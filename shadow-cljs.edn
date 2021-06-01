@@ -1,0 +1,15 @@
+{:source-paths ["src"]
+ :dependencies [[binaryage/devtools "1.0.3"]
+                [nrepl "0.8.3"]
+                [reagent "1.0.0"]
+
+                [metosin/reitit "0.5.1"]
+                [metosin/jsonista "0.2.6"]]
+ :builds       {:app {:target     :browser
+                      :output-dir "public/js"
+                      :asset-path "/js"
+                      :modules    {:app {:entries [drip.core]}}
+                      :devtools   {:after-load drip.core/mount-root}}}
+
+ :dev-http     {3000 {:root    "public"
+                      :handler user/app}}}
