@@ -61,7 +61,6 @@
                          :label           "Land management plan in place"
                          :data            (cursor data [:land-management])}]
 
-     "==========================="
      [inputs/multi-form-group-2 {:input-components {:technology #(technology {:data %})}
                                  :new-data         {:technology {:tech :A :subtech nil}}
                                  :label            "Technologies"

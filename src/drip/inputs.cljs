@@ -8,7 +8,7 @@
    [goog.ui IdGenerator]))
 
 (defn gen-dom-id []
-  (.getNextUniqueId (.getInstance IdGenerator)))
+  ^string (.getNextUniqueId (.getInstance IdGenerator)))
 
 ;; -------------------------
 ;; Simple inputs - no labels, basic layout

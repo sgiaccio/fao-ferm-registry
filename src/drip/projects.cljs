@@ -26,7 +26,7 @@
      [:h1 "Projects"]
      (when (some? @project-list)
        [:ul (map (fn [p]
-                   (js/console.log p)
+                  ;;  (js/console.log p)
                    [:li {:key "TODO"} [:a {:href (href :project {:id (.-id p)})}
                                        (or (get-in (js->clj (.data p)) ["project" "title"]) "No title")]])
                  @project-list)]
@@ -39,7 +39,7 @@
           [:th {:scope "col"} "Province"]]]
         [:tbody
          (map (fn [p]
-                (js/console.log p)
+                ;; (js/console.log p)
                 [:tr {:on-click #(push-state :project {:id (.-id p)})
                       :style {:cursor "pointer"}}
                  [:th {:scope "row"} (or (get-in (js->clj (.data p)) ["project" "title"]) "No title")]
@@ -55,7 +55,7 @@
              project-id (get-in routing-data [:route-params :id])
              _ (.then (config/get-project project-id)
                       #(do
-                         (js/console.log %)
+                        ;;  (js/console.log %)
                          (reset! config/md (js->clj (.data %) :keywordize-keys true))
                          (reset! config/project-id (.-id %))))]
     [:div.container
