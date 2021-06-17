@@ -3,7 +3,11 @@ definitions:
   steps:
     - step: &build
         name: Build_Firebase
+        image: adoptopenjdk/openjdk16:jdk-16.0.1_9-slim
         script:
+          - curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh
+          - bash nodesource_setup.sh
+          - apt install nodejs
           - npm install
           - npx shadow-cljs release app
         artifacts:
