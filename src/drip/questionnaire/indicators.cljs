@@ -1,24 +1,31 @@
 (ns drip.questionnaire.indicators
   (:require
-   [reagent.core :as r :refer [cursor]]
-
    [cljs.pprint :as pp]
-   [ajax.core :refer [POST]]
 
+   [reagent.core :as r :refer [cursor]]
+   [reagent.ratom :refer [make-reaction]]
+
+   [drip.config :refer [userid md]]
    [drip.inputs :as inputs]
    [drip.menus :as menus]))
 
 (defn indicators [data]
-  [:<>
-   [:h2 "Indicator selection"]
+  (let [edit (make-reaction (fn []
+                              (and
+                               (some? @userid)
+                               (= @userid (:uid @md)))))]
+    [:<>
+     [:h2 "Indicator selection"]
 
-   [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/sdg-contributions
-                                                                        :data    %})
-                       :label           "Contribution to SDGs"
-                       :data            (cursor data [:sdg-contributions])}]
+     [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/sdg-contributions
+                                                                          :data    %
+                                                                          :edit    @edit})
+                         :label           "Contribution to SDGs"
+                         :data            (cursor data [:sdg-contributions])}]
 
-   [inputs/textarea-form-group-loc {:label       "Contribution to restoration related Rio Conventions"
-                                    :data        (cursor data [:rio-convention-contribution])}]
+     [inputs/textarea-form-group {:label "Contribution to restoration related Rio Conventions"
+                                  :data  (cursor data [:rio-convention-contribution])
+                                  :edit  @edit}]
 
   ;;  TODO: add goals/criteria/indicators/target
   ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/project-goals
@@ -36,5 +43,5 @@
   ;;   "Save"]
 
    ; DEBUG data structure
-   [:hr]
-   [:div [:pre (with-out-str (pp/pprint @data))]]])
+     [:hr]
+     [:div [:pre (with-out-str (pp/pprint @data))]]]))

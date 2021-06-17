@@ -8,17 +8,6 @@
             [drip.questionnaire.md-root :refer [md-root]]))
 
 
-;; (defn projects []
-;;   (with-let [project-list (atom nil)
-;;         _ (.then (config/get-all-projects) #(reset! project-list %))]
-;;     [:h1 "Projects"]
-;;     (when (some? @project-list)
-;;       [:ul (map (fn [p]
-;;                   (js/console.log p)
-;;                   [:li {:key "TODO"} [:a {:href (href :project {:id (.-id p)})}
-;;                                       (or (get-in (js->clj (.data p)) ["project" "title"]) "No title")]])
-;;                 @project-list)])))
-
 (defn projects []
   (with-let [project-list (atom nil)
              _ (.then (config/get-all-projects) #(reset! project-list %))]
@@ -36,7 +25,8 @@
           [:th {:scope "col"} "Title"]
           [:th {:scope "col"} "Country"]
           [:th {:scope "col"} "Region"]
-          [:th {:scope "col"} "Province"]]]
+          [:th {:scope "col"} "Province"]
+          [:th]]]
         [:tbody
          (map (fn [p]
                 ;; (js/console.log p)
@@ -45,7 +35,8 @@
                  [:th {:scope "row"} (or (get-in (js->clj (.data p)) ["project" "title"]) "No title")]
                  [:td "Admin 1"]
                  [:td "Admin 2"]
-                 [:td "Admin 3"]])
+                 [:td "Admin 3"]
+                 [:td (if (= @config/userid (-> p .data .-uid)) "EDIT" "VIEW")]])
               @project-list)]])
      [:button.btn.btn-primary {:on-click #(push-state :project {:id "new"})}
       "Add new project"]]))
@@ -61,13 +52,3 @@
     [:div.container
      [:div.row
       [:div.col-md-12 [md-root]]]]))
-
-;; (defn projects_ []
-;;   (fn []
-;;     (.then (config/get-all-projects) #(js/console.log %))
-;;     [:span.main
-;;      [:h1 "Projects"]
-;;      [:ul (map (fn [item-id]
-;;                  [:li {:name (str "item-" item-id) :key (str "item-" item-id)}
-;;                   [:a {:href (href :item {:item-id item-id})} "Item: " item-id]])
-;;                (range 1 60))]]))

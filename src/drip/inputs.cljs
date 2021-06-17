@@ -8,7 +8,7 @@
    [goog.ui IdGenerator]))
 
 (defn gen-dom-id []
-  ^string (.getNextUniqueId (.getInstance IdGenerator)))
+  ^js/string (.getNextUniqueId (.getInstance IdGenerator)))
 
 ;; -------------------------
 ;; Simple inputs - no labels, basic layout
@@ -18,64 +18,79 @@
   (if (= "" value) nil value))
 
 (defn text-input
-  [{:keys [placeholder description data]}]
+  [{:keys [placeholder description data edit]}]
   [:<>
-   [:input.form-control.form-control-sm {:type       "text"
-                                         :value       (or @data "")
-                                         :placeholder placeholder
-                                         :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
+   (if edit
+     [:input.form-control.form-control-sm {:type       "text"
+                                           :value       (or @data "")
+                                           :placeholder placeholder
+                                           :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
+     (or @data ""))
    (when description [:small.form-text.text-muted description])])
 
 (defn textarea-input
-  [{:keys [placeholder description data]}]
+  [{:keys [placeholder description data edit]}]
   [:<>
-   [:textarea.form-control.form-control-sm {:type       "text"
-                                            :value       (or @data "")
-                                            :placeholder placeholder
-                                            :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
+   (if edit
+     [:textarea.form-control.form-control-sm {:type       "text"
+                                              :value       (or @data "")
+                                              :placeholder placeholder
+                                              :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
+     (or @data ""))
    (when description [:small.form-text.text-muted description])])
 
 (defn number-input
-  [{:keys [placeholder description data]}]
+  [{:keys [placeholder description data edit]}]
   [:<>
-   [:input.form-control.form-control-sm {:type       "number"
-                                         :value       (or @data "")
-                                         :placeholder placeholder
-                                         :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
+   (if edit
+    [:input.form-control.form-control-sm {:type       "number"
+                                          :value       (or @data "")
+                                          :placeholder placeholder
+                                          :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
+     (or @data ""))
    (when description [:small.form-text.text-muted description])])
 
-(defn select-input [{:keys [options placeholder description data] :or {placeholder "Please select"}}]
+(defn get-select-label [key options]
+  (second (first (filter (fn [[k _]] (= k (keyword key))) options))))
+
+(defn select-input [{:keys [options placeholder description data edit] :or {placeholder "Please select"}}]
   [:<>
-   [:select.form-control.form-control-sm {:value (or @data "")
-                                          :on-change #(reset! data (-> % .-target .-value empty-to-nil keyword))}
-    [:option {:value ""} placeholder]
-    (for [[value label] options]
-      [:option {:key value :value (or value label)} label])]
+   (if edit
+     [:select.form-control.form-control-sm {:value (or @data "")
+                                            :on-change #(reset! data (-> % .-target .-value empty-to-nil keyword))}
+      [:option {:value ""} placeholder]
+      (for [[value label] options]
+        [:option {:key value :value (or value label)} label])]
+     (get-select-label @data options))
    (when description [:small.form-text.text-muted description])])
 
-(defn select-multiple-input [{:keys [options description data]}]
+(defn select-multiple-input [{:keys [options description data edit]}]
   [:<>
-   [:select.form-control.form-control-sm {:value @data
-                                          :multiple true
-                                          :style {:height "150px"}
-                                          :on-change (fn [evt]
-                                                       (reset! data (->> evt
-                                                                         .-target
-                                                                         .-options
-                                                                         (filter #(.-selected %))
-                                                                         (map #(.-value %))
-                                                                         (into []))))}
-    (for [[value label] options]
-      [:option {:key value :value (or value label)} (or label value)])]
+   (if edit
+     [:select.form-control.form-control-sm {:value @data
+                                            :multiple true
+                                            :style {:height "150px"}
+                                            :on-change (fn [evt]
+                                                         (reset! data (->> evt
+                                                                           .-target
+                                                                           .-options
+                                                                           (filter #(.-selected %))
+                                                                           (map #(.-value %))
+                                                                           (into []))))}
+      (for [[value label] options]
+        [:option {:key value :value (or value label)} (or label value)])]
+     (for [[d] @data] (get-select-label d options)))
    (when description [:small.form-text.text-muted description])])
 
-(defn date-input [{:keys [description data]}]
-  [:<>
-   [:input.form-control.form-control-sm {:type      "date"
-                                         :value     (or @data "")
-                                         :style     {:height "38px"} ; by default date field is taller than the other inputs
-                                         :on-change #(reset! data (reset! data (-> % .-target .-value empty-to-nil)))}]
-   (when description [:small.form-text.text-muted description])])
+(defn date-input [{:keys [description data edit]}]
+  (if edit
+    [:<>
+     [:input.form-control.form-control-sm {:type      "date"
+                                           :value     (or @data "")
+                                           :style     {:height "38px"} ; by default date field is taller than the other inputs
+                                           :on-change #(reset! data (reset! data (-> % .-target .-value empty-to-nil)))}]
+     (when description [:small.form-text.text-muted description])]
+    (or @data "")))
 
 ; TODO move to another file
 (defn- vec-remove [pos coll]
@@ -125,7 +140,7 @@
     :add-labels       {:text \"Text \" :keyword \"Keyword\"}
     :data             [[:keyword {:type :discipline :keywords [\"kw1\" \"kw2\"]}]
                        [:text \"text \"]]}"
-  [{:keys [input-components description data new-data add-labels]}]
+  [{:keys [input-components description data new-data add-labels edit]}]
   (with-let [button-id (gen-dom-id)]
     [:div.border.p-3
      (doall (for [n (range (count @data))]
@@ -137,38 +152,40 @@
                       input-component-data (cursor data [n input-component-type])
                       input-component      (get input-components input-component-type)]
                   [:div.col.pl-0 (input-component input-component-data)])
-                [:div.col-auto.pr-0
-                 [:div.text-danger {:style {:cursor "pointer" :margin-top "9px"}
-                                    :on-click (fn []
-                                                (when (js/confirm "Are you sure you want to delete this item?")
-                                                  (swap! data #(vec-remove n %))))}
-                  icons/trash]]]]))
+                (when edit
+                  [:div.col-auto.pr-0
+                   [:div.text-danger {:style {:cursor "pointer" :margin-top "9px"}
+                                      :on-click (fn []
+                                                  (when (js/confirm "Are you sure you want to delete this item?")
+                                                    (swap! data #(vec-remove n %))))}
+                    icons/trash]])]]))
      (when description [:small.form-text.text-muted description])
 
      ; "Add" button
-     (if (> (count input-components) 1)
+     (when edit
+       (if (> (count input-components) 1)
        ; If there's more than one input component, show a dropdown menu
-       [:<>
-        [:div.btn.btn-primary.btn-sm.dropdown-toggle {:type "button"
-                                                      :id button-id
-                                                      :data-toggle "dropdown"
-                                                      :aria-haspopup "true"
-                                                      :aria-expanded "false"}
-         "Add"]
-        [:div.dropdown-menu {:aria-labelledby button-id}
-         (doall (for [component input-components
-                      :let [k (key component)]]
-                  [:a.dropdown-item {:key      k
+         [:<>
+          [:div.btn.btn-primary.btn-sm.dropdown-toggle {:type "button"
+                                                        :id button-id
+                                                        :data-toggle "dropdown"
+                                                        :aria-haspopup "true"
+                                                        :aria-expanded "false"}
+           "Add"]
+          [:div.dropdown-menu {:aria-labelledby button-id}
+           (doall (for [component input-components
+                        :let [k (key component)]]
+                    [:a.dropdown-item {:key      k
                                      ; Not using swap! - Using into and reset!
                                      ; because (conj nil x) returns (x) instead of [x].
                                      ; Causes problems when adding the first item
-                                     :on-click #(reset! data (into [] (conj @data [k (get new-data k)])))}
-                   (get add-labels k)]))]]
+                                       :on-click #(reset! data (into [] (conj @data [k (get new-data k)])))}
+                     (get add-labels k)]))]]
        ; Otherwise, show just a button
-       [:div.btn.btn-primary.btn-sm {:type "button"
+         [:div.btn.btn-primary.btn-sm {:type "button"
                                      ; Using into and reset! - see comment above
-                                     :on-click #(reset! data (into [] (conj @data new-data)))}
-        "Add " (-> add-labels first val)])]))
+                                       :on-click #(reset! data (into [] (conj @data new-data)))}
+          "Add " (-> add-labels first val)]))]))
 
 ;; -------------------------
 ;; Form groups - wrap other inputs (also form groups themselves) with layout, labels and description
@@ -192,25 +209,31 @@
 
 (defn multi-form-group-2
   "Creates a multiple form group from a simple input - adds label and description"
-  [{:keys [input-components label description new-data add-labels data]}]
+  [{:keys [input-components label description new-data add-labels data edit]}]
   [form-group-wrapper {:label label :description description}
    [multi-input-2 {:input-components input-components
                    :new-data         new-data
                    :add-labels       add-labels
-                   :data             data}]])
+                   :data             data
+                   :edit             edit}]])
 
 ; UTILITY FUNCTIONS
 (defn text-form-group [args]
-  [form-group (assoc args :input-component #(text-input {:placeholder "Please enter text" :data %}))])
+  [form-group (assoc args :input-component #(text-input {:placeholder "Please enter text"
+                                                         :data %
+                                                         :edit (:edit args)}))])
 
-(defn number-form-group [args]
-  [form-group (assoc args :input-component #(number-input {:data %}))])
+(defn number-form-group [args edit]
+  [form-group (assoc args :input-component #(number-input {:data %
+                                                           :edit (:edit args)}))])
 
-(defn date-form-group [args]
-  [form-group (assoc args :input-component #(date-input {:data %}))])
+(defn date-form-group [args edit]
+  [form-group (assoc args :input-component #(date-input {:data %
+                                                         :edit (:edit args)}))])
 
-(defn textarea-form-group [args]
-  [form-group (assoc args :input-component #(textarea-input {:data %}))])
+(defn textarea-form-group [args edit]
+  [form-group (assoc args :input-component #(textarea-input {:data %
+                                                             :edit (:edit args)}))])
 
 ;; ; TODO dissoc :options from args
 ;; (defn select-form-group [args]
@@ -218,38 +241,42 @@
 
 ; TODO refactor next two components
 
-(defn text-form-group-loc [{:keys [label placeholder description data]}]
+(defn text-form-group-loc [{:keys [label placeholder description data edit]}]
   (with-let [input-id (gen-dom-id)]
     [:div.form-group.row.pt-3
      [:span.col-md-2.col-form-label.pt-0 label]
      [:div.col-md-10
       (doall (for [[lang-id labels] config/languages]
-               [:div.input-group {:key lang-id}
-                [:div.input-group-prepend
-                 [:span.input-group-text {:id (str input-id "_l_" lang-id)} (:label-short labels)]]
-                [:input.form-control.form-control-sm {:id (str input-id "_" lang-id)
-                                                      :type             "text"
-                                                      :value            (get @data lang-id)
-                                                      :aria-describedby (str input-id "_l_" lang-id)
-                                                      :placeholder      placeholder
-                                                      :on-change        #(swap! data assoc lang-id (-> % .-target .-value))}]]))
+               (if edit
+                 [:div.input-group {:key lang-id}
+                  [:div.input-group-prepend
+                   [:span.input-group-text {:id (str input-id "_l_" lang-id)} (:label-short labels)]]
+                  [:input.form-control.form-control-sm {:id (str input-id "_" lang-id)
+                                                        :type             "text"
+                                                        :value            (get @data lang-id)
+                                                        :aria-describedby (str input-id "_l_" lang-id)
+                                                        :placeholder      placeholder
+                                                        :on-change        #(swap! data assoc lang-id (-> % .-target .-value))}]]
+                 (str (:label-short labels) " - " (get @data lang-id)))))
       [:small.form-text.text-muted  description]]]))
 
-(defn textarea-form-group-loc [{:keys [label placeholder description data]}]
+(defn textarea-form-group-loc [{:keys [label placeholder description data edit]}]
   (with-let [input-id (gen-dom-id)]
     [:div.form-group.row.pt-3
      [:span.col-md-2.col-form-label.pt-0 label]
      [:div.col-md-10
       (doall (for [[lang-id labels] config/languages]
-               [:div.input-group {:key lang-id}
-                [:div.input-group-prepend
-                 [:span.input-group-text {:id (str input-id "_l_" lang-id)} (:label-short labels)]]
-                [:textarea.form-control.form-control-sm {:id               (str input-id "_" lang-id)
-                                                         :value            (get @data lang-id)
-                                                         :rows             3
-                                                         :aria-describedby (str input-id "_l_" lang-id)
-                                                         :placeholder      placeholder
-                                                         :on-change        #(swap! data assoc lang-id (-> % .-target .-value))}]]))
+               (if edit
+                 [:div.input-group {:key lang-id}
+                  [:div.input-group-prepend
+                   [:span.input-group-text {:id (str input-id "_l_" lang-id)} (:label-short labels)]]
+                  [:textarea.form-control.form-control-sm {:id               (str input-id "_" lang-id)
+                                                           :value            (get @data lang-id)
+                                                           :rows             3
+                                                           :aria-describedby (str input-id "_l_" lang-id)
+                                                           :placeholder      placeholder
+                                                           :on-change        #(swap! data assoc lang-id (-> % .-target .-value))}]]
+                 (str (:label-short labels) " - " (get @data lang-id)))))
       [:small.form-text.text-muted description]]]))
 
 (defn- horizontal-layout
@@ -260,45 +287,56 @@
 
 
 ;; -------------------------
-;; Metadata specific inputs
+;; ISO 19139 Metadata specific inputs
 
-(defn date-and-type-input [{:keys [data]}]
+(defn date-and-type-input [{:keys [data edit]}]
   [horizontal-layout
    [select-input
     {:options     menus/date-types
      :description "Type"
      :data        (cursor data [:type])}]
    [date-input {:description "Date"
-                :data        (cursor data [:date])}]])
+                :data        (cursor data [:date])
+                :edit        edit}]])
 
-(defn point-of-contact [{:keys [data]}]
+(defn point-of-contact [{:keys [data edit]}]
   [horizontal-layout
    [select-input {:options     menus/poc-roles
                   :description "Role"
-                  :data        (cursor data [:role])}]
+                  :data        (cursor data [:role])
+                  :edit edit}]
    [text-input {:description "Organization"
-                :data        (cursor data [:organization])}]
+                :data        (cursor data [:organization])
+                :edit edit}]
    [text-input {:description "Individual name"
-                :data        (cursor data [:individual-name])}]
+                :data        (cursor data [:individual-name])
+                :edit edit}]
    [text-input {:description "Web address"
-                :data        (cursor data [:web-address])}]
+                :data        (cursor data [:web-address])
+                :edit edit}]
    [text-input
     {:description "Email"
      :data        (cursor data [:email])}]])
 
-(defn keywords [{:keys [data]}]
+(defn keywords [{:keys [data edit]}]
   [horizontal-layout
    [select-input {:options     menus/keyword-types
                   :description "Keyword type"
-                  :data        (cursor data [:type])}]
-   [multi-input-2 {:input-components {:keyword #(text-input {:placeholder "Keyword" :data %})}
+                  :data        (cursor data [:type])
+                  :edit        edit}]
+   [multi-input-2 {:input-components {:keyword #(text-input {:placeholder "Keyword" 
+                                                             :data %
+                                                             :edit edit})}
                    :new-data         {:keyword nil}
                    :add-labels       {:keyword "keyword"}
-                   :data             (cursor data [:keywords])}]])
+                   :data             (cursor data [:keywords])
+                   :edit             edit}]])
 
-(defn measurement [{:keys [data]}]
+(defn measurement [{:keys [data edit]}]
   [horizontal-layout
    [number-input {:description "Mean"
-                  :data (cursor data [:value])}]
+                  :data (cursor data [:value])
+                  :edit edit}]
    [number-input {:description "Std dev"
-                  :data (cursor data [:error])}]])
+                  :data (cursor data [:error])
+                  :edit edit}]])

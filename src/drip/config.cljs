@@ -1,14 +1,12 @@
 (ns drip.config
   (:require
-   [reagent.core :refer [atom]]
+   [reagent.core :as r]
    ["firebase" :default Firebase]
-  ;;  ["firebase/auth"]
+   ["firebase/auth"]
    ["firebase/firestore"]))
 
 
 ;; Check this https://github.com/fbielejec/cljs-firebase-client
-
-
 
 
 ;; firebase.initializeApp({
@@ -20,13 +18,30 @@
 ;; var db = firebase.firestore();
 
 
-
-
 (defonce firebase-instance (atom nil))
+
+(def userid (r/atom nil))
 
 (defn init [config]
   (when-not @firebase-instance
-    (reset! firebase-instance (-> Firebase (.initializeApp (clj->js config))))))
+    (reset! firebase-instance (-> Firebase (.initializeApp (clj->js config))))
+    ;; (let [UI (.-AuthUI (.-auth Firebaseui))
+    ;;       _  (reset! ui (UI. (.auth Firebase)))
+    ;;       provider_id (.. Firebase -auth -EmailAuthProvider -PROVIDER_ID)
+    ;;       ;; (.start @ui "#firebaseui-auth-container" #js {:signInOptions [(.. Firebase auth EmailAuthProvider PROVIDER_ID)]})
+    ;;       ]
+    ;;   (js/console.log "------------------------------")
+    ;;   (js/console.log provider_id)
+    ;;   (js/console.log @ui)
+    ;;   (js/console.log #js {:signInOptions #js [ #js {:provider "password" :signInMethod "password"}]})
+      
+    ;;   (.start @ui "#firebaseui-auth-container" #js {:signInOptions #js [ #js {:provider "password" :signInMethod "password"}]})
+    ;; ;; (js/console.log "---------")
+    ;; ;; (reset! ui "(.AuthUI (.-auth Firebaseui) (.auth Firebase))")
+    ;; ;; (js/console.log @ui)
+    ;; ;; (.start @ui "#firebaseui-auth-container" #js {:signInOptions [(.. firebase auth EmailAuthProvider PROVIDER_ID)]})
+    ;; )
+    ))
 
 (init (clj->js {:apiKey "AIzaSyDWpt9xQ9DLOYXhbi6QZtjXe3mIOdVvuIA"
                 :authDomain "drip-f429f.firebaseapp.com"
@@ -39,57 +54,71 @@
 
 
 
-;; (firebase/initializeApp clj->js {
-;;   :apiKey "### FIREBASE API KEY ###",
-;;   :authDomain "### FIREBASE AUTH DOMAIN ###",
-;;   :projectId "### CLOUD FIRESTORE PROJECT ID ###"
-;; })
-
-;; (def db (.firestore firebase))
-
-;; db.collection("users").add({
-;;     first: "Ada",
-;;     last: "Lovelace",
-;;     born: 1815
-;; })
-
 (defonce languages {:en {:label "English" :label-short "en"}
                 ;;     :fr {:label "Français" :label-short "fr"}
                     })
 
-(defonce project-id (atom nil))
+(defonce project-id (r/atom nil))
 
-(defonce md (atom {:metadata
-                   {:citation {:title {:loc {:en "Ecosystem restoration project pi 3.14159265359"
-                                             :fr "Ecosystem restoration project pi 3.14159265359"}}
-                               :dates [{:date {:type :creation
-                                               :date "2019-06-04"}}
-                                       {:date {:type :lastUpdate
-                                               :date "2020-06-04"}}]}
-                    :abstract {:loc {:en "The Ecosystem Restoration project pi 3.14159265359 is the biggest and the most ambitious project in the world. Underpinned by knowledge in the latest IPCC and IPBES reports, large-scale ecosystem restoration is urgent – the window of opportunity is closing rapidly. It needs a systemic approach to deliver tangible benefits. This project is therefore pivotal in demonstrating and promoting systemic solutions for upscaling urgent restoration to increase biodiversity and support a wide range of ecosystem services, as requested in the Biodiversity Strategy for 2030 for damaged terrestrial, freshwater, coastal and marine ecosystems."
-                                     :fr "The Ecosystem Restoration project pi 3.14159265359 is the biggest and the most ambitious project in the world. Underpinned by knowledge in the latest IPCC and IPBES reports, large-scale ecosystem restoration is urgent – the window of opportunity is closing rapidly. It needs a systemic approach to deliver tangible benefits. This project is therefore pivotal in demonstrating and promoting systemic solutions for upscaling urgent restoration to increase biodiversity and support a wide range of ecosystem services, as requested in the Biodiversity Strategy for 2030 for damaged terrestrial, freshwater, coastal and marine ecosystems."}}
-                    :status :completed
-                    :points-of-contact [{:poc {:role            nil
-                                               :organization    nil
-                                               :individual-name nil
-                                               :web-address     nil
-                                               :email           nil}}]
-                    :topic-categories ["Location"]
+(defonce default-values
+  {:metadata
+   {:citation {:title {:loc {:en "Ecosystem restoration project pi 3.14159265359"
+                             :fr "Ecosystem restoration project pi 3.14159265359"}}
+               :dates [{:date {:type :creation
+                               :date "2019-06-04"}}
+                       {:date {:type :lastUpdate
+                               :date "2020-06-04"}}]}
+    :abstract {:loc {:en "The Ecosystem Restoration project pi 3.14159265359 is the biggest and the most ambitious project in the world. Underpinned by knowledge in the latest IPCC and IPBES reports, large-scale ecosystem restoration is urgent – the window of opportunity is closing rapidly. It needs a systemic approach to deliver tangible benefits. This project is therefore pivotal in demonstrating and promoting systemic solutions for upscaling urgent restoration to increase biodiversity and support a wide range of ecosystem services, as requested in the Biodiversity Strategy for 2030 for damaged terrestrial, freshwater, coastal and marine ecosystems."
+                     :fr "The Ecosystem Restoration project pi 3.14159265359 is the biggest and the most ambitious project in the world. Underpinned by knowledge in the latest IPCC and IPBES reports, large-scale ecosystem restoration is urgent – the window of opportunity is closing rapidly. It needs a systemic approach to deliver tangible benefits. This project is therefore pivotal in demonstrating and promoting systemic solutions for upscaling urgent restoration to increase biodiversity and support a wide range of ecosystem services, as requested in the Biodiversity Strategy for 2030 for damaged terrestrial, freshwater, coastal and marine ecosystems."}}
+    :status :completed
+    :points-of-contact [{:poc {:role            nil
+                               :organization    nil
+                               :individual-name nil
+                               :web-address     nil
+                               :email           nil}}]
+    :topic-categories ["Location"]
 
-                    :keywords [{:keyword-group {:type     :discipline
-                                                :keywords [{:keyword nil}]}}]
+    :keywords [{:keyword-group {:type     :discipline
+                                :keywords [{:keyword nil}]}}]}
+   :results
+   {:partially-achieved-reasons []}})
 
-              ;; :test-point-of-contact {:role nil, :organization "org", :web-address nil, :email nil}
-              ;; :test-text "asdf"
-              ;; :multi-type-input-test [[:keyword {:type     :discipline
-              ;;                                    :keywords ["kw1" "kw2"]}]
-              ;;                         [:text    "text"]]
-              ;; :multi-type-input-test2 [[:text "text"]]
-                    }
-                   :results
-                   {:partially-achieved-reasons []}}))
+(defonce md (r/atom default-values))
+
+(defn save []
+  (let [doc (if-some [id @project-id]
+              (.doc registry-collection id)
+              (.doc registry-collection))]
+    (reset! project-id nil)
+    (.set doc (clj->js (assoc @md :uid @userid)))))
+
+(defn get-all-projects []
+  (.then (.get (.collection db "registry"))
+         (fn [query-snapshot]
+           ;; (doall (map #(.data %) (.-docs query-snapshot)))
+           (.-docs query-snapshot))))
+
+;; db.collection ("cities") .doc ("SF");
+(defn get-project [id]
+  (if (= "new" id)
+    (let [doc (.get (.doc registry-collection))]
+      (reset! project-id (.-id doc))
+      doc)
+    (do
+      (reset! project-id id)
+      (.get (.doc registry-collection id)))))
+
+
+;; (add-watch userid
+;;            :userid
+;;            #(js/alert @userid))
+
+
+
+
 
 ;; Sample higher level conf
+
 ;; (def form {:type :group
 ;;            :display :tab
 ;;            :title "Identification"
@@ -145,27 +174,3 @@
 ;;                                  [:underDevelopment  "Under development"]
 ;;                                  [:valid             "Valid"]
 ;;                                  [:withdrawn         "Withdrawn"]]}]})
-
-
-(defn save []
-  (let [doc (if-some [id @project-id]
-              (.doc registry-collection id)
-              (.doc registry-collection))]
-    (reset! project-id nil)
-    (.set doc (clj->js @md))))
-
-(defn get-all-projects []
-  (.then (.get (.collection db "registry"))
-         (fn [query-snapshot]
-           ;; (doall (map #(.data %) (.-docs query-snapshot)))
-           (.-docs query-snapshot))))
-
-;; db.collection ("cities") .doc ("SF");
-(defn get-project [id]
-  (if (= "new" id)
-    (let [doc (.get (.doc registry-collection))]
-      (reset! project-id (.-id doc))
-      doc)
-    (do
-      (reset! project-id id)
-      (.get (.doc registry-collection id)))))

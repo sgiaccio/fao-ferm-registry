@@ -1,30 +1,39 @@
 (ns drip.questionnaire.activities
   (:require
-   [reagent.core :as r :refer [cursor]]
-
    [cljs.pprint :as pp]
 
+   [reagent.core :refer [cursor]]
+   [reagent.ratom :refer [make-reaction]]
+
+   [drip.config :refer [userid md]]
    [drip.inputs :as inputs]
    [drip.menus :as menus]))
 
 (defn activities [data]
-  [:<>
-   [:h2 "Definition of activities"]
+  (let [edit (make-reaction (fn []
+                              (and
+                               (some? @userid)
+                               (= @userid (:uid @md)))))]
+    [:<>
+     [:h2 "Definition of activities"]
 
-   [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/activities
-                                                                        :data    %})
-                       :label           "Activities implemented"
-                       :data            (cursor data [:activities-implemented])}]
+     [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/activities
+                                                                          :data    %
+                                                                          :edit    @edit})
+                         :label           "Activities implemented"
+                         :data            (cursor data [:activities-implemented])}]
 
 
-   [inputs/form-group {:input-component #(inputs/date-input {:data        %})
-                       :label           "Date of implementation of the activity"
-                       :data            (cursor data [:implementation_date])}]
+     [inputs/form-group {:input-component #(inputs/date-input {:data %
+                                                               :edit @edit})
+                         :label           "Date of implementation of the activity"
+                         :data            (cursor data [:implementation_date])}]
 
-   [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
-                                                               :data    %})
-                       :label           "Priority/critical areas for LDN implementation "
-                       :data            (cursor data [:priority_areas])}]
+     [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
+                                                                 :data    %
+                                                                 :edit    @edit})
+                         :label           "Priority/critical areas for LDN implementation "
+                         :data            (cursor data [:priority_areas])}]
 
   ;; TODO: Drivers of ecosystem restoration observed on site (choose from the list)
 
@@ -37,5 +46,5 @@
   ;;   "Save"]
 
    ; DEBUG data structure
-   [:hr]
-   [:div [:pre (with-out-str (pp/pprint @data))]]])
+     [:hr]
+     [:div [:pre (with-out-str (pp/pprint @data))]]]))
