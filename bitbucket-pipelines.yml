@@ -1,0 +1,30 @@
+image: node:latest
+definitions:
+  steps:
+    - step: &build
+        name: Build_Firebase
+        script:
+          - npm install
+          - npx shadow-cljs release app
+        artifacts:
+          - public/**
+
+    - step: &deploy
+        name: Deploy_Firebase
+        script:
+          - pipe: atlassian/firebase-deploy:0.2.1
+            variables:
+              FIREBASE_TOKEN: $FIREBASE_TOKEN 
+              PROJECT_ID: $PROJECT_ID
+pipelines:
+  branches:
+    review:
+      - step: *build
+      - step:
+          <<: *deploy
+          deployment: review 
+    master:
+      - step: *build
+      - step:
+          <<: *deploy
+          deployment: prod
