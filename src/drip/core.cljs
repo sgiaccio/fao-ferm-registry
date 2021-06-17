@@ -64,7 +64,8 @@
              [:a.nav-link {:href "#" :on-click #(auth/show-login-form)}
               "Login" [:span.sr-only "(current)"]]
              [:a.nav-link {:href "#" :on-click #(auth/logout)}
-              "Logout" [:span.sr-only "(current)"]])]]]]
+              "Logout" [:span.sr-only "(current)"]])
+           ]]]]
        ;<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
        [page]
        [:footer

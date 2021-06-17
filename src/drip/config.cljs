@@ -1,8 +1,10 @@
 (ns drip.config
   (:require
    [reagent.core :as r]
-   ["firebase" :default Firebase]
-   ["firebase/auth"]
+  ;;  import firebase from "firebase/app";
+   ["firebase/app" :default firebase]
+  ;;  ["firebase" :default Firebase]
+  ;;  ["firebase/auth"]
    ["firebase/firestore"]))
 
 
@@ -24,7 +26,7 @@
 
 (defn init [config]
   (when-not @firebase-instance
-    (reset! firebase-instance (-> Firebase (.initializeApp (clj->js config))))
+    (reset! firebase-instance (-> firebase (.initializeApp (clj->js config))))
     ;; (let [UI (.-AuthUI (.-auth Firebaseui))
     ;;       _  (reset! ui (UI. (.auth Firebase)))
     ;;       provider_id (.. Firebase -auth -EmailAuthProvider -PROVIDER_ID)
@@ -49,7 +51,7 @@
                 :storageBucket "drip-f429f.appspot.com"
                 :messagingSenderId "807676682446"
                 :appId "1:807676682446:web:94694090ff2fe30bad309f"}))
-(def db (.firestore Firebase))
+(def db (.firestore firebase))
 (def registry-collection (.collection db "registry"))
 
 
