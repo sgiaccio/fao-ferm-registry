@@ -108,5 +108,5 @@
   (init-routes!)
   (rdom/render [current-page] (.getElementById js/document "app")))
 
-(defn init! []
+(defn main []
   (mount-root))
