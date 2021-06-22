@@ -5,11 +5,12 @@
    [reitit.frontend :as rf]
    [reitit.frontend.easy :as rfe]
 
-   [drip.config :as config]
+  ;;  [drip.config :as config]
    [drip.util :refer [href]]
    [drip.projects :refer [projects project]]
+  ;;  [drip.auth :as auth]
    
-   [drip.auth :as auth]))
+   ))
 
 
 
@@ -60,11 +61,11 @@
         [:div#navbarSupportedContent.collapse.navbar-collapse
          [:ul.navbar-nav.mr-auto
           [:li.nav-item.active
-           (if (nil? @config/userid)
-             [:a.nav-link {:href "#" :on-click #(auth/show-login-form)}
-              "Login" [:span.sr-only "(current)"]]
-             [:a.nav-link {:href "#" :on-click #(auth/logout)}
-              "Logout" [:span.sr-only "(current)"]])
+          ;;  (if (nil? @config/userid)
+          ;;    [:a.nav-link {:href "#" :on-click #(auth/show-login-form)}
+          ;;     "Login" [:span.sr-only "(current)"]]
+          ;;    [:a.nav-link {:href "#" :on-click #(auth/logout)}
+          ;;     "Logout" [:span.sr-only "(current)"]])
            ]]]]
        ;<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
        [page]

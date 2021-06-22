@@ -1,11 +1,21 @@
 (ns drip.config
   (:require
    [reagent.core :as r]
-  ;;  import firebase from "firebase/app";
-   ["firebase/app" :default firebase]
-  ;;  ["firebase" :default Firebase]
-  ;;  ["firebase/auth"]
-   ["firebase/firestore"]))
+   ["firebase/app" :refer (initializeApp)]
+   ["firebase/firestore/lite" :refer (getFirestore collection query getDocs doc getDoc)]
+;; import firebase from 'firebase/compat/app';
+;; import 'firebase/compat/firestore';
+;; import { getDoc } from 'firebase/firestore'
+
+  ;;  ["firebase/compat/app" :default firebase]
+
+
+
+   ;;  ["firebase" :default Firebase]
+   ;;  ["firebase/auth"]
+  ;;  ["firebase/compat/firestore"]
+   ["regenerator-runtime/runtime"])) ; TODO: see if we still need this after switching to version 9 modular firebase API
+
 
 
 ;; Check this https://github.com/fbielejec/cljs-firebase-client
@@ -26,24 +36,7 @@
 
 (defn init [config]
   (when-not @firebase-instance
-    (reset! firebase-instance (-> firebase (.initializeApp (clj->js config))))
-    ;; (let [UI (.-AuthUI (.-auth Firebaseui))
-    ;;       _  (reset! ui (UI. (.auth Firebase)))
-    ;;       provider_id (.. Firebase -auth -EmailAuthProvider -PROVIDER_ID)
-    ;;       ;; (.start @ui "#firebaseui-auth-container" #js {:signInOptions [(.. Firebase auth EmailAuthProvider PROVIDER_ID)]})
-    ;;       ]
-    ;;   (js/console.log "------------------------------")
-    ;;   (js/console.log provider_id)
-    ;;   (js/console.log @ui)
-    ;;   (js/console.log #js {:signInOptions #js [ #js {:provider "password" :signInMethod "password"}]})
-      
-    ;;   (.start @ui "#firebaseui-auth-container" #js {:signInOptions #js [ #js {:provider "password" :signInMethod "password"}]})
-    ;; ;; (js/console.log "---------")
-    ;; ;; (reset! ui "(.AuthUI (.-auth Firebaseui) (.auth Firebase))")
-    ;; ;; (js/console.log @ui)
-    ;; ;; (.start @ui "#firebaseui-auth-container" #js {:signInOptions [(.. firebase auth EmailAuthProvider PROVIDER_ID)]})
-    ;; )
-    ))
+    (reset! firebase-instance (initializeApp (clj->js config)))))
 
 (init (clj->js {:apiKey "AIzaSyDWpt9xQ9DLOYXhbi6QZtjXe3mIOdVvuIA"
                 :authDomain "drip-f429f.firebaseapp.com"
@@ -51,14 +44,12 @@
                 :storageBucket "drip-f429f.appspot.com"
                 :messagingSenderId "807676682446"
                 :appId "1:807676682446:web:94694090ff2fe30bad309f"}))
-(def db (.firestore firebase))
-(def registry-collection (.collection db "registry"))
+
+(def db (getFirestore @firebase-instance))
+(def registry-collection (collection db "registry"))
 
 
-
-(defonce languages {:en {:label "English" :label-short "en"}
-                ;;     :fr {:label "Français" :label-short "fr"}
-                    })
+(defonce languages {:en {:label "English" :label-short "en"}})
 
 (defonce project-id (r/atom nil))
 
@@ -95,21 +86,34 @@
     (.set doc (clj->js (assoc @md :uid @userid)))))
 
 (defn get-all-projects []
-  (.then (.get (.collection db "registry"))
+  (.then (getDocs (query registry-collection))
          (fn [query-snapshot]
            ;; (doall (map #(.data %) (.-docs query-snapshot)))
-           (.-docs query-snapshot))))
+           ^js/Array (.-docs query-snapshot))))
+
+;; (defn get-all-projects_ []
+;;   (.then (.get (.collection db "registry"))
+;;          (fn [query-snapshot]
+;;            ;; (doall (map #(.data %) (.-docs query-snapshot)))
+;;            (.-docs query-snapshot))))
 
 ;; db.collection ("cities") .doc ("SF");
-(defn get-project [id]
-  (if (= "new" id)
-    (let [doc (.get (.doc registry-collection))]
-      (reset! project-id (.-id doc))
-      doc)
-    (do
-      (reset! project-id id)
-      (.get (.doc registry-collection id)))))
+;; (defn get-project [id]
+;;   (if (= "new" id)
+;;     (let [doc (.get (.doc registry-collection))]
+;;       (reset! project-id (.-id doc))
+;;       doc)
+;;     (do
+;;       (reset! project-id id)
+;;       (.get (.doc registry-collection id)))))
 
+;; const docRef = doc (db, "cities", "SF");
+;; const docSnap = await getDoc (docRef);
+
+(defn get-project [id]
+  (reset! project-id id)
+  (let [doc-ref  (doc db "registry" id)]
+    (getDoc doc-ref)))
 
 ;; (add-watch userid
 ;;            :userid
