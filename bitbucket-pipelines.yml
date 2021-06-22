@@ -9,7 +9,7 @@ definitions:
           - bash nodesource_setup.sh
           - apt install nodejs
           - npm install
-          - npx shadow-cljs release app
+          - npm run build
         artifacts:
           - public/**
 
