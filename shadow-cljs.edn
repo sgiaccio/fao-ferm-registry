@@ -1,6 +1,9 @@
 {:builds
  {:app {:asset-path "/js"
-        :modules {:main {:init-fn drip.core/main}}
+        :module-loader true
+        :modules {:main {:init-fn drip.core/main}
+                  :aoi {:entries [drip.questionnaire.aoi]
+                        :depends-on #{:main}}}
         :output-dir "public/js"
         :target :browser}
   :cards {:asset-path "/js"

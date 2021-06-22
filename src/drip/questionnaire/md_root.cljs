@@ -1,19 +1,24 @@
 (ns drip.questionnaire.md-root
   (:require
+   ["react" :as react]
    [reagent.core :as r :refer [atom cursor with-let]]
    [reitit.frontend.easy :refer [push-state]]
 
    [drip.config :as config]
-   
+   [drip.util :refer (lazy-component)]
+
    [drip.questionnaire.iso-19115 :refer [iso-19115]]
    [drip.questionnaire.project :refer [project]]
-   [drip.questionnaire.aoi :refer [aoi]]
+  ;;  [drip.questionnaire.aoi :refer [aoi]]
    [drip.questionnaire.baseline :refer [baseline]]
    [drip.questionnaire.activities :refer [activities]]
    [drip.questionnaire.indicators :refer [indicators]]
    [drip.questionnaire.characterisation :refer [characterisation]]
    [drip.questionnaire.information :refer [information]]
    [drip.questionnaire.results :refer [results]]))
+
+;; Temporary solution to reduce the loading time
+(def aoi (lazy-component drip.questionnaire.aoi/aoi))
 
 (defn md-root []
   (with-let [md config/md
@@ -48,42 +53,44 @@
                                               :href "javascript:void(0)"
                                               :on-click #(reset! active-tab :results)} "Results"]]]
      [:div.tab-content
-      [:div.tab-pane {:class (when (= :metadata @active-tab) "active")
-                      :role "tabpanel"
-                      :aria-labelledby "metadata-tab"}
-       [iso-19115 (cursor md [:metadata])]]
-      [:div.tab-pane {:class (when (= :project @active-tab) "active")
-                      :role "tabpanel"
-                      :aria-labelledby "project-tab"}
-       [project (cursor md [:project])]]
-      [:div.tab-pane {:class (when (= :aoi @active-tab) "active")
-                      :role "tabpanel"
-                      :aria-labelledby "aoi-tab"}
-       [aoi (cursor md [:aoi])]]
-      [:div.tab-pane {:class (when (= :baseline @active-tab) "active")
-                      :role "tabpanel"
-                      :aria-labelledby "baseline-tab"}
-       [baseline (cursor md [:baseline])]]
-      [:div.tab-pane {:class (when (= :activities @active-tab) "active")
-                      :role "tabpanel"
-                      :aria-labelledby "activities-tab"}
-       [activities (cursor md [:activities])]]
-      [:div.tab-pane {:class (when (= :indicators @active-tab) "active")
-                      :role "tabpanel"
-                      :aria-labelledby "indicators-tab"}
-       [indicators (cursor md [:indicators])]]
-      [:div.tab-pane {:class (when (= :characterisation @active-tab) "active")
-                      :role "tabpanel"
-                      :aria-labelledby "characterisation-tab"}
-       [characterisation (cursor md [:characterisation])]]
-      [:div.tab-pane {:class (when (= :information @active-tab) "active")
-                      :role "tabpanel"
-                      :aria-labelledby "information-tab"}
-       [information (cursor md [:information])]]
-      [:div.tab-pane {:class (when (= :results @active-tab) "active")
-                      :role "tabpanel"
-                      :aria-labelledby "results-tab"}
-       [results (cursor md [:results])]]]
+      [:> react/Suspense {:fallback (r/as-element [:div "Loading ..."])}
+       [:div.tab-pane {:class (when (= :metadata @active-tab) "active")
+                       :role "tabpanel"
+                       :aria-labelledby "metadata-tab"}
+        [iso-19115 (cursor md [:metadata])]]
+
+       (when (= :project @active-tab)
+         [:div.tab-pane.active {:role "tabpanel"
+                                :aria-labelledby "project-tab"}
+          [project (cursor md [:project])]])
+       (when (= :aoi @active-tab)
+         [:div.tab-pane.active {:role "tabpanel"
+                                :aria-labelledby "aoi-tab"}
+          [:> aoi {:data (cursor md [:aoi])}]])
+       (when (= :baseline @active-tab)
+         [:div.tab-pane.active {:role "tabpanel"
+                                :aria-labelledby "baseline-tab"}
+          [baseline (cursor md [:baseline])]])
+       (when (= :activities @active-tab)
+         [:div.tab-pane.active {:role "tabpanel"
+                                :aria-labelledby "activities-tab"}
+          [activities (cursor md [:activities])]])
+       (when (= :indicators @active-tab)
+         [:div.tab-pane.active {:role "tabpanel"
+                                :aria-labelledby "indicators-tab"}
+          [indicators (cursor md [:indicators])]])
+       (when (= :characterisation @active-tab)
+         [:div.tab-pane.active {:role "tabpanel"
+                                :aria-labelledby "characterisation-tab"}
+          [characterisation (cursor md [:characterisation])]])
+       (when (= :information @active-tab)
+         [:div.tab-pane.active {:role "tabpanel"
+                                :aria-labelledby "information-tab"}
+          [information (cursor md [:information])]])
+       (when (= :results @active-tab)
+         [:div.tab-pane.active {:role "tabpanel"
+                                :aria-labelledby "results-tab"}
+          [results (cursor md [:results])]])]]
      [:button.btn.btn-primary {:on-click (fn []
                                            (.then (config/save)
                                                   (push-state :projects)))}

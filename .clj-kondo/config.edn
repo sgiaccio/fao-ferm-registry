@@ -1,2 +1,3 @@
 {:lint-as {devcards.core/defcard cljs.core/def
-           devcards.core/deftest cljs.core/def}}
+           devcards.core/deftest cljs.core/def
+           reagent.core/with-let clojure.core/let}}
