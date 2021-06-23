@@ -3,15 +3,6 @@
    [reagent.core :as r]
    ["firebase/app" :refer (initializeApp)]
    ["firebase/firestore/lite" :refer (getFirestore collection query getDocs doc getDoc setDoc)]
-   ;; import firebase from 'firebase/compat/app';
-   ;; import 'firebase/compat/firestore';
-   ;; import { getDoc } from 'firebase/firestore'
-
-   ;;  ["firebase/compat/app" :default firebase]
-
-   ;;  ["firebase" :default Firebase]
-   ;;  ["firebase/auth"]
-   ;;  ["firebase/compat/firestore"]
    ["regenerator-runtime/runtime"])) ; TODO: see if we still need this after switching to version 9 modular firebase API
 
 
@@ -34,8 +25,8 @@
                 :messagingSenderId "807676682446"
                 :appId "1:807676682446:web:94694090ff2fe30bad309f"}))
 
-(def db (getFirestore @firebase-instance))
-(def registry-collection (collection db "registry"))
+(defonce db (getFirestore @firebase-instance))
+(defonce registry-collection (collection db "registry"))
 
 
 (defonce languages {:en {:label "English" :label-short "en"}})
