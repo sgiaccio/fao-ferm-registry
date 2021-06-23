@@ -23,21 +23,22 @@
         [:thead
          [:tr
           [:th {:scope "col"} "Title"]
-          [:th {:scope "col"} "Country"]
-          [:th {:scope "col"} "Region"]
-          [:th {:scope "col"} "Province"]
+          ;; [:th {:scope "col"} "Country"]
+          ;; [:th {:scope "col"} "Region"]
+          ;; [:th {:scope "col"} "Province"]
           [:th]]]
         [:tbody
-         (map (fn [p]
+         (doall
+          (map (fn [p]
                 ;; (js/console.log p)
-                [:tr {:on-click #(push-state :project {:id (.-id p)})
-                      :style {:cursor "pointer"}}
-                 [:th {:scope "row"} (or (get-in (js->clj (.data p)) ["project" "title"]) "No title")]
-                 [:td "Admin 1"]
-                 [:td "Admin 2"]
-                 [:td "Admin 3"]
-                 [:td (if (= @config/userid (-> p .data .-uid)) "EDIT" "VIEW")]])
-              @project-list)]])
+                 [:tr {:on-click #(push-state :project {:id (.-id p)})
+                       :style {:cursor "pointer"}}
+                  [:th {:scope "row"} (or (get-in (js->clj (.data p)) ["project" "title"]) "No title")]
+                  ;; [:td "Admin 1"]
+                  ;; [:td "Admin 2"]
+                  ;; [:td "Admin 3"]
+                  [:td (if (= @config/userid (-> p .data .-uid)) "EDIT" "VIEW")]])
+               @project-list))]])
      [:button.btn.btn-primary {:on-click #(push-state :project {:id "new"})}
       "Add new project"]]))
 

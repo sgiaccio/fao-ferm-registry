@@ -2,7 +2,7 @@
   (:require
    [cljs.pprint :as pp]
 
-   [reagent.core :as r :refer [cursor]]
+   [reagent.core :as r :refer [cursor with-let]]
    [reagent.ratom :refer [make-reaction]]
 
    [drip.config :refer [userid md]]
@@ -12,10 +12,13 @@
 (def xml (r/atom ""))
 
 (defn iso-19115 [data]
-  (let [edit (make-reaction (fn []
-                              (and
-                               (some? @userid)
-                               (= @userid (:uid @md)))))]
+  (with-let [edit (make-reaction (fn []
+                                   (and
+                                    (some? @userid)
+                                    (or
+                                     (= @userid (:uid @md))
+                                     (nil? (:uid @md))))))]
+    (js/console.log (:uid @md))
     [:<>
      [:h2 "Metadata"]
 

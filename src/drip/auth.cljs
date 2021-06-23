@@ -1,19 +1,34 @@
 (ns drip.auth
-  ;; (:require
-  ;;  [drip.config :refer [firebase-instance userid]]
-  ;; ;;  ["firebase" :default Firebase :refer (auth)]
-  ;;  ["firebaseui" :as Firebaseui]
-  ;; ;;  import {auth} from 'firebase/app';
-  ;; ;;  ["firebase/firestore"]
-  ;;  ["firebase/app" :default firebase]
-  ;;  ["firebase/auth"])
-  )
+  (:require
+   [drip.config :refer [auth-loaded userid]]
+   ["firebase/auth" :refer (getAuth signInWithEmailAndPassword onAuthStateChanged signOut)]))
 
 
-;; ;; (js/console.log auth)
+(defonce auth (getAuth))
+
+(defn authenticate-user [email password]
+  (-> (signInWithEmailAndPassword auth email password)
+      (.then (fn [user-credential]
+               (reset! userid (-> user-credential .-user .-uid))))
+      (.catch #(js/alert "Error logging in"))))
+
+(defn logout []
+  (-> (signOut auth)
+      (.then #(reset! userid nil))
+      (.catch #(js/alert "Error logging out"))))
+
+(onAuthStateChanged auth
+                    (fn [user]
+                      (reset! auth-loaded true)
+                      (if (some? user)
+                        (reset! userid (.-uid user))
+                        (reset! userid nil))))
+
+
+;; For use with FirebaseUI, when it will be compatible with v9 API
 
 ;; (defonce ui (atom nil))
-
+;;
 ;; (defn init []
 ;;   (when (and (some? @firebase-instance) (nil? @ui))
 ;;     (let [UI (.-AuthUI (.-auth Firebaseui))]
@@ -42,12 +57,11 @@
 ;;            :auth
 ;;            #(init))
 
-;; ; Set the uid when reloading the page if user has logged in already
+; Set the uid when reloading the page if user has logged in already
 ;; (.onAuthStateChanged (.auth firebase)
 ;;                      (fn [user]
 ;;                        (if (some? user)
 ;;                          (reset! userid (.-uid user))
 ;;                          (reset! userid nil))))
-
 
 ;; ;; (reset! firebase-instance 1)

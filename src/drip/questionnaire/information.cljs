@@ -33,10 +33,12 @@
                          :data            (cursor data [:subtech])}]]))
 
 (defn information [data]
-  (let [edit      (make-reaction (fn []
+  (let [edit (make-reaction (fn []
                                    (and
                                     (some? @userid)
-                                    (= @userid (:uid @md)))))]
+                                    (or
+                                     (= @userid (:uid @md))
+                                     (nil? (:uid @md))))))]
     [:<>
      [:h2 "Additional information"]
 

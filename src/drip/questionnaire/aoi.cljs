@@ -14,7 +14,9 @@
   (let [edit (make-reaction (fn []
                               (and
                                (some? @userid)
-                               (= @userid (:uid @md)))))
+                               (or
+                                (= @userid (:uid @md))
+                                (nil? (:uid @md))))))
         countries-menu (map #(-> [(:code %) (:name %)]) admin2/admin2)
         country (cursor data [:admin-0])
         regions (make-reaction

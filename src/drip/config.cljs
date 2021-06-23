@@ -2,36 +2,25 @@
   (:require
    [reagent.core :as r]
    ["firebase/app" :refer (initializeApp)]
-   ["firebase/firestore/lite" :refer (getFirestore collection query getDocs doc getDoc)]
-;; import firebase from 'firebase/compat/app';
-;; import 'firebase/compat/firestore';
-;; import { getDoc } from 'firebase/firestore'
+   ["firebase/firestore/lite" :refer (getFirestore collection query getDocs doc getDoc setDoc)]
+   ;; import firebase from 'firebase/compat/app';
+   ;; import 'firebase/compat/firestore';
+   ;; import { getDoc } from 'firebase/firestore'
 
-  ;;  ["firebase/compat/app" :default firebase]
-
-
+   ;;  ["firebase/compat/app" :default firebase]
 
    ;;  ["firebase" :default Firebase]
    ;;  ["firebase/auth"]
-  ;;  ["firebase/compat/firestore"]
+   ;;  ["firebase/compat/firestore"]
    ["regenerator-runtime/runtime"])) ; TODO: see if we still need this after switching to version 9 modular firebase API
 
 
 
 ;; Check this https://github.com/fbielejec/cljs-firebase-client
 
-
-;; firebase.initializeApp({
-;;   apiKey: '### FIREBASE API KEY ###',
-;;   authDomain: '### FIREBASE AUTH DOMAIN ###',
-;;   projectId: '### CLOUD FIRESTORE PROJECT ID ###'
-;; });
-
-;; var db = firebase.firestore();
-
-
 (defonce firebase-instance (atom nil))
 
+(def auth-loaded (r/atom false))
 (def userid (r/atom nil))
 
 (defn init [config]
@@ -80,10 +69,10 @@
 
 (defn save []
   (let [doc (if-some [id @project-id]
-              (.doc registry-collection id)
-              (.doc registry-collection))]
+              (doc registry-collection id)
+              (doc registry-collection))]
     (reset! project-id nil)
-    (.set doc (clj->js (assoc @md :uid @userid)))))
+    (setDoc doc (clj->js (assoc @md :uid @userid)))))
 
 (defn get-all-projects []
   (.then (getDocs (query registry-collection))
@@ -91,36 +80,10 @@
            ;; (doall (map #(.data %) (.-docs query-snapshot)))
            ^js/Array (.-docs query-snapshot))))
 
-;; (defn get-all-projects_ []
-;;   (.then (.get (.collection db "registry"))
-;;          (fn [query-snapshot]
-;;            ;; (doall (map #(.data %) (.-docs query-snapshot)))
-;;            (.-docs query-snapshot))))
-
-;; db.collection ("cities") .doc ("SF");
-;; (defn get-project [id]
-;;   (if (= "new" id)
-;;     (let [doc (.get (.doc registry-collection))]
-;;       (reset! project-id (.-id doc))
-;;       doc)
-;;     (do
-;;       (reset! project-id id)
-;;       (.get (.doc registry-collection id)))))
-
-;; const docRef = doc (db, "cities", "SF");
-;; const docSnap = await getDoc (docRef);
-
 (defn get-project [id]
   (reset! project-id id)
   (let [doc-ref  (doc db "registry" id)]
     (getDoc doc-ref)))
-
-;; (add-watch userid
-;;            :userid
-;;            #(js/alert @userid))
-
-
-
 
 
 ;; Sample higher level conf
