@@ -1,10 +1,30 @@
 (ns drip.auth
   (:require
    [drip.config :refer [auth-loaded userid]]
-   ["firebase/auth" :refer (getAuth signInWithEmailAndPassword onAuthStateChanged signOut)]))
+   ["firebase/auth" :refer (getAuth
+                            createUserWithEmailAndPassword
+                            signInWithEmailAndPassword
+                            onAuthStateChanged
+                            signOut)]))
 
 
 (defonce auth (getAuth))
+
+;; createUserWithEmailAndPassword(auth, email, password)
+;;   .then((userCredential) => {
+;;     // Signed in 
+;;     const user = userCredential.user;
+;;     // ...
+;;   })
+;;   .catch((error) => {
+;;     const errorCode = error.code;
+;;     const errorMessage = error.message;
+;;     // ..
+;;   });
+
+
+(defn sign-up [email password]
+  (-> (createUserWithEmailAndPassword auth email password)))
 
 (defn authenticate-user [email password]
   (-> (signInWithEmailAndPassword auth email password)

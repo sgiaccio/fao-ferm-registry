@@ -49,7 +49,7 @@
       ;;  [:p {:class "mt-2 text-center text-sm text-gray-600"}
       ;;   [:a {:href "#", :class "font-medium text-indigo-600 hover:text-indigo-500"} "start your 14-day free trial"]]
        ]
-      [:form {:class "mt-8 space-y-6", :method "POST"}
+      [:div {:class "mt-8 space-y-6"}
       ;;  [:input {:type "hidden", :name "remember", :value "true"}]
        [:div {:class "rounded-md shadow-sm -space-y-px"}
         [:div
@@ -81,31 +81,39 @@
         [:div {:class "text-sm"}
          [:a {:href "#", :class "font-medium text-indigo-600 hover:text-indigo-500"} "Forgot your password?"]]]
        [:div
-        [:button {:type "submit"
-                  :class "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        [:button {:class "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   :on-click (fn [evt]
                               (.preventDefault evt)
                               (auth/authenticate-user @email @password))}
          [:span {:class "absolute left-0 inset-y-0 flex items-center pl-3"}
           ; Heroicon name: solid/lock-closed
-          [:svg {:class "h-5 w-5 text-indigo-500 group-hover:text-indigo-400", :xmlns "http://www.w3.org/2000/svg", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true"}
-           [:path {:fill-rule "evenodd", :d "M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z", :clip-rule "evenodd"}]]] "Sign in"]]]]]))
+          [:svg {:class "h-5 w-5 text-indigo-500 group-hover:text-indigo-400", :xmlns "http://www.w3.org/2000/svg", :viewBox "0 0 20 20", :fill "currentColor", :aria-hidden "true"}
+           [:path {:fill-rule "evenodd", :d "M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z", :clip-rule "evenodd"}]]] "Login"]]
+       [:div
+        [:button {:class "group relative w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-400 hover:from-purple-400 via-pink-500 hover:via-pink-600 to-red-500 hover:to-red-500 focus:outline-none"
+                  :on-click (fn [evt]
+                              (.preventDefault evt)
+                              (auth/sign-up @email @password))}
+         [:span {:class "absolute left-0 inset-y-0 flex items-center pl-3"}] "Sign up"]]]]]))
 
-(defn login-form_ []
-  (with-let [user (r/atom "")
-             password (r/atom "")]
-    [:<>
-     [:label
-      "User"
-      [:input {:type "text"
-               :value @user
-               :on-change #(reset! user (-> % .-target .-value))}]]
-     [:label
-      "Password"
-      [:input {:type "password"
-               :value @password
-               :on-change #(reset! password (-> % .-target .-value))}]]
-     [:button {:on-click #(auth/authenticate-user @user @password)} "Login"]]))
+(defn navbar []
+  [:div {:class "relative bg-white mb-10"}
+   [:div {:class "max-w-7xl mx-auto px-4 sm:px-6"}
+    [:div {:class "flex justify-between items-center border-b-2 border-gray-100 py-6 md:justify-start md:space-x-10"}
+     [:div {:class "flex justify-start lg:w-0 lg:flex-1"}
+      [:a {:href "#"}
+       [:span {:class "sr-only"} "FERM Registry"]
+       [:img {:class "h-8 w-auto sm:h-10", :src "https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg", :alt ""}]]]
+     [:div {:class "-mr-2 -my-2 md:hidden"}
+      [:button {:type "button", :class "bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500", :aria-expanded "false"}
+       [:span {:class "sr-only"} "Open menu"]
+       ;;  Heroicon name: outline/menu
+       [:svg {:class "h-6 w-6", :xmlns "http://www.w3.org/2000/svg", :fill "none", :viewBox "0 0 24 24", :stroke "currentColor", :aria-hidden "true"}
+        [:path {:stroke-linecap "round", :stroke-linejoin "round", :stroke-width "2", :d "M4 6h16M4 12h16M4 18h16"}]]]]
+     [:div {:class "hidden md:flex items-center justify-end md:flex-1 lg:w-0"}
+      ;; [:a {:href "#", :class "whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900"} "Sign in"]
+      ;; [:a {:href "#", :class "ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"} "Sign up"]
+      [:a {:href "#", :on-click #(auth/logout) :class "ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"} "Logout"]]]]])
 
 ;; -------------------------
 ;; Page mounting component
@@ -117,32 +125,12 @@
         ; TODO redirect
         [login-form]
         (let [page (:current-page (session/get :route))]
-          [:div
-           [:div#firebaseui-auth-container {:style {:position "absolute"
-                                                    :top "200px"
-                                                    :right "300px"}}]
-           [:nav.navbar.navbar-expand-lg.navbar-light.bg-light
-            [:a.navbar-brand {:href "#"}
-             [:img {:src "/img/FERM_logo.png" :height "30" :style {:padding-right "12px"}}]
-             "FERM Registry"]
-            [:button.navbar-toggler {:type "button" :data-toggle "collapse" :data-target "#navbarSupportedContent"
-                                     :aria-controls "navbarSupportedContent" :aria-expanded "false" :aria-label "Toggle navigation"}
-             [:span.navbar-toggler-icon]]
-            [:div#navbarSupportedContent.collapse.navbar-collapse
-             [:ul.navbar-nav.mr-auto
-              [:li.nav-item.active
-               ;;  (if (nil? @config/userid)
-               ;;    [:a.nav-link {:href "#" :on-click #(auth/show-login-form)}
-               ;;     "Login" [:span.sr-only "(current)"]]
-               ;;    [:a.nav-link {:href "#" :on-click #(auth/logout)}
-               ;;     "Logout" [:span.sr-only "(current)"]])
-               [:a.nav-link {:href "#"
-                             :on-click #(auth/logout)}
-                "logout" [:span.sr-only "(current)"]]]]]]
-           [page]
-           ;; TODO: add footer
-           ;; [:p "FERM-DRIP Registry ©2021"]
-           [:footer]]))
+          [:<>
+           [navbar]
+           [:div {:class "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"}
+           ;;  We've used 3xl here, but feel free to try other max-widths based on your needs
+            [:div {:class "max-w-3xl mx-auto"}
+             [page]]]]))
       [:div "loading..."])))
 
 

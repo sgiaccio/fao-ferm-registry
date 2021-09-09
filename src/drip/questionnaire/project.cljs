@@ -16,8 +16,8 @@
                                (or
                                 (= @userid (:uid @md))
                                 (nil? (:uid @md))))))]
-    [:<>
-     [:h2 "Project registration"]
+    [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
+     [:h1 {:class "text-3xl"} "Project registration"]
 
      [inputs/number-form-group
       {:label       "Version"
@@ -61,13 +61,33 @@
                          :label           "Reporting agency"
                          :data            (cursor data [:reporting-agencies])}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/agencies
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Executing agency"
-                         :data            (cursor data [:executing-agencies])}]
 
-   ; TODO: Executing agency role
+    ;;  [inputs/multi-form-group-2 {:input-components {:reason #(inputs/select-input {:options menus/partially-achieved-reasons
+    ;;                                                                                :data    %
+    ;;                                                                                :edit    @edit})}
+    ;;                              :new-data   {:reason nil}
+    ;;                              :label      "If partially achieved, choose from list"
+    ;;                              :add-labels {:reason "reason"}
+    ;;                              :data       (cursor data [:partially-achieved-reasons])
+    ;;                              :edit       @edit}]
+     [inputs/multi-form-group-2 {:input-components {:executing-agency #(inputs/agency-input {:data % :edit @edit})}
+                                 :new-data         {:executing-agency {:agency nil :role nil}}
+                                 :label            "Executing agencies"
+                                 :add-labels       {:executing-agency "agency"}
+                                 :data             (cursor data [:executing-agencies])
+                                 :edit             @edit}]
+     
+    ;;  [inputs/form-group {:input-component #(inputs/select-input {:options menus/agencies
+    ;;                                                              :data    %
+    ;;                                                              :edit    @edit})
+    ;;                      :label           "Executing agency"
+    ;;                      :data            (cursor data [:executing-agencies])}]
+
+    ;;  [inputs/form-group {:input-component #(inputs/select-input {:options menus/agency-roles
+    ;;                                                              :data    %
+    ;;                                                              :edit    @edit})
+    ;;                      :label           "Executing agency role"
+    ;;                      :data            (cursor data [:agency-role])}]
 
      [inputs/form-group {:input-component #(inputs/select-input {:options menus/project-statuses
                                                                  :data    %

@@ -1,10 +1,11 @@
 (ns drip.config
   (:require
    [reagent.core :as r]
+  ;;  [reagent.ratom :refer [make-reaction]]
+
    ["firebase/app" :refer (initializeApp)]
    ["firebase/firestore/lite" :refer (getFirestore collection query getDocs doc getDoc setDoc)]
    ["regenerator-runtime/runtime"])) ; TODO: see if we still need this after switching to version 9 modular firebase API
-
 
 
 ;; Check this https://github.com/fbielejec/cljs-firebase-client
@@ -35,7 +36,8 @@
 
 (defonce default-values
   {:metadata
-   {:citation {:title {:loc {:en "Ecosystem restoration project pi 3.14159265359"
+   {:citation {
+               :title {:loc {:en "Ecosystem restoration project pi 3.14159265359"
                              :fr "Ecosystem restoration project pi 3.14159265359"}}
                :dates [{:date {:type :creation
                                :date "2019-06-04"}}
@@ -57,6 +59,55 @@
    {:partially-achieved-reasons []}})
 
 (defonce md (r/atom default-values))
+
+;; (-> @(r/track md)
+;;       js/console.log)
+
+;; (defn person-keys []
+;;   (-> @(r/track md)
+;;       keys
+;;       sort))
+
+
+;; (make-reaction (fn []
+;;                  (and
+;;                   (some? @userid)
+;;                   (or
+;;                    (= @userid (:uid @md))
+;;                    (nil? (:uid @md))))))
+
+;; (def caz (r/cursor md [:aoi]))
+;; (make-reaction (fn []
+;;                  (js/console.log @userid)))
+
+
+;; (js/console.log @md)
+
+
+
+;; (defonce tmp-name (atom []))
+;; (def aoi (r/cursor md [:aoi]))
+;; (def baseline (r/cursor md [:baseline]))
+;; (defn aggregate-state []
+;;   (let [baselines (into [] (map identity @aoi))]
+;;     (reset! baseline baselines)
+;;     (swap! baseline
+;;            (fn []
+;;              ))))
+;; (defonce tmp-name-logger (r/track! aggregate-state))
+
+
+
+
+
+;; (defn ^:export history [& args]
+;;   (let [d @md
+;;         k (if (seq args)
+;;             (map keyword args)
+;;             (keys d))]
+;;     @tmp-name))
+
+
 
 (defn save []
   (let [doc (if-some [id @project-id]

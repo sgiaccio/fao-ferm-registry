@@ -16,8 +16,8 @@
                                (or
                                 (= @userid (:uid @md))
                                 (nil? (:uid @md))))))]
-    [:<>
-     [:h2 "Indicator selection"]
+    [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
+     [:h1 {:class "text-3xl"} "Indicator selection"]
 
      [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/sdg-contributions
                                                                           :data    %

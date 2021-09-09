@@ -92,15 +92,24 @@
                    ["Extra Terrestrial"]
                    ["Disaster"]])
 
-
-
-
 (defonce reporting-processes [[:ferm "FERM"]
                               [:drip "DRIP"]])
 
 (defonce agencies [[:fao "FAO"]
                    [:ifad "IFAD"]
                    [:wfp "WFP"]])
+
+(defonce agency-roles [[1 "author" "Party who authored the resource"]
+                       [2 "custodian" "Person or organization that accepts accountability and responsibility for the data and ensures appropriate care and maintenance of the resource"]
+                       [3 "distributor" "Person or organization that distributes the resource"]
+                       [4 "originator" "Person or organization that created or produced the resource"]
+                       [5 "owner" "Person or organization that owns the resource"]
+                       [6 "point of contact" "Person or organization that can be contacted for acquiring knowledge about or acquisition of the resource"]
+                       [7 "principle investigator" "Key person or organization responsible for gathering information and conducting research"]
+                       [8 "processor" "Person or organization that has processed the data in a manner such that the resource has been modified"]
+                       [9 "publisher" "Person or organization that published the resource"]
+                       [10 "resource provider" "Person or organization that provides the resource"]
+                       [11 "user" "Person or organization that uses the resource"]])
 
 (defonce project-statuses
   [[1 "Pipeline/identification"]

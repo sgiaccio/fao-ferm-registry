@@ -17,81 +17,66 @@
    [drip.questionnaire.information :refer [information]]
    [drip.questionnaire.results :refer [results]]))
 
+
 ;; Temporary solution to reduce the loading time
 (def aoi (lazy-component drip.questionnaire.aoi/aoi))
 
 (defn md-root []
-  (with-let [md config/md
-             active-tab (atom :metadata)]
+  (with-let [md         config/md
+             active-tab (atom :metadata)
+             tab        (fn [tab-id label]
+                          [:<>
+                           [:a {:href "javascript:void(0)"
+                                :class (str "w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm "
+                                            (if (= tab-id @active-tab)
+                                              "border-indigo-500 text-indigo-600"
+                                              "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"))
+                                :aria-current (if (= tab-id @active-tab) "page" "false")
+                                :on-click #(reset! active-tab tab-id)}
+                            label]])]
     [:<>
-     [:ul.nav.nav-tabs
-      [:li.nav-item [:a#metadata-tab.nav-link {:class (when (= :metadata @active-tab) "active")
-                                               :href "javascript:void(0)"
-                                               :on-click #(reset! active-tab :metadata)} "Metadata"]]
-      [:li.nav-item [:a#project-tab.nav-link {:class (when (= :project @active-tab) "active")
-                                              :href "javascript:void(0)"
-                                              :on-click #(reset! active-tab :project)} "Project"]]
-      [:li.nav-item [:a#aoi-tab.nav-link {:class (when (= :aoi @active-tab) "active")
-                                          :href "javascript:void(0)"
-                                          :on-click #(reset! active-tab :aoi)} "AOI"]]
-      [:li.nav-item [:a#baseline-tab.nav-link {:class (when (= :baseline @active-tab) "active")
-                                               :href "javascript:void(0)"
-                                               :on-click #(reset! active-tab :baseline)} "Baseline"]]
-      [:li.nav-item [:a#activities-tab.nav-link {:class (when (= :activities @active-tab) "active")
-                                                 :href "javascript:void(0)"
-                                                 :on-click #(reset! active-tab :activities)} "Activities"]]
-      [:li.nav-item [:a#indicators-tab.nav-link {:class (when (= :indicators @active-tab) "active")
-                                                 :href "javascript:void(0)"
-                                                 :on-click #(reset! active-tab :indicators)} "Indicators"]]
-      [:li.nav-item [:a#characterisation-tab.nav-link {:class (when (= :characterisation @active-tab) "active")
-                                                       :href "javascript:void(0)"
-                                                       :on-click #(reset! active-tab :characterisation)} "Characterisation"]]
-      [:li.nav-item [:a#information-tab.nav-link {:class (when (= :information @active-tab) "active")
-                                                  :href "javascript:void(0)"
-                                                  :on-click #(reset! active-tab :information)} "Information"]]
-      [:li.nav-item [:a#results-tab.nav-link {:class (when (= :results @active-tab) "active")
-                                              :href "javascript:void(0)"
-                                              :on-click #(reset! active-tab :results)} "Results"]]]
-     [:div.tab-content
-      [:> react/Suspense {:fallback (r/as-element [:div "Loading ..."])}
-       [:div.tab-pane {:class (when (= :metadata @active-tab) "active")
-                       :role "tabpanel"
-                       :aria-labelledby "metadata-tab"}
-        [iso-19115 (cursor md [:metadata])]]
-
-       (when (= :project @active-tab)
-         [:div.tab-pane.active {:role "tabpanel"
-                                :aria-labelledby "project-tab"}
-          [project (cursor md [:project])]])
-       (when (= :aoi @active-tab)
-         [:div.tab-pane.active {:role "tabpanel"
-                                :aria-labelledby "aoi-tab"}
-          [:> aoi {:data (cursor md [:aoi])}]])
-       (when (= :baseline @active-tab)
-         [:div.tab-pane.active {:role "tabpanel"
-                                :aria-labelledby "baseline-tab"}
-          [baseline (cursor md [:baseline])]])
-       (when (= :activities @active-tab)
-         [:div.tab-pane.active {:role "tabpanel"
-                                :aria-labelledby "activities-tab"}
-          [activities (cursor md [:activities])]])
-       (when (= :indicators @active-tab)
-         [:div.tab-pane.active {:role "tabpanel"
-                                :aria-labelledby "indicators-tab"}
-          [indicators (cursor md [:indicators])]])
-       (when (= :characterisation @active-tab)
-         [:div.tab-pane.active {:role "tabpanel"
-                                :aria-labelledby "characterisation-tab"}
-          [characterisation (cursor md [:characterisation])]])
-       (when (= :information @active-tab)
-         [:div.tab-pane.active {:role "tabpanel"
-                                :aria-labelledby "information-tab"}
-          [information (cursor md [:information])]])
-       (when (= :results @active-tab)
-         [:div.tab-pane.active {:role "tabpanel"
-                                :aria-labelledby "results-tab"}
-          [results (cursor md [:results])]])]]
-     [:button.btn.btn-primary {:on-click (fn []
-                                           (.then (config/save)
-                                                  (push-state :projects)))}
+     [:div
+      [:div {:class "sm:hidden"}
+       [:label {:for "tabs", :class "sr-only"} "Select a tab"]
+       [:select {:id "tabs"
+                 :name "tabs"
+                 :class "block w-full focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 rounded-md"
+                 :on-change #(reset! active-tab (-> % .-target .-value keyword))}
+        [:option {:value "metadata"} "Metadatata"]
+        [:option {:value "project"} "Project"]
+        [:option {:value "aoi"} "AOI"]
+        [:option {:value "baseline"} "Baseline"]
+        [:option {:value "activities"} "Activities"]
+        [:option {:value "indicators"} "Indicators"]
+        [:option {:value "characterisation"} "Characterisation"]
+        [:option {:value "information"} "Information"]
+        [:option {:value "results"} "Results"]]]
+      [:div {:class "hidden sm:block"}
+       [:div {:class "border-b border-gray-200"}
+        [:nav {:class "-mb-px flex space-x-4", :aria-label "Tabs"}
+         [tab :metadata "Metadata"]
+         [tab :project "Project"]
+         [tab :aoi "AOI"]
+         [tab :baseline "Baseline"]
+         [tab :activities "Activities"]
+         [tab :indicators "Indicators"]
+         [tab :characterisation "Characterisation"]
+         [tab :information "Information"]
+         [tab :results "Results"]]]]]
+     [:> react/Suspense {:fallback (r/as-element [:div "Loading ..."])}
+      (case @active-tab
+        :metadata         [iso-19115 (cursor md [:metadata])]
+        :project          [project (cursor md [:project])]
+        :aoi              [:> aoi {:data (cursor md [:aoi])}]
+        :baseline         [baseline (cursor md [:aoi])]
+        :activities       [activities (cursor md [:activities])]
+        :indicators       [indicators (cursor md [:indicators])]
+        :characterisation [characterisation (cursor md [:characterisation])]
+        :information      [information (cursor md [:information])]
+        :results          [results (cursor md [:results])])]
+     [:button {:type "button"
+               :class "inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+               :on-click (fn []
+                           (.then (config/save)
+                                  (push-state :projects)))}
       "Save"]]))
