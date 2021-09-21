@@ -1,6 +1,9 @@
 module.exports = {
-  purge: [],
-  darkMode: false, // or 'media' or 'class'
+  purge: [
+    './src/**/*.html',
+    './src/**/*.cljs',
+  ],
+ darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {},
   },
