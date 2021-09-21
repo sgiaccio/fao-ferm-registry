@@ -27,8 +27,15 @@
        :data        (cursor data [:citation :title])
        :edit        @edit}]
 
-   ;; Dates - TODO avoid passing :edit twice
-     [inputs/multi-form-group-2 {:input-components {:date #(inputs/date-and-type-input {:data % :edit @edit})}
+     [inputs/form-group {:input-component #(inputs/select-input {:options menus/currencies
+                                                                 :data    %
+                                                                 :edit    @edit})
+                         :label           "Currency (not ISO)"
+                         :data            (cursor data [:currency])}]
+
+
+     ;; Dates - TODO avoid passing :edit twice
+     [inputs/multi-form-group {:input-components {:date #(inputs/date-and-type-input {:data % :edit @edit})}
                                  :new-data         {:date {:type nil :date nil}}
                                  :label            "Dates"
                                  :add-labels       {:date "date"}
@@ -38,13 +45,22 @@
 
 
    ;;  Abstract
-     [inputs/textarea-form-group-loc {:label       "Abstract"
-                                      :placeholder "Enter abstract"
-                                      :description "The dataset abstract"
-                                      :data        (cursor data [:abstract :loc])
-                                      :edit        @edit}]
+    ;;  [inputs/textarea-form-group-loc {:label       "Abstract"
+    ;;                                   :placeholder "Enter abstract"
+    ;;                                   ;; :description "The dataset abstract"
+    ;;                                   :data        (cursor data [:abstract :loc])
+    ;;                                   :edit        @edit}]
+     [inputs/textarea-form-group {:label       "Abstract"
+                                  :placeholder "Enter abstract"
+                                  :data        (cursor data [:abstract])
+                                  :edit        @edit}]
 
-   ;;  Status
+     [inputs/textarea-form-group {:label       "Purpose (not ISO)"
+                                  :placeholder "Enter purpose"
+                                  :data        (cursor data [:purpose])
+                                  :edit        @edit}]
+
+     ;;  Status
      [inputs/form-group {:input-component #(inputs/select-input {:options menus/status-items
                                                                  :data    %
                                                                  :edit    @edit})
@@ -52,27 +68,37 @@
                          :data            (cursor data [:status])}]
 
      ;;  Points of contact
-     [inputs/multi-form-group-2 {:input-components {:poc #(inputs/point-of-contact {:data %
+     [inputs/multi-form-group {:input-components {:poc #(inputs/point-of-contact {:data %
                                                                                     :edit @edit})}
-                                 :new-data         {:poc {:role nil
+                                 :new-data         {:poc {:role            nil
                                                           :organization    nil
                                                           :individual-name nil
-                                                          :web-address     nil
+                                                          :address         nil
                                                           :email           nil}}
                                  :label            "Points of contact"
                                  :add-labels       {:poc "point of contact"}
                                  :data             (cursor data [:points-of-contact])
                                  :edit             @edit}]
 
-     ;;  Topic categories
-     [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/keywords
-                                                                          :data    %
-                                                                          :edit    @edit})
-                         :label           "Topic categories"
-                         :data            (cursor data [:topic-categories])}]
+      ;; Topic categories
+     [inputs/multi-form-group {:input-components {:topic-category #(inputs/select-input {:options menus/topic-categories
+                                                                                           :data    %
+                                                                                           :edit    @edit})}
+                                 :new-data         {:topic-category nil}
+                                 :label            "Topic categories"
+                                 :add-labels       {:topic-category "Topic category"}
+                                 :data             (cursor data [:topic-categories])
+                                 :edit             @edit}]
+
+    ;;  ;;  Topic categories
+    ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/keywords
+    ;;                                                                       :data    %
+    ;;                                                                       :edit    @edit})
+    ;;                      :label           "Topic categories"
+    ;;                      :data            (cursor data [:topic-categories])}]
 
      ;;  Keywords
-     [inputs/multi-form-group-2 {:input-components {:keyword-group #(inputs/keywords {:data %
+     [inputs/multi-form-group {:input-components {:keyword-group #(inputs/keywords {:data %
                                                                                       :edit @edit})}
                                  :new-data         {:keyword-group {:type :place :keywords []}}
                                  :label            "Keywords"

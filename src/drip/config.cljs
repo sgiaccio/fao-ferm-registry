@@ -34,29 +34,30 @@
 
 (defonce project-id (r/atom nil))
 
-(defonce default-values
-  {:metadata
-   {:citation {
-               :title {:loc {:en "Ecosystem restoration project pi 3.14159265359"
-                             :fr "Ecosystem restoration project pi 3.14159265359"}}
-               :dates [{:date {:type :creation
-                               :date "2019-06-04"}}
-                       {:date {:type :lastUpdate
-                               :date "2020-06-04"}}]}
-    :abstract {:loc {:en "The Ecosystem Restoration project pi 3.14159265359 is the biggest and the most ambitious project in the world. Underpinned by knowledge in the latest IPCC and IPBES reports, large-scale ecosystem restoration is urgent – the window of opportunity is closing rapidly. It needs a systemic approach to deliver tangible benefits. This project is therefore pivotal in demonstrating and promoting systemic solutions for upscaling urgent restoration to increase biodiversity and support a wide range of ecosystem services, as requested in the Biodiversity Strategy for 2030 for damaged terrestrial, freshwater, coastal and marine ecosystems."
-                     :fr "The Ecosystem Restoration project pi 3.14159265359 is the biggest and the most ambitious project in the world. Underpinned by knowledge in the latest IPCC and IPBES reports, large-scale ecosystem restoration is urgent – the window of opportunity is closing rapidly. It needs a systemic approach to deliver tangible benefits. This project is therefore pivotal in demonstrating and promoting systemic solutions for upscaling urgent restoration to increase biodiversity and support a wide range of ecosystem services, as requested in the Biodiversity Strategy for 2030 for damaged terrestrial, freshwater, coastal and marine ecosystems."}}
-    :status :completed
-    :points-of-contact [{:poc {:role            nil
-                               :organization    nil
-                               :individual-name nil
-                               :web-address     nil
-                               :email           nil}}]
-    :topic-categories ["Location"]
+(defonce default-values {}
+  ;; {:metadata
+  ;;  {:citation {
+  ;;              :title {:loc {:en "Ecosystem restoration project pi 3.14159265359"
+  ;;                            :fr "Ecosystem restoration project pi 3.14159265359"}}
+  ;;              :dates [{:date {:type :creation
+  ;;                              :date "2019-06-04"}}
+  ;;                      {:date {:type :lastUpdate
+  ;;                              :date "2020-06-04"}}]}
+  ;;   ;; :abstract {:loc {:en "The Ecosystem Restoration project pi 3.14159265359 is the biggest and the most ambitious project in the world. Underpinned by knowledge in the latest IPCC and IPBES reports, large-scale ecosystem restoration is urgent – the window of opportunity is closing rapidly. It needs a systemic approach to deliver tangible benefits. This project is therefore pivotal in demonstrating and promoting systemic solutions for upscaling urgent restoration to increase biodiversity and support a wide range of ecosystem services, as requested in the Biodiversity Strategy for 2030 for damaged terrestrial, freshwater, coastal and marine ecosystems."
+  ;;   ;;                  :fr "The Ecosystem Restoration project pi 3.14159265359 is the biggest and the most ambitious project in the world. Underpinned by knowledge in the latest IPCC and IPBES reports, large-scale ecosystem restoration is urgent – the window of opportunity is closing rapidly. It needs a systemic approach to deliver tangible benefits. This project is therefore pivotal in demonstrating and promoting systemic solutions for upscaling urgent restoration to increase biodiversity and support a wide range of ecosystem services, as requested in the Biodiversity Strategy for 2030 for damaged terrestrial, freshwater, coastal and marine ecosystems."}}
+  ;;   :status :completed
+  ;;   :points-of-contact [{:poc {:role            nil
+  ;;                              :organization    nil
+  ;;                              :individual-name nil
+  ;;                              :web-address     nil
+  ;;                              :email           nil}}]
+  ;;   ;; :topic-categories ["Location"]
 
-    :keywords [{:keyword-group {:type     :discipline
-                                :keywords [{:keyword nil}]}}]}
-   :results
-   {:partially-achieved-reasons []}})
+  ;;   :keywords [{:keyword-group {:type     :discipline
+  ;;                               :keywords [{:keyword nil}]}}]}
+  ;;  :results
+  ;;  {:partially-achieved-reasons []}}
+   )
 
 (defonce md (r/atom default-values))
 

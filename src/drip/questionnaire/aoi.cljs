@@ -6,9 +6,17 @@
 
    [drip.config :refer [userid md]]
    [drip.inputs :as inputs]
-   [drip.admin2 :as admin2]))
+   [drip.admin2 :as admin2]
+   
+  ;;  ["react-leaflet" :refer (MapContainer, TileLayer, Marker, Popup)]
+   ;;import * as ol from 'openlayers';
+  ;;  ["ol" :as ol]
+  ;;  ["react-openlayers" :refer (interaction, layer, custom, control, ;;name spaces
+  ;;                 Interactions, Overlays, Controls,     ;;group
+  ;;                 Map, Layers, Overlay, Util)]    ;;objects
+   ))
 
-
+;; (js/alert ol)
 
 (defn admin2 [{:keys [data edit]}]
   (let [country          (cursor data [:admin-0])
@@ -118,13 +126,13 @@
     ;;                              :add-labels       {:date "date"}
     ;;                              :data             (cursor data [:citation :dates])
     ;;                              :edit             @edit}]
-     [inputs/multi-form-group-2 {:input-components {:admin-area #(admin2 {:data %
-                                                                          :edit @edit})}
-                                 :new-data   {:admin-area {}}
-                                 :label      "Admin areas"
-                                 :add-labels {:admin-area "admin2 area"}
-                                 :data       data
-                                 :edit       @edit}]
+     [inputs/multi-form-group {:input-components {:admin-area #(admin2 {:data %
+                                                                        :edit @edit})}
+                               :new-data   {:admin-area {}}
+                               :label      "Admin areas"
+                               :add-labels {:admin-area "admin2 area"}
+                               :data       data
+                               :edit       @edit}]
 
     ;;  (js/console.log data)
     ;;  [admin2 {:data data :edit (r/atom true)}]
@@ -153,6 +161,48 @@
      [:hr]
 
 
+     
+;; <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
+;;   <TileLayer
+;;     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+;;     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+;;   />
+;;   <Marker position={[51.505, -0.09]}>
+;;     <Popup>
+;;       A pretty CSS3 popup. <br /> Easily customizable.
+;;     </Popup>
+;;   </Marker>
+;; </MapContainer>
+
+    ;; [:> MapContainer
+    ;;  {:center [51.505, -0.09] :zoom 13 :scrollWheelZoom false}
+    ;;    [:> TileLayer
+    ;;     {:attribution "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors"
+    ;;      :url "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}]]
+
+     
+;; var tileSource = new ol.source.Stamen({
+;;   layer: 'toner'
+;; });
+
+     
+
+
+
+
+
+    ;; (let [tileSource ((.. ol -source -Stamen) {:layer 'toner'})]
+    ;;   [:> Map {:view {:center [0 0], :zoom 2}}
+    ;;    [:> Layers
+    ;;     [:> (.. layer Tile) {:source tileSource}]]
+    ;;       ;;      <Layers>
+    ;;       ;;   <layer.Tile source={tileSource}/>
+    ;;       ;;   <layer.Vector 
+    ;;       ;;     source={vectorSource} 
+    ;;       ;;     style={cluster.vectorStyleFunction}/>
+    ;;       ;; </Layers>
+    ;;    ])
+
      (when @edit
        [:<>
         [:h3 "Or upload the shapefile of the area"]
@@ -162,6 +212,8 @@
                                     :id   "exampleFormControlFile1"}]]])
 
 
+     
+     
     ;;  [:button.btn.btn-primary {:on-click #(POST "/md"
     ;;                                         {:headers {"x-csrf-token" (.-value (.getElementById js/document "__anti-forgery-token"))}
     ;;                                          :format :json

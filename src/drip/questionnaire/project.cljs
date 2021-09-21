@@ -70,13 +70,13 @@
     ;;                              :add-labels {:reason "reason"}
     ;;                              :data       (cursor data [:partially-achieved-reasons])
     ;;                              :edit       @edit}]
-     [inputs/multi-form-group-2 {:input-components {:executing-agency #(inputs/agency-input {:data % :edit @edit})}
-                                 :new-data         {:executing-agency {:agency nil :role nil}}
-                                 :label            "Executing agencies"
-                                 :add-labels       {:executing-agency "agency"}
-                                 :data             (cursor data [:executing-agencies])
-                                 :edit             @edit}]
-     
+     [inputs/multi-form-group {:input-components {:executing-agency #(inputs/agency-input {:data % :edit @edit})}
+                               :new-data         {:executing-agency {:agency nil :role nil}}
+                               :label            "Executing agencies"
+                               :add-labels       {:executing-agency "agency"}
+                               :data             (cursor data [:executing-agencies])
+                               :edit             @edit}]
+
     ;;  [inputs/form-group {:input-component #(inputs/select-input {:options menus/agencies
     ;;                                                              :data    %
     ;;                                                              :edit    @edit})
@@ -96,13 +96,23 @@
                          :data            (cursor data [:project-status])}]
 
      [inputs/date-form-group
+      {:label       "Begin date"
+       :data        (cursor data [:begin-date])
+       :edit        @edit}]
+
+     [inputs/date-form-group
+      {:label       "End date"
+       :data        (cursor data [:end-date])
+       :edit        @edit}]
+
+     [inputs/date-form-group
       {:label       "Project starting date"
-       :data        (cursor data [:start-date])
+       :data        (cursor data [:starting-date])
        :edit        @edit}]
 
      [inputs/date-form-group
       {:label       "Project ending date"
-       :data        (cursor data [:end-date])
+       :data        (cursor data [:ending-date])
        :edit        @edit}]
 
      [inputs/number-form-group
@@ -116,6 +126,23 @@
                          :label           "Source of funding"
                          :data            (cursor data [:funding-source])}]
 
+     [inputs/textarea-form-group {:label "Donors"
+                                  :data  (cursor data [:donors])
+                                  :edit  @edit}]
+     
+     [inputs/text-form-group {:label "Document link"
+                              :data  (cursor data [:docuent-link])
+                              :edit  @edit}]
+
+     [inputs/text-form-group {:label "Document title"
+                              :data  (cursor data [:docuent-title])
+                              :edit  @edit}]
+
+     [inputs/form-group {:input-component #(inputs/select-input {:options menus/document-formats
+                                                                 :data    %
+                                                                 :edit    @edit})
+                         :label           "Document format"
+                         :data            (cursor data [:document-format])}]
   ;;  [:button.btn.btn-primary {:on-click #(POST "/md"
   ;;                                         {:headers {"x-csrf-token" (.-value (.getElementById js/document "__anti-forgery-token"))}
   ;;                                          :format :json

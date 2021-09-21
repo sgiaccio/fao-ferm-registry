@@ -30,7 +30,7 @@
   ;;                      :label           "If partially achieved, choose from list"
   ;;                      :data            (cursor data [:partially-achieved-reasons])}]
 
-     [inputs/multi-form-group-2 {:input-components {:reason #(inputs/select-input {:options menus/partially-achieved-reasons
+     [inputs/multi-form-group {:input-components {:reason #(inputs/select-input {:options menus/partially-achieved-reasons
                                                                                    :data    %
                                                                                    :edit    @edit})}
                                  :new-data   {:reason nil}

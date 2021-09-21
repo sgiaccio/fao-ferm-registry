@@ -19,11 +19,21 @@
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
      [:h1 {:class "text-3xl"} "Definition of activities"]
 
-     [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/activities
-                                                                          :data    %
-                                                                          :edit    @edit})
-                         :label           "Activities implemented"
-                         :data            (cursor data [:activities-implemented])}]
+     [inputs/multi-form-group {:input-components {:activity #(inputs/select-input
+                                                                {:options menus/activities
+                                                                 :data    %
+                                                                 :edit    @edit})}
+                                 :new-data         {:activity nil}
+                                 :label            "Activities implemented"
+                                 :add-labels       {:activity "activity"}
+                                 :data             (cursor data [:topic-categories])
+                                 :edit             @edit}]
+     
+    ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/activities
+    ;;                                                                       :data    %
+    ;;                                                                       :edit    @edit})
+    ;;                      :label           "Activities implemented"
+    ;;                      :data            (cursor data [:activities-implemented])}]
 
 
      [inputs/form-group {:input-component #(inputs/date-input {:data %

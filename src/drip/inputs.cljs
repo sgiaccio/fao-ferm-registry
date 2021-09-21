@@ -85,7 +85,7 @@
                :on-change #(reset! data (-> % .-target .-value empty-to-nil keyword))}
       [:option {:value ""} placeholder]
       (for [[value label] options]
-        [:option {:key value :value (or value label)} label])]
+        [:option {:key value :value (or value label)} (or label value)])]
 
      (get-select-label @data options))
    (when description [:p {:class "mt-2 text-sm text-gray-500"}
@@ -148,36 +148,7 @@
   (vec (concat (subvec coll 0 pos) (subvec coll (inc pos)))))
 
 
-;; This is not used anymore, replaced by multi-input-2
-;; (defn multi-input
-;;   "Creates a multi-input from an input-component, adding \"add\" and \"delete\" buttons to add/delete items. @data must be a vector
-   
-;;    Sample arg:
-   
-;;    {:input-component #(inputs/keywords {:data %})
-;;     :new-data        {:type :author :keywords [nil]}
-;;     :label           \"Keywords\"
-;;     :add-label       \"keyword type\"
-;;     :data            [{:type :discipline :keywords [nil]}]}"
-;;   [{:keys [input-component description data new-data add-label]}]
-;;   [:div.border.p-3
-;;    (doall (for [i (range (count @data))]
-;;             ; TODO using i as a key for now - will find a proper one
-;;             [:div.container {:key i}
-;;              [:div.row.mb-2
-;;               [:div.col.pl-0 (input-component (cursor data [i]))]
-;;               [:div.col-auto.pr-0
-;;                [:div.text-danger {:style {:cursor "pointer" :margin-top "9px"}
-;;                                   :on-click (fn []
-;;                                               (when (js/confirm "Are you sure you want to delete this item?")
-;;                                                 (swap! data #(vec-remove i %))))} icons/trash]]]]))
-;;    (when description [:small.form-text.text-muted description])
-;;    [:div.btn.btn-primary.btn-sm {:type "button"
-;;                                  :on-click #(swap! data conj new-data)}
-;;     "Add " add-label]])
-
-
-(defn multi-input-2
+(defn multi-input
   "Creates a multi-input from an input-component, adding \"add\" and \"delete\"
    buttons to add/delete items. @data must be a vector. Can handle multiple input types
    
@@ -193,26 +164,25 @@
                        [:text \"text \"]]}"
   [{:keys [input-components description data new-data add-labels edit]}]
   (with-let [button-id (gen-dom-id)]
-    [:div.border.p-3
+    [:div {:class "border p-3 rounded rounded-md"}
      (doall (for [n (range (count @data))]
               ; TODO using n as a key for now - will find a proper one
-              [:div.container {:key n}
-               [:div.flex.flex-row.mb-2
+              [:div {:key n}
+               [:div {:class "flex flex-row mb-5"}
                 
                 (let [input-component-def  (nth @data n)
                       input-component-type (-> input-component-def first first) ; get key - there's only one
                       input-component-data (cursor data [n input-component-type])
                       input-component      (get input-components input-component-type)]
-                  (js/console.log input-component)
-                  [:div.pl-0 (input-component input-component-data)])
+                  [:div {:class "pl-0"} (input-component input-component-data)])
                 (when edit
-                  [:div.col-auto.pr-0
-                   [:div {:class "text-red-600"
+                  [:div {:class "pl-3 pt-3"}
+                   [:div {:class "text-red-600 cursor-pointer"
                           :on-click (fn []
                                       (when (js/confirm "Are you sure you want to delete this item?")
                                         (swap! data #(vec-remove n %))))}
                     icons/trash]])]]))
-     (when description [:p {:class "mt-2 text-sm text-gray-500"}
+     (when description [:p {:class "mt-1 text-sm text-gray-500"}
                         description])
 
      ; "Add" button
@@ -238,7 +208,7 @@
          ; Otherwise, show just a button
          [:button {:type "button" 
                    :on-click #(reset! data (into [] (conj @data new-data)))
-                   :class "inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"}
+                   :class "inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"}
           "Add " (-> add-labels first val)]
 
         ;;  [:div.btn.btn-primary.btn-sm {:type "button"
@@ -284,11 +254,11 @@
           [:div {:class "mt-1 sm:mt-0 sm:col-span-3"}
            [:input {:type "text", :name "first_name", :id "first_name", :autocomplete "given-name", :class "max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md"}]]])
 
-(defn multi-form-group-2
+(defn multi-form-group
   "Creates a multiple form group from a simple input - adds label and description"
   [{:keys [input-components label description new-data add-labels data edit]}]
   [form-group-wrapper {:label label :description description}
-   [multi-input-2 {:input-components input-components
+   [multi-input {:input-components input-components
                    :new-data         new-data
                    :add-labels       add-labels
                    :data             data
@@ -366,7 +336,7 @@
 
 (defn- horizontal-layout
   [& children]
-  [:div {:class "flex flex-row"}
+  [:div {:class "flex flex-row space-x-4"}
    (doall (for [i (range (count children))]
             [:div {:key i} (nth children i)]))])
 
@@ -397,8 +367,8 @@
    [text-input {:description "Individual name"
                 :data        (cursor data [:individual-name])
                 :edit edit}]
-   [text-input {:description "Web address"
-                :data        (cursor data [:web-address])
+   [text-input {:description "Address"
+                :data        (cursor data [:address])
                 :edit edit}]
    [text-input {:description "Email"
                 :data        (cursor data [:email])
@@ -410,7 +380,7 @@
                   :description "Keyword type"
                   :data        (cursor data [:type])
                   :edit        edit}]
-   [multi-input-2 {:input-components {:keyword #(text-input {:placeholder "Keyword" 
+   [multi-input {:input-components {:keyword #(text-input {:placeholder "Keyword" 
                                                              :data %
                                                              :edit edit})}
                    :new-data         {:keyword nil}

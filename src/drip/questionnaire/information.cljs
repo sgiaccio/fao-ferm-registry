@@ -67,7 +67,7 @@
                          :label           "Land management plan in place"
                          :data            (cursor data [:land-management])}]
 
-     [inputs/multi-form-group-2 {:input-components {:technology #(technology {:data %
+     [inputs/multi-form-group {:input-components {:technology #(technology {:data %
                                                                               :edit @edit})}
                                  :new-data   {:technology {:tech :A :subtech nil}}
                                  :label      "Technologies"
@@ -105,9 +105,9 @@
        :data  (cursor data [:restoration-cost])
        :edit  @edit}]
 
-     [inputs/textarea-form-group-loc {:label "Other additional information"
-                                      :data  (cursor data [:other-inf])
-                                      :edit  @edit}]
+     [inputs/textarea-form-group {:label "Other additional information"
+                                  :data  (cursor data [:other-inf])
+                                  :edit  @edit}]
 
 
   ;;  [:button.btn.btn-primary {:on-click #(POST "/md"
