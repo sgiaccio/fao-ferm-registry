@@ -61,11 +61,11 @@
                                   :edit        @edit}]
 
      ;;  Status
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/status-items
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Status"
-                         :data            (cursor data [:status])}]
+    ;;  [inputs/form-group {:input-component #(inputs/select-input {:options menus/status-items
+    ;;                                                              :data    %
+    ;;                                                              :edit    @edit})
+    ;;                      :label           "Status"
+    ;;                      :data            (cursor data [:status])}]
 
      ;;  Points of contact
      [inputs/multi-form-group {:input-components {:poc #(inputs/point-of-contact {:data %

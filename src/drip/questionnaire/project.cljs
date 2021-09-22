@@ -17,49 +17,56 @@
                                 (= @userid (:uid @md))
                                 (nil? (:uid @md))))))]
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
-     [:h1 {:class "text-3xl"} "Project registration"]
+     [:h1 {:class "text-3xl"} "Project registration"
 
-     [inputs/number-form-group
-      {:label       "Version"
-       :data        (cursor data [:version])
-       :edit        @edit}]
-
-     [inputs/text-form-group
-      {:label       "Project ID"
-       :data        (cursor data [:project-id])
-       :edit        @edit}]
-
-     [inputs/date-form-group
-      {:label       "Create date"
-       :data        (cursor data [:create-date])
-       :edit        @edit}]
-
-     [inputs/date-form-group
-      {:label       "Last modified date"
-       :data        (cursor data [:last-modified-date])
-       :edit        @edit}]
-
-     [inputs/text-form-group
-      {:label       "Title"
-       :data        (cursor data [:title])
-       :edit        @edit}]
+      [inputs/text-form-group
+       {:label       "Title"
+        :data        (cursor data [:title])
+        :edit        @edit}]]
 
      [inputs/textarea-form-group
       {:label       "Description"
        :data        (cursor data [:description])
        :edit        @edit}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/reporting-processes
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Reporting process"
-                         :data            (cursor data [:reporting-process])}]
+    ;;  [inputs/number-form-group
+    ;;   {:label       "Version"
+    ;;    :data        (cursor data [:version])
+    ;;    :edit        @edit}]
+
+    ;;  [inputs/text-form-group
+    ;;   {:label       "Project ID"
+    ;;    :data        (cursor data [:project-id])
+    ;;    :edit        @edit}]
+
+     [inputs/date-form-group
+      {:label       "Project begin date"
+       :data        (cursor data [:project-begin-date])
+       :edit        @edit}]
+
+     [inputs/date-form-group
+      {:label       "Project end date"
+       :data        (cursor data [:project-end-date])
+       :edit        @edit}]
 
      [inputs/form-group {:input-component #(inputs/select-input {:options menus/agencies
                                                                  :data    %
                                                                  :edit    @edit})
                          :label           "Reporting agency"
                          :data            (cursor data [:reporting-agencies])}]
+
+     [inputs/multi-form-group {:input-components {:executing-agency #(inputs/agency-input {:data % :edit @edit})}
+                               :new-data         {:executing-agency {:agency nil :role nil}}
+                               :label            "Executing agencies"
+                               :add-labels       {:executing-agency "agency"}
+                               :data             (cursor data [:executing-agencies])
+                               :edit             @edit}]
+
+     [inputs/form-group {:input-component #(inputs/select-input {:options menus/reporting-processes
+                                                                 :data    %
+                                                                 :edit    @edit})
+                         :label           "Reporting process"
+                         :data            (cursor data [:reporting-process])}]
 
 
     ;;  [inputs/multi-form-group-2 {:input-components {:reason #(inputs/select-input {:options menus/partially-achieved-reasons
@@ -70,12 +77,6 @@
     ;;                              :add-labels {:reason "reason"}
     ;;                              :data       (cursor data [:partially-achieved-reasons])
     ;;                              :edit       @edit}]
-     [inputs/multi-form-group {:input-components {:executing-agency #(inputs/agency-input {:data % :edit @edit})}
-                               :new-data         {:executing-agency {:agency nil :role nil}}
-                               :label            "Executing agencies"
-                               :add-labels       {:executing-agency "agency"}
-                               :data             (cursor data [:executing-agencies])
-                               :edit             @edit}]
 
     ;;  [inputs/form-group {:input-component #(inputs/select-input {:options menus/agencies
     ;;                                                              :data    %
@@ -95,30 +96,33 @@
                          :label           "Project status"
                          :data            (cursor data [:project-status])}]
 
+
      [inputs/date-form-group
-      {:label       "Begin date"
-       :data        (cursor data [:begin-date])
+      {:label       "Activities begin date"
+       :data        (cursor data [:activities-begin-date])
        :edit        @edit}]
 
      [inputs/date-form-group
-      {:label       "End date"
-       :data        (cursor data [:end-date])
-       :edit        @edit}]
-
-     [inputs/date-form-group
-      {:label       "Project starting date"
-       :data        (cursor data [:starting-date])
-       :edit        @edit}]
-
-     [inputs/date-form-group
-      {:label       "Project ending date"
-       :data        (cursor data [:ending-date])
+      {:label       "Activities end date"
+       :data        (cursor data [:activities-end-date])
        :edit        @edit}]
 
      [inputs/number-form-group
-      {:label       "Budget [USD]"
+      {:label       "Total Budget [USD]"
        :data        (cursor data [:budget])
        :edit        @edit}]
+     
+
+    ;;  [inputs/date-form-group
+    ;;   {:label       "Begin date"
+    ;;    :data        (cursor data [:begin-date])
+    ;;    :edit        @edit}]
+
+    ;;  [inputs/date-form-group
+    ;;   {:label       "End date"
+    ;;    :data        (cursor data [:end-date])
+    ;;    :edit        @edit}]
+
 
      [inputs/form-group {:input-component #(inputs/select-input {:options menus/funding-sources
                                                                  :data    %
@@ -129,7 +133,7 @@
      [inputs/textarea-form-group {:label "Donors"
                                   :data  (cursor data [:donors])
                                   :edit  @edit}]
-     
+
      [inputs/text-form-group {:label "Document link"
                               :data  (cursor data [:docuent-link])
                               :edit  @edit}]
@@ -154,4 +158,5 @@
    ; DEBUG data structure
     ;;  [:hr]
     ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
-     ]))
+     
+]))

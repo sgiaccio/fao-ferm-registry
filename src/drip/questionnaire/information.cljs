@@ -70,7 +70,7 @@
      [inputs/multi-form-group {:input-components {:technology #(technology {:data %
                                                                               :edit @edit})}
                                  :new-data   {:technology {:tech :A :subtech nil}}
-                                 :label      "Technologies"
+                                 :label      "Locally adapted technologies, tools, and techniques"
                                  :add-labels {:technology "technology"}
                                  :data       (cursor data [:technologies])
                                  :edit       @edit}]
