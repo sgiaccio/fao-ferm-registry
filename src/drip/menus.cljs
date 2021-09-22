@@ -493,58 +493,97 @@
    [:2 "No"]
    [:3 "Planned"]])
 
-;; TODO: implement as multi-level menu once multi-level menus are implemented
 (defonce activities
-  [[:1 "Restore/improve forest land - Reduce/halt deforestation and conversion of forest to other land cover types (includes conserving forest land) "]
-   [:2 "Restore/improve forest land - Restore forest land "]
-   [:3 "Restore/improve forest land - Increase land productivity in forest areas "]
-   [:4 "Restore/improve forest land - Improve forest management e.g. fire management "]
-   [:5 "Increase forest land - Increase forest land (net gain) e.g. plantations "]
-   [:6 "Restore/improve cropland - Increase land productivity in agricultural areas "]
-   [:7 "Restore/improve cropland - Rehabilitate bare or degraded land for crop production "]
-   [:8 "Restore/improve cropland - Improve water use for irrigation "]
-   [:9 "Restore/improve cropland - Halt/reduce conversion of cropland to other land cover types "]
-   [:10 "Restore/improve cropland - Sustainable Land Management "]
-   [:11 "Restore/improve grassland and savannah - Restore and improve pastures "]
-   [:12 "Restore/improve grassland and savannah - Improve land productivity in grassland/savannah "]
-   [:13 "Restore/improve grassland and savannah - Restore rangeland (e.g. by controlling livestock and wildfires) "]
-   [:14 "Restore/improve grassland and savannah - Halt/reduce conversion of grassland to other land cover types "]
-   [:15 "Restore/improve wetlands (including peatlands and mangroves) - Halt/reduce wetland conversion to other land uses (includes conserving wetlands) "]
-   [:16 "Restore/improve wetlands (including peatlands and mangroves) - Restore/preserve wetlands and reduce degradation of wetlands "]
-   [:17 "Increase soil fertility and carbon stock - Rehabilitate bare land and/or restore degraded land "]
-   [:18 "Increase soil fertility and carbon stock - Increase carbon stock and reduce soil/land degradation "]
-   [:19 "Increase soil fertility and carbon stock - Maintain current level of SOC "]
-   [:20 "Increase soil fertility and carbon stock - Reduce soil erosion "]
-   [:21 "Increase soil fertility and carbon stock - Reduce sand encroachment "]
-   [:22 "Increase soil fertility and carbon stock - Improve watershed/landscape management "]
-   [:23 "Manage artificial area and mining - Restore degraded mining areas "]
-   [:24 "Manage artificial area and mining - Halt illegal mining and/or reduce mining area "]
-   [:25 "Manage artificial area and mining - Improve land productivity in artificial areas "]
-   [:26 "Manage artificial area and mining - Halt/reduce/regulate expansion of urban/artificial area "]
-   [:27 "Restore /improve protected areas - Restore protected areas "]
-   [:28 "Restore /improve protected areas - Improve management of protected areas "]
-   [:29 "Increase protected areas - Increase protected areas "]
-   [:30 "Improve coastal management - Reduce coastal erosion "]
-   [:31 "Improve coastal management - Reduce saline water intrusion in coastal zone "]
-   [:32 "Other/General/Unspecified - Avoid/Prevent/ halt degradation (of degraded lands) "]
-   [:33 "Other/General/Unspecified - Restore vegetation cover (unspecified land use) "]
-   [:34 "Other/General/Unspecified - Achieve LDN "]
-   [:35 "Other/General/Unspecified - Improve land productivity (unspecified land use) "]
-   [:36 "Other/General/Unspecified - Other/General/Unspecified "]
-   [:37 "Instrument - General instrument (e.g. policies, economic incentives) "]
-   [:38 "Restore/improve multiple land use - Forest and grassland "]
-   [:39 "Restore/improve multiple land use - Cropland and grassland "]
-   [:40 "Restore/improve multiple land use - Forest and wetlands "]
-   [:41 "Restore/improve multiple land use - Forest, cropland and grassland "]
-   [:42 "Restore/improve multiple land use - Protected area and forest "]
-   [:43 "Restore/improve multiple land use - Other "]
-   [:44 "Restore/improve multiple land use - All land uses "]
-   [:45 "Reduce/halt conversion of multiple land uses - As above "]
-   [:46 "Restore/improve multiple functions - Productivity and carbon stock "]
-   [:47 "Restore/improve multiple functions - Other "]
-   [:48 "Restore/improve multiple functions - Multiple functions "]
-   [:49 "Restore/improve multiple functions in multiple land uses - Improve productivity and SOC stock in croplands and grasslands "]
-   [:50 "Restore/improve multiple functions in multiple land uses - Other "]])
+  [{:code :1
+    :name "Restore/improve forest land"
+    :children [{:code :1 :name "Reduce/halt deforestation and conversion of forest to other land cover types (includes conserving forest land)"}
+               {:code :2 :name "Restore forest land"}
+               {:code :3 :name "Increase land productivity in forest areas"}
+               {:code :4 :name "Improve forest management e.g. fire management"}]}
+
+   {:code :2
+    :name "Increase forest land"
+    :children [{:code :5 :name "Increase forest land (net gain) e.g. plantations"}]}
+   {:code :3
+    :name "Restore/improve cropland"
+    :children [{:code :6 :name "Increase land productivity in agricultural areas"}
+               {:code :7 :name "Rehabilitate bare or degraded land for crop production"}
+               {:code :8 :name "Improve water use for irrigation"}
+               {:code :9 :name "Halt/reduce conversion of cropland to other land cover types"}
+               {:code :10 :name "Sustainable Land Management"}]}
+   {:code :4
+    :name "Restore/improve grassland and savannah"
+    :children [{:code :11 :name "Restore and improve pastures"}
+               {:code :12 :name "Improve land productivity in grassland/savannah"}
+               {:code :13 :name "Restore rangeland (e.g. by controlling livestock and wildfires)"}
+               {:code :14 :name "Halt/reduce conversion of grassland to other land cover types"}]}
+   {:code :5
+    :name "Restore/improve wetlands (including peatlands and mangroves)"
+    :children [{:code :15 :name "Halt/reduce wetland conversion to other land uses (includes conserving wetlands)"}
+               {:code :16 :name "Restore/preserve wetlands and reduce degradation of wetlands"}]}
+   {:code :6
+    :name "Increase soil fertility and carbon stock"
+    :children [{:code :17 :name "Rehabilitate bare land and/or restore degraded land"}
+               {:code :18 :name "Increase carbon stock and reduce soil/land degradation"}
+               {:code :19 :name "Maintain current level of SOC"}
+               {:code :20 :name "Reduce soil erosion"}
+               {:code :21 :name "Reduce sand encroachment"}
+               {:code :22 :name "Improve watershed/landscape management"}]}
+   {:code :7
+    :name "Manage artificial area and mining"
+    :children [{:code :23 :name "Restore degraded mining areas"}
+               {:code :24 :name "Halt illegal mining and/or reduce mining area"}
+               {:code :25 :name "Improve land productivity in artificial areas"}
+               {:code :26 :name "Halt/reduce/regulate expansion of urban/artificial area"}]}
+   {:code :8
+    :name "Restore /improve protected areas"
+    :children [{:code :27 :name "Restore protected areas"}
+               {:code :28 :name "Improve management of protected areas"}]}
+   {:code :9
+    :name "Increase protected areas"
+    :children [{:code :29 :name "Increase protected areas"}]}
+   {:code :10
+    :name "Improve coastal management"
+    :children [{:code :30 :name "Reduce coastal erosion"}
+               {:code :31 :name "Reduce saline water intrusion in coastal zone"}]}
+   {:code :11
+    :name "Other/General/Unspecified"
+    :children [{:code :32 :name "Avoid/Prevent/ halt degradation (of degraded lands)"}
+               {:code :33 :name "Restore vegetation cover (unspecified land use)"}
+               {:code :34 :name "Achieve LDN"}
+               {:code :35 :name "Improve land productivity (unspecified land use)"}
+               {:code :36 :name "Other/General/Unspecified"}]}
+   {:code :12
+    :name "Instrument"
+    :children [{:code :37 :name "General instrument (e.g. policies, economic incentives)"}]}
+   {:code :13
+    :name "Restore/improve multiple land use"
+    :children [{:code :38 :name "Forest and grassland"}
+               {:code :39 :name "Cropland and grassland"}
+               {:code :40 :name "Forest and wetlands"}
+               {:code :41 :name "Forest, cropland and grassland"}
+               {:code :42 :name "Protected area and forest"}
+               {:code :43 :name "Other"}
+               {:code :44 :name "All land uses"}]}
+   {:code :14
+    :name "Reduce/halt conversion of multiple land uses"
+    :children [{:code :45 :name "Forest and grassland"}
+               {:code :46 :name "Cropland and grassland"}
+               {:code :47 :name "Forest and wetlands"}
+               {:code :48 :name "Forest, cropland and grassland"}
+               {:code :49 :name "Protected area and forest"}
+               {:code :50 :name "Other"}
+               {:code :51 :name "All land uses"}]}
+   {:code :15
+    :name "Restore/improve multiple functions"
+    :children [{:code :52 :name "Productivity and carbon stock"}
+               {:code :53 :name "Other"}
+               {:code :54 :name "Multiple functions"}]}
+   {:code :16
+    :name "Restore/improve multiple functions in multiple land uses"
+    :children [{:code :55 :name "Improve productivity and SOC stock in croplands and grasslands"}
+               {:code :50 :name "Other"}]}])
+
 
 (defonce achieved
   [[:1 "Yes"]
@@ -567,9 +606,9 @@
   [{:code :A
     :name "Agronomic measures"
     :children [{:code :A1
-                :name "Vegetation/ soil cover "}
+                :name "Vegetation / soil cover "}
                {:code :A2
-                :name "Organic matter/ soil fertility"}
+                :name "Organic matter / soil fertility"}
                {:code :A3
                 :name "Soil surface treatment"}
                {:code :A4

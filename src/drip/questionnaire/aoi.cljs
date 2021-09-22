@@ -74,7 +74,10 @@
                                                                   :data    data
                                                                   :edit    edit}))
                          :label           "Administrative name (level 2)"
-                         :data            (cursor data [:admin-2])}]]))
+                         :data            (cursor data [:admin-2])}]
+     [inputs/text-form-group {:label "Site name"
+                              :data  (cursor data [:site-name])
+                              :edit  edit}]]))
 
 (defn aoi [{:keys [data]}]
   ;; TODO - clean-up; generalize tree menus
@@ -158,7 +161,7 @@
     ;;                      :label           "Administrative name (level 2)"
     ;;                      :data            (cursor data [:admin-2])}]
 
-     [:hr]
+
 
 
      
@@ -203,13 +206,13 @@
     ;;       ;; </Layers>
     ;;    ])
 
-     (when @edit
-       [:<>
-        [:h3 "Or upload the shapefile of the area"]
-        [:div.form-group
-         [:label {:for "exampleFormControlFile1"} "Example file input"]
-         [:input.form-control-file {:type "file"
-                                    :id   "exampleFormControlFile1"}]]])
+    ;;  (when @edit
+    ;;    [:<>
+    ;;     [:h3 "Or upload the shapefile of the area"]
+    ;;     [:div.form-group
+    ;;      [:label {:for "exampleFormControlFile1"} "Example file input"]
+    ;;      [:input.form-control-file {:type "file"
+    ;;                                 :id   "exampleFormControlFile1"}]]])
 
 
      
@@ -225,5 +228,6 @@
      ; TODO: add area draw
 
    ; DEBUG data structure
-     [:hr]
-     [:div [:pre (with-out-str (pp/pprint @data))]]]))
+    ;;  [:hr]
+    ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
+     ]))

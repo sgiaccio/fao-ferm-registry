@@ -3,11 +3,46 @@
    [cljs.pprint :as pp]
 
    [reagent.core :refer [cursor]]
-   [reagent.ratom :refer [make-reaction]]
+   [reagent.ratom :as r :refer [make-reaction]]
 
    [drip.config :refer [userid md]]
    [drip.inputs :as inputs]
    [drip.menus :as menus]))
+
+(defn activities-menu-group [{:keys [data edit]}]
+  (let [type              (cursor data [:type])
+        activity          (cursor data [:activity])
+
+        activities        (r/atom [])
+
+        reset-activity    (atom false)
+
+        types-menu        (map #(-> [(:code %) (:name %)]) menus/activities)
+
+        update_activities (fn []
+                            (let [c (-> (filter #(= (:code %) @type) menus/activities) first)]
+                              (reset! activities (:children c))
+                                ;; Reset activity only after first load
+                              (when @reset-activity
+                                (reset! activity nil))
+                              (reset! reset-activity true)))
+        _                 @(r/track update_activities)
+        activities-menu   (make-reaction
+                           (fn [] (map #(-> [(:code %) (:name %)]) @activities)))]
+    [:<>
+     [inputs/form-group {:input-component (fn [data]
+                                            (inputs/select-input {:options types-menu
+                                                                  :data    data
+                                                                  :edit    edit}))
+                         :label           "Activity type"
+                         :data            (cursor data [:type])}]
+
+     [inputs/form-group {:input-component (fn [data]
+                                            (inputs/select-input {:options @activities-menu
+                                                                  :data    data
+                                                                  :edit    edit}))
+                         :label           "Activity"
+                         :data            (cursor data [:activity])}]]))
 
 (defn activities [data]
   (let [edit (make-reaction (fn []
@@ -19,16 +54,19 @@
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
      [:h1 {:class "text-3xl"} "Definition of activities"]
 
-     [inputs/multi-form-group {:input-components {:activity #(inputs/select-input
-                                                                {:options menus/activities
-                                                                 :data    %
-                                                                 :edit    @edit})}
-                                 :new-data         {:activity nil}
-                                 :label            "Activities implemented"
-                                 :add-labels       {:activity "activity"}
-                                 :data             (cursor data [:topic-categories])
-                                 :edit             @edit}]
-     
+    ;;  [inputs/multi-form-group {:input-components {:activity #(inputs/select-input
+    ;;                                                             {:options menus/activities
+    ;;                                                              :data    %
+    ;;                                                              :edit    @edit})}
+    ;;                              :new-data         {:activity nil}
+    ;;                              :label            "Activities implemented"
+    ;;                              :add-labels       {:activity "activity"}
+    ;;                              :data             (cursor data [:topic-categories])
+    ;;                              :edit             @edit}]
+
+
+    [activities-menu-group {:data (cursor data [:activity])
+                            :edit @edit}]
     ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/activities
     ;;                                                                       :data    %
     ;;                                                                       :edit    @edit})
@@ -58,5 +96,6 @@
   ;;   "Save"]
 
    ; DEBUG data structure
-     [:hr]
-     [:div [:pre (with-out-str (pp/pprint @data))]]]))
+    ;;  [:hr]
+    ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
+     ]))
