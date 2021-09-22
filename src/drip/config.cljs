@@ -111,9 +111,12 @@
 
 
 (defn save []
-  (let [doc (if-some [id @project-id]
-              (doc registry-collection id)
-              (doc registry-collection))]
+  (let [;;doc (if-some [id @project-id]
+        ;;      (doc registry-collection id)
+        ;;      (doc registry-collection))
+        doc (if (= @project-id "new")
+              (doc registry-collection)
+              (doc registry-collection @project-id))]
     (reset! project-id nil)
     (setDoc doc (clj->js (assoc @md :uid @userid)))))
 
