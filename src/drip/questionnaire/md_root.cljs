@@ -75,7 +75,7 @@
         :information      [information (cursor md [:information])]
         :results          [results (cursor md [:results])])]
      [:button {:type "button"
-               :class "inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+               :class "my-6 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                :on-click (fn []
                            (.then (config/save)
                                   (push-state :projects)))}

@@ -55,7 +55,7 @@
                                   :data        (cursor data [:abstract])
                                   :edit        @edit}]
 
-     [inputs/textarea-form-group {:label       "Purpose (not ISO)"
+     [inputs/textarea-form-group {:label       "Purpose"
                                   :placeholder "Enter purpose"
                                   :data        (cursor data [:purpose])
                                   :edit        @edit}]

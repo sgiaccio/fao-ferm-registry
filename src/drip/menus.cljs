@@ -19,8 +19,7 @@
 ;;                        [:valid             "Valid"]
 ;;                        [:withdrawn         "Withdrawn"]])
 
-(defonce date-types [
-                    ;;  [:adopted         "Adopted"]
+(defonce date-types [;;  [:adopted         "Adopted"]
                      [:creation        "Creation"]
                     ;;  [:deprecated      "Deprecated"]
                     ;;  [:distribution    "Distribution"]
@@ -235,8 +234,7 @@
                     [:user                  "User"]])
 
 
-(defonce keyword-types [
-                        ;; [:dataCentre "Data centre"]
+(defonce keyword-types [;; [:dataCentre "Data centre"]
                         [:discipline "Discipline"]
                         ;; [:featureType "Feature type"]
                         ;; [:instrument "Instrument"]
@@ -667,3 +665,10 @@
                 :name "Control/ change in species composition  (if annually or in a rotational sequence as done e.g. on cropland A1)"}
                {:code :M6
                 :name "Waste management (recycling, re-use or reduce)"}]}])
+
+
+(defonce years
+  (->> (partition 2 
+                  (interleave (map (comp keyword str) (range 2015 2201))
+                              (map str (range 2015 2201))))
+       (map #(into [] %)) (into [])))

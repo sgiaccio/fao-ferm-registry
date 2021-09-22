@@ -214,16 +214,6 @@
     ;;      [:input.form-control-file {:type "file"
     ;;                                 :id   "exampleFormControlFile1"}]]])
 
-
-     
-     
-    ;;  [:button.btn.btn-primary {:on-click #(POST "/md"
-    ;;                                         {:headers {"x-csrf-token" (.-value (.getElementById js/document "__anti-forgery-token"))}
-    ;;                                          :format :json
-    ;;                                          :params @data
-    ;;                                          :error-handler (fn [r] (prn r))})}
-    ;;   "Save"]
-
      ; TODO: add shapefile upload
      ; TODO: add area draw
 

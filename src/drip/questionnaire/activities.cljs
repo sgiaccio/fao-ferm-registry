@@ -65,8 +65,8 @@
     ;;                              :edit             @edit}]
 
 
-    [activities-menu-group {:data (cursor data [:activity])
-                            :edit @edit}]
+     [activities-menu-group {:data (cursor data [:activity])
+                             :edit @edit}]
     ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/activities
     ;;                                                                       :data    %
     ;;                                                                       :edit    @edit})
@@ -74,26 +74,24 @@
     ;;                      :data            (cursor data [:activities-implemented])}]
 
 
-     [inputs/form-group {:input-component #(inputs/date-input {:data %
-                                                               :edit @edit})
-                         :label           "Date of implementation of the activity"
-                         :data            (cursor data [:implementation_date])}]
+    ;;  [inputs/form-group {:input-component #(inputs/date-input {:data %
+    ;;                                                            :edit @edit})
+    ;;                      :label           "Date of implementation of the activity"
+    ;;                      :data            (cursor data [:implementation-date])}]
 
+     [inputs/form-group {:input-component #(inputs/select-input {:options menus/years
+                                                                 :data    %
+                                                                 :edit    @edit})
+                         :label           "Date of implementation of the activity"
+                         :data            (cursor data [:implementation-year])}]
+ 
      [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
                                                                  :data    %
                                                                  :edit    @edit})
-                         :label           "Priority/critical areas for LDN implementation "
-                         :data            (cursor data [:priority_areas])}]
+                         :label           "Priority/critical areas for LDN implementation"
+                         :data            (cursor data [:priority-areas])}]
 
   ;; TODO: Drivers of ecosystem restoration observed on site (choose from the list)
-
-  ;;  [:button.btn.btn-primary {:on-click #(POST "/md"
-  ;;                                         {:headers {"x-csrf-token" (.-value (.getElementById js/document "__anti-forgery-token"))}
-  ;;                                          :format :json
-  ;;                                          :params @data
-  ;;                                          ;; :handler handler
-  ;;                                          :error-handler (fn [r] (prn r))})}
-  ;;   "Save"]
 
    ; DEBUG data structure
     ;;  [:hr]

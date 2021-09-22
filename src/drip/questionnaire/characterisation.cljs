@@ -80,14 +80,6 @@
                                   :data  (cursor data [:other-indicators])
                                   :edit  @edit}]
 
-  ;;  [:button.btn.btn-primary {:on-click #(POST "/md"
-  ;;                                         {:headers {"x-csrf-token" (.-value (.getElementById js/document "__anti-forgery-token"))}
-  ;;                                          :format :json
-  ;;                                          :params @data
-  ;;                                          ;; :handler handler
-  ;;                                          :error-handler (fn [r] (prn r))})}
-  ;;   "Save"]
-
    ; DEBUG data structure
     ;;  [:hr]
     ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
