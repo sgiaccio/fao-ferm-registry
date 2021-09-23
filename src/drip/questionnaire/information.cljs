@@ -13,7 +13,7 @@
   (let [tech-menu (map #(-> [(:code %) (:name %)]) menus/technologies)
         tech (cursor data [:tech])
         subtechs (make-reaction
-                  (fn [] (let [c (-> (filter #(= (keyword (:code %)) @tech) menus/technologies) first)]
+                  (fn [] (let [c (-> (filter #(= (keyword (:code %)) (keyword @tech)) menus/technologies) first)]
                            (:children c))))
         subtech-menu (make-reaction
                       (fn [] (map #(-> [(:code %) (:name %)]) @subtechs)))]

@@ -19,14 +19,14 @@
 
         types-menu        (map #(-> [(:code %) (:name %)]) menus/activities)
 
-        update_activities (fn []
-                            (let [c (-> (filter #(= (:code %) @type) menus/activities) first)]
+        update-activities (fn []
+                            (let [c (-> (filter #(= (keyword (:code %)) (keyword @type)) menus/activities) first)]
                               (reset! activities (:children c))
                                 ;; Reset activity only after first load
                               (when @reset-activity
                                 (reset! activity nil))
                               (reset! reset-activity true)))
-        _                 @(r/track update_activities)
+        _                 @(r/track update-activities)
         activities-menu   (make-reaction
                            (fn [] (map #(-> [(:code %) (:name %)]) @activities)))]
     [:<>
@@ -94,6 +94,6 @@
   ;; TODO: Drivers of ecosystem restoration observed on site (choose from the list)
 
    ; DEBUG data structure
-    ;;  [:hr]
-    ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
+     [:hr]
+     [:div [:pre (with-out-str (pp/pprint @data))]]
      ]))
