@@ -21,6 +21,7 @@ definitions:
             variables:
               FIREBASE_TOKEN: $FIREBASE_TOKEN 
               PROJECT_ID: $PROJECT_ID
+              DEBUG: 'true'
 pipelines:
   branches:
     review:
