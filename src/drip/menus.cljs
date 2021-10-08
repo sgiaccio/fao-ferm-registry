@@ -276,12 +276,13 @@
 ;; (defonce agencies [[:fao "FAO"]
 ;;                    [:ifad "IFAD"]
 ;;                    [:wfp "WFP"]])
-(defonce agencies [[:fao  "FAO"]
+(defonce agencies [[:eu   "European Union"]
+                   [:fao  "FAO"]
                    [:gef  "GEF"]
                    [:ifad "IFAD"]
+                   [:international-ngo "International NGO"]
                    [:wfp  "WFP"]
-                   [:zfc  "Zimbabwe Forestry Commission"]
-                   [:eu   "European Union"]])
+                   [:zfc  "Zimbabwe Forestry Commission"]])
 
 
 (defonce agency-roles [[1 "Funding" "The government or organisation which provides funds to the activity"]
@@ -672,3 +673,16 @@
                   (interleave (map (comp keyword str) (range 2015 2201))
                               (map str (range 2015 2201))))
        (map #(into [] %)) (into [])))
+
+
+(defonce achieving-targets
+  [[:1 "Reforest degraded lands"]
+   [:2 "Improve soil health"]
+   [:3 "Increase food and products production"]
+   [:4 "Improve biodiversity"]
+   [:5 "Contribute to climate change adaptation and mitigation"]
+   [:6 "Improve water availability and quality"]
+   [:7 "Improving livelihoods"]
+   [:8 "Improve access to energy"]
+   [:9 "Rights and culture"]
+   [:10 "Ensure sustainability of restoration practices"]])

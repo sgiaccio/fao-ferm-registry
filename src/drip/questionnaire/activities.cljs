@@ -94,6 +94,6 @@
   ;; TODO: Drivers of ecosystem restoration observed on site (choose from the list)
 
    ; DEBUG data structure
-     [:hr]
-     [:div [:pre (with-out-str (pp/pprint @data))]]
+    ;;  [:hr]
+    ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
      ]))

@@ -31,19 +31,26 @@
   ;;                      :data            (cursor data [:partially-achieved-reasons])}]
 
      [inputs/multi-form-group {:input-components {:reason #(inputs/select-input {:options menus/partially-achieved-reasons
-                                                                                   :data    %
-                                                                                   :edit    @edit})}
-                                 :new-data   {:reason nil}
-                                 :label      "If partially achieved, choose from list"
-                                 :add-labels {:reason "reason"}
-                                 :data       (cursor data [:partially-achieved-reasons])
-                                 :edit       @edit}]
+                                                                                 :data    %
+                                                                                 :edit    @edit})}
+                               :new-data   {:reason nil}
+                               :label      "If partially achieved, choose from list"
+                               :add-labels {:reason "reason"}
+                               :data       (cursor data [:partially-achieved-reasons])
+                               :edit       @edit}]
 
-     [inputs/number-form-group
-      {:label "Results achieved based on targets (women/men ratio)"
-       :data  (cursor data [:women-men-ratio])
-       :edit  @edit}]
+    ;;  [inputs/number-form-group
+    ;;   {:label "Results achieved based on targets (women/men ratio)"
+    ;;    :data  (cursor data [:women-men-ratio])
+    ;;    :edit  @edit}]
 
+     [inputs/form-group {:input-component #(inputs/select-input {:options menus/achieving-targets
+                                                                 :data    %
+                                                                 :edit    @edit})
+                         :label           "Results achieved based on targets"
+                         :data            (cursor data [:menus/achieving-targets])}]
+
+     
    ; DEBUG data structure
     ;;  [:hr]
     ;;  [:div [:pre (with-out-str (pp/pprint @data))]]

@@ -89,12 +89,13 @@
           ; Heroicon name: solid/lock-closed
           [:svg {:class "h-5 w-5 text-indigo-500 group-hover:text-indigo-400", :xmlns "http://www.w3.org/2000/svg", :viewBox "0 0 20 20", :fill "currentColor", :aria-hidden "true"}
            [:path {:fill-rule "evenodd", :d "M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z", :clip-rule "evenodd"}]]] "Login"]]
-       [:div
-        [:button {:class "group relative w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-400 hover:from-purple-400 via-pink-500 hover:via-pink-600 to-red-500 hover:to-red-500 focus:outline-none"
-                  :on-click (fn [evt]
-                              (.preventDefault evt)
-                              (auth/sign-up @email @password))}
-         [:span {:class "absolute left-0 inset-y-0 flex items-center pl-3"}] "Sign up"]]]]]))
+      ;;  [:div
+      ;;   [:button {:class "group relative w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-400 hover:from-purple-400 via-pink-500 hover:via-pink-600 to-red-500 hover:to-red-500 focus:outline-none"
+      ;;             :on-click (fn [evt]
+      ;;                         (.preventDefault evt)
+      ;;                         (auth/sign-up @email @password))}
+      ;;    [:span {:class "absolute left-0 inset-y-0 flex items-center pl-3"}] "Sign up"]]
+       ]]]))
 
 (defn navbar []
   [:div {:class "relative bg-white mb-10"}

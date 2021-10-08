@@ -17,12 +17,12 @@
                                 (= @userid (:uid @md))
                                 (nil? (:uid @md))))))]
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
-     [:h1 {:class "text-3xl"} "Project registration"
+     [:h1 {:class "text-3xl"} "Project registration"]
 
-      [inputs/text-form-group
-       {:label       "Title"
-        :data        (cursor data [:title])
-        :edit        @edit}]]
+     [inputs/text-form-group
+      {:label       "Title"
+       :data        (cursor data [:title])
+       :edit        @edit}]
 
      [inputs/textarea-form-group
       {:label       "Description"
@@ -111,7 +111,7 @@
       {:label       "Total Budget [USD]"
        :data        (cursor data [:budget])
        :edit        @edit}]
-     
+
 
     ;;  [inputs/date-form-group
     ;;   {:label       "Begin date"
@@ -151,5 +151,4 @@
    ; DEBUG data structure
     ;;  [:hr]
     ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
-     
-]))
+     ]))
