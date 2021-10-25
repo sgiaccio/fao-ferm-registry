@@ -4,7 +4,7 @@
    [reagent.core :as r :refer [cursor]]
    [reagent.ratom :refer [make-reaction]]
 
-   [drip.config :refer [userid md]]
+   [drip.config :refer [userid md is-admin]]
    [drip.inputs :as inputs]
    [drip.admin2 :as admin2]
    
@@ -85,6 +85,7 @@
                               (and
                                (some? @userid)
                                (or
+                                @is-admin
                                 (= @userid (:uid @md))
                                 (nil? (:uid @md))))))
         ;; countries-menu (map #(-> [(:code %) (:name %)]) admin2/admin2)

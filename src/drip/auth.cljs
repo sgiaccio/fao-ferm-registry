@@ -1,6 +1,6 @@
 (ns drip.auth
   (:require
-   [drip.config :refer [auth-loaded userid]]
+   [drip.config :refer [auth-loaded userid get-user is-admin]]
    ["firebase/auth" :refer (getAuth
                             createUserWithEmailAndPassword
                             signInWithEmailAndPassword
@@ -29,8 +29,13 @@
 (defn authenticate-user [email password]
   (-> (signInWithEmailAndPassword auth email password)
       (.then (fn [user-credential]
-               (reset! userid (-> user-credential .-user .-uid))))
-      (.catch #(js/alert "Error logging in"))))
+               (let [uid (-> user-credential .-user .-uid)]
+                 (reset! userid uid)
+                 (.then (get-user uid)
+                        (fn [fb-obj]
+                          (reset! is-admin ^js/Boolean (.-admin (-> fb-obj .data))))))))
+      (.catch #(js/alert "Error logging in")))
+  )
 
 (defn logout []
   (-> (signOut auth)
@@ -41,7 +46,11 @@
                     (fn [user]
                       (reset! auth-loaded true)
                       (if (some? user)
-                        (reset! userid (.-uid user))
+                        (let [uid (.-uid user)]
+                          (reset! userid uid)
+                          (.then (get-user uid)
+                                 (fn [fb-obj]
+                                   (reset! is-admin ^js/Boolean (.-admin (-> fb-obj .data))))))
                         (reset! userid nil))))
 
 

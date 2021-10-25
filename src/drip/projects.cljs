@@ -65,7 +65,7 @@
                   ;; [:div {:class "flex-shrink-0"}
                   ;;  [:img {:class "h-12 w-12 rounded-full", :src "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}]]
                    [:div {:class "flex-shrink-0"}
-                    (if (= @config/userid (-> p .data .-uid))
+                    (if (or @config/is-admin (= @config/userid (-> p .data .-uid)))
                      ;; Heroicon name: solid/pencil-alt
                       [:svg {:xmlns "http://www.w3.org/2000/svg", :class "h-5 w-5 text-gray-500", :viewBox "0 0 20 20", :fill "currentColor"}
                        [:path {:d "M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"}]
@@ -113,7 +113,6 @@
              project-id (get-in routing-data [:route-params :id])
              _ (.then (config/get-project project-id)
                       #(do
-                        ;;  (js/console.log %)
                          (reset! config/md (js->clj (.data %) :keywordize-keys true))
                          (reset! config/project-id (.-id %))))]
     [:div.container

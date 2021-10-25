@@ -5,7 +5,7 @@
    [reagent.core :refer [cursor]]
    [reagent.ratom :refer [make-reaction]]
 
-   [drip.config :refer [userid md]]
+   [drip.config :refer [userid md is-admin]]
    [drip.inputs :as inputs]
    [drip.menus :as menus]))
 
@@ -14,6 +14,7 @@
                               (and
                                (some? @userid)
                                (or
+                                @is-admin
                                 (= @userid (:uid @md))
                                 (nil? (:uid @md))))))]
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
@@ -48,10 +49,10 @@
                                                                  :data    %
                                                                  :edit    @edit})
                          :label           "Results achieved based on targets"
-                         :data            (cursor data [:menus/achieving-targets])}]
+                         :data            (cursor data [:menus/achieving-targets])}]]))
 
      
    ; DEBUG data structure
     ;;  [:hr]
     ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
-     ]))
+     

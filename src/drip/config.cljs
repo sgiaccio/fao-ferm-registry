@@ -13,7 +13,8 @@
 (defonce firebase-instance (atom nil))
 
 (def auth-loaded (r/atom false))
-(def userid (r/atom nil))
+(def userid      (r/atom nil))
+(def is-admin    (r/atom nil))
 
 (defn init [config]
   (when-not @firebase-instance
@@ -131,6 +132,9 @@
   (let [doc-ref  (doc db "registry" id)]
     (getDoc doc-ref)))
 
+(defn get-user [uid]
+  (let [doc-ref  (doc db "users" uid)]
+    (getDoc doc-ref)))
 
 ;; Sample higher level conf
 
