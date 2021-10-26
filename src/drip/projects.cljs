@@ -11,7 +11,7 @@
 (defn projects []
   (with-let [project-list (atom nil)
              _ (.then (config/get-all-projects) #(reset! project-list %))]
-    [:div.container
+    [:div
      [:h1 "Projects"]
      (when (some? @project-list)
        [:ul (map (fn [p]
@@ -46,6 +46,7 @@
 
 
     [:<>
+     [:h1 {:class "text-3xl mb-6"} "Projects"]
      [:div {:class "bg-white shadow overflow-hidden sm:rounded-md mb-6"}
       [:ul {:class "divide-y divide-gray-200"}
        (doall

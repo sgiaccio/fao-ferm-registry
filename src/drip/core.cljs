@@ -7,18 +7,17 @@
    [reitit.frontend.easy :as rfe]
 
    [drip.config :as config]
-   [drip.util :refer [href]]
+  ;;  [drip.util :refer [href]]
    [drip.projects :refer [projects project]]
    [drip.auth :as auth]))
 
 
-
-(defn home-page []
-  [:div.container
-   [:div.row
-    [:div.col-md-12
-     [:h1 "Welcome to the "
-      [:a {:href (href :projects)} "FERM Registry"]]]]])
+;; (defn home-page []
+;;   [:div.container
+;;    [:div.row
+;;     [:div.col-md-12
+;;      [:h1 "Welcome to the "
+;;       [:a {:href (href :projects)} "FERM Registry"]]]]])
 
 (defn projects-page []
   [projects])
@@ -44,7 +43,7 @@
     [:div {:class "min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"}
      [:div {:class "max-w-md w-full space-y-8"}
       [:div
-       [:img {:class "mx-auto h-12 w-auto", :src "https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg", :alt "Workflow"}]
+       [:img {:class "mx-auto h-12 w-auto", :src "/img/UNDecade_LOGO_MASTER_EN.svg", :alt "UN Decade"}]
        [:h2 {:class "mt-6 text-center text-3xl font-extrabold text-gray-900"} "Sign in to your account"]
       ;;  [:p {:class "mt-2 text-center text-sm text-gray-600"}
       ;;   [:a {:href "#", :class "font-medium text-indigo-600 hover:text-indigo-500"} "start your 14-day free trial"]]
@@ -100,11 +99,11 @@
 (defn navbar []
   [:div {:class "relative bg-white mb-10"}
    [:div {:class "max-w-7xl mx-auto px-4 sm:px-6"}
-    [:div {:class "flex justify-between items-center border-b-2 border-gray-100 py-6 md:justify-start md:space-x-10"}
+    [:div {:class "flex justify-between items-center border-b-2 border-gray-100 py-2 md:justify-start md:space-x-10"}
      [:div {:class "flex justify-start lg:w-0 lg:flex-1"}
       [:a {:href "#"}
        [:span {:class "sr-only"} "FERM Registry"]
-       [:img {:class "h-8 w-auto sm:h-10", :src "https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg", :alt ""}]]]
+       [:img {:class "h-8 w-auto sm:h-20", :src "/img/UNDecade_LOGO_MASTER_EN.svg", :alt "UN Decade"}]]]
      [:div {:class "-mr-2 -my-2 md:hidden"}
       [:button {:type "button", :class "bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500", :aria-expanded "false"}
        [:span {:class "sr-only"} "Open menu"]
@@ -141,7 +140,7 @@
 (def router
   (rf/router
    [["/" {:name :index
-          :view #'home-page}]
+          :view #'projects-page}]
     ["projects"
      ["" {:name :projects
           :view #'projects-page}]
