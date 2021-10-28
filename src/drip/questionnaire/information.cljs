@@ -73,6 +73,27 @@
                                :edit             @edit}]
 
 
+
+    ;;  Fields to be deleted after pre-presentation meeting
+     [inputs/number-form-group
+      {:label "Land cover change [ha]"
+       :data  (cursor data [:land-cover-change])
+       :edit  @edit}]
+     [inputs/number-form-group
+      {:label "Net primary productivity [tDM/ha/yr]"
+       :data  (cursor data [:net-primary-productivity])
+       :edit  @edit}]
+     [inputs/number-form-group
+      {:label "Soil organic carbon [tC/ha, to 30 cm]"
+       :data  (cursor data [:soil-organic-carbon])
+       :edit  @edit}]
+     [inputs/form-group {:input-component #(inputs/select-input {:options menus/ecosystem-degradation-degree
+                                                                 :data    %
+                                                                 :edit    @edit})
+                         :label           "Degree of ecosystem degradation observed on site"
+                         :data            (cursor data [:ecosystem-degradation-degree])}]
+
+
      ;; ORIGINAL FIELDS
      [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
                                                                  :data    %
