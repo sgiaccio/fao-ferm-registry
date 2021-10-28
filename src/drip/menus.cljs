@@ -686,3 +686,21 @@
    [:8 "Improve access to energy"]
    [:9 "Rights and culture"]
    [:10 "Ensure sustainability of restoration practices"]])
+
+(defonce indicators
+  [[:1 "Area of forest [square meters, % of total area]"]
+   [:6 "GHGs emissions/removals [CO2/GHGs eq kg ]"]
+   [:13 "Area of degraded land [square meters, % of total area]"]
+   [:14 "Rate of species loss [Species richness gain/loss in the last N years?]"]
+   [:15 "Established Ramsar sites [Number of Ramsar sites/administrative boundary]"]
+   [:16 "Quantity of organic fertilizer [kg/m2]"]
+   [:17 "Soil Organic carbon [Depends on IPCC Tier selected]"]
+   [:19 "Agricultural productivity  [ ratio of annual output to the number of working days in one year]"]
+   [:21 "Area covered with protected areas [square meters, % of total area]"]
+   [:22 "Concentration of HFE and HFC  [ppm]"]
+   [:24 "production practices enforcing agrobiodiversity [practices identified in the AGBI framework]"]
+   [:28 "Quantity of managed solid waste [kg]"]
+   [:33 "Adoption of early warning systems [yes/no]"]
+   [:36 "Species-genetic diversity/species richness [Species richness]"]
+   [:41 "Area of land/water restored [square meters, % of total area]"]
+   [:44 "Rate of migrant smuggling [% of total]"]])

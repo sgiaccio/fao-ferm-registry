@@ -10,7 +10,7 @@
    [drip.menus :as menus]))
 
 
-(def xml (r/atom ""))
+;; (def xml (r/atom ""))
 
 (defn iso-19115 [data]
   (with-let [edit (make-reaction (fn []
@@ -20,7 +20,8 @@
                                      @is-admin
                                      (= @userid (:uid @md))
                                      (nil? (:uid @md))))))]
-    [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
+    ;; [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
+    [:<>
      [inputs/text-form-group
       {:label       "Title"
        :placeholder "Enter title"
@@ -37,11 +38,11 @@
 
      ;; Dates - TODO avoid passing :edit twice
      [inputs/multi-form-group {:input-components {:date #(inputs/date-and-type-input {:data % :edit @edit})}
-                                 :new-data         {:date {:type nil :date nil}}
-                                 :label            "Dates"
-                                 :add-labels       {:date "date"}
-                                 :data             (cursor data [:citation :dates])
-                                 :edit             @edit}]
+                               :new-data         {:date {:type nil :date nil}}
+                               :label            "Dates"
+                               :add-labels       {:date "date"}
+                               :data             (cursor data [:citation :dates])
+                               :edit             @edit}]
 
 
 
@@ -70,26 +71,26 @@
 
      ;;  Points of contact
      [inputs/multi-form-group {:input-components {:poc #(inputs/point-of-contact {:data %
-                                                                                    :edit @edit})}
-                                 :new-data         {:poc {:role            nil
-                                                          :organization    nil
-                                                          :individual-name nil
-                                                          :address         nil
-                                                          :email           nil}}
-                                 :label            "Points of contact"
-                                 :add-labels       {:poc "point of contact"}
-                                 :data             (cursor data [:points-of-contact])
-                                 :edit             @edit}]
+                                                                                  :edit @edit})}
+                               :new-data         {:poc {:role            nil
+                                                        :organization    nil
+                                                        :individual-name nil
+                                                        :address         nil
+                                                        :email           nil}}
+                               :label            "Points of contact"
+                               :add-labels       {:poc "point of contact"}
+                               :data             (cursor data [:points-of-contact])
+                               :edit             @edit}]
 
       ;; Topic categories
      [inputs/multi-form-group {:input-components {:topic-category #(inputs/select-input {:options menus/topic-categories
-                                                                                           :data    %
-                                                                                           :edit    @edit})}
-                                 :new-data         {:topic-category nil}
-                                 :label            "Topic categories"
-                                 :add-labels       {:topic-category "Topic category"}
-                                 :data             (cursor data [:topic-categories])
-                                 :edit             @edit}]
+                                                                                         :data    %
+                                                                                         :edit    @edit})}
+                               :new-data         {:topic-category nil}
+                               :label            "Topic categories"
+                               :add-labels       {:topic-category "Topic category"}
+                               :data             (cursor data [:topic-categories])
+                               :edit             @edit}]
 
     ;;  ;;  Topic categories
     ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/keywords
@@ -100,13 +101,22 @@
 
      ;;  Keywords
      [inputs/multi-form-group {:input-components {:keyword-group #(inputs/keywords {:data %
-                                                                                      :edit @edit})}
-                                 :new-data         {:keyword-group {:type :place :keywords []}}
-                                 :label            "Keywords"
-                                 :add-labels       {:keyword-group "keyword type"}
-                                 :data             (cursor data [:keywords])
-                                 :edit             @edit}]
+                                                                                    :edit @edit})}
+                               :new-data         {:keyword-group {:type :place :keywords []}}
+                               :label            "Keywords"
+                               :add-labels       {:keyword-group "keyword type"}
+                               :data             (cursor data [:keywords])
+                               :edit             @edit}]
 
+     [inputs/date-form-group
+      {:label       "Begin date"
+       :data        (cursor data [:begin-date])
+       :edit        @edit}]
+
+     [inputs/date-form-group
+      {:label       "End date"
+       :data        (cursor data [:end-date])
+       :edit        @edit}]
   ;;  Demo single-type field group
   ;;  [inputs/multi-form-group-2 {:input-components {:text    #(inputs/text-input {:data %})}
   ;;                              :new-data         {:text "new text"}

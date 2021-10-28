@@ -33,9 +33,8 @@
                  (reset! userid uid)
                  (.then (get-user uid)
                         (fn [fb-obj]
-                          (reset! is-admin ^js/Boolean (.-admin (-> fb-obj .data))))))))
-      (.catch #(js/alert "Error logging in")))
-  )
+                          (reset! is-admin (some #(= % "admin") (-> fb-obj .data js->clj (get "roles")))))))))
+      (.catch #(js/alert "Error logging in"))))
 
 (defn logout []
   (-> (signOut auth)
@@ -50,7 +49,7 @@
                           (reset! userid uid)
                           (.then (get-user uid)
                                  (fn [fb-obj]
-                                   (reset! is-admin ^js/Boolean (.-admin (-> fb-obj .data))))))
+                                   (reset! is-admin (some #(= % "admin") (-> fb-obj .data js->clj (get "roles")))))))
                         (reset! userid nil))))
 
 

@@ -55,6 +55,7 @@
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
      [:h1 {:class "text-3xl"} "Definition of activities"]
 
+     [:p "There are various forms of activities to support ecosystem restoration. They range from technologies to approaches, at local to watershed levels. Different parameters are identified to categorize activities and better identify related indicators and datasets for each area of interest."]
     ;;  [inputs/multi-form-group {:input-components {:activity #(inputs/select-input
     ;;                                                             {:options menus/activities
     ;;                                                              :data    %

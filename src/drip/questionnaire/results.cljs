@@ -20,6 +20,8 @@
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
      [:h1 {:class "text-3xl"} "Results"]
 
+     [:p "Results are calculated for selected indicators in each area of interests. The indicator calculation is based on available global layers and cloud computing environment such as SEPAL. The standard operating procedure to assess ecosystem restoration indicators is under preparation."]
+     
      [inputs/form-group {:input-component #(inputs/select-input {:options menus/achieved
                                                                  :data    %
                                                                  :edit    @edit})

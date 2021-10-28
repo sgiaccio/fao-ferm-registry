@@ -48,6 +48,7 @@
       ;;  [:p {:class "mt-2 text-center text-sm text-gray-600"}
       ;;   [:a {:href "#", :class "font-medium text-indigo-600 hover:text-indigo-500"} "start your 14-day free trial"]]
        ]
+      [:div "Welcome to the FERM registry! The Ecosystem Restoration Monitoring Framework Registry aims to provide a register of ecosystem restoration monitoring projects, in the context of the United Nations Framework for Ecosystem Restoration, the Drylands Restoration Initiative Platform (DRIP), as well as various other platforms and initiatives."]
       [:div {:class "mt-8 space-y-6"}
       ;;  [:input {:type "hidden", :name "remember", :value "true"}]
        [:div {:class "rounded-md shadow-sm -space-y-px"}
@@ -78,7 +79,7 @@
         ;;  [:input {:id "remember_me", :name "remember_me", :type "checkbox", :class "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"}]
         ;;  [:label {:for "remember_me", :class "ml-2 block text-sm text-gray-900"} "Remember me"]]
         [:div {:class "text-sm"}
-         [:a {:href "#", :class "font-medium text-indigo-600 hover:text-indigo-500"} "Forgot your password?"]]]
+         [:span {:on-click #(js/alert "Too bad!") :class "cursor-pointer font-medium text-indigo-600 hover:text-indigo-500"} "Forgot your password?"]]]
        [:div
         [:button {:class "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   :on-click (fn [evt]
@@ -113,6 +114,7 @@
      [:div {:class "hidden md:flex items-center justify-end md:flex-1 lg:w-0"}
       ;; [:a {:href "#", :class "whitespace-nowrap text-base font-medium text-gray-500 hover:text-gray-900"} "Sign in"]
       ;; [:a {:href "#", :class "ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"} "Sign up"]
+      (when @config/is-admin [:a {:href "#", :on-click #(auth/logout) :class "ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-indigo-300 rounded-md shadow-sm text-base font-medium text-black hover:bg-indigo-200"} "Admin"])
       [:a {:href "#", :on-click #(auth/logout) :class "ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"} "Logout"]]]]])
 
 ;; -------------------------

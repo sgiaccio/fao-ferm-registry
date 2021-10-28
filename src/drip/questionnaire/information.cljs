@@ -43,10 +43,41 @@
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
      [:h1 {:class "text-3xl"} "Additional information"]
 
+     [:p "Additional information helps us to understand ecosystem restoration dynamics. This includes information about drivers, presence of natural disasters and other relevant information."]
+
+     ;; FROM CHARACTERIZAION
+     [inputs/multi-form-group {:input-components {:natural-disaster #(inputs/select-input
+                                                                      {:options menus/natural-disasters
+                                                                       :data    %
+                                                                       :edit    @edit})}
+                               :new-data         {:natural-disaster nil}
+                               :label            "Natural disasters in the last 15 years"
+                               :add-labels       {:natural-disaster "natural disaster"}
+                               :data             (cursor data [:sdg-contributions])
+                               :edit             @edit}]
+
+     [inputs/form-group {:input-component #(inputs/select-input {:options menus/ecosystem-degradation-types
+                                                                 :data    %
+                                                                 :edit    @edit})
+                         :label           "Type of ecosystem degradation observed on site"
+                         :data            (cursor data [:ecosystem-degradation-types])}]
+
+     [inputs/multi-form-group {:input-components {:driver #(inputs/select-input
+                                                            {:options menus/land-degradation-drivers
+                                                             :data    %
+                                                             :edit    @edit})}
+                               :new-data         {:driver nil}
+                               :label            "Drivers of land degradation observed on site (choose from the list)"
+                               :add-labels       {:driver "driver"}
+                               :data             (cursor data [:land-degradation-drivers])
+                               :edit             @edit}]
+
+
+     ;; ORIGINAL FIELDS
      [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
                                                                  :data    %
                                                                  :edit    @edit})
-                         :label           "Is there a legal and  policy framework supporting restoration/forestation in the country?"
+                         :label           "Presence of legal and policy framework supporting restoration/forestation in the country"
                          :data            (cursor data [:reporting-process])}]
 
    ;; TODO: one for each type of cover
@@ -69,12 +100,12 @@
                          :data            (cursor data [:land-management])}]
 
      [inputs/multi-form-group {:input-components {:technology #(technology {:data %
-                                                                              :edit @edit})}
-                                 :new-data   {:technology {:tech :A :subtech nil}}
-                                 :label      "Locally adapted technologies, tools, and techniques"
-                                 :add-labels {:technology "technology"}
-                                 :data       (cursor data [:technologies])
-                                 :edit       @edit}]
+                                                                            :edit @edit})}
+                               :new-data   {:technology {:tech :A :subtech nil}}
+                               :label      "Locally adapted technologies, tools, and techniques"
+                               :add-labels {:technology "technology"}
+                               :data       (cursor data [:technologies])
+                               :edit       @edit}]
     ;;  [technology data]
     ;;  [inputs/form-group {:input-component (fn [data]
     ;;                                         (inputs/select-input {:options tech-menu

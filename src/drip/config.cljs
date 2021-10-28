@@ -29,6 +29,7 @@
 
 (defonce db (getFirestore @firebase-instance))
 (defonce registry-collection (collection db "registry"))
+(defonce agencies-collection (collection db "agencies"))
 
 
 (defonce languages {:en {:label "English" :label-short "en"}})
@@ -58,58 +59,9 @@
   ;;                               :keywords [{:keyword nil}]}}]}
   ;;  :results
   ;;  {:partially-achieved-reasons []}}
-   )
+  )
 
 (defonce md (r/atom default-values))
-
-;; (-> @(r/track md)
-;;       js/console.log)
-
-;; (defn person-keys []
-;;   (-> @(r/track md)
-;;       keys
-;;       sort))
-
-
-;; (make-reaction (fn []
-;;                  (and
-;;                   (some? @userid)
-;;                   (or
-;;                    (= @userid (:uid @md))
-;;                    (nil? (:uid @md))))))
-
-;; (def caz (r/cursor md [:aoi]))
-;; (make-reaction (fn []
-;;                  (js/console.log @userid)))
-
-
-;; (js/console.log @md)
-
-
-
-;; (defonce tmp-name (atom []))
-;; (def aoi (r/cursor md [:aoi]))
-;; (def baseline (r/cursor md [:baseline]))
-;; (defn aggregate-state []
-;;   (let [baselines (into [] (map identity @aoi))]
-;;     (reset! baseline baselines)
-;;     (swap! baseline
-;;            (fn []
-;;              ))))
-;; (defonce tmp-name-logger (r/track! aggregate-state))
-
-
-
-
-
-;; (defn ^:export history [& args]
-;;   (let [d @md
-;;         k (if (seq args)
-;;             (map keyword args)
-;;             (keys d))]
-;;     @tmp-name))
-
-
 
 (defn save []
   (let [;;doc (if-some [id @project-id]
@@ -132,8 +84,13 @@
   (let [doc-ref  (doc db "registry" id)]
     (getDoc doc-ref)))
 
+(defn get-agencies []
+  (.then (getDocs (query agencies-collection))
+         (fn [query-snapshot]
+           ^js/Array (.-docs query-snapshot))))
+
 (defn get-user [uid]
-  (let [doc-ref  (doc db "users" uid)]
+  (let [doc-ref (doc db "users" uid)]
     (getDoc doc-ref)))
 
 ;; Sample higher level conf

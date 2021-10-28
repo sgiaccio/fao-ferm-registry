@@ -7,6 +7,8 @@
    [drip.config :refer [userid md is-admin]]
    [drip.inputs :as inputs]
    [drip.admin2 :as admin2]
+
+   [drip.questionnaire.iso-19115 :refer [iso-19115]]
    
   ;;  ["react-leaflet" :refer (MapContainer, TileLayer, Marker, Popup)]
    ;;import * as ol from 'openlayers';
@@ -79,7 +81,8 @@
                               :data  (cursor data [:site-name])
                               :edit  edit}]]))
 
-(defn aoi [{:keys [data]}]
+(defn aoi [{:keys [aoiData mdData]}]
+  ;; (js/console.log (clj->js aoiData))
   ;; TODO - clean-up; generalize tree menus
   (let [edit (make-reaction (fn []
                               (and
@@ -104,18 +107,20 @@
         ]
 
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
-     [:h1 {:class "text-3xl"} "Area of interest"]
+     [:h1 {:class "text-3xl"} "Area of Interest (AOI)"]
 
-     [:h3 "Choose a level 2 administrative area"]
+     [:p "Identification of geographic areas of ecosystem restoration is key for geospatial applications. One project implements ecosystem restoration in one or more geographic areas. Projects can identify one or more project areas. Identification of activities, indicators, characterization and results will be provided for each area of interest. Geographic areas can be identified based on (1) administrative areas, (2) polygons/vector information provided and/or (3) drawn directly on the platform."]
 
-     
+     [:h3 "Please choose one or more level 2 administrative areas"]
+
+
     ;;  [inputs/multi-form-group-2 {:input-components {:date #(inputs/date-and-type-input {:data % :edit @edit})}
     ;;                              :new-data         {:date {:type nil :date nil}}
     ;;                              :label            "Dates"
     ;;                              :add-labels       {:date "date"}
     ;;                              :data             (cursor data [:citation :dates])
     ;;                              :edit             @edit}]
-     
+
   ;;  [inputs/multi-form-group-2 {:input-components {:keyword #(inputs/keywords {:data %})
   ;;                                                 :text    #(inputs/text-input {:data %})}
   ;;                              :new-data         {:keyword {:type :author :keywords ["new kw"]}
@@ -135,9 +140,11 @@
                                :new-data   {:admin-area {}}
                                :label      "Admin areas"
                                :add-labels {:admin-area "admin2 area"}
-                               :data       data
+                               :data       aoiData
                                :edit       @edit}]
 
+     [:h1 {:class "text-3xl pt-10"} "ISO 19115 metadata"]
+     [iso-19115 mdData]
     ;;  (js/console.log data)
     ;;  [admin2 {:data data :edit (r/atom true)}]
 
@@ -165,7 +172,7 @@
 
 
 
-     
+
 ;; <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
 ;;   <TileLayer
 ;;     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -184,12 +191,12 @@
     ;;     {:attribution "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors"
     ;;      :url "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}]]
 
-     
+
 ;; var tileSource = new ol.source.Stamen({
 ;;   layer: 'toner'
 ;; });
 
-     
+
 
 
 

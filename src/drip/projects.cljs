@@ -5,6 +5,8 @@
 
             [drip.config :as config]
             [drip.util :refer [href]]
+            [drip.utils :as utils]
+            [drip.admin2 :as admin2]
             [drip.questionnaire.md-root :refer [md-root]]))
 
 
@@ -12,10 +14,9 @@
   (with-let [project-list (atom nil)
              _ (.then (config/get-all-projects) #(reset! project-list %))]
     [:div
-     [:h1 "Projects"]
+     [:p "Restoration projects, programs and initiatives at all spatial scales, from individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for sustaining life on Earth. The FERM register provides access to the database of ecosystem restoration projects, with the aim of monitoring, using various sources of information and priority indicators, progress towards the United Nations Decade on Ecosystem Restoration"]
      (when (some? @project-list)
        [:ul (map (fn [p]
-                  ;;  (js/console.log p)
                    [:li {:key "TODO"} [:a {:href (href :project {:id (.-id p)})}
                                        (or (get-in (js->clj (.data p)) ["project" "title"]) "No title")]])
                  @project-list)]
@@ -30,7 +31,6 @@
         [:tbody
          (doall
           (map (fn [p]
-                ;; (js/console.log p)
                  [:tr {:on-click #(push-state :project {:id (.-id p)})
                        :style {:cursor "pointer"}}
                   [:th {:scope "row"} (or (get-in (js->clj (.data p)) ["project" "title"]) "No title")]
@@ -47,18 +47,13 @@
 
     [:<>
      [:h1 {:class "text-3xl mb-6"} "Projects"]
+     [:div {:class "mb-6"} "Restoration projects, programs and initiatives at all spatial scales, from individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for sustaining life on Earth. The FERM registry provides access to the database of ecosystem restoration projects, with the aim of monitoring, using various sources of information and priority indicators, progress towards the United Nations Decade on Ecosystem Restoration."]
+     [:button {:class "inline-flex items-center mb-6 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :on-click #(push-state :project {:id "new"})}
+      "Add new project"]
      [:div {:class "bg-white shadow overflow-hidden sm:rounded-md mb-6"}
       [:ul {:class "divide-y divide-gray-200"}
        (doall
         (map (fn [p]
-              ;; [:tr {:on-click #(push-state :project {:id (.-id p)})
-              ;;       :style {:cursor "pointer"}}
-              ;;  [:th {:scope "row"} (or (get-in (js->clj (.data p)) ["project" "title"]) "No title")]
-              ;;     ;; [:td "Admin 1"]
-              ;;     ;; [:td "Admin 2"]
-              ;;     ;; [:td "Admin 3"]
-              ;;  [:td (if (= @config/userid (-> p .data .-uid)) "EDIT" "VIEW")]]
-
                [:li
                 [:a {:href "javascript:void(0)", :class "block hover:bg-gray-50" :on-click #(push-state :project {:id (.-id p)})}
                  [:div {:class "flex items-center px-4 py-4 sm:px-6"}
@@ -86,12 +81,15 @@
                      ;;   [:path {:d "M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"}]]
                       [:span {:class "truncate"}
                       ;; "ricardo.cooper@example.com"
-                       "Budget: "
-                       (or (get-in (js->clj (.data p)) ["project" "budget"]) "n/a")
-                       (when (some? (get-in (js->clj (.data p)) ["project" "budget"]))
-                         " USD")]]]
+                      ;;  "Budget: "
+                      ;;  (or (get-in (js->clj (.data p)) ["project" "budget"]) "n/a")
+                      ;;  (when (some? (get-in (js->clj (.data p)) ["project" "budget"]))
+                      ;;    " USD")
+                       (:adm0 (utils/get-admin2-names (get-in (js->clj (.data p)) ["aoi" 0 "admin-area" "admin-0"]) nil nil))]]]
                     [:div {:class "hidden md:block"}
                      [:div
+                      [:p {:class "text-mono text-xs text-gray-900"}
+                       (get-in (js->clj (.data p)) ["project" "uuid"])]
                       ;; [:p {:class "text-sm text-gray-900"}
                       ;;  "Created on "
                       ;;  [:time {:datetime "2020-01-07"}
@@ -105,16 +103,17 @@
                   ;; Heroicon name: solid/chevron-right
                    [:svg {:class "h-5 w-5 text-gray-400", :xmlns "http://www.w3.org/2000/svg", :viewBox "0 0 20 20", :fill "currentColor", :aria-hidden "true"}
                     [:path {:fill-rule "evenodd", :d "M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z", :clip-rule "evenodd"}]]]]]])
-             @project-list))]]
-     [:button {:class "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" :on-click #(push-state :project {:id "new"})}
-      "Add new project"]]))
+             @project-list))]]]))
 
 (defn project []
   (with-let [routing-data (session/get :route)
              project-id (get-in routing-data [:route-params :id])
              _ (.then (config/get-project project-id)
-                      #(do
-                         (reset! config/md (js->clj (.data %) :keywordize-keys true))
+                      #(let [clj-data (js->clj (.data %) :keywordize-keys true)]
+                         (if (= "new" (.-id %))
+                           (reset! config/md {:project {:uuid (str (random-uuid))}})
+                           (reset! config/md clj-data))
+                        ;;  (reset! config/md (js->clj (.data %) :keywordize-keys true))
                          (reset! config/project-id (.-id %))))]
     [:div.container
      [:div.row

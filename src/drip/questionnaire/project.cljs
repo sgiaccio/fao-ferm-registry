@@ -1,11 +1,11 @@
 (ns drip.questionnaire.project
   (:require
-   [cljs.pprint :as pp]
+  ;;  [cljs.pprint :as pp]
 
-   [reagent.core :as r :refer [cursor]]
+   [reagent.core :as r :refer [cursor with-let]]
    [reagent.ratom :refer [make-reaction]]
 
-   [drip.config :refer [userid md is-admin]]
+   [drip.config :refer [userid md is-admin get-agencies]]
    [drip.inputs :as inputs]
    [drip.menus :as menus]))
 
@@ -17,18 +17,24 @@
                                 @is-admin
                                 (= @userid (:uid @md))
                                 (nil? (:uid @md))))))]
-    [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
-     [:h1 {:class "text-3xl"} "Project registration"]
+    (with-let [;;  agencies-list (atom nil)
+              ;;  _ (.then (get-agencies) #(reset! agencies-list %))
+               ]
+      ;; (js/console.log agencies-list)
+      [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
+       [:h1 {:class "text-3xl"} "Project registration"]
+       [:p "Various projects contribute to ecosystem restoration. Project registration helps better understanding where are those projects and ecosystem restoration efforts in general. This contributes to various objectives, from local to national, regional and global planning and monitoring."]
+       [:div {:class "my-6 font-bold"} "uuid: "
+        [:span {:class "font-mono"} (:uuid @data)]]
+       [inputs/text-form-group
+        {:label       "Title"
+         :data        (cursor data [:title])
+         :edit        @edit}]
 
-     [inputs/text-form-group
-      {:label       "Title"
-       :data        (cursor data [:title])
-       :edit        @edit}]
-
-     [inputs/textarea-form-group
-      {:label       "Description"
-       :data        (cursor data [:description])
-       :edit        @edit}]
+       [inputs/textarea-form-group
+        {:label       "Description"
+         :data        (cursor data [:description])
+         :edit        @edit}]
 
     ;;  [inputs/number-form-group
     ;;   {:label       "Version"
@@ -40,34 +46,34 @@
     ;;    :data        (cursor data [:project-id])
     ;;    :edit        @edit}]
 
-     [inputs/date-form-group
-      {:label       "Project begin date"
-       :data        (cursor data [:project-begin-date])
-       :edit        @edit}]
+       [inputs/date-form-group
+        {:label       "Starting date"
+         :data        (cursor data [:starting-date])
+         :edit        @edit}]
 
-     [inputs/date-form-group
-      {:label       "Project end date"
-       :data        (cursor data [:project-end-date])
-       :edit        @edit}]
+       [inputs/date-form-group
+        {:label       "Ending date"
+         :data        (cursor data [:ending-date])
+         :edit        @edit}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/agencies
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Reporting agency"
-                         :data            (cursor data [:reporting-agencies])}]
+       [inputs/form-group {:input-component #(inputs/select-input {:options menus/agencies
+                                                                   :data    %
+                                                                   :edit    @edit})
+                           :label           "Reporting agency"
+                           :data            (cursor data [:reporting-agencies])}]
 
-     [inputs/multi-form-group {:input-components {:executing-agency #(inputs/agency-input {:data % :edit @edit})}
-                               :new-data         {:executing-agency {:agency nil :role nil}}
-                               :label            "Executing agencies"
-                               :add-labels       {:executing-agency "agency"}
-                               :data             (cursor data [:executing-agencies])
-                               :edit             @edit}]
+       [inputs/multi-form-group {:input-components {:executing-agency #(inputs/agency-input {:data % :edit @edit})}
+                                 :new-data         {:executing-agency {:agency nil :role nil}}
+                                 :label            "Executing agencies"
+                                 :add-labels       {:executing-agency "agency"}
+                                 :data             (cursor data [:executing-agencies])
+                                 :edit             @edit}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/reporting-processes
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Reporting process"
-                         :data            (cursor data [:reporting-process])}]
+       [inputs/form-group {:input-component #(inputs/select-input {:options menus/reporting-processes
+                                                                   :data    %
+                                                                   :edit    @edit})
+                           :label           "Reporting process"
+                           :data            (cursor data [:reporting-process])}]
 
 
     ;;  [inputs/multi-form-group-2 {:input-components {:reason #(inputs/select-input {:options menus/partially-achieved-reasons
@@ -91,27 +97,17 @@
     ;;                      :label           "Executing agency role"
     ;;                      :data            (cursor data [:agency-role])}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/project-statuses
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Project status"
-                         :data            (cursor data [:project-status])}]
+       [inputs/form-group {:input-component #(inputs/select-input {:options menus/project-statuses
+                                                                   :data    %
+                                                                   :edit    @edit})
+                           :label           "Project status"
+                           :data            (cursor data [:project-status])}]
 
 
-     [inputs/date-form-group
-      {:label       "Activities begin date"
-       :data        (cursor data [:activities-begin-date])
-       :edit        @edit}]
-
-     [inputs/date-form-group
-      {:label       "Activities end date"
-       :data        (cursor data [:activities-end-date])
-       :edit        @edit}]
-
-     [inputs/number-form-group
-      {:label       "Total Budget [USD]"
-       :data        (cursor data [:budget])
-       :edit        @edit}]
+       [inputs/number-form-group
+        {:label       "Total Budget [USD]"
+         :data        (cursor data [:budget])
+         :edit        @edit}]
 
 
     ;;  [inputs/date-form-group
@@ -125,31 +121,31 @@
     ;;    :edit        @edit}]
 
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/funding-sources
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Source of funding"
-                         :data            (cursor data [:funding-source])}]
+       [inputs/form-group {:input-component #(inputs/select-input {:options menus/funding-sources
+                                                                   :data    %
+                                                                   :edit    @edit})
+                           :label           "Source of funding"
+                           :data            (cursor data [:funding-source])}]
 
-     [inputs/textarea-form-group {:label "Donors"
-                                  :data  (cursor data [:donors])
-                                  :edit  @edit}]
+       [inputs/textarea-form-group {:label "Donors"
+                                    :data  (cursor data [:donors])
+                                    :edit  @edit}]
 
-     [inputs/text-form-group {:label "Document link"
-                              :data  (cursor data [:docuent-link])
-                              :edit  @edit}]
+       [inputs/text-form-group {:label "Document link"
+                                :data  (cursor data [:docuent-link])
+                                :edit  @edit}]
 
-     [inputs/text-form-group {:label "Document title"
-                              :data  (cursor data [:docuent-title])
-                              :edit  @edit}]
+       [inputs/text-form-group {:label "Document title"
+                                :data  (cursor data [:docuent-title])
+                                :edit  @edit}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/document-formats
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Document format"
-                         :data            (cursor data [:document-format])}]
+       [inputs/form-group {:input-component #(inputs/select-input {:options menus/document-formats
+                                                                   :data    %
+                                                                   :edit    @edit})
+                           :label           "Document format"
+                           :data            (cursor data [:document-format])}]
 
    ; DEBUG data structure
-    ;;  [:hr]
-    ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
-     ]))
+      ;;  [:hr]
+      ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
+       ])))

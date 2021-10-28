@@ -37,7 +37,9 @@
                                 (= @userid (:uid @md))
                                 (nil? (:uid @md))))))]
        [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
-        [:h1 {:class "text-3xl"} "Default characteristics"]
+        [:h1 {:class "text-3xl"} "Characteristics"]
+        [:p "The project area is characterized by a number of default parameters. They are automatically generated for each aoi based on global data sources. More information about the data source will be soon made available. "]
+        
         (doall (for [i (range (count @data_))
                      :let [data (r/cursor data_ [i])
                            admin-names (utils/get-admin2-names
@@ -46,11 +48,11 @@
                                         (:admin-2 (:admin-area @data)))]]
                  [:<>
                   [:br] ;; TODO
-                  (:adm0 admin-names) ", "
-                  (:adm1 admin-names) ", "
-                  (:adm2 admin-names)
+                  (or (:adm0 admin-names) "n/a") ", "
+                  (or (:adm1 admin-names) "n/a") ", "
+                  (or (:adm2 admin-names) "n/a")
                   [:br] ;; TODO
-                  
+
                   (when (and @edit (:admin-2 (:admin-area @data)))
                     [:button {:on-click #(fetch-indicators data)
                               :class "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"}
