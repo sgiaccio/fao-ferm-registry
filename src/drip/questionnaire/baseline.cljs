@@ -19,7 +19,7 @@
   ;; (js/console.log '------------------------------')
   ;; (js/console.log (clj->js data))
   (let [elevation (cursor data [:elevation])]
-    (GET (str "http://api.data.apps.fao.org/api/v1/bigquery?query=SELECT%20mean,stdDev%20FROM%20%60fao-maps.fao_zonal_stats.fct_CGIAR_SRTM90_V4_FAO_GAUL_SIMPLIFIED_500m_2015_level2%60%20WHERE%20ADM2_CODE%3D" (-> @data :admin-area :admin-2 name) "%20LIMIT%2010")
+    (GET (str "https://api.data.apps.fao.org/api/v1/bigquery?query=SELECT%20mean,stdDev%20FROM%20%60fao-maps.fao_zonal_stats.fct_CGIAR_SRTM90_V4_FAO_GAUL_SIMPLIFIED_500m_2015_level2%60%20WHERE%20ADM2_CODE%3D" (-> @data :admin-area :admin-2 name) "%20LIMIT%2010")
       {:format :json
        :handler (fn [r] (let [measure (parse-query-result r)]
                           (js/console.log (clj->js measure))
