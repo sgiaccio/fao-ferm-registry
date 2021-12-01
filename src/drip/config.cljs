@@ -150,3 +150,5 @@
 ;;                                  [:underDevelopment  "Under development"]
 ;;                                  [:valid             "Valid"]
 ;;                                  [:withdrawn         "Withdrawn"]]}]})
+
+(defonce modal-content (r/atom nil))

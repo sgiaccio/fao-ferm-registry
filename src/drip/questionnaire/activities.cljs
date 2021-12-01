@@ -67,8 +67,9 @@
     ;;                              :edit             @edit}]
 
 
-     [activities-menu-group {:data (cursor data [:activity])
-                             :edit @edit}]
+     [:div {:class "divide-y divide-pink-200"}
+      [activities-menu-group {:data (cursor data [:activity])
+                              :edit @edit}]
     ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/activities
     ;;                                                                       :data    %
     ;;                                                                       :edit    @edit})
@@ -81,17 +82,27 @@
     ;;                      :label           "Date of implementation of the activity"
     ;;                      :data            (cursor data [:implementation-date])}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/years
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Date of implementation of the activity"
-                         :data            (cursor data [:implementation-year])}]
- 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Priority/critical areas for LDN implementation"
-                         :data            (cursor data [:priority-areas])}]
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/years
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Date of implementation of the activity"
+                          :data            (cursor data [:implementation-year])}]
+
+      [inputs/date-form-group
+       {:label       "Starting date"
+        :data        (cursor data [:begin-date])
+        :edit        @edit}]
+
+      [inputs/date-form-group
+       {:label       "Ending date"
+        :data        (cursor data [:end-date])
+        :edit        @edit}]
+
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Priority/critical areas for LDN implementation"
+                          :data            (cursor data [:priority-areas])}]]
 
   ;; TODO: Drivers of ecosystem restoration observed on site (choose from the list)
 

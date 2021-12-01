@@ -10,6 +10,10 @@
 (defn gen-dom-id []
   ^js/string (.getNextUniqueId (.getInstance IdGenerator)))
 
+(defn show-info [info]
+  (reset! config/modal-content {:title "Values" :message info}))
+
+
 ;; -------------------------
 ;; Simple inputs - no labels, basic layout
 ;;
@@ -17,7 +21,10 @@
 (defn- empty-to-nil [value]
   (if (= "" value) nil value))
 
-
+(defn input-wrap [inner description]
+  [:<>
+   [inner]
+   (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
 (defn text-input
   [{:keys [placeholder description data edit]}]
   [:<>
@@ -27,13 +34,12 @@
               :value       (or @data "")
               :placeholder placeholder
               :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
-    ;;  [:input.form-control.form-control-sm {:type       "text"
-    ;;                                        :value       (or @data "")
-    ;;                                        :placeholder placeholder
-    ;;                                        :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
      (or @data ""))
-   (when description [:p {:class "mt-2 text-sm text-gray-500"}
-                      description])])
+   (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
+
+(defn textarea-input-test []
+  ;TODO use input wrap;
+  )
 
 (defn textarea-input
   [{:keys [placeholder description data edit]}]
@@ -44,42 +50,27 @@
                  :placeholder placeholder
                  :on-change   #(reset! data (-> % .-target .-value empty-to-nil))
                  :class "max-w-lg shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border border-gray-300 rounded-md"}]
-    ;;  [:textarea.form-control.form-control-sm {:type       "text"
-    ;;                                           :value       (or @data "")
-    ;;                                           :placeholder placeholder
-    ;;                                           :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
      (or @data ""))
-   (when description [:p {:class "mt-2 text-sm text-gray-500"}
-                      description])])
+   (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
 
 (defn number-input
   [{:keys [placeholder description data edit]}]
   [:<>
    (if edit
-    ;;  [:input.form-control.form-control-sm {:type       "number"
-    ;;                                        :value       (or @data "")
-    ;;                                        :placeholder placeholder
-    ;;                                        :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
      [:input {:type        "number"
               :class       "max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
               :value       (or @data "")
               :placeholder placeholder
               :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
      (or @data ""))
-   (when description [:p {:class "mt-2 text-sm text-gray-500"}
-                      description])])
+   (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
 
 (defn get-select-label [key options]
   (second (first (filter (fn [[k _]] (= k (keyword key))) options))))
 
-(defn select-input [{:keys [options placeholder description data edit] :or {placeholder "Please select"}}]
+(defn select-input [{:keys [options placeholder description info data edit] :or {placeholder "Please select"}}]
   [:<>
    (if edit
-    ;;  [:select.form-control.form-control-sm {:value (or @data "")
-    ;;                                         :on-change #(reset! data (-> % .-target .-value empty-to-nil keyword))}
-    ;;   [:option {:value ""} placeholder]
-    ;;   (for [[value label] options]
-    ;;     [:option {:key value :value (or value label)} label])]
      [:select {:class "max-w-lg block focus:ring-indigo-500 focus:border-indigo-500 w-full shadow-sm sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
                :value (or @data "")
                :on-change #(reset! data (-> % .-target .-value empty-to-nil keyword))}
@@ -88,25 +79,13 @@
         [:option {:key value :value (or value label)} (or label value)])]
 
      (get-select-label @data options))
-   (when description [:p {:class "mt-2 text-sm text-gray-500"}
-                      description])])
+   (when description [:p {:class "mt-2 text-sm text-gray-500"} description])
+   (when info [:div {:class "text-yellow-500"
+                     :on-click #(show-info info)} icons/info])])
 
 (defn select-multiple-input [{:keys [options description data edit]}]
   [:<>
    (if edit
-    ;;  [:select.form-control.form-control-sm {:value @data
-    ;;                                         :multiple true
-    ;;                                         :style {:height "150px"}
-    ;;                                         :on-change (fn [evt]
-    ;;                                                      (reset! data (->> evt
-    ;;                                                                        .-target
-    ;;                                                                        .-options
-    ;;                                                                        (filter #(.-selected %))
-    ;;                                                                        (map #(.-value %))
-    ;;                                                                        (into []))))}
-    ;;   (for [[value label] options]
-    ;;     [:option {:key value :value (or value label)} (or label value)])]
-     
      [:select {:class "max-w-lg block focus:ring-indigo-500 focus:border-indigo-500 w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                :value @data
                :multiple true
@@ -122,26 +101,18 @@
         [:option {:key value :value (or value label)} (or label value)])]
      
      (for [[d] @data] (get-select-label d options)))
-   (when description [:p {:class "mt-2 text-sm text-gray-500"}
-                      description])])
+   (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
 
 (defn date-input [{:keys [description data edit]}]
   [:<>
    (if edit
-    ;; [:<>
-    ;;  [:input.form-control.form-control-sm {:type      "date"
-    ;;                                        :value     (or @data "")
-    ;;                                        :style     {:height "38px"} ; by default date field is taller than the other inputs
-    ;;                                        :on-change #(reset! data (reset! data (-> % .-target .-value empty-to-nil)))}]
-    ;;  (when description [:small.form-text.text-muted description])]
      [:input {:type      "date"
               :class     "max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md"
               :value     (or @data "")
               :style     {:height "38px"} ; by default date field is taller than the other inputs
               :on-change #(reset! data (reset! data (-> % .-target .-value empty-to-nil)))}]
      (or @data ""))
-   (when description [:p {:class "mt-2 text-sm text-gray-500"}
-                      description])])
+   (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
 
 ; TODO move to another file
 (defn- vec-remove [pos coll]
@@ -162,14 +133,19 @@
     :add-labels       {:text \"Text \" :keyword \"Keyword\"}
     :data             [[:keyword {:type :discipline :keywords [\"kw1\" \"kw2\"]}]
                        [:text \"text \"]]}"
-  [{:keys [input-components description data new-data add-labels edit]}]
-  (with-let [button-id (gen-dom-id)]
-    [:div {:class "border p-3 rounded rounded-md"}
+  [{:keys [input-components description data new-data add-labels edit numbering] :or {numbering false}}]
+  (with-let [button-id (gen-dom-id)
+             _ (js/console.log (clj->js @data))]
+    [:div {:class "border p-3 rounded rounded-md divide-y"}
      (doall (for [n (range (count @data))]
               ; TODO using n as a key for now - will find a proper one
               [:div {:key n}
-               [:div {:class "flex flex-row mb-5"}
-                
+               (when numbering
+                ;;  [:div {:class "mt-5"}]
+                 [:span {:href "#", :class "mt-5 flex items-center text-sm font-medium", :aria-current "n"}
+                  [:span {:class "flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-indigo-600 rounded-full"}
+                   [:span {:class "text-indigo-600"} (+ 1 n)]]])
+               [:div {:class "flex flex-row my-5"}
                 (let [input-component-def  (nth @data n)
                       input-component-type (-> input-component-def first first) ; get key - there's only one
                       input-component-data (cursor data [n input-component-type])
@@ -182,8 +158,7 @@
                                       (when (js/confirm "Are you sure you want to delete this item?")
                                         (swap! data #(vec-remove n %))))}
                     icons/trash]])]]))
-     (when description [:p {:class "mt-1 text-sm text-gray-500"}
-                        description])
+     (when description [:p {:class "mt-1 text-sm text-gray-500"} description])
 
      ; "Add" button
      (when edit
@@ -209,60 +184,46 @@
          [:button {:type "button" 
                    :on-click #(reset! data (into [] (conj @data new-data)))
                    :class "inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"}
-          "Add " (-> add-labels first val)]
+          "Add " (-> add-labels first val)]))]))
 
         ;;  [:div.btn.btn-primary.btn-sm {:type "button"
         ;;                              ; Using into and reset! - see comment above
         ;;                                :on-click #(reset! data (into [] (conj @data new-data)))}
         ;;   "Add " (-> add-labels first val)]
-         ))]))
+         
 
 ;; -------------------------
 ;; Form groups - wrap other inputs (also form groups themselves) with layout, labels and description
 ;;
 
 (defn- form-group-wrapper [{:keys [label description]} & children]
-  [:fieldset.form-group.pt-3
-   [:div {:class "sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"}
-    [:legend {:class "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"} label]
-    (into [:div {:class "mt-1 sm:mt-0 sm:col-span-3"}] ;; TODO - add class?
+  [:fieldset {:class "pt-3"}
+   [:div {:class "sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start sm:border-t_ sm:border-gray-200_ sm:py-5"}
+    [:legend {:class "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2_"} label]
+    (into [:div {:class "mt-1 sm:mt-0 sm:col-span-3"}]
           (concat children
-                  [(when description [:p {:class "mt-2 text-sm text-gray-500"}
-                                      description])]))]])
+                  [(when description [:p {:class "mt-2 text-sm text-gray-500"} description])]))]])
 
 (defn form-group
   "Creates a form group from a simple input - i.e. adds label and layout"
   [{:keys [input-component label description data]}]
-
-  ;; [form-group-wrapper {:label label :description description}
-  ;;  [:div.container
-  ;;   [:div.row
-  ;;    [:div.col.pl-0 (input-component data)]]]]
-  
   [:fieldset
-   [:div {:class "sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"}
-    [:legend {:class "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"} label]
-   ;;  [:label {:class "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"}
-   ;;   label]
+   [:div {:class "sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start sm:border-t_ sm:border-gray-200_ sm:py-5 sm:content-center"}
+    [:legend {:class "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2_"} label]
     [:div {:class "mt-1 sm:mt-0 sm:col-span-3"}
      (input-component data)
      (when description [:p {:class "mt-2 text-sm text-gray-500"} description])]]])
 
-(comment [:div {:class "sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5"}
-          [:label {:for "first_name", :class "block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"}
-           "First name"]
-          [:div {:class "mt-1 sm:mt-0 sm:col-span-3"}
-           [:input {:type "text", :name "first_name", :id "first_name", :autocomplete "given-name", :class "max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md"}]]])
-
 (defn multi-form-group
   "Creates a multiple form group from a simple input - adds label and description"
-  [{:keys [input-components label description new-data add-labels data edit]}]
+  [{:keys [input-components label description new-data add-labels data edit numbering]}]
   [form-group-wrapper {:label label :description description}
    [multi-input {:input-components input-components
-                   :new-data         new-data
-                   :add-labels       add-labels
-                   :data             data
-                   :edit             edit}]])
+                 :new-data         new-data
+                 :add-labels       add-labels
+                 :data             data
+                 :edit             edit
+                 :numbering        numbering}]])
 
 ; UTILITY FUNCTIONS
 (defn text-form-group [args]
@@ -329,8 +290,8 @@
                                                            :rows             3
                                                            :aria-describedby (str input-id "_l_" lang-id)
                                                            :placeholder      placeholder
-                                                           :on-change        #(swap! data assoc lang-id (-> % .-target .-value))}]
-                  ]
+                                                           :on-change        #(swap! data assoc lang-id (-> % .-target .-value))}]]
+                  
                  (str (:label-short labels) " - " (get @data lang-id)))))
       [:small.form-text.text-muted description]]]))
 
@@ -350,7 +311,11 @@
     {:options     menus/date-types
      :description "Type"
      :data        (cursor data [:type])
-     :edit        edit}]
+     :edit        edit
+     :info        [:<>
+                   [:p "Creation: Date identifies when the resource was brought into existence"]
+                   [:p "Publication: Date identifies when the resource was issued"]
+                   [:p "Revision: Date identifies when the resource was examined or re-examined and improved or amended"]]}]
    [date-input {:description "Date"
                 :data        (cursor data [:date])
                 :edit        edit}]])
@@ -359,8 +324,20 @@
   [horizontal-layout
    [select-input {:options     menus/poc-roles
                   :description "Role"
+                  :info        [:<>
+                                [:p "Author: Party who authored the resource"]
+                                [:p "Custodian: Person or organization that accepts accountability and responsibility for the data and ensures appropriate care and maintenance of the resource"]
+                                [:p "Distributor: Person or organization that distributes the resource"]
+                                [:p "Originator: Person or organization that created or produced the resource"]
+                                [:p "Owner: Person or organization that owns the resource"]
+                                [:p "Point of contact: Person or organization that can be contacted for acquiring knowledge about or acquisition of the resource"]
+                                [:p "Principle investigator: Key person or organization responsible for gathering information and conducting research"]
+                                [:p "Processor: Person or organization that has processed the data in a manner such that the resource has been modified"]
+                                [:p "Publisher: Person or organization that published the resource"]
+                                [:p "Resource provider: Person or organization that provides the resource"]
+                                [:p "User: Person or organization that uses the resource"]]
                   :data        (cursor data [:role])
-                  :edit edit}]
+                  :edit        edit}]
    [text-input {:description "Organization"
                 :data        (cursor data [:organization])
                 :edit edit}]
@@ -378,6 +355,13 @@
   [horizontal-layout
    [select-input {:options     menus/keyword-types
                   :description "Keyword type"
+                  :info        [:<>
+                                [:p "Discipline: Keyword identifies a branch of instruction or specialized learning"]
+                                [:p "Place: Keyword identifies a location"]
+                                [:p "Stratum: Keyword identifies the layer(s) of any deposited substance"]
+                                [:p "Temporal: Keyword identifies a time  period related to the dataset"]
+                                [:p "Theme: Keyword identifies a particular subject or topic"]]
+
                   :data        (cursor data [:type])
                   :edit        edit}]
    [multi-input {:input-components {:keyword #(text-input {:placeholder "Keyword" 
@@ -396,14 +380,6 @@
    [number-input {:description "Std dev"
                   :data (cursor data [:error])
                   :edit edit}]])
-
-
-
-
-
-
-
-
 
 (defn agency-input [{:keys [data edit]}]
   [horizontal-layout

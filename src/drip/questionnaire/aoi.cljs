@@ -141,9 +141,10 @@
                                :label      "Admin areas"
                                :add-labels {:admin-area "admin2 area"}
                                :data       aoiData
-                               :edit       @edit}]
+                               :edit       @edit
+                               :numbering  true}]
 
-     [:h1 {:class "text-3xl pt-10"} "ISO 19115 metadata"]
+    ;;  [:h1 {:class "text-3xl pt-10"} "ISO 19115 metadata"]
      [iso-19115 mdData]
     ;;  (js/console.log data)
     ;;  [admin2 {:data data :edit (r/atom true)}]

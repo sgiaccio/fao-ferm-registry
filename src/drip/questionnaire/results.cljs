@@ -22,36 +22,37 @@
 
      [:p "Results are calculated for selected indicators in each area of interests. The indicator calculation is based on available global layers and cloud computing environment such as SEPAL. The standard operating procedure to assess ecosystem restoration indicators is under preparation."]
      
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/achieved
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Were the restoration objectives achieved?"
-                         :data            (cursor data [:achieved])}]
+     [:div {:class "divide-y divide-pink-200"}
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/achieved
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Were the restoration objectives achieved?"
+                          :data            (cursor data [:achieved])}]
 
   ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/partially-achieved-reasons
   ;;                                                                       :data    %})
   ;;                      :label           "If partially achieved, choose from list"
   ;;                      :data            (cursor data [:partially-achieved-reasons])}]
 
-     [inputs/multi-form-group {:input-components {:reason #(inputs/select-input {:options menus/partially-achieved-reasons
-                                                                                 :data    %
-                                                                                 :edit    @edit})}
-                               :new-data   {:reason nil}
-                               :label      "If partially achieved, choose from list"
-                               :add-labels {:reason "reason"}
-                               :data       (cursor data [:partially-achieved-reasons])
-                               :edit       @edit}]
+      [inputs/multi-form-group {:input-components {:reason #(inputs/select-input {:options menus/partially-achieved-reasons
+                                                                                  :data    %
+                                                                                  :edit    @edit})}
+                                :new-data   {:reason nil}
+                                :label      "If partially achieved, choose from list"
+                                :add-labels {:reason "reason"}
+                                :data       (cursor data [:partially-achieved-reasons])
+                                :edit       @edit}]
 
     ;;  [inputs/number-form-group
     ;;   {:label "Results achieved based on targets (women/men ratio)"
     ;;    :data  (cursor data [:women-men-ratio])
     ;;    :edit  @edit}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/achieving-targets
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Results achieved based on targets"
-                         :data            (cursor data [:menus/achieving-targets])}]]))
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/achieving-targets
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Results achieved based on targets"
+                          :data            (cursor data [:menus/achieving-targets])}]]]))
 
      
    ; DEBUG data structure

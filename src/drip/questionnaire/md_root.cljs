@@ -15,7 +15,9 @@
    [drip.questionnaire.indicators :refer [indicators]]
   ;;  [drip.questionnaire.characterisation :refer [characterisation]]
    [drip.questionnaire.information :refer [information]]
-   [drip.questionnaire.results :refer [results]]))
+   [drip.questionnaire.results :refer [results]]
+   
+   [drip.modal :as modal]))
 
 
 ;; Temporary solution to reduce the loading time
@@ -89,4 +91,5 @@
        [:button {:type "button"
                  :class "my-6 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                  :on-click #(reset! active-tab :project)}
-        "Start inserting data"])]))
+        "Start inserting data"])
+     (when (some? @config/modal-content) [modal/modal])]))

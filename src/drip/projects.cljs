@@ -6,7 +6,7 @@
             [drip.config :as config]
             [drip.util :refer [href]]
             [drip.utils :as utils]
-            [drip.admin2 :as admin2]
+            
             [drip.questionnaire.md-root :refer [md-root]]))
 
 
@@ -115,6 +115,7 @@
                            (reset! config/md clj-data))
                         ;;  (reset! config/md (js->clj (.data %) :keywordize-keys true))
                          (reset! config/project-id (.-id %))))]
-    [:div.container
-     [:div.row
-      [:div.col-md-12 [md-root]]]]))
+    [:<>
+     [:div.container
+      [:div.row
+       [:div.col-md-12 [md-root]]]]]))

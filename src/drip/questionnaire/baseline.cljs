@@ -58,83 +58,84 @@
                               :class "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"}
                      "Fetch data from FERM"])
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Elevation"
-                                      :data            (cursor data [:elevation])}]
+                  [:div {:class "divide-y divide-pink-200"}
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Elevation"
+                                       :data            (cursor data [:elevation])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Temperature"
-                                      :data            (cursor data [:temperature])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Temperature"
+                                       :data            (cursor data [:temperature])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Rainfall"
-                                      :data            (cursor data [:rainfall])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Rainfall"
+                                       :data            (cursor data [:rainfall])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Evapotranspiration"
-                                      :data            (cursor data [:evapotranspiration])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Evapotranspiration"
+                                       :data            (cursor data [:evapotranspiration])}]
 
-                  [inputs/text-form-group
-                   {:label       "Climate domain"
-                    :data        (cursor data [:climate_domain])}]
+                   [inputs/text-form-group
+                    {:label       "Climate domain"
+                     :data        (cursor data [:climate_domain])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Tree cover"
-                                      :data            (cursor data [:tree_cover])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Tree cover"
+                                       :data            (cursor data [:tree_cover])}]
 
-                  [inputs/text-form-group
-                   {:label       "Land cover"
-                    :data        (cursor data [:land_cover])}]
+                   [inputs/text-form-group
+                    {:label       "Land cover"
+                     :data        (cursor data [:land_cover])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Soil organic carbon"
-                                      :data            (cursor data [:soil_organic_carbon])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Soil organic carbon"
+                                       :data            (cursor data [:soil_organic_carbon])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Productivity"
-                                      :data            (cursor data [:productivity])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Productivity"
+                                       :data            (cursor data [:productivity])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Population"
-                                      :data            (cursor data [:population])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Population"
+                                       :data            (cursor data [:population])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Accessibility to healthcare"
-                                      :data            (cursor data [:accessibility_to_healthcare])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Accessibility to healthcare"
+                                       :data            (cursor data [:accessibility_to_healthcare])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Water occurrence"
-                                      :data            (cursor data [:water_occurrence])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Water occurrence"
+                                       :data            (cursor data [:water_occurrence])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Sea temperature"
-                                      :data            (cursor data [:sea_temperature])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Sea temperature"
+                                       :data            (cursor data [:sea_temperature])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Chlorophyll concentration"
-                                      :data            (cursor data [:chlorophyll_concentration])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Chlorophyll concentration"
+                                       :data            (cursor data [:chlorophyll_concentration])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Sea salinity"
-                                      :data            (cursor data [:sea_salinity])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Sea salinity"
+                                       :data            (cursor data [:sea_salinity])}]
 
-                  [inputs/form-group {:input-component #(inputs/measurement {:data %
-                                                                             :edit @edit})
-                                      :label           "Bathimetry"
-                                      :data            (cursor data [:bathimetry])}]
+                   [inputs/form-group {:input-component #(inputs/measurement {:data %
+                                                                              :edit @edit})
+                                       :label           "Bathimetry"
+                                       :data            (cursor data [:bathimetry])}]]
                   [:hr {:class "my-10"}]]))
 
         ; DEBUG data structure

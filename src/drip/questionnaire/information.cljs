@@ -46,87 +46,88 @@
      [:p "Additional information helps us to understand ecosystem restoration dynamics. This includes information about drivers, presence of natural disasters and other relevant information."]
 
      ;; FROM CHARACTERIZAION
-     [inputs/multi-form-group {:input-components {:natural-disaster #(inputs/select-input
-                                                                      {:options menus/natural-disasters
-                                                                       :data    %
-                                                                       :edit    @edit})}
-                               :new-data         {:natural-disaster nil}
-                               :label            "Natural disasters in the last 15 years"
-                               :add-labels       {:natural-disaster "natural disaster"}
-                               :data             (cursor data [:sdg-contributions])
-                               :edit             @edit}]
+     [:div {:class "divide-y divide-pink-200"}
+      [inputs/multi-form-group {:input-components {:natural-disaster #(inputs/select-input
+                                                                       {:options menus/natural-disasters
+                                                                        :data    %
+                                                                        :edit    @edit})}
+                                :new-data         {:natural-disaster nil}
+                                :label            "Natural disasters in the last 15 years"
+                                :add-labels       {:natural-disaster "natural disaster"}
+                                :data             (cursor data [:sdg-contributions])
+                                :edit             @edit}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/ecosystem-degradation-types
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Type of ecosystem degradation observed on site"
-                         :data            (cursor data [:ecosystem-degradation-types])}]
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/ecosystem-degradation-types
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Type of ecosystem degradation observed on site"
+                          :data            (cursor data [:ecosystem-degradation-types])}]
 
-     [inputs/multi-form-group {:input-components {:driver #(inputs/select-input
-                                                            {:options menus/land-degradation-drivers
-                                                             :data    %
-                                                             :edit    @edit})}
-                               :new-data         {:driver nil}
-                               :label            "Drivers of land degradation observed on site (choose from the list)"
-                               :add-labels       {:driver "driver"}
-                               :data             (cursor data [:land-degradation-drivers])
-                               :edit             @edit}]
+      [inputs/multi-form-group {:input-components {:driver #(inputs/select-input
+                                                             {:options menus/land-degradation-drivers
+                                                              :data    %
+                                                              :edit    @edit})}
+                                :new-data         {:driver nil}
+                                :label            "Drivers of land degradation observed on site (choose from the list)"
+                                :add-labels       {:driver "driver"}
+                                :data             (cursor data [:land-degradation-drivers])
+                                :edit             @edit}]
 
 
 
     ;;  Fields to be deleted after pre-presentation meeting
-     [inputs/number-form-group
-      {:label "Land cover change [ha]"
-       :data  (cursor data [:land-cover-change])
-       :edit  @edit}]
-     [inputs/number-form-group
-      {:label "Net primary productivity [tDM/ha/yr]"
-       :data  (cursor data [:net-primary-productivity])
-       :edit  @edit}]
-     [inputs/number-form-group
-      {:label "Soil organic carbon [tC/ha, to 30 cm]"
-       :data  (cursor data [:soil-organic-carbon])
-       :edit  @edit}]
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/ecosystem-degradation-degree
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Degree of ecosystem degradation observed on site"
-                         :data            (cursor data [:ecosystem-degradation-degree])}]
+      [inputs/number-form-group
+       {:label "Land cover change [ha]"
+        :data  (cursor data [:land-cover-change])
+        :edit  @edit}]
+      [inputs/number-form-group
+       {:label "Net primary productivity [tDM/ha/yr]"
+        :data  (cursor data [:net-primary-productivity])
+        :edit  @edit}]
+      [inputs/number-form-group
+       {:label "Soil organic carbon [tC/ha, to 30 cm]"
+        :data  (cursor data [:soil-organic-carbon])
+        :edit  @edit}]
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/ecosystem-degradation-degree
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Degree of ecosystem degradation observed on site"
+                          :data            (cursor data [:ecosystem-degradation-degree])}]
 
 
      ;; ORIGINAL FIELDS
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Presence of legal and policy framework supporting restoration/forestation in the country"
-                         :data            (cursor data [:reporting-process])}]
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Presence of legal and policy framework supporting restoration/forestation in the country"
+                          :data            (cursor data [:reporting-process])}]
 
    ;; TODO: one for each type of cover
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-use
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Land use in project area (for each type of cover)"
-                         :data            (cursor data [:land-use])}]
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-use
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Land use in project area (for each type of cover)"
+                          :data            (cursor data [:land-use])}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-tenure
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Land tenure in project area"
-                         :data            (cursor data [:land-tenure])}]
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-tenure
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Land tenure in project area"
+                          :data            (cursor data [:land-tenure])}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Land management plan in place"
-                         :data            (cursor data [:land-management])}]
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Land management plan in place"
+                          :data            (cursor data [:land-management])}]
 
-     [inputs/multi-form-group {:input-components {:technology #(technology {:data %
-                                                                            :edit @edit})}
-                               :new-data   {:technology {:tech :A :subtech nil}}
-                               :label      "Locally adapted technologies, tools, and techniques"
-                               :add-labels {:technology "technology"}
-                               :data       (cursor data [:technologies])
-                               :edit       @edit}]
+      [inputs/multi-form-group {:input-components {:technology #(technology {:data %
+                                                                             :edit @edit})}
+                                :new-data   {:technology {:tech :A :subtech nil}}
+                                :label      "Locally adapted technologies, tools, and techniques"
+                                :add-labels {:technology "technology"}
+                                :data       (cursor data [:technologies])
+                                :edit       @edit}]
     ;;  [technology data]
     ;;  [inputs/form-group {:input-component (fn [data]
     ;;                                         (inputs/select-input {:options tech-menu
@@ -141,26 +142,26 @@
     ;;                      :data            (cursor data [:subtech])}]
 
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/stakeholder-engagement
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Stakeholder engagement in the project"
-                         :data            (cursor data [:stakeholder-engagement])}]
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/stakeholder-engagement
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Stakeholder engagement in the project"
+                          :data            (cursor data [:stakeholder-engagement])}]
 
-     [inputs/form-group {:input-component #(inputs/select-input {:options menus/gender-mainstreaming-activities
-                                                                 :data    %
-                                                                 :edit    @edit})
-                         :label           "Specific gender mainstreaming activities "
-                         :data            (cursor data [:gender-mainstreaming-activities])}]
+      [inputs/form-group {:input-component #(inputs/select-input {:options menus/gender-mainstreaming-activities
+                                                                  :data    %
+                                                                  :edit    @edit})
+                          :label           "Specific gender mainstreaming activities "
+                          :data            (cursor data [:gender-mainstreaming-activities])}]
 
-     [inputs/number-form-group
-      {:label "Total restoration cost per activity [USD/ha]"
-       :data  (cursor data [:restoration-cost])
-       :edit  @edit}]
+      [inputs/number-form-group
+       {:label "Total restoration cost per activity [USD/ha]"
+        :data  (cursor data [:restoration-cost])
+        :edit  @edit}]
 
-     [inputs/textarea-form-group {:label "Other additional information"
-                                  :data  (cursor data [:other-inf])
-                                  :edit  @edit}]
+      [inputs/textarea-form-group {:label "Other additional information"
+                                   :data  (cursor data [:other-inf])
+                                   :edit  @edit}]]
 
    ; DEBUG data structure
     ;;  [:hr]
