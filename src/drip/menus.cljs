@@ -410,7 +410,9 @@
    [:14 "Climatological"]
    [:15 "Extreme temperature"]
    [:16 "Drought"]
-   [:17 "Wildfire"]])
+   [:17 "Wildfire"]
+   [:18 "Cyclone"]
+   [:19 "Hurricane"]])
 
 (defonce ecosystem-degradation-types
   [[:1 "soil erosion by water "]

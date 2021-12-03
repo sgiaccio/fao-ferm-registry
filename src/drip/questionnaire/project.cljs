@@ -130,9 +130,9 @@
                                      :data  (cursor data [:donors])
                                      :edit  @edit}]
 
-        [inputs/text-form-group {:label "Document link"
-                                 :data  (cursor data [:docuent-link])
-                                 :edit  @edit}]
+        [inputs/document-form-group {:label "Document link"
+                                     :data  (cursor data [:docuent-link])
+                                     :edit  @edit}]
 
         ;; [inputs/text-form-group {:label "Document title"
         ;;                          :data  (cursor data [:docuent-title])

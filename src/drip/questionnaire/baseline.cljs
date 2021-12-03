@@ -1,6 +1,5 @@
 (ns drip.questionnaire.baseline
   (:require
-   [cljs.pprint :as pp]
    [ajax.core :refer [GET]]
 
    [clojure.string :as str]

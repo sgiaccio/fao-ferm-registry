@@ -71,8 +71,9 @@
         :project          [project (cursor md [:project])]
         :aoi              [:> aoi {:aoi-data (cursor md [:aoi])
                                    :md-data (cursor md [:metadata])}]
-        :baseline         [baseline (cursor md [:aoi])]
-        :activities       [activities (cursor md [:activities])]
+        :baseline         [baseline (cursor md [:aoi])] ; One baseline per AOI
+        ;; :activities       [activities (cursor md [:activities])]
+        :activities       [activities (cursor md [:aoi])] ; One activities per AOI
         :indicators       [indicators (cursor md [:indicators])]
         ;; :characterisation [characterisation (cursor md [:characterisation])]
         :information      [information (cursor md [:information])]

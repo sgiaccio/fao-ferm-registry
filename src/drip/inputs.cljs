@@ -302,6 +302,13 @@
             [:div {:key i} (nth children i)]))])
 
 
+(defn document-form-group [args]
+  [:<>
+   [form-group (assoc args :input-component #(text-input {:placeholder "Please enter text"
+                                                         :data %
+                                                         :edit (:edit args)}))]])
+
+
 ;; -------------------------
 ;; ISO 19139 Metadata specific inputs
 

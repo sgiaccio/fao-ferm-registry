@@ -7,7 +7,8 @@
 
    [drip.config :refer [userid md is-admin]]
    [drip.inputs :as inputs]
-   [drip.menus :as menus]))
+   [drip.menus :as menus]
+   [drip.utils :as utils]))
 
 (defn activities-menu-group [{:keys [data edit]}]
   (let [type              (cursor data [:type])
@@ -44,7 +45,31 @@
                          :label           "Activity"
                          :data            (cursor data [:activity])}]]))
 
-(defn activities [data]
+(defn technology [{:keys [data edit]}]
+  (let [tech-menu (map #(-> [(:code %) (:name %)]) menus/technologies)
+        tech (cursor data [:tech])
+        subtechs (make-reaction
+                  (fn [] (let [c (-> (filter #(= (keyword (:code %)) (keyword @tech)) menus/technologies) first)]
+                           (:children c))))
+        subtech-menu (make-reaction
+                      (fn [] (map #(-> [(:code %) (:name %)]) @subtechs)))]
+    [:<>
+     [inputs/form-group {:input-component (fn [data]
+                                            (inputs/select-input {:options tech-menu
+                                                                  :data    data
+                                                                  :edit    edit}))
+                         :label           "Technology"
+                         :data            (cursor data [:tech])}]
+
+     [inputs/form-group {:input-component (fn [data]
+                                            (inputs/select-input {:options @subtech-menu
+                                                                  :data    data
+                                                                  :edit    edit}))
+                         :label           "Sub-technology"
+                         :data            (cursor data [:subtech])}]]))
+
+
+(defn activities [data_]
   (let [edit (make-reaction (fn []
                               (and
                                (some? @userid)
@@ -68,8 +93,24 @@
 
 
      [:div {:class "divide-y divide-pink-200"}
-      [activities-menu-group {:data (cursor data [:activity])
-                              :edit @edit}]
+      
+      (doall (for [i (range (count @data_))
+                   :let [data (r/cursor data_ [i])
+                         admin-names (utils/get-admin2-names
+                                      (:admin-0 (:admin-area @data))
+                                      (:admin-1 (:admin-area @data))
+                                      (:admin-2 (:admin-area @data)))]]
+
+               [:<>
+
+                ;; [:br] ;; TODO
+                [:div
+                 (or (:adm0 admin-names) "n/a") ", "
+                 (or (:adm1 admin-names) "n/a") ", "
+                 (or (:adm2 admin-names) "n/a")]
+                ;; [:br] ;; TODO
+                [activities-menu-group {:data (cursor data [:activity])
+                                        :edit @edit}]
     ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/activities
     ;;                                                                       :data    %
     ;;                                                                       :edit    @edit})
@@ -82,31 +123,61 @@
     ;;                      :label           "Date of implementation of the activity"
     ;;                      :data            (cursor data [:implementation-date])}]
 
-      [inputs/form-group {:input-component #(inputs/select-input {:options menus/years
-                                                                  :data    %
-                                                                  :edit    @edit})
-                          :label           "Date of implementation of the activity"
-                          :data            (cursor data [:implementation-year])}]
+                ;; [inputs/form-group {:input-component #(inputs/select-input {:options menus/years
+                ;;                                                             :data    %
+                ;;                                                             :edit    @edit})
+                ;;                     :label           "Date of implementation of the activity"
+                ;;                     :data            (cursor data [:implementation-year])}]
 
-      [inputs/date-form-group
-       {:label       "Starting date"
-        :data        (cursor data [:begin-date])
-        :edit        @edit}]
+                [inputs/date-form-group
+                 {:label       "Starting date"
+                  :data        (cursor data [:begin-date])
+                  :edit        @edit}]
 
-      [inputs/date-form-group
-       {:label       "Ending date"
-        :data        (cursor data [:end-date])
-        :edit        @edit}]
+                [inputs/date-form-group
+                 {:label       "Ending date"
+                  :data        (cursor data [:end-date])
+                  :edit        @edit}]
 
-      [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
-                                                                  :data    %
-                                                                  :edit    @edit})
-                          :label           "Priority/critical areas for LDN implementation"
-                          :data            (cursor data [:priority-areas])}]]
+                ;; [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
+                ;;                                                             :data    %
+                ;;                                                             :edit    @edit})
+                ;;                     :label           "Priority/critical areas for LDN implementation"
+                ;;                     :data            (cursor data [:priority-areas])}]
+
+                [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-use
+                                                                            :data    %
+                                                                            :edit    @edit})
+                                    :label           "Land use in project area (for each type of cover)"
+                                    :data            (cursor data [:land-use])}]
+                [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-tenure
+                                                                            :data    %
+                                                                            :edit    @edit})
+                                    :label           "Land tenure in project area"
+                                    :data            (cursor data [:land-tenure])}]
+
+                [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
+                                                                            :data    %
+                                                                            :edit    @edit})
+                                    :label           "Land management plan in place"
+                                    :data            (cursor data [:land-management])}]
+
+                [inputs/multi-form-group {:input-components {:technology #(technology {:data %
+                                                                                       :edit @edit})}
+                                          :new-data   {:technology {:tech :A :subtech nil}}
+                                          :label      "Locally adapted technologies, tools, and techniques"
+                                          :add-labels {:technology "technology"}
+                                          :data       (cursor data [:technologies])
+                                          :edit       @edit}]
+                
+                [inputs/number-form-group
+                 {:label "Total restoration cost per activity [USD/ha/yy]"
+                  :data  (cursor data [:restoration-cost])
+                  :edit  @edit}]]))]
 
   ;; TODO: Drivers of ecosystem restoration observed on site (choose from the list)
 
    ; DEBUG data structure
     ;;  [:hr]
-    ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
+    ;;  [:div [:pre (with-out-str (pp/pprint @data_))]]
      ]))
