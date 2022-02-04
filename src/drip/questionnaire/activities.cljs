@@ -105,6 +105,10 @@
 
                 ;; [:br] ;; TODO
                 [:div
+                 [:span {:href "#", :class "mt-5 flex items-center text-sm font-medium", :aria-current "n"}
+                  [:span {:class "flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-indigo-600 rounded-full"}
+                   [:span {:class "text-indigo-600"} (+ 1 i)]]]
+
                  (or (:adm0 admin-names) "n/a") ", "
                  (or (:adm1 admin-names) "n/a") ", "
                  (or (:adm2 admin-names) "n/a")]

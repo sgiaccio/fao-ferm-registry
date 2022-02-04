@@ -26,4 +26,5 @@
                 [cljs-ajax "0.8.0"]]
  :dev-http {3000 "public"}
  :nrepl {:port 3333}
- :source-paths ["src"]}
+ :source-paths ["src"]
+ :compiler-options {:source-map true}}

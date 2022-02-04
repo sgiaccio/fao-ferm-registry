@@ -20,12 +20,13 @@
   (when-not @firebase-instance
     (reset! firebase-instance (initializeApp (clj->js config)))))
 
-(init (clj->js {:apiKey "AIzaSyDWpt9xQ9DLOYXhbi6QZtjXe3mIOdVvuIA"
-                :authDomain "drip-f429f.firebaseapp.com"
-                :projectId "drip-f429f"
-                :storageBucket "drip-f429f.appspot.com"
-                :messagingSenderId "807676682446"
-                :appId "1:807676682446:web:94694090ff2fe30bad309f"}))
+(init (clj->js {:apiKey            "AIzaSyC1svtyo8lap_mUZtgn65n76ZIKsvgoxYE"
+                :authDomain        "fao-ferm2-review.firebaseapp.com"
+                :projectId         "fao-ferm2-review"
+                :storageBucket     "fao-ferm2-review.appspot.com"
+                :messagingSenderId "469091359823"
+                :appId             "1:469091359823:web:3770a8e98eef6e9e23de3a"
+                :measurementId     "G-149EPVPT3N"}))
 
 (defonce db (getFirestore @firebase-instance))
 (defonce registry-collection (collection db "registry"))

@@ -25,6 +25,7 @@
   [:<>
    [inner]
    (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
+
 (defn text-input
   [{:keys [placeholder description data edit]}]
   [:<>
@@ -36,6 +37,20 @@
               :on-change   #(reset! data (-> % .-target .-value empty-to-nil))}]
      (or @data ""))
    (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
+
+(defn document-input 
+  [{:keys [placeholder description data edit]}]
+  [:div
+   [:label {:for "email", :class "block text-sm font-medium text-gray-700"} "Search candidates"]
+   [:div {:class "mt-1 flex rounded-md shadow-sm"}
+    [:div {:class "flex-grow focus-within:z-10"}
+     [:input {:type "email", :name "email", :id "email", :class "focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300", :placeholder placeholder}]]
+    [:button {:type "button", :class "-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"}  ;; "<!-- Heroicon name: solid/sort-ascending -->"
+    ;;  [:svg {:class "h-5 w-5 text-gray-400", :xmlns "http://www.w3.org/2000/svg", :viewbox "0 0 20 20", :fill "currentColor", :aria-hidden "true"}
+    ;;   [:path {:d "M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z"}]]
+     [:svg {:xmlns "http://www.w3.org/2000/svg", :class "h-5 w-5 text-gray-400", :viewbox "0 0 20 20", :fill "currentColor"}
+      [:path {:fill-rule "evenodd", :d "M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z", :clip-rule "evenodd"}]]
+     [:span "Upload"]]]])
 
 (defn textarea-input-test []
   ;TODO use input wrap;
@@ -304,9 +319,9 @@
 
 (defn document-form-group [args]
   [:<>
-   [form-group (assoc args :input-component #(text-input {:placeholder "Please enter text"
-                                                         :data %
-                                                         :edit (:edit args)}))]])
+   [form-group (assoc args :input-component #(document-input {:placeholder "Please enter text"
+                                                              :data %
+                                                              :edit (:edit args)}))]])
 
 
 ;; -------------------------
