@@ -5,7 +5,9 @@
                             createUserWithEmailAndPassword
                             signInWithEmailAndPassword
                             onAuthStateChanged
-                            signOut)]))
+                            signOut
+                            sendPasswordResetEmail)]))
+
 
 
 (defonce auth (getAuth))
@@ -52,6 +54,28 @@
                                    (reset! is-admin (some #(= % "admin") (-> fb-obj .data js->clj (get "roles")))))))
                         (reset! userid nil))))
 
+
+
+(defn send-password-reset-email [email]
+  (-> (sendPasswordResetEmail auth email)
+      (.then (fn [] (js/alert "Password reset email sent")))
+      (.catch (fn [error]
+                (let [error-code (.-code error)]
+                  (if (= error-code "auth/user-not-found")
+                    (js/alert "Unknown user")
+                    (js/alert "Error sending password reset email. Please try again")))))))
+
+;; sendPasswordResetEmail(auth, email)
+;;   .then(() => {
+;;     // Password reset email sent!
+;;     // ..
+;;   })
+;;   .catch((error) => {
+;;     const errorCode = error.code;
+;;     const errorMessage = error.message;
+;;     // ..
+;;   });
+;; auth_send_password_reset.js
 
 ;; For use with FirebaseUI, when it will be compatible with v9 API
 
