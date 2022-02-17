@@ -4,7 +4,7 @@
    [reagent.core :as r :refer [cursor]]
    [reagent.ratom :refer [make-reaction]]
 
-   [drip.config :refer [userid md is-admin]]
+   [drip.config :refer [userid project-id md is-admin]]
    [drip.inputs :as inputs]
    [drip.admin2 :as admin2]
 
@@ -144,6 +144,21 @@
                                :edit       @edit
                                :numbering  true}]
 
+     [inputs/form-group {:input-component (fn [data]
+                                            (inputs/document-input {:project-id @project-id
+                                                                    :path ["aoi"]
+                                                                    :label "Shapefile"
+                                                                    :data  nil
+                                                                    :edit  edit}))
+                         :label           "Shapefile"
+                         :data            nil
+                         }]
+    ;;  [inputs/document-input
+    ;;   {:label       "Shapefile"
+    ;;   ;;  :description "Provide the title of your project as it is stated in the official project document"
+    ;;    :data        (cursor aoiData [:title])
+    ;;    :edit        @edit}]
+     
     ;;  [:h1 {:class "text-3xl pt-10"} "ISO 19115 metadata"]
      [iso-19115 mdData]
     ;;  (js/console.log data)

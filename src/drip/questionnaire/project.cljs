@@ -5,7 +5,7 @@
    [reagent.core :as r :refer [cursor with-let]]
    [reagent.ratom :refer [make-reaction]]
 
-   [drip.config :refer [userid md is-admin get-agencies]]
+   [drip.config :refer [userid md is-admin project-id]]
    [drip.inputs :as inputs]
    [drip.menus :as menus]))
 
@@ -130,9 +130,17 @@
                                      :data  (cursor data [:donors])
                                      :edit  @edit}]
 
-        [inputs/document-form-group {:label "Document link"
-                                     :data  (cursor data [:docuent-link])
-                                     :edit  @edit}]
+        ;; [inputs/document-form-group {:label "Document link"
+        ;;                              :data  (cursor data [:docuent-link])
+        ;;                              :edit  @edit}]
+        [inputs/form-group {:input-component (fn [data]
+                                               (inputs/document-input {:project-id @project-id
+                                                                       :path ["documents"]
+                                                                       :label "Shapefile"
+                                                                       :data  nil
+                                                                       :edit  edit}))
+                            :label           "Document"
+                            :data            nil}]
 
         ;; [inputs/text-form-group {:label "Document title"
         ;;                          :data  (cursor data [:docuent-title])

@@ -1,6 +1,5 @@
 (ns drip.core
   (:require
-  ;;  [reagent.core :as r :refer [with-let]]
    [reagent.dom :as rdom]
    [reagent.session :as session]
    [reitit.frontend :as rf]
@@ -11,8 +10,7 @@
    [drip.projects :refer [projects project]]
    [drip.auth :as auth]
 
-   [drip.login-form :as login-form]
-   ))
+   [drip.login-form :as login-form]))
 
 
 ;; (defn home-page []

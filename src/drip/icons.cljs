@@ -22,5 +22,5 @@
            :d "M7.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0V8z"}]])
 
 (def info
-  [:svg {:xmlns "http://www.w3.org/2000/svg", :class "h-6 w-6", :fill "none", :viewbox "0 0 24 24", :stroke "currentColor"}
+  [:svg {:xmlns "http://www.w3.org/2000/svg", :class "h-6 w-6", :fill "none", :viewBox "0 0 24 24", :stroke "currentColor"}
    [:path {:stroke-linecap "round", :stroke-linejoin "round", :stroke-width "2", :d "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"}]])
