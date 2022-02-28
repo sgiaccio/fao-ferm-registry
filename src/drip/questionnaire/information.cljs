@@ -151,8 +151,7 @@
       [inputs/textarea-form-group {:label "Other additional information"
                                    :data  (cursor data [:other-inf])
                                    :edit  @edit}]]
-
-   ; DEBUG data structure
-     [:hr]
-     [:div [:pre (with-out-str (pp/pprint @data))]]
+     ; DEBUG data structure
+     ;;  [:hr]
+     ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
      ]))
