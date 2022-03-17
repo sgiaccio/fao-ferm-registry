@@ -4,7 +4,8 @@
    [drip.config :as config]
    [drip.menus :as menus]
    [drip.icons :as icons]
-   [drip.upload :as upload])
+   [drip.upload :as upload]
+   [ajax.core :refer [GET]])
   (:import
    [goog.ui IdGenerator]))
 
@@ -22,10 +23,10 @@
 (defn- empty-to-nil [value]
   (if (= "" value) nil value))
 
-(defn input-wrap [inner description]
-  [:<>
-   [inner]
-   (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
+;; (defn input-wrap [inner description]
+;;   [:<>
+;;    [inner]
+;;    (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
 
 (defn text-input
   [{:keys [placeholder description data edit]}]
@@ -39,11 +40,26 @@
      (or @data ""))
    (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
 
+(defn download [url]
+  (js/alert url))
+
 (defn document-input
   [{:keys [project-id placeholder path description data edit]  :or {path []}}]
   (with-let [selected-file (r/atom nil)
-             input-ref (r/atom nil)]
+             input-ref (r/atom nil)
+             files (r/atom nil)
+             _
+             (-> (upload/list-files project-id path)
+                 (.then (fn [res]
+                          (reset! files (.-items res))))
+                 (.catch #(js/console.log %)))] ;; TODO delete this
     [:div
+     (when (some? @files)
+       (for [file @files]
+         [:p [:span {:on-click (fn [] (.then
+                                       (upload/get-download-url (.-fullPath file))
+                                       #(download %)))} (.-name file)]]))
+
      [:label {:for "file", :class "block text-sm font-medium text-gray-700"} ""]
      [:div {:class "mt-1 flex rounded-md shadow-sm"}
       [:div {:class "flex-grow focus-within:z-10"}
@@ -165,7 +181,8 @@
                        [:text \"text \"]]}"
   [{:keys [input-components description data new-data add-labels edit numbering] :or {numbering false}}]
   (with-let [button-id (gen-dom-id)
-             _ (js/console.log (clj->js @data))]
+            ;;  _ (js/console.log (clj->js @data))
+             ]
     [:div {:class "border p-3 rounded rounded-md divide-y"}
      (doall (for [n (range (count @data))]
               ; TODO using n as a key for now - will find a proper one

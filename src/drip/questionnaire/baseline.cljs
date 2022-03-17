@@ -1,6 +1,8 @@
 (ns drip.questionnaire.baseline
   (:require
    [ajax.core :refer [GET]]
+  ;;  [cljs.core.async :refer [<!]]
+  ;;  [cljs-http.client :as http]
 
    [clojure.string :as str]
 
@@ -9,23 +11,53 @@
 
    [drip.config :refer [userid md is-admin]]
    [drip.utils :as utils]
-   [drip.inputs :as inputs]))
+   [drip.inputs :as inputs])
+  ;; A macro that is used to import macros.
+  ;; (:require-macros
+  ;;  [cljs.core.async.macros :refer [go]])
+  )
 
 (defn parse-query-result [csv]
   (map #(js/parseFloat %) (-> csv (str/split "\n") second (str/split ","))))
 
+(defn fetch-indicator [cursor admin-2 table columns]
+  (GET (str "https://api.data.apps.fao.org/api/v2/bigquery?query=SELECT%20" (str/join "," columns) "%20FROM%20%60fao-maps.fao_zonal_stats." table "%60%20WHERE%20ADM2_CODE%3D" admin-2 "%20LIMIT%2010")
+    {:format :json
+     :handler (fn [r] (let [measure (parse-query-result r)]
+                        (js/console.log (clj->js measure))
+                        (reset! cursor {:value (first measure) :error (second measure)})))
+     :error-handler (fn [r]
+                      (js/console.log r)
+                      (js/alert r))}))
+
+;; (defn fetch-indicator_ [crs admin-2 table]
+;;   (go (let [response (<! (http/get (str "https://api.data.apps.fao.org/api/v2/bigquery?query=SELECT%20mean,stdDev%20FROM%20%60fao-maps.fao_zonal_stats." table "%60%20WHERE%20ADM2_CODE%3D" admin-2 "%20LIMIT%2010")))]
+;;         (prn (:status response))
+;;         (prn (:body response)))))
+
 (defn fetch-indicators [data]
-  ;; (js/console.log '------------------------------')
-  ;; (js/console.log (clj->js data))
-  (let [elevation (cursor data [:elevation])]
-    (GET (str "https://api.data.apps.fao.org/api/v1/bigquery?query=SELECT%20mean,stdDev%20FROM%20%60fao-maps.fao_zonal_stats.fct_CGIAR_SRTM90_V4_FAO_GAUL_SIMPLIFIED_500m_2015_level2%60%20WHERE%20ADM2_CODE%3D" (-> @data :admin-area :admin-2 name) "%20LIMIT%2010")
-      {:format :json
-       :handler (fn [r] (let [measure (parse-query-result r)]
-                          (js/console.log (clj->js measure))
-                          (reset! elevation {:value (first measure) :error (second measure)})))
-       :error-handler (fn [r]
-                        (js/console.log r)
-                        (js/alert r))})))
+  (let [admin-2             (-> @data :admin-area :admin-2 name)
+        elevation           (cursor data [:elevation])
+        temperature         (cursor data [:temperature])
+        rainfall            (cursor data [:rainfall])
+        evapotranspiration  (cursor data [:evapotranspiration])
+        ;; TODO: climate domain missing from stats
+        ;; TODO: tree cover missing from stats
+        land-cover          (cursor data [:land_cover]) ;; TODO handle differently
+        productivity        (cursor data [:productivity])
+        soil_organic_carbon (cursor data [:soil_organic_carbon])
+        sea_temperature     (cursor data [:sea_temperature])]
+    (fetch-indicator elevation           admin-2 "fct_CGIAR_SRTM90_V4_FAO_GAUL_SIMPLIFIED_500m_2015_level2"                          ["mean" "stdDev"])
+    (fetch-indicator temperature         admin-2 "fct_FERMS_ECMWF_ERA5_MONTHLY_FAO_GAUL_2015_level2"                                 ["mean_2m_air_temperature_mean" "mean_2m_air_temperature_stdDev"])
+    ;; rainfall doesn't work
+    (fetch-indicator rainfall            admin-2 "fct_FERMS_ECMWF_UCSB_CHG_CHIRPS_PENTAD_FAO_GAUL_2015_level2"                       ["mean" "stdDev"])
+    (fetch-indicator evapotranspiration  admin-2 "fct_MODIS_006_MOD16A2_FAO_GAUL_2015_level2" ["ET_mean" "ET_stdDev"])
+    (fetch-indicator land-cover          admin-2 "fct_FERMS_lc_traj_globe_2001_2001_to_2015_modis_FAO_GAUL_2015_level2"              ["lc_tr_histogram"])
+    (fetch-indicator productivity        admin-2 "fct_FERMS_lp5cl_globe_2001_2015_modis_FAO_GAUL_2015_level2"                        ["constant_mean" "constant_stdDev"])
+    (fetch-indicator soil_organic_carbon admin-2 "fct_FERMS_soc_globe_2001_2015_deg_modis_FAO_GAUL_2015_level2"                      ["soc_deg_mean" "soc_deg_stdDev"])
+    (fetch-indicator sea_temperature     admin-2 "fct_FERM_JAXA_GCOM-C_L3_OCEAN_SST_V2_FAO_GAUL_2015_level2"                         ["SST_AVE_mean" "SST_AVE_stdDev"])))
+
+    
 
 (defn baseline [data_]
   (let [edit (make-reaction (fn []
@@ -138,9 +170,9 @@
                                                                               :edit @edit})
                                        :label           "Bathimetry"
                                        :data            (cursor data [:bathimetry])}]]
-                  [:hr {:class "my-10"}]]))
+                  [:hr {:class "my-10"}]]))]))
 
         ; DEBUG data structure
         ;; [:hr]
         ;; [:div [:pre (with-out-str (pp/pprint @data_))]]
-        ]))
+        

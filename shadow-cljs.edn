@@ -23,7 +23,8 @@
                 
                 [metosin/reitit "0.5.1"]
                 [metosin/jsonista "0.2.6"]
-                [cljs-ajax "0.8.0"]]
+                [cljs-ajax "0.8.0"] ;; TODO delete this?
+                [cljs-http "0.1.46"]]
  :dev-http {3000 "public"}
  :nrepl {:port 3333}
  :source-paths ["src"]
