@@ -40,8 +40,20 @@
      (or @data ""))
    (when description [:p {:class "mt-2 text-sm text-gray-500"} description])])
 
-(defn download [url]
-  (js/alert url))
+(defn download-blob [file-name blob]
+  (let [object-url (js/URL.createObjectURL blob)
+        anchor-element
+        (doto (js/document.createElement "a")
+          (-> .-href (set! object-url))
+          (-> .-download (set! file-name)))]
+    (.appendChild (.-body js/document) anchor-element)
+    (.click anchor-element)
+    (.removeChild (.-body js/document) anchor-element)
+    (js/URL.revokeObjectURL object-url)))
+
+(defn download [name url]
+  (.then (upload/download-blob url)
+         #(download-blob name %)))
 
 (defn document-input
   [{:keys [project-id placeholder path description data edit]  :or {path []}}]
@@ -55,10 +67,13 @@
                  (.catch #(js/console.log %)))] ;; TODO delete this
     [:div
      (when (some? @files)
-       (for [file @files]
-         [:p [:span {:on-click (fn [] (.then
+       (for [[i file] (map-indexed vector @files)]
+         [:p
+          (inc i) ") "
+          [:span {:class "underline text-blue-600 cursor-pointer"
+                  :on-click (fn [] (.then
                                        (upload/get-download-url (.-fullPath file))
-                                       #(download %)))} (.-name file)]]))
+                                       #(download (.-name file) %)))} (.-name file)]]))
 
      [:label {:for "file", :class "block text-sm font-medium text-gray-700"} ""]
      [:div {:class "mt-1 flex rounded-md shadow-sm"}

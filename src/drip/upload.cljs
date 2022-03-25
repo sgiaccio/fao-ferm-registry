@@ -1,6 +1,6 @@
 (ns drip.upload
   (:require
-   ["firebase/storage" :refer (getStorage, ref, uploadBytes, getDownloadURL, listAll)]
+   ["firebase/storage" :refer (getStorage, ref, uploadBytes, getDownloadURL, listAll getBlob)]
    [clojure.string :as string]))
 
 
@@ -30,3 +30,6 @@
 (defn get-download-url [path]
   ;; getDownloadURL (ref (storage, 'images/stars.jpg'))
   (getDownloadURL (ref storage path)))
+
+(defn download-blob [path]
+  (getBlob (ref storage path)))

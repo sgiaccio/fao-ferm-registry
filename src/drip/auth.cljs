@@ -2,15 +2,38 @@
   (:require
    [drip.config :refer [auth-loaded userid get-user is-admin]]
    ["firebase/auth" :refer (getAuth
+                            connectAuthEmulator
                             createUserWithEmailAndPassword
                             signInWithEmailAndPassword
                             onAuthStateChanged
                             signOut
-                            sendPasswordResetEmail)]))
+                            sendPasswordResetEmail)]
+   ["firebase/functions" :refer (getFunctions httpsCallable connectFunctionsEmulator)]
+  ;;  ["firebase/app" :refer (getApp)]
+   ))
 
 
 
 (defonce auth (getAuth))
+;; (connectAuthEmulator auth "http://localhost:9099")
+
+(defonce functions (getFunctions))
+;; (connectFunctionsEmulator functions "localhost", 5001)
+
+(defn getUserList []
+  (let [getUsers (httpsCallable functions "listAllUsers")]
+    (.then (getUsers)
+           #(js/console.log (.-data %)))))
+
+(defn addAdminRole [email]
+  (let [addAdminRole (httpsCallable functions "addAdminRole")]
+    (.then (addAdminRole (clj->js {:email email}))
+           #(js/console.log %))))
+
+(defn assignToGroup [email group role]
+  (let [assignToGroup (httpsCallable functions "assignToGroup")]
+    (.then (assignToGroup (clj->js { :email email :group group :role role }))
+           #(js/console.log %))))
 
 ;; createUserWithEmailAndPassword(auth, email, password)
 ;;   .then((userCredential) => {
@@ -64,6 +87,10 @@
                   (if (= error-code "auth/user-not-found")
                     (js/alert "Unknown user")
                     (js/alert "Error sending password reset email. Please try again")))))))
+
+(defn get-users []
+  (.then ()))
+
 
 ;; sendPasswordResetEmail(auth, email)
 ;;   .then(() => {

@@ -4,7 +4,7 @@
   ;;  [reagent.ratom :refer [make-reaction]]
 
    ["firebase/app" :refer (initializeApp)]
-   ["firebase/firestore/lite" :refer (getFirestore collection query getDocs doc getDoc setDoc)]
+   ["firebase/firestore/lite" :refer (getFirestore connectFirestoreEmulator collection query getDocs doc getDoc setDoc)]
    ["regenerator-runtime/runtime"])) ; TODO: see if we still need this after switching to version 9 modular firebase API
 
 
@@ -29,6 +29,8 @@
                 :measurementId     "G-149EPVPT3N"}))
 
 (defonce db (getFirestore @firebase-instance))
+;; (connectFirestoreEmulator db "localhost" 8080)
+
 (defonce registry-collection (collection db "registry"))
 (defonce agencies-collection (collection db "agencies"))
 
