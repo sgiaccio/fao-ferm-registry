@@ -101,15 +101,15 @@
                                :edit       @edit
                                :numbering  true}]
 
-      [inputs/multi-form-group {:input-components {:contribution #(inputs/select-input
-                                                                   {:options menus/sdg-contributions
-                                                                    :data    %
-                                                                    :edit    @edit})}
-                                :new-data         {:contribution nil}
-                                :label            "Contribution to Sustainable Development Goals"
-                                :add-labels       {:contribution "contribution"}
-                                :data             (cursor data [:natural-disasters])
-                                :edit             @edit}]
+      ;; [inputs/multi-form-group {:input-components {:contribution #(inputs/select-input
+      ;;                                                              {:options menus/sdg-contributions
+      ;;                                                               :data    %
+      ;;                                                               :edit    @edit})}
+      ;;                           :new-data         {:contribution nil}
+      ;;                           :label            "Contribution to Sustainable Development Goals"
+      ;;                           :add-labels       {:contribution "contribution"}
+      ;;                           :data             (cursor data [:natural-disasters])
+      ;;                           :edit             @edit}]
 
     ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/sdg-contributions
     ;;                                                                       :data    %
@@ -117,9 +117,10 @@
     ;;                      :label           "Contribution to SDGs"
     ;;                      :data            (cursor data [:sdg-contributions])}]
 
-      [inputs/textarea-form-group {:label "Contribution to restoration related Rio Conventions"
-                                   :data  (cursor data [:rio-convention-contribution])
-                                   :edit  @edit}]]
+      ;; [inputs/textarea-form-group {:label "Contribution to restoration related Rio Conventions"
+      ;;                              :data  (cursor data [:rio-convention-contribution])
+      ;;                              :edit  @edit}]
+      ]
 
   ;;  TODO: add goals/criteria/indicators/target
   ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/project-goals

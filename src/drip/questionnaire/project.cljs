@@ -68,12 +68,12 @@
         ;;                     :label           "Reporting agency"
         ;;                     :data            (cursor data [:reporting-agencies])}]
 
-        [inputs/multi-form-group {:input-components {:executing-agency #(inputs/agency-input {:data % :edit @edit})}
-                                  :new-data         {:executing-agency {:agency nil :role nil}}
-                                  :label            "Executing agencies"
-                                  :add-labels       {:executing-agency "agency"}
-                                  :data             (cursor data [:executing-agencies])
-                                  :edit             @edit}]
+        ;; [inputs/multi-form-group {:input-components {:executing-agency #(inputs/agency-input {:data % :edit @edit})}
+        ;;                           :new-data         {:executing-agency {:agency nil :role nil}}
+        ;;                           :label            "Executing agencies"
+        ;;                           :add-labels       {:executing-agency "agency"}
+        ;;                           :data             (cursor data [:executing-agencies])
+        ;;                           :edit             @edit}]
 
     ;;  [inputs/multi-form-group-2 {:input-components {:reason #(inputs/select-input {:options menus/partially-achieved-reasons
     ;;                                                                                :data    %
@@ -96,17 +96,17 @@
     ;;                      :label           "Executing agency role"
     ;;                      :data            (cursor data [:agency-role])}]
 
-        [inputs/form-group {:input-component #(inputs/select-input {:options menus/project-statuses
-                                                                    :data    %
-                                                                    :edit    @edit})
-                            :label           "Project status"
-                            :data            (cursor data [:project-status])}]
+        ;; [inputs/form-group {:input-component #(inputs/select-input {:options menus/project-statuses
+        ;;                                                             :data    %
+        ;;                                                             :edit    @edit})
+        ;;                     :label           "Project status"
+        ;;                     :data            (cursor data [:project-status])}]
 
 
-        [inputs/number-form-group
-         {:label       "Total Budget [USD]"
-          :data        (cursor data [:budget])
-          :edit        @edit}]
+        ;; [inputs/number-form-group
+        ;;  {:label       "Total Budget [USD]"
+        ;;   :data        (cursor data [:budget])
+        ;;   :edit        @edit}]
 
 
     ;;  [inputs/date-form-group
@@ -120,11 +120,11 @@
     ;;    :edit        @edit}]
 
 
-        [inputs/form-group {:input-component #(inputs/select-input {:options menus/funding-sources
-                                                                    :data    %
-                                                                    :edit    @edit})
-                            :label           "Source of funding"
-                            :data            (cursor data [:funding-source])}]
+        ;; [inputs/form-group {:input-component #(inputs/select-input {:options menus/funding-sources
+        ;;                                                             :data    %
+        ;;                                                             :edit    @edit})
+        ;;                     :label           "Source of funding"
+        ;;                     :data            (cursor data [:funding-source])}]
 
         [inputs/textarea-form-group {:label "Donors"
                                      :data  (cursor data [:donors])
@@ -134,8 +134,8 @@
         ;;                              :data  (cursor data [:docuent-link])
         ;;                              :edit  @edit}]
         [inputs/form-group {:input-component (fn [data]
-                                               (inputs/document-input {:project-id @project-id
-                                                                       :path ["documents"]
+                                               (inputs/document-input {;;:path "https://europe-west3-fao-ferm2-review.cloudfunctions.net/parse_multipart"
+                                                                       :path (str @project-id "/documents")
                                                                        :label "Shapefile"
                                                                        :data  nil
                                                                        :edit  edit}))

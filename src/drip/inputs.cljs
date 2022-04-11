@@ -56,12 +56,12 @@
          #(download-blob name %)))
 
 (defn document-input
-  [{:keys [project-id placeholder path description data edit]  :or {path []}}]
+  [{:keys [placeholder path description data edit]  :or {path []}}]
   (with-let [selected-file (r/atom nil)
              input-ref (r/atom nil)
              files (r/atom nil)
              _
-             (-> (upload/list-files project-id path)
+             (-> (upload/list-files path)
                  (.then (fn [res]
                           (reset! files (.-items res))))
                  (.catch #(js/console.log %)))] ;; TODO delete this
@@ -89,9 +89,12 @@
                 :placeholder placeholder}]]
       [:button {:on-click (fn []
                             (.then
-                             (upload/upload-file project-id path @selected-file)
-                             (set! (.-value @input-ref) "")
-                             (js/alert "Uploaded")))
+                             (upload/upload-file-multipart "https://europe-west3-fao-ferm2-review.cloudfunctions.net/parse_multipart" @selected-file)
+                            ;;  (upload/upload-file path @selected-file)
+                             (do
+                               (set! (.-value @input-ref) "")
+                               (js/alert "Uploaded"))
+                             #(js/console.log %)))
                 :type "button"
                 :class "-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"}
        [:svg {:xmlns "http://www.w3.org/2000/svg", :class "h-5 w-5 text-gray-400", :viewBox "0 0 20 20", :fill "currentColor"}

@@ -1,6 +1,6 @@
 (ns drip.questionnaire.aoi
   (:require
-   [cljs.pprint :as pp]
+  ;;  [cljs.pprint :as pp]
    [reagent.core :as r :refer [cursor]]
    [reagent.ratom :refer [make-reaction]]
 
@@ -145,8 +145,7 @@
                                :numbering  true}]
 
      [inputs/form-group {:input-component (fn [data]
-                                            (inputs/document-input {:project-id @project-id
-                                                                    :path ["aoi"]
+                                            (inputs/document-input {:path (str @project-id "/aoi")
                                                                     :label "Shapefile"
                                                                     :data  nil
                                                                     :edit  edit}))

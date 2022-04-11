@@ -149,35 +149,36 @@
                 ;;                     :label           "Priority/critical areas for LDN implementation"
                 ;;                     :data            (cursor data [:priority-areas])}]
 
-                [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-use
-                                                                            :data    %
-                                                                            :edit    @edit})
-                                    :label           "Land use in project area (for each type of cover)"
-                                    :data            (cursor data [:land-use])}]
-                [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-tenure
-                                                                            :data    %
-                                                                            :edit    @edit})
-                                    :label           "Land tenure in project area"
-                                    :data            (cursor data [:land-tenure])}]
+                ;; [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-use
+                ;;                                                             :data    %
+                ;;                                                             :edit    @edit})
+                ;;                     :label           "Land use in project area (for each type of cover)"
+                ;;                     :data            (cursor data [:land-use])}]
+                ;; [inputs/form-group {:input-component #(inputs/select-input {:options menus/land-tenure
+                ;;                                                             :data    %
+                ;;                                                             :edit    @edit})
+                ;;                     :label           "Land tenure in project area"
+                ;;                     :data            (cursor data [:land-tenure])}]
 
-                [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
-                                                                            :data    %
-                                                                            :edit    @edit})
-                                    :label           "Land management plan in place"
-                                    :data            (cursor data [:land-management])}]
+                ;; [inputs/form-group {:input-component #(inputs/select-input {:options menus/bool
+                ;;                                                             :data    %
+                ;;                                                             :edit    @edit})
+                ;;                     :label           "Land management plan in place"
+                ;;                     :data            (cursor data [:land-management])}]
 
-                [inputs/multi-form-group {:input-components {:technology #(technology {:data %
-                                                                                       :edit @edit})}
-                                          :new-data   {:technology {:tech :A :subtech nil}}
-                                          :label      "Locally adapted technologies, tools, and techniques"
-                                          :add-labels {:technology "technology"}
-                                          :data       (cursor data [:technologies])
-                                          :edit       @edit}]
+                ;; [inputs/multi-form-group {:input-components {:technology #(technology {:data %
+                ;;                                                                        :edit @edit})}
+                ;;                           :new-data   {:technology {:tech :A :subtech nil}}
+                ;;                           :label      "Locally adapted technologies, tools, and techniques"
+                ;;                           :add-labels {:technology "technology"}
+                ;;                           :data       (cursor data [:technologies])
+                ;;                           :edit       @edit}]
                 
-                [inputs/number-form-group
-                 {:label "Total restoration cost per activity [USD/ha/yy]"
-                  :data  (cursor data [:restoration-cost])
-                  :edit  @edit}]]))]
+                ;; [inputs/number-form-group
+                ;;  {:label "Total restoration cost per activity [USD/ha/yy]"
+                ;;   :data  (cursor data [:restoration-cost])
+                ;;   :edit  @edit}]
+                ]))]
 
   ;; TODO: Drivers of ecosystem restoration observed on site (choose from the list)
 

@@ -56,17 +56,11 @@
 
 
 
-   ;;  Abstract
-    ;;  [inputs/textarea-form-group-loc {:label       "Abstract"
-    ;;                                   :placeholder "Enter abstract"
-    ;;                                   ;; :description "The dataset abstract"
-    ;;                                   :data        (cursor data [:abstract :loc])
-    ;;                                   :edit        @edit}]
-      [inputs/textarea-form-group {:label       "Abstract"
-                                   :placeholder "Enter abstract"
-                                   :description "Brief narrative summary of the content of the resource(s)"
-                                   :data        (cursor data [:abstract])
-                                   :edit        @edit}]
+      ;; [inputs/textarea-form-group {:label       "Abstract"
+      ;;                              :placeholder "Enter abstract"
+      ;;                              :description "Brief narrative summary of the content of the resource(s)"
+      ;;                              :data        (cursor data [:abstract])
+      ;;                              :edit        @edit}]
 
       [inputs/textarea-form-group {:label       "Purpose"
                                    :placeholder "Enter purpose"
