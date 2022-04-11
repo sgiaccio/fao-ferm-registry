@@ -11,6 +11,8 @@ definitions:
           - npm install --global yarn
           - npm install
           - npm run build
+          - cd functions
+          - npm install
         artifacts:
           - public/**
 
