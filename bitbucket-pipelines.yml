@@ -11,14 +11,13 @@ definitions:
           - npm install --global yarn
           - npm install
           - npm run build
-          - cd functions
-          - npm install
         artifacts:
           - public/**
 
     - step: &deploy
         name: Deploy_Firebase
         script:
+          - cd functions; npm install; cd ..
           - pipe: atlassian/firebase-deploy:1.2.0
             variables:
               FIREBASE_TOKEN: $FIREBASE_TOKEN 
