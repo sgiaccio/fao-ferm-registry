@@ -4,8 +4,7 @@
    [drip.config :as config]
    [drip.menus :as menus]
    [drip.icons :as icons]
-   [drip.upload :as upload]
-   [ajax.core :refer [GET]])
+   [drip.upload :as upload])
   (:import
    [goog.ui IdGenerator]))
 
@@ -56,15 +55,57 @@
          #(download-blob name %)))
 
 (defn document-input
+  [{:keys [placeholder path description data edit] :or {path []}}]
+  (with-let [selected-file (r/atom nil)
+             input-ref (r/atom nil)
+             upload-active (r/atom (not @data))]
+    [:div
+     [:div {:class "underlined"} (or @data "")]
+     
+     [:label {:for "file", :class "block text-sm font-medium text-gray-700"} ""]
+     (when-not @data
+       [:div {:class "mt-1 flex rounded-md shadow-sm"}
+
+        [:div {:class "flex-grow focus-within:z-10"}
+         [:input {:ref #(reset! input-ref %)
+                  :on-change (fn [event]
+                               (let [files (.. event -target -files) ; returns JS Array
+                                     file  (first files)]
+                                 (reset! selected-file file)))
+                  :type "file"
+                  :name "file"
+                  :class "pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
+                  :placeholder placeholder}]]
+        [:button {:on-click (fn []
+                              (when (and @upload-active (some? @selected-file))
+                                (reset! upload-active false)
+                                (-> (upload/upload-file-multipart
+                                     "https://europe-west3-fao-ferm2-review.cloudfunctions.net/load_area"
+                                     @selected-file)
+                                    (.then (fn [response]
+                                             (reset! data response)))
+                                    (.catch (fn [error]
+                                              (js/alert (str "Error uploading the polygon: " error))
+                                              (js/console.error error)
+                                              (reset! upload-active true)))
+                                    (.finally #(set! (.-value @input-ref) "")))))
+                  :type "button"
+                  :class (str "-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border "
+                              "border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none "
+                              (if @upload-active "text-gray-700 hover:bg-gray-100" "text-gray-200 cursor-default"))}
+         [:svg {:xmlns "http://www.w3.org/2000/svg", :class "h-5 w-5 text-gray-400", :viewBox "0 0 20 20", :fill "currentColor"}
+          [:path {:fill-rule "evenodd", :d "M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z", :clip-rule "evenodd"}]]
+         [:span (if @upload-active "Upload" "Uploading")]]])]))
+
+(defn document-input-multiple
   [{:keys [placeholder path description data edit]  :or {path []}}]
   (with-let [selected-file (r/atom nil)
              input-ref (r/atom nil)
-             files (r/atom nil)
-             _
-             (-> (upload/list-files path)
-                 (.then (fn [res]
-                          (reset! files (.-items res))))
-                 (.catch #(js/console.log %)))] ;; TODO delete this
+             files     (r/atom nil)
+             _         (-> (upload/list-files path)
+                           (.then (fn [res]
+                                    (reset! files (.-items res))))
+                           (.catch #(js/console.log %)))] ;; TODO delete this
     [:div
      (when (some? @files)
        (for [[i file] (map-indexed vector @files)]
@@ -89,7 +130,7 @@
                 :placeholder placeholder}]]
       [:button {:on-click (fn []
                             (.then
-                             (upload/upload-file-multipart "https://europe-west3-fao-ferm2-review.cloudfunctions.net/parse_multipart" @selected-file)
+                             (upload/upload-file-multipart "https://europe-west3-fao-ferm2-review.cloudfunctions.net/load_area" @selected-file)
                             ;;  (upload/upload-file path @selected-file)
                              (do
                                (set! (.-value @input-ref) "")
@@ -201,7 +242,7 @@
   (with-let [button-id (gen-dom-id)
             ;;  _ (js/console.log (clj->js @data))
              ]
-    [:div {:class "border p-3 rounded rounded-md divide-y"}
+    [:div {:class "border p-3 rounded rounded-md divide-y-4"}
      (doall (for [n (range (count @data))]
               ; TODO using n as a key for now - will find a proper one
               [:div {:key n}
@@ -243,7 +284,7 @@
                                      ; Not using swap! - Using into and reset!
                                      ; because (conj nil x) returns (x) instead of [x].
                                      ; Causes problems when adding the first item
-                                       :on-click #(reset! data (into [] (conj @data [k (get new-data k)])))}
+                                       :on-click (fn [] (reset! data (into [] (conj @data {k (get new-data k)}))))}
                      (get add-labels k)]))]]
          ; Otherwise, show just a button
          [:button {:type "button" 
@@ -256,6 +297,7 @@
         ;;                                :on-click #(reset! data (into [] (conj @data new-data)))}
         ;;   "Add " (-> add-labels first val)]
          
+
 
 ;; -------------------------
 ;; Form groups - wrap other inputs (also form groups themselves) with layout, labels and description
@@ -421,9 +463,9 @@
    [text-input {:description "Individual name"
                 :data        (cursor data [:individual-name])
                 :edit edit}]
-   [text-input {:description "Address"
-                :data        (cursor data [:address])
-                :edit edit}]
+  ;;  [text-input {:description "Address"
+  ;;               :data        (cursor data [:address])
+  ;;               :edit edit}]
    [text-input {:description "Email"
                 :data        (cursor data [:email])
                 :edit edit}]])
@@ -441,9 +483,9 @@
 
                   :data        (cursor data [:type])
                   :edit        edit}]
-   [multi-input {:input-components {:keyword #(text-input {:placeholder "Keyword" 
-                                                             :data %
-                                                             :edit edit})}
+   [multi-input {:input-components {:keyword #(text-input {:placeholder "Keyword"
+                                                           :data %
+                                                           :edit edit})}
                    :new-data         {:keyword nil}
                    :add-labels       {:keyword "keyword"}
                    :data             (cursor data [:keywords])
@@ -452,10 +494,13 @@
 (defn measurement [{:keys [data edit]}]
   [horizontal-layout
    [number-input {:description "Mean"
-                  :data (cursor data [:value])
+                  :data (cursor data [:mean])
                   :edit edit}]
-   [number-input {:description "Std dev"
-                  :data (cursor data [:error])
+   [number-input {:description "Min"
+                  :data (cursor data [:min])
+                  :edit edit}]
+   [number-input {:description "Max"
+                  :data (cursor data [:max])
                   :edit edit}]])
 
 (defn agency-input [{:keys [data edit]}]

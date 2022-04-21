@@ -1,6 +1,6 @@
 (ns drip.questionnaire.aoi
   (:require
-  ;;  [cljs.pprint :as pp]
+   [cljs.pprint :as pp]
    [reagent.core :as r :refer [cursor]]
    [reagent.ratom :refer [make-reaction]]
 
@@ -9,16 +9,8 @@
    [drip.admin2 :as admin2]
 
    [drip.questionnaire.iso-19115 :refer [iso-19115]]
-   
-  ;;  ["react-leaflet" :refer (MapContainer, TileLayer, Marker, Popup)]
-   ;;import * as ol from 'openlayers';
-  ;;  ["ol" :as ol]
-  ;;  ["react-openlayers" :refer (interaction, layer, custom, control, ;;name spaces
-  ;;                 Interactions, Overlays, Controls,     ;;group
-  ;;                 Map, Layers, Overlay, Util)]    ;;objects
-   ))
+   [drip.questionnaire.map-div :refer [map-input]]))
 
-;; (js/alert ol)
 
 (defn admin2 [{:keys [data edit]}]
   (let [country          (cursor data [:admin-0])
@@ -57,6 +49,9 @@
         provinces-menu   (make-reaction
                           (fn [] (map #(-> [(:code %) (:name %)]) @provinces)))]
     [:<>
+     [inputs/text-form-group {:label "Site name"
+                              :data  (cursor data [:site-name])
+                              :edit  edit}]
      [inputs/form-group {:input-component (fn [data]
                                             (inputs/select-input {:options countries-menu
                                                                   :data    data
@@ -76,10 +71,17 @@
                                                                   :data    data
                                                                   :edit    edit}))
                          :label           "Administrative name (level 2)"
-                         :data            (cursor data [:admin-2])}]
-     [inputs/text-form-group {:label "Site name"
-                              :data  (cursor data [:site-name])
-                              :edit  edit}]]))
+                         :data            (cursor data [:admin-2])}]]))
+
+
+(defn upload-shapefile [{:keys [data edit]}]
+  [inputs/form-group {:input-component (fn [data]
+                                         (inputs/document-input {:path (str @project-id "/aoi")
+                                                                 :label "Shapefile"
+                                                                 :data  data
+                                                                 :edit  edit}))
+                      :label           "Shapefile"
+                      :data            data}])
 
 (defn aoi [{:keys [aoiData mdData]}]
   ;; (js/console.log (clj->js aoiData))
@@ -135,29 +137,53 @@
     ;;                              :add-labels       {:date "date"}
     ;;                              :data             (cursor data [:citation :dates])
     ;;                              :edit             @edit}]
-     [inputs/multi-form-group {:input-components {:admin-area #(admin2 {:data %
-                                                                        :edit @edit})}
-                               :new-data   {:admin-area {}}
-                               :label      "Admin areas"
-                               :add-labels {:admin-area "admin2 area"}
-                               :data       aoiData
-                               :edit       @edit
-                               :numbering  true}]
 
-     [inputs/form-group {:input-component (fn [data]
-                                            (inputs/document-input {:path (str @project-id "/aoi")
-                                                                    :label "Shapefile"
-                                                                    :data  nil
-                                                                    :edit  edit}))
-                         :label           "Shapefile"
-                         :data            nil
-                         }]
+
+        ; Demo multy-type field group
+   [inputs/multi-input {:input-components {;;:keyword    #(inputs/keywords {:data % :edit @edit})
+                                           ;;:text       #(inputs/text-input {:data % :edit @edit})
+                                           :admin-area #(admin2 {:data % :edit @edit})
+                                           :draw       #(r/as-element [map-input])
+                                           :shapefile  #(upload-shapefile {:data % :edit @edit})}
+                        :new-data         {;;:keyword    {:type :author :keywords [{:keyword "asdf"}]}
+                                           ;;:text       "new text"
+                                           :admin-area nil
+                                           :draw       nil
+                                           :shapefile  nil}
+                        :add-labels       {;;:text       "Text"
+                                           ;;:keyword    "Keyword"
+                                           :admin-area "Admin area"
+                                           :draw       "Draw"
+                                           :shapefile  "Upload ShapeFile"}
+                        :data             aoiData
+                        :edit             @edit}]
+
+
+    ;;  [map-input]
+
+
+    ;;  [inputs/multi-form-group {:input-components {:admin-area #(admin2 {:data %
+    ;;                                                                     :edit @edit})}
+    ;;                            :new-data   {:admin-area {}}
+    ;;                            :label      "Admin areas"
+    ;;                            :add-labels {:admin-area "admin2 area"}
+    ;;                            :data       aoiData
+    ;;                            :edit       @edit
+    ;;                            :numbering  true}]
+
+    ;;  [inputs/form-group {:input-component (fn [data]
+    ;;                                         (inputs/document-input {:path (str @project-id "/aoi")
+    ;;                                                                 :label "Shapefile"
+    ;;                                                                 :data  nil
+    ;;                                                                 :edit  edit}))
+    ;;                      :label           "Shapefile"
+    ;;                      :data            nil}]
     ;;  [inputs/document-input
     ;;   {:label       "Shapefile"
     ;;   ;;  :description "Provide the title of your project as it is stated in the official project document"
     ;;    :data        (cursor aoiData [:title])
     ;;    :edit        @edit}]
-     
+
     ;;  [:h1 {:class "text-3xl pt-10"} "ISO 19115 metadata"]
      [iso-19115 mdData]
     ;;  (js/console.log data)
@@ -184,32 +210,6 @@
     ;;                      :label           "Administrative name (level 2)"
     ;;                      :data            (cursor data [:admin-2])}]
 
-
-
-
-
-;; <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
-;;   <TileLayer
-;;     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-;;     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-;;   />
-;;   <Marker position={[51.505, -0.09]}>
-;;     <Popup>
-;;       A pretty CSS3 popup. <br /> Easily customizable.
-;;     </Popup>
-;;   </Marker>
-;; </MapContainer>
-
-    ;; [:> MapContainer
-    ;;  {:center [51.505, -0.09] :zoom 13 :scrollWheelZoom false}
-    ;;    [:> TileLayer
-    ;;     {:attribution "&copy; <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors"
-    ;;      :url "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}]]
-
-
-;; var tileSource = new ol.source.Stamen({
-;;   layer: 'toner'
-;; });
 
 
 
@@ -241,6 +241,6 @@
      ; TODO: add area draw
 
    ; DEBUG data structure
-    ;;  [:hr]
-    ;;  [:div [:pre (with-out-str (pp/pprint @data))]]
+     [:hr]
+     [:div [:pre (with-out-str (pp/pprint @aoiData))]]
      ]))

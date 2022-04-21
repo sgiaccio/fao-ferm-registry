@@ -2,7 +2,7 @@
   (:require
    [drip.config :refer [auth-loaded userid get-user is-admin]]
    ["firebase/auth" :refer (getAuth
-                            connectAuthEmulator
+                            ;; connectAuthEmulator
                             createUserWithEmailAndPassword
                             signInWithEmailAndPassword
                             onAuthStateChanged
@@ -16,6 +16,7 @@
 
 (defonce auth (getAuth))
 ;; (connectAuthEmulator auth "http://localhost:9099")
+
 
 (defonce functions (getFunctions))
 ;; (connectFunctionsEmulator functions "localhost", 5001)
@@ -66,18 +67,20 @@
       (.then #(reset! userid nil))
       (.catch #(js/alert "Error logging out"))))
 
+(defn get-access-token []
+  (.. auth -currentUser -accessToken))
+
 (onAuthStateChanged auth
                     (fn [user]
                       (reset! auth-loaded true)
                       (if (some? user)
                         (let [uid (.-uid user)]
+                          ;; (js/console.log (get-access-token))
                           (reset! userid uid)
                           (.then (get-user uid)
                                  (fn [fb-obj]
                                    (reset! is-admin (some #(= % "admin") (-> fb-obj .data js->clj (get "roles")))))))
                         (reset! userid nil))))
-
-
 
 (defn send-password-reset-email [email]
   (-> (sendPasswordResetEmail auth email)

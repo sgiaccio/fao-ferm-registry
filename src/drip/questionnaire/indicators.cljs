@@ -1,7 +1,5 @@
 (ns drip.questionnaire.indicators
   (:require
-   [cljs.pprint :as pp]
-
    [reagent.core :as r :refer [cursor]]
    [reagent.ratom :refer [make-reaction]]
 

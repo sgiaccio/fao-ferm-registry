@@ -1,13 +1,10 @@
 (ns drip.questionnaire.information
   (:require
-   [cljs.pprint :as pp]
-
    [reagent.core :as r :refer [cursor]]
    [reagent.ratom :refer [make-reaction]]
 
    [drip.config :refer [userid md is-admin]]
-   [drip.inputs :as inputs]
-   [drip.menus :as menus]))
+   [drip.inputs :as inputs]))
 
 
 (defn information [data]
