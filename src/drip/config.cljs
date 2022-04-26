@@ -4,9 +4,11 @@
   ;;  [reagent.ratom :refer [make-reaction]]
 
    ["firebase/app" :refer (initializeApp)]
-   ["firebase/firestore/lite" :refer (getFirestore connectFirestoreEmulator collection query getDocs doc getDoc setDoc)]
+   ["firebase/firestore/lite" :refer (getFirestore connectFirestoreEmulator collection query where getDocs doc getDoc setDoc)]
    ["regenerator-runtime/runtime"])) ; TODO: see if we still need this after switching to version 9 modular firebase API
 
+
+;; (goog-define EMULATOR false)
 
 ;; Check this https://github.com/fbielejec/cljs-firebase-client
 
@@ -15,6 +17,7 @@
 (def auth-loaded (r/atom false))
 (def userid      (r/atom nil))
 (def is-admin    (r/atom nil))
+(def privileges  (r/atom {}))
 
 (defn init [config]
   (when-not @firebase-instance
@@ -29,11 +32,13 @@
                 :measurementId     "G-149EPVPT3N"}))
 
 (defonce db (getFirestore @firebase-instance))
-;; (connectFirestoreEmulator db "localhost" 8080)
+
+(when goog.DEBUG
+  (connectFirestoreEmulator db "localhost" 8080))
 
 (defonce registry-collection (collection db "registry"))
-(defonce agencies-collection (collection db "agencies"))
-
+;; (defonce agencies-collection (collection db "agencies"))
+(defonce groups-collection (collection db "groups"))
 
 (defonce languages {:en {:label "English" :label-short "en"}})
 
@@ -72,9 +77,18 @@
         ;;      (doc registry-collection))
         doc (if (= @project-id "new")
               (doc registry-collection)
-              (doc registry-collection @project-id))]
+              (doc registry-collection @project-id))
+        ;; md-with-group (when-not (:group @md) (assoc @md :group (-> @privileges first key)))
+        ]
     (reset! project-id nil)
-    (setDoc doc (clj->js (assoc @md :uid @userid)))))
+    ;; (setDoc doc (clj->js (assoc md-with-group :uid @userid)))
+    (setDoc doc (clj->js (if-not (:group @md)
+                           (assoc @md :group (-> @privileges first key))
+                           @md)))))
+
+(defn create-empty-doc []
+  (let [new-ref (doc registry-collection)]
+    (.-id new-ref)))
 
 (defn get-all-projects []
   (.then (getDocs (query registry-collection))
@@ -82,15 +96,57 @@
            ;; (doall (map #(.data %) (.-docs query-snapshot)))
            ^js/Array (.-docs query-snapshot))))
 
+(defn get-public-projects []
+  (.then (getDocs (query registry-collection (where "public" "==" true)))
+         (fn [query-snapshot]
+           ;; (doall (map #(.data %) (.-docs query-snapshot)))
+           ^js/Array (.-docs query-snapshot))))
+
+(defn get-user-accessible-projects
+  "Returns a list of records accessible by the current user (either public or belonging to one of his groups)"
+  []
+  (let [user-groups (-> @privileges keys clj->js)
+        q           (query registry-collection (where "group" "in" user-groups))
+        private     (getDocs q)
+        public      (get-public-projects)]
+    (.then (js/Promise.all #js [private public])
+           (fn [[pr pu]]
+             ;; Deduplicate results from the two queries
+             (let [duplicates (concat (vec pu) (vec ^js/Array (.-docs pr)))
+                   t (into {} (map #(-> [(.-id %) %]) duplicates))]
+               (vals t))))))
+
+(defn get-projects []
+  (cond
+    @is-admin (get-all-projects)
+    (not @userid) (get-public-projects)
+    :else (get-user-accessible-projects)))
+
 (defn get-project [id]
   (reset! project-id id)
   (let [doc-ref  (doc db "registry" id)]
     (getDoc doc-ref)))
 
-(defn get-agencies []
-  (.then (getDocs (query agencies-collection))
+;; (defn get-agencies []
+;;   (.then (getDocs (query agencies-collection))
+;;          (fn [query-snapshot]
+;;            ^js/Array (.-docs query-snapshot))))
+
+(defn get-groups []
+  (.then (getDocs (query groups-collection))
          (fn [query-snapshot]
            ^js/Array (.-docs query-snapshot))))
+
+(defn get-admin-level [project]
+  (get @privileges (keyword (.. project data -group))))
+
+(defn can-create []
+  (or @is-admin
+      (seq (filter #(contains? #{"admin" "editor"} (val %)) @privileges))))
+
+(defn can-edit [project]
+  (or @is-admin
+      (contains? #{"admin" "editor"} (get-admin-level project))))
 
 (defn get-user [uid]
   (let [doc-ref (doc db "users" uid)]

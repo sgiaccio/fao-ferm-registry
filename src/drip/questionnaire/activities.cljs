@@ -8,7 +8,7 @@
    [drip.menus :as menus]
    [drip.utils :as utils]))
 
-(defn activities-menu-group [{:keys [data edit]}]
+(defn activities-menu-group_ [{:keys [data edit]}]
   (let [type              (cursor data [:type])
         activity          (cursor data [:activity])
 
@@ -42,6 +42,71 @@
                                                                   :edit    edit}))
                          :label           "Activity"
                          :data            (cursor data [:activity])}]]))
+
+
+
+(defn activities-menu-group [{:keys [data edit]}]
+  (let [component          (cursor data [:admin-0])
+        category           (cursor data [:admin-1])
+        subcategory         (cursor data [:admin-2])
+
+        categories          (r/atom [])
+        subcategories        (r/atom [])
+
+        reset-category     (atom false)
+        reset-subcategory   (atom false)
+
+        components-menu   (map #(-> [(:code %) (:name %)]) menus/activities)
+
+        update_categories   (fn []
+                           (let [c (-> (filter #(= (keyword (:code %)) (keyword @component)) menus/activities) first)]
+                             (reset! categories (:children c))
+                             ;; Reset category and subcategory only after first load
+                             (when @reset-category
+                               (reset! category nil)
+                               (reset! subcategory nil))
+                             (reset! reset-category true)))
+        _                @(r/track update_categories)
+        categories-menu     (make-reaction
+                          (fn [] (map #(-> [(:code %) (:name %)]) @categories)))
+
+        update_subcategories (fn []
+                           (let [c (-> (filter #(= (keyword (:code %)) (keyword @category)) @categories) first)]
+                             (reset! subcategories (:children c))
+                             (when @reset-subcategory
+                               ;; Reset subcategory only after first load
+                               (reset! subcategory nil))
+                             (reset! reset-subcategory true)))
+        _                @(r/track update_subcategories)
+
+        subcategories-menu   (make-reaction
+                          (fn [] (map #(-> [(:code %) (:name %)]) @subcategories)))]
+    [:<>
+     [inputs/text-form-group {:label "Site name"
+                              :data  (cursor data [:site-name])
+                              :edit  edit}]
+     [inputs/form-group {:input-component (fn [data]
+                                            (inputs/select-input {:options components-menu
+                                                                  :data    data
+                                                                  :edit    edit}))
+                         :label           "Component"
+                         :data            (cursor data [:admin-0])}]
+
+     [inputs/form-group {:input-component (fn [data]
+                                            (inputs/select-input {:options @categories-menu
+                                                                  :data    data
+                                                                  :edit    edit}))
+                         :label           "Category"
+                         :data            (cursor data [:admin-1])}]
+
+     [inputs/form-group {:input-component (fn [data]
+                                            (inputs/select-input {:options @subcategories-menu
+                                                                  :data    data
+                                                                  :edit    edit}))
+                         :label           "Subcategory"
+                         :data            (cursor data [:admin-2])}]]))
+
+
 
 (defn technology [{:keys [data edit]}]
   (let [tech-menu (map #(-> [(:code %) (:name %)]) menus/technologies)
@@ -99,9 +164,7 @@
                                       (:admin-1 (:admin-area @data))
                                       (:admin-2 (:admin-area @data)))]]
 
-               [:<>
-
-                ;; [:br] ;; TODO
+               [:div {:key i} ;; TODO find better key
                 [:div
                  [:span {:href "#", :class "mt-5 flex items-center text-sm font-medium", :aria-current "n"}
                   [:span {:class "flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-indigo-600 rounded-full"}
@@ -110,7 +173,6 @@
                  (or (:adm0 admin-names) "n/a") ", "
                  (or (:adm1 admin-names) "n/a") ", "
                  (or (:adm2 admin-names) "n/a")]
-                ;; [:br] ;; TODO
                 [activities-menu-group {:data (cursor data [:activity])
                                         :edit @edit}]
     ;;  [inputs/form-group {:input-component #(inputs/select-multiple-input {:options menus/activities

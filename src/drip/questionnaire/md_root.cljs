@@ -15,9 +15,7 @@
    [drip.questionnaire.indicators :refer [indicators]]
   ;;  [drip.questionnaire.characterisation :refer [characterisation]]
    [drip.questionnaire.information :refer [information]]
-   [drip.questionnaire.results :refer [results]]
-   
-   [drip.modal :as modal]))
+   [drip.questionnaire.results :refer [results]]))
 
 
 ;; Temporary solution to reduce the loading time
@@ -28,13 +26,12 @@
              active-tab (atom :project)
              tab        (fn [tab-id label]
                           [:<>
-                           [:a {:href "javascript:void(0)"
-                                :class (str "w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm "
-                                            (if (= tab-id @active-tab)
-                                              "border-indigo-500 text-indigo-600"
-                                              "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"))
-                                :aria-current (if (= tab-id @active-tab) "page" "false")
-                                :on-click #(reset! active-tab tab-id)}
+                           [:span {:class (str "w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm cursor-pointer "
+                                               (if (= tab-id @active-tab)
+                                                 "border-indigo-500 text-indigo-600"
+                                                 "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"))
+                                   :aria-current (if (= tab-id @active-tab) "page" "false")
+                                   :on-click #(reset! active-tab tab-id)}
                             label]])]
     [:<>
      [:div
@@ -92,5 +89,4 @@
        [:button {:type "button"
                  :class "my-6 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                  :on-click #(reset! active-tab :project)}
-        "Start inserting data"])
-     (when (some? @config/modal-content) [modal/modal])]))
+        "Start inserting data"])]))

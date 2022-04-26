@@ -7,7 +7,8 @@
 
 (defn login-form []
   (with-let [email (r/atom "")
-             password (r/atom "")]
+             password (r/atom "")
+             registering (r/atom false)]
     (if (not @show-reset-password)
 
       [:div {:class "min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"}
@@ -52,23 +53,34 @@
         ;;  [:label {:for "remember_me", :class "ml-2 block text-sm text-gray-900"} "Remember me"]]
           [:div {:class "text-sm"}
            [:span {:on-click #(reset! show-reset-password true) :class "cursor-pointer font-medium text-indigo-600 hover:text-indigo-500"} "Forgot your password?"]]]
-         [:div
-          [:button {:class "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    :on-click (fn [evt]
-                                (.preventDefault evt)
-                                (auth/authenticate-user @email @password))}
-           [:span {:class "absolute left-0 inset-y-0 flex items-center pl-3"}
-          ; Heroicon name: solid/lock-closed
-            [:svg {:class "h-5 w-5 text-indigo-500 group-hover:text-indigo-400", :xmlns "http://www.w3.org/2000/svg", :viewBox "0 0 20 20", :fill "currentColor", :aria-hidden "true"}
-             [:path {:fill-rule "evenodd", :d "M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z", :clip-rule "evenodd"}]]] "Login"]]
-      ;;  [:div
-      ;;   [:button {:class "group relative w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-400 hover:from-purple-400 via-pink-500 hover:via-pink-600 to-red-500 hover:to-red-500 focus:outline-none"
-      ;;             :on-click (fn [evt]
-      ;;                         (.preventDefault evt)
-      ;;                         (auth/sign-up @email @password))}
-      ;;    [:span {:class "absolute left-0 inset-y-0 flex items-center pl-3"}] "Sign up"]]
-         ]]]
 
+         (when (not @registering)
+           [:<>
+            [:div
+             [:button {:class "group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                       :on-click (fn [evt]
+                                   (.preventDefault evt)
+                                   (auth/authenticate-user @email @password))}
+              [:span {:class "absolute left-0 inset-y-0 flex items-center pl-3"}
+               ; Heroicon name: solid/lock-closed
+               [:svg {:class "h-5 w-5 text-indigo-500 group-hover:text-indigo-400", :xmlns "http://www.w3.org/2000/svg", :viewBox "0 0 20 20", :fill "currentColor", :aria-hidden "true"}
+                [:path {:fill-rule "evenodd", :d "M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z", :clip-rule "evenodd"}]]] "Login"]]
+            [:div {:class "font-semibold mt-10"} "No account? "
+             [:span {:on-click #(reset! registering true)
+                     :class "text-blue-700 hover:text-blue-800 cursor-pointer underline"} "Register instead"]]])
+
+         (when @registering
+           [:<>
+            [:div
+             [:button {:class "group relative w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-400 hover:from-purple-400 via-pink-500 hover:via-pink-600 to-red-500 hover:to-red-500 focus:outline-none"
+                       :on-click (fn [evt]
+                                   (.preventDefault evt)
+                                   (auth/sign-up @email @password))}
+              [:span {:class "absolute left-0 inset-y-0 flex items-center pl-3"}] "Sign up"]]
+            [:div {:class "font-semibold mt-10"} "Got an account? "
+             [:span {:on-click #(reset! registering false)
+                     :class "text-blue-700 hover:text-blue-800 cursor-pointer underline"} "Login instead"]]])]]]
+      
 
 
 

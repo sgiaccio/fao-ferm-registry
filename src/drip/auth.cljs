@@ -1,8 +1,8 @@
 (ns drip.auth
   (:require
-   [drip.config :refer [auth-loaded userid get-user is-admin]]
+   [drip.config :refer (auth-loaded userid is-admin privileges)]
    ["firebase/auth" :refer (getAuth
-                            ;; connectAuthEmulator
+                            connectAuthEmulator
                             createUserWithEmailAndPassword
                             signInWithEmailAndPassword
                             onAuthStateChanged
@@ -13,28 +13,35 @@
    ))
 
 
+(goog-define EMULATOR false)
 
-(defonce auth (getAuth))
-;; (connectAuthEmulator auth "http://localhost:9099")
-
-
+(defonce auth (getAuth))  
 (defonce functions (getFunctions))
-;; (connectFunctionsEmulator functions "localhost", 5001)
 
-(defn getUserList []
+
+(when goog.DEBUG
+  (connectFunctionsEmulator functions "localhost", 5001)
+  (connectAuthEmulator auth "http://localhost:9099"))
+
+(defn get-user-list []
   (let [getUsers (httpsCallable functions "listAllUsers")]
-    (.then (getUsers)
-           #(js/console.log (.-data %)))))
+    (getUsers)))
 
-(defn addAdminRole [email]
-  (let [addAdminRole (httpsCallable functions "addAdminRole")]
-    (.then (addAdminRole (clj->js {:email email}))
-           #(js/console.log %))))
+;; (defn add-admin-role [email]
+;;   (let [addAdminRole (httpsCallable functions "addAdminRole")]
+;;     (.then (addAdminRole (clj->js {:email email}))
+;;            #(js/console.log %))))
 
-(defn assignToGroup [email group role]
-  (let [assignToGroup (httpsCallable functions "assignToGroup")]
-    (.then (assignToGroup (clj->js { :email email :group group :role role }))
-           #(js/console.log %))))
+(defn set-user-privileges
+  "Returns a promise"
+  [email privileges admin]
+  (let [setUserPrivileges (httpsCallable functions "setUserPrivileges")]
+    (setUserPrivileges (clj->js {:email email :privileges privileges :admin admin}))))
+
+;; (defn set-group-role [email group role]
+;;   (let [setGroupRole (httpsCallable functions "setGroupRole")]
+;;     (.then (setGroupRole (clj->js { :email email :group group :role role }))
+;;            #(js/console.log %))))
 
 ;; createUserWithEmailAndPassword(auth, email, password)
 ;;   .then((userCredential) => {
@@ -52,15 +59,25 @@
 (defn sign-up [email password]
   (-> (createUserWithEmailAndPassword auth email password)))
 
+(defn get-id-token []
+  (.. auth -currentUser getIdTokenResult))
+
+(defn get-user-access-privileges []
+  (.then (get-id-token)
+         #(let [claims (:claims (js->clj % :keywordize-keys true))]
+            (reset! is-admin (:admin claims))
+            (reset! privileges (:privileges claims)))))
+
 (defn authenticate-user [email password]
   (-> (signInWithEmailAndPassword auth email password)
       (.then (fn [user-credential]
                (let [uid (-> user-credential .-user .-uid)]
                  (reset! userid uid)
-                 (.then (get-user uid)
-                        (fn [fb-obj]
-                          (reset! is-admin (some #(= % "admin") (-> fb-obj .data js->clj (get "roles")))))))))
-      (.catch #(js/alert "Error logging in"))))
+                 ;;  (.then (get-user uid)
+                 ;;         (fn [fb-obj]
+                 ;;           (reset! is-admin (some #(= % "admin") (-> fb-obj .data js->clj (get "roles"))))))
+                 (get-user-access-privileges))))
+      (.catch #(js/alert (str "Error logging in") ))))
 
 (defn logout []
   (-> (signOut auth)
@@ -77,9 +94,7 @@
                         (let [uid (.-uid user)]
                           ;; (js/console.log (get-access-token))
                           (reset! userid uid)
-                          (.then (get-user uid)
-                                 (fn [fb-obj]
-                                   (reset! is-admin (some #(= % "admin") (-> fb-obj .data js->clj (get "roles")))))))
+                          (get-user-access-privileges))
                         (reset! userid nil))))
 
 (defn send-password-reset-email [email]
@@ -90,9 +105,6 @@
                   (if (= error-code "auth/user-not-found")
                     (js/alert "Unknown user")
                     (js/alert "Error sending password reset email. Please try again")))))))
-
-(defn get-users []
-  (.then ()))
 
 
 ;; sendPasswordResetEmail(auth, email)

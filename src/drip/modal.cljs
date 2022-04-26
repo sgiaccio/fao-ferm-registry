@@ -24,7 +24,7 @@
        [:h3 {:class "text-lg leading-6 font-medium text-gray-900", :id "modal-title"}
         (:title @modal-content)]
        [:div {:class "mt-2"}
-        [:p {:class "text-sm text-gray-500"}
+        [:div {:class "text-sm text-gray-500"}
          (:message @modal-content)]]]]
     ;;  [:div {:class "mt-5 sm:mt-4 sm:flex sm:flex-row-reverse"}
     ;;   [:button {:type "button", :class "w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"} "Deactivate"]

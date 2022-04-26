@@ -111,9 +111,12 @@
     [:div {:class "mt-6 sm:mt-5 space-y-6 sm:space-y-5"}
      [:h1 {:class "text-3xl"} "Area of Interest (AOI)"]
 
-     [:p "Identification of geographic areas of ecosystem restoration is key for geospatial applications. One project implements ecosystem restoration in one or more geographic areas. Projects can identify one or more project areas. Identification of activities, indicators, characterization and results will be provided for each area of interest. Geographic areas can be identified based on (1) administrative areas, (2) polygons/vector information provided and/or (3) drawn directly on the platform."]
-
-     [:h3 "Please choose one or more level 2 administrative areas"]
+     [:p "Identification of geographic areas of ecosystem restoration is key for geospatial applications. One project implements ecosystem restoration in one or more geographic areas. Projects can identify one or more project areas. Identification of activities, indicators, characterization and results will be provided for each area of interest. Geographic areas can be identified based on different options:"]
+     [:ol {:class "list-decimal ml-10"}
+      [:li "Select administrative areas"]
+      [:li "Upload polygons/vector, "]
+      [:li "Draw directly on the platform."]]
+     [:h3 "Option 1: Select administrartive area"]
 
 
     ;;  [inputs/multi-form-group-2 {:input-components {:date #(inputs/date-and-type-input {:data % :edit @edit})}
@@ -140,23 +143,23 @@
 
 
         ; Demo multy-type field group
-   [inputs/multi-input {:input-components {;;:keyword    #(inputs/keywords {:data % :edit @edit})
+     [inputs/multi-input {:input-components {;;:keyword    #(inputs/keywords {:data % :edit @edit})
                                            ;;:text       #(inputs/text-input {:data % :edit @edit})
-                                           :admin-area #(admin2 {:data % :edit @edit})
-                                           :draw       #(r/as-element [map-input])
-                                           :shapefile  #(upload-shapefile {:data % :edit @edit})}
-                        :new-data         {;;:keyword    {:type :author :keywords [{:keyword "asdf"}]}
+                                             :admin-area #(admin2 {:data % :edit @edit})
+                                             :draw       #(r/as-element [map-input])
+                                             :shapefile  #(upload-shapefile {:data % :edit @edit})}
+                          :new-data         {;;:keyword    {:type :author :keywords [{:keyword "asdf"}]}
                                            ;;:text       "new text"
-                                           :admin-area nil
-                                           :draw       nil
-                                           :shapefile  nil}
-                        :add-labels       {;;:text       "Text"
+                                             :admin-area nil
+                                             :draw       nil
+                                             :shapefile  nil}
+                          :add-labels       {;;:text       "Text"
                                            ;;:keyword    "Keyword"
-                                           :admin-area "Admin area"
-                                           :draw       "Draw"
-                                           :shapefile  "Upload ShapeFile"}
-                        :data             aoiData
-                        :edit             @edit}]
+                                             :admin-area "Admin area"
+                                             :draw       "Draw"
+                                             :shapefile  "Upload ShapeFile"}
+                          :data             aoiData
+                          :edit             @edit}]
 
 
     ;;  [map-input]
@@ -242,5 +245,4 @@
 
    ; DEBUG data structure
      [:hr]
-     [:div [:pre (with-out-str (pp/pprint @aoiData))]]
-     ]))
+     [:div [:pre (with-out-str (pp/pprint @aoiData))]]]))

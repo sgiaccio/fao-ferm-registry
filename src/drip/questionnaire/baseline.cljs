@@ -142,7 +142,7 @@
                                         (:admin-0 (:admin-area @data))
                                         (:admin-1 (:admin-area @data))
                                         (:admin-2 (:admin-area @data)))]]
-                 [:<>
+                 [:div {:key i} ;; TODO - find a better key
                   [:span {:href "#", :class "mt-5 flex items-center text-sm font-medium", :aria-current "n"}
                    [:span {:class "flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-indigo-600 rounded-full"}
                     [:span {:class "text-indigo-600"} (+ 1 i)]]]

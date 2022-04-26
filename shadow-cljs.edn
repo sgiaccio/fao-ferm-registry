@@ -5,7 +5,9 @@
                   :aoi {:entries [drip.questionnaire.aoi]
                         :depends-on #{:main}}}
         :output-dir "public/js"
-        :target :browser}
+        :target :browser
+       ;;  :dev {:closure-defines {drip.auth/EMULATOR true}}
+        }
   :cards {:asset-path "/js"
           :modules {:main {:init-fn drip.cards/main}}
           :compiler-options {:devcards true}
