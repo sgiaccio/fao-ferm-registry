@@ -42,10 +42,11 @@ pipelines:
           <<: *deploy
           deployment: review 
     master:
+      - step:
+          <<: *deploy-functions
+          deployment: prod-gcf
       - step: *build
       - step:
           <<: *deploy
           deployment: prod
-      - step:
-          <<: *deploy-functions
-          deployment: prod-gcf
+
