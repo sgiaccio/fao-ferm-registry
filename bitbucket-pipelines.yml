@@ -23,6 +23,17 @@ definitions:
               FIREBASE_TOKEN: $FIREBASE_TOKEN 
               PROJECT_ID: $PROJECT_ID
               DEBUG: 'true'
+
+    - step: &deploy-functions
+        name: Deploy_Functions
+        image: google/cloud-sdk:latest
+        script:
+          - export REGION=europe-west3
+          - export BUCKET="gs://fao-ferm-functions-staging"
+          - echo $PROJECT_KEYFILE > gcloud-api-key.json
+          - export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/gcloud-api-key.json"
+          - gcloud auth activate-service-account --key-file "${GOOGLE_APPLICATION_CREDENTIALS}"
+          - gcloud functions deploy get_zonal_stats --region=$REGION --source=./cloud-functions/functions/get_area --runtime=python39 --stage-bucket=$BUCKET --trigger-http --allow-unauthenticated
 pipelines:
   branches:
     review:
@@ -35,3 +46,6 @@ pipelines:
       - step:
           <<: *deploy
           deployment: prod
+      - step:
+          <<: *deploy-functions
+          deployment: prod-gcf
