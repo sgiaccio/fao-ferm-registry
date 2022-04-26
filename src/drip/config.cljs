@@ -23,13 +23,21 @@
   (when-not @firebase-instance
     (reset! firebase-instance (initializeApp (clj->js config)))))
 
-(init (clj->js {:apiKey            "AIzaSyC1svtyo8lap_mUZtgn65n76ZIKsvgoxYE"
-                :authDomain        "fao-ferm2-review.firebaseapp.com"
-                :projectId         "fao-ferm2-review"
-                :storageBucket     "fao-ferm2-review.appspot.com"
-                :messagingSenderId "469091359823"
-                :appId             "1:469091359823:web:3770a8e98eef6e9e23de3a"
-                :measurementId     "G-149EPVPT3N"}))
+(init
+ (clj->js (if goog.DEBUG
+            {:apiKey            "AIzaSyC1svtyo8lap_mUZtgn65n76ZIKsvgoxYE"
+             :authDomain        "fao-ferm2-review.firebaseapp.com"
+             :projectId         "fao-ferm2-review"
+             :storageBucket     "fao-ferm2-review.appspot.com"
+             :messagingSenderId "469091359823"
+             :appId             "1:469091359823:web:3770a8e98eef6e9e23de3a"
+             :measurementId     "G-149EPVPT3N"}
+            {:apiKey            "AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M"
+             :authDomain        "fao-ferm.firebaseapp.com"
+             :projectId         "fao-ferm"
+             :storageBucket     "fao-ferm.appspot.com"
+             :messagingSenderId "1081330009070"
+             :appId             "1:1081330009070:web:bdfbf7c72821c9be1784ff"})))
 
 (defonce db (getFirestore @firebase-instance))
 

@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const auth = require("firebase-auth")
+// const auth = require("firebase-auth")
 // import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 
