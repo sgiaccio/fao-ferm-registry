@@ -33,7 +33,7 @@ definitions:
           - echo $PROJECT_KEYFILE > gcloud-api-key.json
           - export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/gcloud-api-key.json"
           - gcloud auth activate-service-account --key-file "${GOOGLE_APPLICATION_CREDENTIALS}"
-          - gcloud functions deploy get_zonal_stats --region=$REGION --source=./cloud-functions/functions/get_area --runtime=python39 --stage-bucket=$BUCKET --trigger-http --allow-unauthenticated
+          - gcloud functions deploy get_zonal_stats --region=$REGION --source=./cloud-functions/functions/get_area --runtime=python39 --stage-bucket=$BUCKET #--trigger-http --allow-unauthenticated
 pipelines:
   branches:
     review:
