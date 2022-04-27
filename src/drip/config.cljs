@@ -24,6 +24,15 @@
     (reset! firebase-instance (initializeApp (clj->js config)))))
 
 (init
+ {:apiKey            "AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M"
+  :authDomain        "fao-ferm.firebaseapp.com"
+  :projectId         "fao-ferm"
+  :storageBucket     "fao-ferm.appspot.com"
+  :messagingSenderId "1081330009070"
+  :appId             "1:1081330009070:web:bdfbf7c72821c9be1784ff"})
+
+
+(init
  (clj->js (if goog.DEBUG
             {:apiKey            "AIzaSyC1svtyo8lap_mUZtgn65n76ZIKsvgoxYE"
              :authDomain        "fao-ferm2-review.firebaseapp.com"

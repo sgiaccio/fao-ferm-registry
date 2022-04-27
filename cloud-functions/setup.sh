@@ -20,10 +20,14 @@ bq mk registry.areas
 # Set up the streaming Cloud Function
 FUNCTIONS_BUCKET=${DEVSHELL_PROJECT_ID}-functions
 gsutil mb -c regional -l ${REGION} gs://${FUNCTIONS_BUCKET}
-gcloud functions deploy streaming --region=${REGION} \
-    --source=./functions/streaming --runtime=python37 \
+gcloud functions deploy get_zonal_stats --region=${REGION} \
+    --source=./functions/get_area --runtime=python39 \
     --stage-bucket=${FUNCTIONS_BUCKET} \
-    --trigger-bucket=${FILES_SOURCE}
+    --trigger-http --allow-unauthenticated
+# gcloud functions deploy streaming --region=${REGION} \
+#     --source=./functions/streaming --runtime=python37 \
+#     --stage-bucket=${FUNCTIONS_BUCKET} \
+#     --trigger-bucket=${FILES_SOURCE}
 # Verify that the function was deployed.
 # gcloud functions describe streaming  --region=${REGION} \
 #     --format="table[box](entryPoint, status, eventTrigger.eventType)"

@@ -81,7 +81,7 @@ exports.addAdminRole = functions.https.onCall(async (data, context) => {
     }
 });
 
-exports.setUserPrivileges = functions.https.onCall(async ({email, privileges, admin: _admin}, context) => {
+exports.setUserPrivileges = functions.https.onCall(async ({email, privileges = {}, admin: _admin}, context) => {
     // if (!GROUP_ROLES.includes(role)) {
     //     throw new functions.https.HttpsError('invalid-argument', `Invalid role: ${role}`);
     // }
