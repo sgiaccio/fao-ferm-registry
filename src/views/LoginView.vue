@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Info from "@/components/project/Info.vue";
+import Login from "@/components/login/Login.vue";
 </script>
 
 <template>
   <main>
-    <Info />
+    <Login />
   </main>
 </template>

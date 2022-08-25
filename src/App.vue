@@ -1,7 +1,19 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import Navbar from "./components/Navbar.vue"
+import Navbar from "./components/Navbar.vue";
+
+import { onBeforeMount } from "vue";
+import { useAuthStore } from "./stores/auth"
+
 // import HelloWorld from "./components/HelloWorld.vue";
+
+// import "./lib/firestore";
+
+
+onBeforeMount(() => {
+  const { fetchUser } = useAuthStore();
+  fetchUser();
+})
 </script>
 
 <template>

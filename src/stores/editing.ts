@@ -5,9 +5,6 @@ export const useEditingStore = defineStore({
   state: () => ({
     editing: false,
   }),
-//   getters: {
-//     doubleCount: (state) => state.counter * 2,
-//   },
   actions: {
     toggleEditing() {
       this.editing = !this.editing;

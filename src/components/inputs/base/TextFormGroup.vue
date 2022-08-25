@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import baseProps from "./formGroupProps"
-import FormGroup from "./FormGroup.vue"
+import baseProps from "../formGroupProps"
+import FormGroup from "../FormGroup.vue"
 import TextInput from "./TextInput.vue"
 
 defineProps({
@@ -13,6 +13,10 @@ defineProps({
 
 
 const emit = defineEmits(['update:modelValue'])
+
+function azz(value: string) {
+    emit('update:modelValue', value)
+}
 </script>
 
 <template>
@@ -20,7 +24,8 @@ const emit = defineEmits(['update:modelValue'])
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
         <TextInput :value="modelValue"
+                   class="text-black"
                    :placeholder="placeholder"
-                   @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"></TextInput>
+                   @update:modelValue="azz"></TextInput>
     </FormGroup>
 </template>

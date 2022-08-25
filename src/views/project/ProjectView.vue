@@ -20,6 +20,7 @@ const tabs = computed (() => [
   { name: 'Information', href: 'information', current: 'information' === route.name },
   { name: 'Results', href: 'results', current: 'results' === route.name },
 ])
+
 </script>
 
 <script setup lang="ts">
@@ -36,13 +37,13 @@ const tabs = computed (() => [
     </div>
     <div class="hidden sm:block">
         <div class="border-b border-gray-200">
-        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-            <router-link v-for="tab in tabs" :key="tab.name" :href="tab.href" :class="[tab.current ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']" :aria-current="tab.current ? 'page' : undefined"
-                         :to="tab.href">{{tab.name}}</router-link>
-            <!-- <a v-for="tab in tabs" :key="tab.name" :href="tab.href" :class="[tab.current ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']" :aria-current="tab.current ? 'page' : undefined">
-                {{ tab.name }}
-            </a> -->
-        </nav>
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <router-link v-for="tab in tabs"
+                             :key="tab.name"
+                             :href="tab.href"
+                             :class="[tab.current ? 'border-indigo-500 text-indigo-600 dark:text-indigo-100' : 'border-transparent text-gray-500 dark:text-indigo-300 hover:text-gray-700 dark:hover:text-indigo-200 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']" :aria-current="tab.current ? 'page' : undefined"
+                             :to="tab.href">{{tab.name}}</router-link>
+            </nav>
         </div>
     </div>
     </div>

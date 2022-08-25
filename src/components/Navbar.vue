@@ -1,7 +1,13 @@
-<script setup>
+<script setup lang="ts">
 
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/vue/outline'
+
+import { useAuthStore } from "../stores/auth"
+
+// import { storeToRefs } from 'pinia'
+// import { useAuthStore } from '../stores/auth'
+// const { userId, privileges } = storeToRefs(useAuthStore())
 
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
@@ -9,6 +15,11 @@ const navigation = [
   { name: 'Projects', href: '#', current: false },
   { name: 'Calendar', href: '#', current: false },
 ]
+
+function logout() {
+  const authStore = useAuthStore();
+  authStore.logout();
+}
 </script>
 
 <template>
@@ -58,7 +69,9 @@ const navigation = [
                   <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Settings</a>
                 </MenuItem>
                 <MenuItem v-slot="{ active }">
-                  <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Sign out</a>
+                  <a href="#"
+                     :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
+                     @click="logout">Sign out</a>
                 </MenuItem>
               </MenuItems>
             </transition>

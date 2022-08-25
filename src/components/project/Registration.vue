@@ -1,21 +1,20 @@
 <script setup lang="ts">
 // import { defineComponent } from '@vue/composition-api'
-import TextInput from "../inputs/TextInput.vue";
-import TextFormGroup from "../inputs/TextFormGroup.vue";
-import DateFormGroup from "../inputs/DateFormGroup.vue";
-import TextareaFormGroup from "../inputs/TextareaFormGroup.vue";
-import SelectFormGroup from "../inputs/SelectFormGroup.vue";
+import TextInput from "../inputs/base/TextInput.vue";
+import TextFormGroup from "../inputs/base/TextFormGroup.vue";
+import DateFormGroup from "../inputs/base/DateFormGroup.vue";
+import TextareaFormGroup from "../inputs/base/TextareaFormGroup.vue";
+import SelectFormGroup from "../inputs/base/SelectFormGroup.vue";
 import MultiInput from "../inputs/MultiInput.vue";
 import MultiInputFormGroup from "../inputs/MultiInputFormGroup.vue";
-
+import PointsOfContact from "../inputs/pointsOfContact/PointsOfContact.vue"
+import KeywordsInput from "../inputs/KeywordsInput.vue"
 import { ref } from 'vue'
 
 
-import { h } from 'vue'
+// import { h } from 'vue'
 
-const sampleData = {
-  created_by: "0nLfgGHB4uYvklHbzjlJP4K4Fv13",
-  project: {
+const data = ref({
     keywords: [
       {
         keywordGroup: {
@@ -56,25 +55,25 @@ const sampleData = {
           role: "author",
           organization: "asdf",
           individualName: "asdf",
-          address: null
+          // address: null
         }
       }
     ],
     purpose: "objectives",
     endingDate: "2022-08-21",
     description: "description",
-    title: "test admin asdf"
+    title: "test admin"
   },
-  updateTime: {
-    seconds: 1659502327,
-    nanoseconds: 151000000
-  },
-  createTime: {
-    seconds: 1651849897,
-    nanoseconds: 160000000
-  },
-  group: "fMBz8DktwRHxLjVgMSpg"
-}
+  // updateTime: {
+  //   seconds: 1659502327,
+  //   nanoseconds: 151000000
+  // },
+  // createTime: {
+  //   seconds: 1651849897,
+  //   nanoseconds: 160000000
+  // },
+  // group: "fMBz8DktwRHxLjVgMSpg"
+)
 
 // export default defineComponent({
 //   setup() {
@@ -114,8 +113,47 @@ const multiInputComponents = {
 
 
 <template>
+  <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+    <h1 class="text-3xl dark:text-white">Project Registration</h1>
+    <p class="dark:text-white">In this tab, basic information about your project is needed. The title and a summary of the aims and expected results of the project can be provided in the description section. You also need to provide further information such as when the project is expected to start and end, sources of funding and responsible organisms.</p>
+    <div class="my-6 font-bold dark:text-white">uuid:
+      <span class="font-mono">{{data.uuid}}</span>
+    </div>
+
+    <div class="divide-y divide-purple-800">
+      <TextFormGroup
+          v-model="data.title"
+          label="Title"
+          description="Provide the title of your project as it is stated in the official project document">
+      </TextFormGroup>
+      <TextareaFormGroup
+          v-model="data.description"
+          label="Description"
+          description="Describe briefly the main objective(s) and activity of your project (maximum 4 lines)"></TextareaFormGroup>
+      <DateFormGroup
+          v-model="data.startingDate"
+          label="Starting date"
+          description="Date when the project started"></DateFormGroup>
+      <DateFormGroup
+          v-model="data.endingDate"
+          label="Ending date"
+          description="Date when the project finished"></DateFormGroup>
+      <TextFormGroup
+          v-model="data.document"
+          label="Document">
+      </TextFormGroup> <!-- TODO -->
+      <TextareaFormGroup
+          v-model="data.purpose"
+          label="Project Objectives"
+          description="Summary of the intentions with which the resource(s) was developed"></TextareaFormGroup>
+      <PointsOfContact
+          v-model="data.pointsOfContact"></PointsOfContact>
+      <KeywordsInput></KeywordsInput>
+    </div>
+  </div>
+
   <!-- <DynamicHeading level=2>asdf</DynamicHeading> -->
-  {{JSON.stringify(mi, null, 2)}}
+  <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre>
   <MultiInput :inputComponents="multiInputComponents"
               v-model="mi"></MultiInput>
   <br>
