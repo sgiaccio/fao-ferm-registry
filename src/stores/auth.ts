@@ -128,7 +128,7 @@ export const useAuthStore = defineStore({
 
                     await router.isReady();
                     if (router.currentRoute.value.path === "/login") {
-                        router.push("/projects/1/info"); // TODO
+                        router.push(this.returnUrl); // TODO
                     }
                 }
             });

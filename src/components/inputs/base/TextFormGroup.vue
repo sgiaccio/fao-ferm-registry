@@ -6,15 +6,17 @@ import TextInput from "./TextInput.vue"
 defineProps({
     ...baseProps,
     ...{
-        modelValue: { type: String },
-        placeholder: { type: String }
+        modelValue:  { type: String },
+        placeholder: { type: String },
+        required:    { type: Boolean, default: false }
     }
 });
 
 
+
 const emit = defineEmits(['update:modelValue'])
 
-function azz(value: string) {
+function valueChanged(value: string) {
     emit('update:modelValue', value)
 }
 </script>
@@ -23,9 +25,11 @@ function azz(value: string) {
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
-        <TextInput :value="modelValue"
-                   class="text-black"
-                   :placeholder="placeholder"
-                   @update:modelValue="azz"></TextInput>
+        <TextInput
+            :model-value="modelValue"
+            :placeholder="placeholder"
+            @update:modelValue="valueChanged"
+            :required="required"
+        />
     </FormGroup>
 </template>

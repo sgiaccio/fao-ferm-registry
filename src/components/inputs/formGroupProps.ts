@@ -1,6 +1,7 @@
 export default {
-    label: { type: String, required: true },
+    label: { type: String },
     description: { type: String },
     dangerousHtmlDescription: { type: String },
-    info: { type: String } // Unused for now
+    info: { type: String }, // Unused for now
+    enabled: { type: Function, required: false, default: () => true }
 }

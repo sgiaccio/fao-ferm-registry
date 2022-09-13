@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { TrashIcon } from '@heroicons/vue/outline';
+
 const props = defineProps({
-    modelValue: null,
+    modelValue: { type: null },
     inputComponents: null,
     numbering: Boolean,
     deleteConfirmMsg: String
@@ -16,60 +18,47 @@ const props = defineProps({
 //     }
 // ]
 
-// const emit = defineEmits(['update:modelValue'])
-// @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)
-
-// function updateValue(i: number, v: any) {
-//     const value = props.modelValue[i]
-//     value[getKey(value)] = v
-//     props.modelValue.splice(i, 1, value)
-//     console.log(props.modelValue)
-// }
+const emit = defineEmits(["update:modelValue"]);
 
 function getKey(obj: any) {
     const kyz = Object.keys(obj);
-    if (kyz.length === 1){
-        return kyz[0]
+    if (kyz.length === 1) {
+        return kyz[0];
     } else {
-       throw Error(`One and only one key is allowed - found ${kyz.length}`)
+       throw Error(`One and only one key is allowed - found ${kyz.length}`);
     }
 }
 
+
 function addNewItem(type: string) {
-    props.modelValue.push({ [type]: {} })
+    // Not updtqeing modelValue directly, is it needed?
+    const tempProp = props.modelValue ? [...props.modelValue] : []
+    tempProp.push({ [type]: props.inputComponents[type].newData });
+    emit('update:modelValue', tempProp)
 }
 
 function deleteItem(i: number) {
     if (confirm("Are you sure you want to delete this item?")) {
-        props.modelValue.splice(i, 1)
+        const tempProp = props.modelValue ? [...props.modelValue] : []
+        tempProp.splice(i, 1);
+        emit('update:modelValue', tempProp)
     }
 }
 </script>
 
 <template>
-    <!-- <div v-for="i in inputComponents">
-        {{i.component}}
-        {{i.props}}
-        <Component :is="i.component"
-                   v-bind="i.props"
-                   :value="modelValue"
-                   @input="updateValue"
-        ></component>
-    </div> -->
-    <div class="border rounded rounded-md divide-y border-purple-800 divide-purple-800">
+    <div class="border-2 rounded-md divide-y-2 border-stone-700 divide-stone-700">
         <div v-for="v, i in modelValue" class="p-3">
             <component
-              :is="inputComponents[getKey(v)].component"
-              v-bind="inputComponents[getKey(v)].props"
-              v-model="v[getKey(v)]">
-            </component>
-            <div class="w-full text-red-700 text-right hover:text-orange-600">
+                :key="v"
+                :is="inputComponents[getKey(v)].component"
+                v-bind="inputComponents[getKey(v)].props"
+                v-model="v[getKey(v)]" />
+            <div class="w-full text-orange-600 text-right hover:text-orange-500">
                 <button
-                  type="button"
-                  @click="deleteItem(i)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    type="button"
+                    @click="deleteItem(i)">
+                    <TrashIcon class="h-6 w-6" ></TrashIcon>
                 </button>
             </div>
         </div>
@@ -83,23 +72,6 @@ function deleteItem(i: number) {
         </div>
     </div>
 </template>
-
-
-
-[:button {:type "button" 
-                   :on-click #(reset! data (into [] (conj @data new-data)))
-                   :class "inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"}
-          "Add " (-> add-labels first val)]))]
-
-
-
-
-
-
-
-
-
-
 
 
 <!-- (defn multi-input

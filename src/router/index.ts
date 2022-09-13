@@ -1,3 +1,5 @@
+import { useAuthStore } from "../stores/auth"
+
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
@@ -10,7 +12,12 @@ import ProjectIndicators from "../views/project/IndicatorsView.vue";
 import ProjectInformation from "../views/project/InformationView.vue";
 import ProjectResults from "../views/project/ResultsView.vue";
 
-import { useAuthStore } from "../stores/auth"
+import BestPracticeView from "../views/bestpractices/BestPracticeView.vue";
+import ObjectivesView from "../views/bestpractices/ObjectivesView.vue";
+import MethodologyView from "../views/bestpractices/MethodologyView.vue";
+import KeyFactorsView from "../views/bestpractices/KeyFactorsView.vue";
+import BenefitsView from "../views/bestpractices/BenefitsView.vue";
+import AdditionalResourcesView from "../views/bestpractices/AdditionalResourcesView.vue";
 
 
 const router = createRouter({
@@ -92,6 +99,52 @@ const router = createRouter({
           }
         }
       ]
+    },
+    {
+      path: '/bestpractices/:id',
+      component: BestPracticeView,
+      meta: {
+        requiresAuth: true
+      },
+      children: [
+        {
+          path: 'objectives',
+          name: 'objectives',
+          component: ObjectivesView,
+          meta: {
+            requiresAuth: true
+          }
+        }, {
+          path: 'methodology',
+          name: 'methodology',
+          component: MethodologyView,
+          meta: {
+            requiresAuth: true
+          }
+        }, {
+          path: 'keyfactors',
+          name: 'keyfactors',
+          component: KeyFactorsView,
+          meta: {
+            requiresAuth: true
+          }
+        }, {
+          path: 'benefits',
+          name: 'benefits',
+          component: BenefitsView,
+          meta: {
+            requiresAuth: true
+          }
+        }, {
+          path: 'additionalresources',
+          name: 'additionalresources',
+          component: AdditionalResourcesView,
+          meta: {
+            requiresAuth: true
+          }
+        }
+
+      ]
     }
   ],
 });
@@ -110,12 +163,14 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
+
   if (to.path === "/login" && authStore.user) {
     next("/");
     return;
   }
 
-  if (to.matched.some(record => record.meta.requiresAuth && !authStore.user)) {
+  if (to.matched.some(record => record.meta.requiresAuth)  && !authStore.user) {
+    authStore.returnUrl = to.fullPath;
     next("/login");
     return;
   }

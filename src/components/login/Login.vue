@@ -31,7 +31,7 @@ function togglePasswordReset() {
                 <div class="dark:text-gray-300">
                     Welcome to the
                     <span class="font-bold dark:text-gray-200">FERM registry</span>!
-                    The Framework for Ecosystem Restoration Monitoring Registry aims to provide a register of ecosystem restoration projects and initiatives, in the context of the
+                    The Framework for Ecosystem Restoration Monitoring Registry aims to provide a register of ecosystem restoration initiatives and initiatives, in the context of the
                     <span class="font-bold">United Nations Decade on Ecosystem Restoration</span>,
                     whilst ensuring interoperability with other restoration monitoring platforms and initiatives.
                 </div>

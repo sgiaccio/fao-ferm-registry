@@ -5,9 +5,8 @@ import PointOfContact from "./PointOfContact.vue"
 defineProps<{
     modelValue: {
         poc: {
-            role: string,
-            organization: string,
             individualName: string,
+            organization: string,
             email: string
         }
     }[];
@@ -21,7 +20,6 @@ const multiInputComponents = {
         addItemLabel: "POC",
     },
 }
-
 </script>
 
 <template>
