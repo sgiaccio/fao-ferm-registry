@@ -12,6 +12,7 @@ import ProjectIndicators from "../views/project/IndicatorsView.vue";
 import ProjectInformation from "../views/project/InformationView.vue";
 import ProjectResults from "../views/project/ResultsView.vue";
 
+import BestPracticeListView from "../views/bestpractices/BestPracticeListView.vue";
 import BestPracticeView from "../views/bestpractices/BestPracticeView.vue";
 import ObjectivesView from "../views/bestpractices/ObjectivesView.vue";
 import MethodologyView from "../views/bestpractices/MethodologyView.vue";
@@ -101,7 +102,11 @@ const router = createRouter({
       ]
     },
     {
-      path: '/bestpractices/:id',
+      path: '/best-practices',
+      component: BestPracticeListView
+    },
+    {
+      path: '/best-practices/:id',
       component: BestPracticeView,
       meta: {
         requiresAuth: true
@@ -112,38 +117,42 @@ const router = createRouter({
           name: 'objectives',
           component: ObjectivesView,
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            dataPath: 'objectives'
           }
         }, {
           path: 'methodology',
           name: 'methodology',
           component: MethodologyView,
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            dataPath: 'methodology'
           }
         }, {
-          path: 'keyfactors',
-          name: 'keyfactors',
+          path: 'key-factors',
+          name: 'key-factors',
           component: KeyFactorsView,
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            dataPath: 'keyFactors'
           }
         }, {
           path: 'benefits',
           name: 'benefits',
           component: BenefitsView,
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            dataPath: 'benefits'
           }
         }, {
-          path: 'additionalresources',
-          name: 'additionalresources',
+          path: 'additional-resources',
+          name: 'additional-resources',
           component: AdditionalResourcesView,
           meta: {
-            requiresAuth: true
+            requiresAuth: true,
+            dataPath: 'additionalResources'
           }
         }
-
       ]
     }
   ],

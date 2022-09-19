@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { TrashIcon } from '@heroicons/vue/outline';
+import { computed } from 'vue';
+import { TrashIcon } from '@heroicons/vue/20/solid';
+
 
 const props = defineProps({
     modelValue: { type: null },
     inputComponents: null,
-    numbering: Boolean,
+    numbering: null, // TODO fn(number) => string
     deleteConfirmMsg: String
 });
 
@@ -31,9 +33,10 @@ function getKey(obj: any) {
 
 
 function addNewItem(type: string) {
-    // Not updtqeing modelValue directly, is it needed?
-    const tempProp = props.modelValue ? [...props.modelValue] : []
-    tempProp.push({ [type]: props.inputComponents[type].newData });
+    // Not updating modelValue directly, is it needed?
+    const tempProp = props.modelValue ? props.modelValue : []
+    const newData = props.inputComponents[type].newData;
+    tempProp.push({ [type]: newData ? JSON.parse(JSON.stringify(newData)) : undefined });
     emit('update:modelValue', tempProp)
 }
 
@@ -41,14 +44,23 @@ function deleteItem(i: number) {
     if (confirm("Are you sure you want to delete this item?")) {
         const tempProp = props.modelValue ? [...props.modelValue] : []
         tempProp.splice(i, 1);
-        emit('update:modelValue', tempProp)
+        emit('update:modelValue', tempProp);
     }
 }
+
+const addLabels = computed(() => {
+    const arr: string[] = [];
+    for (const [key, value] of Object.entries(props.inputComponents)) {
+        arr.push(props.inputComponents[key].addItemLabel);
+    }
+    return arr.sort();
+});
 </script>
 
 <template>
     <div class="border-2 rounded-md divide-y-2 border-stone-700 divide-stone-700">
         <div v-for="v, i in modelValue" class="p-3">
+            <div class="text-gray-100 text-lg font-bold" v-if="numbering">{{numbering(i + 1)}}</div>
             <component
                 :key="v"
                 :is="inputComponents[getKey(v)].component"
@@ -58,16 +70,16 @@ function deleteItem(i: number) {
                 <button
                     type="button"
                     @click="deleteItem(i)">
-                    <TrashIcon class="h-6 w-6" ></TrashIcon>
+                    <TrashIcon class="h-5 w-5" ></TrashIcon>
                 </button>
             </div>
         </div>
-        <div class="p-3">
+        <div v-if="addLabels.length === 1" class="p-3">
             <button
                 type="button"
                 @click="addNewItem(getKey(props.inputComponents))"
                 class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Add
+                Add {{addLabels[0]}}
             </button>
         </div>
     </div>

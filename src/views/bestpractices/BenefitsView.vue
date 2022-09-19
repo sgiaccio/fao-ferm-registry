@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useBestPracticesStore } from '../../stores/bestpractices';
 
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
@@ -13,7 +13,7 @@ type Benefits = {
     validation?: string,
 }
 
-const data = ref<Benefits> ({});
+const store = useBestPracticesStore();
 </script>
 
 <template>
@@ -23,21 +23,21 @@ const data = ref<Benefits> ({});
         <div class="divide-y divide-stone-900">
             <MultiSelectFormGroup
                 :options="menus.positiveOutcomes"
-                v-model="data.positiveOutcomes"
+                v-model="store.bestPractice.positiveOutcomes"
                 label="Positive outcomes"
                 description="Please select the positive environmental and/or socio-economic outcomes of implementing the practice."
                 :required="true" />
             <TextareaFormGroup
-                v-model="data.negativeOutcomes"
+                v-model="store.bestPractice.negativeOutcomes"
                 label="Negative outcomes"
                 :required="true"
                 description="Does the practice have any negative natural and socio-economic impacts impact(s)? If so, please describe." />
             <TextareaFormGroup
-                v-model="data.validation"
+                v-model="store.bestPractice.validation"
                 label="Validation"
                 :required="true"
                 description="Please provide links to pictures, positive testimonials from the field, websites, and social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice." />
         </div>
     </div>
-    <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre>
+    <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->
 </template>

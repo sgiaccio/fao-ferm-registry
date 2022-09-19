@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useBestPracticesStore } from '../../stores/bestpractices';
 
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import SelectFormGroup from "../../components/inputs/base/SelectFormGroup.vue";
-
-import * as menus from "../../components/project/menus";
 
 
 type AdditionalResources = {
@@ -12,7 +10,7 @@ type AdditionalResources = {
     details?: string,
 }
 
-const data = ref<AdditionalResources> ({});
+const store = useBestPracticesStore();
 
 const yesNo = [
     { label: "No", value: 0 },
@@ -25,16 +23,16 @@ const yesNo = [
         <h1 class="text-4xl dark:text-zinc-300">Benefits and validation</h1>
         <div class="divide-y divide-stone-900">
             <TextareaFormGroup
-                v-model="data.links"
+                v-model="store.bestPractice.links"
                 label="Links"
                 description="Please provide links to pictures, positive testimonials from the field, websites, and social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice." />
             <SelectFormGroup
-                v-model="data.details"
+                v-model="store.bestPractice.details"
                 :options="yesNo"
                 label="Details"
                 :required="true"
                 description="Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO´s team on Economics of Ecosystem Restoration (TEER)." />
         </div>
     </div>
-    <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre>
+    <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->
 </template>

@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import type { Auth } from "firebase/auth"
-import { getFirestore, Firestore } from "firebase/firestore";
+import { initializeFirestore, Firestore } from "firebase/firestore";
 
 
 const firebaseConfig = {
@@ -14,11 +14,14 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app, auth: Auth, db: Firestore;
+let auth: Auth, db: Firestore;
 if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);
     auth = getAuth(app);
-    db = getFirestore(app);
+    db = initializeFirestore(app, {
+        ignoreUndefinedProperties: true
+    });
+    // db = getFirestore(app);
 }
 
 export { auth, db }

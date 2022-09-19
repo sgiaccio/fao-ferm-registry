@@ -16,7 +16,7 @@ const props = defineProps({
         modelValue: { type: Array as PropType<Array<any>>, required: true, default: [] },
         required: { type: Boolean, default: false },
         otherEnabled: { type: Boolean, default: false },
-        others: { type: null, default: [] }, // TODO: string array
+        others: { type: Array as PropType<Array<string>>, default: [] },
     }
 });
 
@@ -26,7 +26,7 @@ const emit = defineEmits(["update:modelValue", "update:others"])
 const focusedOut = ref(false);
 
 const errorMessages = computed(() => {
-    if (props.required && props.modelValue.length === 0) {
+    if (props.required && props.modelValue.length === 0 && props.otherEnabled && props.others?.length === 0) {
         return ["This field is mandatory."];
     }
     return [];
@@ -38,20 +38,20 @@ function isChecked(value: string): boolean {
     return props.modelValue.includes(value);
 }
 
+// TODO simplify as in TreeItem.vue
 function check(event: Event, value: string) {
-    // TODO - shouldn't change modelValue directly?
-
+    const tempModel = [...props.modelValue]
     if ((event.target as HTMLInputElement).checked) {
-        if (props.modelValue.includes(value)) {
+        if (tempModel.includes(value)) {
             return;
         } else {
-            props.modelValue.push(value);
+            tempModel.push(value);
         }
     } else {
         let i = 0;
-        while (i < props.modelValue.length) {
-            if (props.modelValue[i] === value) {
-                props.modelValue.splice(i, 1);
+        while (i < tempModel.length) {
+            if (tempModel[i] === value) {
+                tempModel.splice(i, 1);
             }
             else {
                 i += 1;
@@ -59,7 +59,8 @@ function check(event: Event, value: string) {
         }
     }
 
-    emit('update:modelValue', (props.modelValue.length ? props.modelValue : undefined));
+    // Delete the attribute from parent if empty
+    emit('update:modelValue', (tempModel.length ? tempModel : undefined));
 }
 
 const inputComponents = {
@@ -70,6 +71,7 @@ const inputComponents = {
     }
 }
 
+const id_ = Math.ceil(Math.random() * 1e9) // TODO
 </script>
 
 <template>
@@ -78,11 +80,11 @@ const inputComponents = {
         :description="description"
         :dangerousHtmlDescription="dangerousHtmlDescription"
         v-on:focusout="focusedOut = true">
-        <fieldset class="space-y-5">
+        <fieldset class="space-y-2">
             <div v-for="option in options" class="relative flex items-start">
                 <div class="flex items-center h-5">
                     <input 
-                        :id="'comments_' + option.value"
+                        :id="option.value + id_"
                         type="checkbox"
                         :checked="isChecked(option.value)"
                         @change="check($event, option.value)"
@@ -90,8 +92,8 @@ const inputComponents = {
                 </div>
                 <div class="ml-3 text-sm">
                     <label
-                        :for="'comments_' + option.value"
-                        class="dark:text-zinc-400 font-font-medium text-gray-700">{{option.label}}
+                        :for="option.value + id_"
+                        class="dark:text-zinc-300 font-font-medium text-gray-700">{{option.label}}
                     </label>
                 </div>
             </div>

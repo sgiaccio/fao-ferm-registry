@@ -130,4 +130,86 @@ export const positiveOutcomes = [
     { value: 18, label: "Reduced flood impacts" },
     { value: 19, label: "Reduced drought impacts" },
     { value: 20, label: "Other: please describe" }
-]
+];
+
+export const activities = {
+    label: "Activities",
+    children: [
+        { value: -1, label: "Biophysical", children: [
+            {
+                value: -1, label: "Restoration of vegetation cover", children: [
+                    { value: 1, label: "Restrictions on forest conversion" },
+                    { value: 2, label: "Promotion of sustainable forest management practices" },
+                    { value: 3, label: "Fire management" },
+                    { value: 4, label: "Assisted natural regeneration" },
+                    { value: 5, label: "Enrichment planting" },
+                    { value: 6, label: "Tree planting" },
+                    { value: 7, label: "Grass planting" }
+                ]
+            }, {
+                value: -1, label: "Control of invasive species", children: [
+                    { value: 8, label: "Quarantine measures" },
+                    { value: 9, label: "Species control measures (physical/chemical/biological)" }
+                ]
+            }, {
+                value: -1, label: "Rehabilitation and depollution", children: [
+                    { value: 10, label: "On-site management of mining wastes (soils and water)" },
+                    { value: 11, label: "Reclamation of mine site topography" },
+                    { value: 12, label: "Conservation and early replacement of topsoil" },
+                    { value: 13, label: "Control of point and non-point pollution sources" }
+                ]
+            },
+            { value: -1, label: "Soil and water management", children: [
+                { value: 14, label: "Reduced tillage" },
+                { value: 15, label: "Improved fertilizer and agrochemical use efficiency" },
+                { value: 16, label: "Improved irrigation and water use efficiency" },
+                { value: 17, label: "Rainwater and runoff harvesting (e.g. terracing, stone cords, zaï, half-moons)" },
+                { value: 18, label: "Fog collection" },
+                { value: 19, label: "Desalination wastewater treatment" },
+                { value: 20, label: "Wetland construction or rehabilitation" },
+                { value: 21, label: "Amelioration of contaminated soils and sealed soils" }
+            ]},
+            { value: -1, label: "Agricultural/fishery/aquacultural practices", children: [
+                { value: 22, label: "Conservation agriculture" },
+                { value: 23, label: "Integrated crop, livestock and forestry systems" },
+                { value: 24, label: "Agroforestry" },
+                { value: 25, label: "Grazing pressure management (physical/social fencing)" },
+                { value: 26, label: "Pasture and forage crop improvement" },
+                { value: 27, label: "Silvopastoral management" },
+                { value: 28, label: "Weed and pest management" },
+                { value: 29, label: "Increase diversity and vegetative cover in production systems" }
+            ]}    
+        ]},
+        { value: -1, label: "Enabling", children: [
+            { value: -1, label: "Legal and rights-based instruments", children: [
+                { value: 30, label: "Land-use planning (national, regional, local)" },
+                { value: 31, label: "Social and environmental impact assessments" },
+                { value: 32, label: "Incentives for sustainable land-use practices" },
+                { value: 33, label: "Establishment of protected areas" },
+                { value: 34, label: "Private and community-based conservation" },
+                { value: 35, label: "Improvements to land tenure security" },
+                { value: 36, label: "Clarification of natural resource-use rights" }
+            ]},
+            { value: -1, label: "Social and cultural instruments", children: [
+                { value: 37, label: "Promotion of indigenous and local knowledge-based traditional use" },
+                { value: 38, label: "Participatory natural resource management and governance" },
+                { value: 39, label: "Eco-certification" },
+                { value: 40, label: "Promotion of corporate social responsibility" },
+                { value: 41, label: "Community consultations" }
+            ]},
+            { value: -1, label: "Capacity-building, skills and knowledge development", children: [
+                { value: 42, label: "On-site trainings" },
+                { value: 43, label: "Online trainings" },
+                { value: 44, label: "Development of guidance and course materials" },
+                { value: 45, label: "Training of trainers" }
+            ]},
+            { value: -1, label: "Integrated landscape planning", children: [
+                { value: 46, label: "Land/water degradation assessment and mapping" },
+                { value: 47, label: "Integrated planning and management" },
+                { value: 48, label: "Zoning" },
+                { value: 49, label: "Assessment of climate change vulnerability and adaptation needs" },
+                { value: 50, label: "Assessment of natural areas with high carbon stores (e.g., peatlands, old-growth forests, mangroves)" }
+            ]}
+        ]}
+    ]
+}

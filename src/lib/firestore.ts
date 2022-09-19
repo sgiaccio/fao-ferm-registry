@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-
+import { getFirestore, initializeFirestore } from "firebase/firestore";
+;
 import { collection, getDocs, query, where } from "firebase/firestore"; 
 
 
@@ -16,10 +16,12 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-
+const db = initializeFirestore(app, {
+    ignoreUndefinedProperties: true
+});
+  
 // Initialize Cloud Firestore and get a reference to the service
-const db = getFirestore(app);
-
+// const db = getFirestore(app);
 
 // const querySnapshot = await getDocs(collection(db, "registry"));
 // querySnapshot.forEach((doc) => {
@@ -27,7 +29,7 @@ const db = getFirestore(app);
 // });
 
 
-const querySnapshot = await getDocs(query(collection(db, "registry"), where("public", "==", "true")))
+// const querySnapshot = await getDocs(query(collection(db, "registry"), where("public", "==", "true")))
 // querySnapshot.forEach((doc) => {
 //   console.log(`${doc.id} => ${doc.data()}`);
 // });

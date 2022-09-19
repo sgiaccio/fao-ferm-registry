@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useBestPracticesStore } from '../../stores/bestpractices';
 
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import MultiInputFormGroup from "../../components/inputs/MultiInputFormGroup.vue";
@@ -19,7 +19,7 @@ type KeyFactors = {
     lessonsLearned?: string,
 }
 
-const data = ref<KeyFactors> ({});
+const store = useBestPracticesStore();
 
 const constraintsComponents = {
     constraint: {
@@ -28,6 +28,7 @@ const constraintsComponents = {
         addItemLabel: "constraint",
     }
 }
+
 </script>
 
 
@@ -39,25 +40,25 @@ const constraintsComponents = {
             <div>
                 <MultiSelectFormGroup
                     :options="menus.keyFactors"
-                    v-model="data.keyFactors"
+                    v-model="store.bestPractice.keyFactors"
                     label="Key factors"
                     description="What are the key factors that need to be in place for the successful implementation of the practice."
                     :required="true" />
                 <TextareaFormGroup
-                    v-model="data.specifyKeyFactors"
+                    v-model="store.bestPractice.specifyKeyFactors"
                     description="Feel free to provide additional information on the key factors mentioned above." />
             </div>
             <MultiInputFormGroup
                 label="Constraints"
                 description="What are the technical, economic and environmental challenges, constraints and/or risks encountered in applying the practice? How were they addressed?"
                 :inputComponents="constraintsComponents"
-                v-model="data.constraints" />
+                v-model="store.bestPractice.constraints" />
             <TextareaFormGroup
-                v-model="data.lessonsLearned"
+                v-model="store.bestPractice.lessonsLearned"
                 label="Lessons learned/Recommendations"
                 :required="true"
                 description="What lessons learned/recommendations would you like to share with other practitioners intending to replicate, adapt or scale up this practice?" />
         </div>
     </div>
-    <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre>
+    <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->
 </template>

@@ -8,9 +8,50 @@ import TextFormGroup from "../../components/inputs/base/TextFormGroup.vue";
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
 import LatLongFormGroup from "../../components/inputs/LatLongFormGroup.vue";
+import TreeItem from "../../components/inputs/base/TreeItem.vue";
 
-import { objectives, ecosystems, drivers } from "../../components/project/menus";
+import { objectives, ecosystems, drivers, activities } from "../../components/project/menus";
 
+import { useBestPracticesStore } from '../../stores/bestpractices';
+
+const store = useBestPracticesStore();
+
+type AOI = {
+    adminArea: {
+        siteName?: string,
+        admin0: string,
+        admin1: string,
+        admin2: string,
+    }
+};
+
+type Objectives = {
+    projectId?: string,
+    objectives?: number[],
+    objectivesOther?: [{"other": string}],
+    title?: string,
+    ecosystems?: number[],
+    coordinates?: { latitude: number, longitude: number },
+    context?: string,
+    drivers?: number[],
+    additionalInformation?: string,
+    aoi?: AOI[],
+    activities?: number[]
+}
+
+// const props = defineProps<{
+//   modelValue: Objectives,
+// }>();
+// console.log(props.modelValue)
+// const emit = defineEmits(["update:modelValue"]);
+
+
+// const { bestPractice } = storeToRefs(useBestPracticesStore());
+
+// watch(props.modelValue, asdf => {
+//     console.log(props.modelValue);
+//     emit('update:modelValue', asdf);
+// });
 
 
 function toCamel(o: any) {
@@ -38,81 +79,38 @@ function toCamel(o: any) {
     return newO;
 }
 
-// import { h } from 'vue'
+// TODO uncomment all this
+// const route = useRoute();
+// const projectData = ref();
+// watch(
+//     () => route.params,
+//     async () => {
+//         const { fetchProject } = useProjectStore();
+//         if (bestPractice.value) {
+//             const project = fetchProject(bestPractice.value.projectId);
+//             projectData.value = toCamel((await project).data());
+//         }
+//     },
+//     // fetch the data when the view is created and the data is already being observed
+//     { immediate: true },
+// )
 
-type AOI = {
-    adminArea: {
-        siteName?: string,
-        admin0: string,
-        admin1: string,
-        admin2: string,
-    }
-};
+// // Build the AOI menu. Showing all AOIs from the related project
+// const aoiMenu = ref<{ label: string, value: number }[]>([])
+// // const activitiesMenu = ref<number[]>([])
+// watch(projectData, data => {
+//     aoiMenu.value = data.aoi.map((area: AOI, i: number) => ({
+//         label: Object.values(area)[0]["siteName"] || `Area ${i}`, value: i
+//     }));
 
-type Objectives = {
-    projectId: string,
-    objectives: number[],
-    objectivesOther?: [{"other": string}],
-    title: string,
-    ecosystems: number[],
-    coordinates?: { latitude: number, longitude: number },
-    context: string,
-    drivers: number[],
-    additionalInformation?: string,
-    aoi: AOI[]
-}
+//     // TODO build activities menu
+// });
 
-const data = ref<Objectives> ({
-    projectId: "JtSvTe3h4dDhjIlWaphw",
-    objectives: [1],
-    title: "Test admin",
-    ecosystems: [],
-    coordinates: undefined,
-    context: "",
-    drivers: [],
-    additionalInformation: undefined,
-    aoi: [],
-    // objectivesOther: [ { "other": "Other objective" } ]
-});
-
-// const asdf = ref();
-
-const route = useRoute();
-const projectData = ref();
-watch(
-    () => route.params,
-    async () => {
-        const { fetchProject } = useProjectStore();
-        const project = fetchProject(data.value.projectId);
-        projectData.value = toCamel((await project).data());
-    },
-    // fetch the data when the view is created and the data is already being observed
-    { immediate: true },
-)
-
-// Build the AOI menu. Showing all AOIs from the related project
-const aoiMenu = ref<{ label: string, value: number }[]>([])
-// const activitiesMenu = ref<number[]>([])
-watch(projectData, data => {
-    aoiMenu.value = data.aoi.map((area: AOI, i: number) => ({
-        label: Object.values(area)[0]["siteName"] || `Area ${i}`, value: i
-    }));
-
-    // TODO build activities menu
-});
-
-// Convert current selection of AOI indexes (number[]) from the menu to a vector of AOIs
-const aoiSelection = reactive<number []>([]);
-watch(aoiSelection, selection => {
-    data.value.aoi = selection.map(n => projectData.value.aoi[n]);
-});
-
-
-// const DynamicHeading = (props, context) => {
-//   return h(`h${props.level}`, context.attrs, context.slots)
-// }
-
-// DynamicHeading.props = ['level']
+// // Convert current selection of AOI indexes (number[]) from the menu to a vector of AOIs
+// const aoiSelection = reactive<number []>([]);
+// watch(aoiSelection, selection => {
+//     bestPractice.value.aoi = selection.map(n => projectData.value.aoi[n]);
+// });
 </script>
 
 
@@ -123,61 +121,59 @@ watch(aoiSelection, selection => {
 
         <div class="divide-y divide-stone-900">
             <TextFormGroup
-                v-model="data.title"
+                v-model="store.bestPractice.title"
                 label="Title"
-                description="Title of the restoration practice"
+                description="Title of the restoration practice."
                 :required=true>
             </TextFormGroup>
             <MultiSelectFormGroup
                 :options="objectives"
-                v-model="data.objectives"
+                v-model="store.bestPractice.objectives"
                 label="Objectives"
-                description="Objectives of the initiatives"
+                description="Objectives of the initiatives."
                 :required="true"
                 :otherEnabled="true"
-                v-model:others="data.objectivesOther" 
-                />
+                v-model:others="store.bestPractice.objectivesOther" />
             <TextareaFormGroup
-                v-model="data.additionalInformation"
+                v-model="store.bestPractice.additionalInformation"
                 label="Additional information"
                 description="Feel free to provide additional information on specific objectives of the practice." />
             <MultiSelectFormGroup
                 :options="ecosystems"
-                v-model="data.ecosystems"
+                v-model="store.bestPractice.ecosystems"
                 label="Ecosystems"
                 description="Ecosystems where the practice was applied (Mandatory) [Select all that apply]"
                 :required="true"></MultiSelectFormGroup>
             <LatLongFormGroup
-                v-model="data.coordinates"
+                v-model="store.bestPractice.coordinates"
                 label="Geographic coordinates"
                 description="If available, please insert the geographic coordinates of the restoration area. Please use the WGS84 Geographic Reference System."></LatLongFormGroup>
             <TextareaFormGroup
-                v-model="data.context"
+                v-model="store.bestPractice.context"
                 label="Context"
                 description="Please feel free to share any relevant socioeconomic and cultural context for the practice's implementation."></TextareaFormGroup>
-            
-            <div class="text-white">TODO: activities</div>
-
+            <TreeItem
+                v-model="store.bestPractice.activities"
+                :treeData="activities" />
             <MultiSelectFormGroup
                 :options="drivers"
-                v-model="data.drivers"
+                v-model="store.bestPractice.drivers"
                 label="Drivers"
-                description="Drivers of degradation addressed by the practice [Select all that apply]"
+                description="Drivers of degradation addressed by the practice [Select all that apply]."
                 :required="true">
             </MultiSelectFormGroup>
             <TextareaFormGroup
-                v-model="data.additionalInformation"
+                v-model="store.bestPractice.additionalInformation"
                 label="Additional information"
                 description="Feel free to provide additional information to explain how the practice contributed to addressing the drivers of ecosystem degradation selected above."></TextareaFormGroup>
-            <template v-if="projectData">
+            <!-- TODO uncomment -->
+            <!-- <template v-if="projectData">
                 <MultiSelectFormGroup
                     :options="aoiMenu"
                     v-model="aoiSelection"
                     label="AOIs"
-                    description="AOIs" />
-            </template>
+                    description="Select the AOIs where the practice was implemented." />
+            </template> -->
         </div>
     </div>
-    <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre>
-
 </template>

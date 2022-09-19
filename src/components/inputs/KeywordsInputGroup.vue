@@ -18,7 +18,7 @@ const props = defineProps({
 // TODO: emit?
 // const emit = defineEmits(['update:modelValue'])
 
-const tempKeywords = ["keyword1", "keyword2", "test", "testdicaz"]
+const tempKeywords = ["keyword1", "keyword2", "test"]
 
 const inputRef = ref<HTMLDivElement>();
 // const keywords = ref(["asdf", "qwer"]);
