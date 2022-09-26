@@ -19,7 +19,7 @@ function authenticate() {
 }
 
 function togglePasswordReset() {
-    alert('asdf');
+    alert('TODO');
 }
 </script>
 

@@ -21,7 +21,7 @@ export const useAuthStore = defineStore({
         isAdmin: false,
         privileges: {},
 
-        returnUrl: '/projects/1/info' // TODO
+        returnUrl: '/'
     }),
     actions: {
         async register(email: string, password: string) {
@@ -42,7 +42,7 @@ export const useAuthStore = defineStore({
                         alert("Weak password");
                         break;
                     default:
-                        alert("Something went wrong");
+                        alert(`Sorry, something went wrong. Error code: ${error.code}`);
                 }
                 return;
             }
@@ -75,7 +75,7 @@ export const useAuthStore = defineStore({
                         alert("Wrong password");
                         break;
                     default:
-                        alert("Something went wrong");
+                        alert(`Sorry, something went wrong. Error code: ${error.code}`);
                 }
                 return;
             }

@@ -36,7 +36,7 @@ const constraintsComponents = {
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <h1 class="text-4xl dark:text-zinc-300">Key factors, constraints and lessons learned</h1>
         
-        <div class="divide-y divide-stone-900">
+        <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <div>
                 <MultiSelectFormGroup
                     :options="menus.keyFactors"
@@ -45,6 +45,7 @@ const constraintsComponents = {
                     description="What are the key factors that need to be in place for the successful implementation of the practice."
                     :required="true" />
                 <TextareaFormGroup
+                    label="Key factors additional information"
                     v-model="store.bestPractice.specifyKeyFactors"
                     description="Feel free to provide additional information on the key factors mentioned above." />
             </div>

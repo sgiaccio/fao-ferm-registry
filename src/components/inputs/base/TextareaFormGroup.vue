@@ -48,9 +48,9 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
             :disabled="!props.enabled()"
             :placeholder="placeholder"
             @focusout="focusedOut = true"
-            class="dark:text-zinc-400 block w-full rounded-md pr-10 focus:outline-none border-gray-300 dark:bg-zinc-900 sm:text-sm"
+            class="dark:text-zinc-400 block w-full rounded-md pr-10 focus:outline-none border-gray-300 dark:bg-zinc-900 sm:text-sm transition ease-in-out duration-270 delay-50"
             :class="{ 'border-red-400 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500': showValidation, 'focus:ring-0 dark:border-black dark:focus:border-black': !showValidation }"            @input="onInput"
             :value="modelValue"></textarea>
-            <p v-if="showValidation" v-for="message in errorMessages" class="mt-2 text-sm text-red-600" id="email-error">{{message}}</p>
+        <p v-if="showValidation" v-for="message in errorMessages" class="mt-2 text-sm text-red-600" id="email-error">{{message}}</p>
     </FormGroup>
 </template>

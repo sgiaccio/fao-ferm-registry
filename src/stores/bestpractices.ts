@@ -1,59 +1,69 @@
-import { getDocs, getDoc, collection, doc, setDoc, addDoc, query, where } from "firebase/firestore"
-import { defineStore } from "pinia";
+import { getDocs, getDoc, collection, doc, setDoc, addDoc, query, where, serverTimestamp } from 'firebase/firestore';
+import { defineStore } from 'pinia';
 
-import { db } from "../firebase";
+import { db } from '../firebase';
 
 import { useAuthStore } from './auth';
 
-// const projectsCollection = collection(db, "projects")
-
-// function fetchProject(id: string) {
-//     const docRef = doc(db, "registry", id)
-// }
-
-// let document;
-
-const bestPracticesCollection = collection(db, "bestPractices");
+const bestPracticesCollection = collection(db, 'bestPractices');
+const areaCollection = collection(db, "areas")
 // const privileges = useAuthStore().privileges;
 // console.log(privileges);
+
+const newBestPractice = {
+    implementationSteps: [
+        { step: {} }
+    ]};
 
 export const useBestPracticesStore = defineStore({
     id: 'bestPractices',
     state: () => ({
         id: null as string | null,
-        bestPractice: null as any // TODO
+        bestPractice: null as any, // TODO
+        projectAreas: null as any // TODO use the ones in project store?
     }),
     actions: {
         async fetchOwnedBestPractices() {
-            const store = useAuthStore();
+            const authStore = useAuthStore();
             
-            if (store.isAdmin) {
-                const asdf = await getDocs(bestPracticesCollection);
-                return asdf.docs
+            if (authStore.isAdmin) {
+                const fsDocs = await getDocs(bestPracticesCollection);
+                return fsDocs.docs
             } else if (true) {
                 // TODO
                 const fsDocs = await getDocs(bestPracticesCollection);
                 return fsDocs.docs;
             }
-
-            // const q = query(bestPracticesCollection, "");
         },
         async fetchBestPractice(id: string) {
             const docRef = doc(db, 'bestPractices', id);
             this.bestPractice = (await getDoc(docRef)).data();
-            this.id = id
-            // return this.bestPractice;
-        },
-        async saveBestPractice() {
-            if (this.id) {
-                await setDoc(doc(db, 'bestPractices', this.id), this.bestPractice);
-            } else {
-                await addDoc(bestPracticesCollection, this.bestPractice);
+            this.id = id;
+
+            if (this.bestPractice.projectId) {
+                this.fetchProjectAreas(this.bestPractice.projectId);
             }
         },
-        createEmptyDoc() {
+        async fetchProjectAreas(projectId: string) {
+            const areasRef = doc(areaCollection, projectId);
+            this.projectAreas = (await getDoc(areasRef)).data()?.areas || [];
+        },
+        async saveBestPractice() {
+            const toBeSaved = { ...this.bestPractice, lastModified: serverTimestamp() }
+            if (this.id) {
+                await setDoc(doc(db, 'bestPractices', this.id), toBeSaved);
+            } else {
+                toBeSaved.created = serverTimestamp();
+                await addDoc(bestPracticesCollection, toBeSaved);
+            }
+
+            // Reset state
+            this.id = this.bestPractice = null;
+        },
+        createEmptyBestPractice(projectId: string) {
             this.id = null;
-            this.bestPractice = {};
+            this.bestPractice = { ...newBestPractice, projectId };
+            this.fetchProjectAreas(projectId);
         }
     }
 });

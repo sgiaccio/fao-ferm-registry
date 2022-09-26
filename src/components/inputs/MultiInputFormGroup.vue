@@ -13,7 +13,6 @@ defineProps({
     }
 });
 
-
 const emit = defineEmits(['update:modelValue'])
 </script>
 
@@ -25,6 +24,7 @@ const emit = defineEmits(['update:modelValue'])
                     @update:modelValue="val => emit('update:modelValue', val)"
                     :inputComponents="inputComponents"
                     :numbering="numbering"
-                    :deleteConfirmMsg="deleteConfirmMsg" />
+                    :deleteConfirmMsg="deleteConfirmMsg"
+                    :required="true" />
     </FormGroup>
 </template>

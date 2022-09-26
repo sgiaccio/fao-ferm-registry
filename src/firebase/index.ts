@@ -25,3 +25,4 @@ if (!getApps().length) {
 }
 
 export { auth, db }
+

@@ -12,13 +12,15 @@ defineProps(baseProps);
             </legend>
             <div class="mt-1 sm:mt-0 sm:col-span-3">
                 <slot></slot>
-                <p v-if="description"
+                <p
+                    v-if="description"
                     class="font-semibold mt-2 text-sm text-gray-500 dark:text-gray-400">
                     {{description}}
                 </p>
-                <p v-else-if="dangerousHtmlDescription"
-                v-html="dangerousHtmlDescription"
-                class="italic mt-2 text-sm text-gray-500 dark:text-gray-400" />
+                <p
+                    v-else-if="dangerousHtmlDescription"
+                    v-html="dangerousHtmlDescription"
+                    class="font-semibold mt-2 text-sm text-gray-500 dark:text-gray-400" />
             </div>
         </div>
     </fieldset>

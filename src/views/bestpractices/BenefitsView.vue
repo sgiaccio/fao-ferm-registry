@@ -20,23 +20,27 @@ const store = useBestPracticesStore();
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <h1 class="text-4xl dark:text-zinc-300">Benefits and validation</h1>
         
-        <div class="divide-y divide-stone-900">
+        <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <MultiSelectFormGroup
                 :options="menus.positiveOutcomes"
-                v-model="store.bestPractice.positiveOutcomes"
-                label="Positive outcomes"
-                description="Please select the positive environmental and/or socio-economic outcomes of implementing the practice."
+                v-model="store.bestPractice.outcomes"
+                label="Outcomes"
+                description="Please select the ecological, cultural and environmental and/or socio-economic outcomes of implementing the practice."
                 :required="true" />
             <TextareaFormGroup
-                v-model="store.bestPractice.negativeOutcomes"
-                label="Negative outcomes"
+                v-model="store.bestPractice.positiveImpacts"
+                label="Positive impacts"
+                description="Please describe the positive ecological, cultural and/or socio-economic  impacts of the practice." />
+            <TextareaFormGroup
+                v-model="store.bestPractice.negativeImpacts"
+                label="Negative impacts"
                 :required="true"
-                description="Does the practice have any negative natural and socio-economic impacts impact(s)? If so, please describe." />
+                description="Does the practice have any negative ecological, cultural and socio-economic impact(s)? If so, please describe." />
             <TextareaFormGroup
                 v-model="store.bestPractice.validation"
                 label="Validation"
                 :required="true"
-                description="Please provide links to pictures, positive testimonials from the field, websites, and social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice." />
+                description="Please describe how the practice was validated from a technical and methodological point of view to measure its effectiveness, and how the practice was validated with the beneficiaries" />
         </div>
     </div>
     <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->

@@ -51,7 +51,6 @@ function getCaretPosition() {
 
 function setCaret(position: number) {
     const el = inputRef.value;
-    console.log(el.childNodes[0]);
     const range = document.createRange();
     const sel = window.getSelection();
     
@@ -63,7 +62,6 @@ function setCaret(position: number) {
 }
 
 watch(inputText, text => {
-    // console.log(getCaretPosition());
     searchText.value = text;
 });
 
@@ -118,7 +116,6 @@ function addKeyword(keyword: string) {
 }
 
 function deleteKeyword(i: number) {
-    console.log(props.modelValue);
     props.modelValue.splice(i, 1);
 }
 

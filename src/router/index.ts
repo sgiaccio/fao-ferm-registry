@@ -1,25 +1,48 @@
 import { useAuthStore } from "../stores/auth"
 
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
-import LoginView from "../views/LoginView.vue";
-import ProjectView from "../views/project/ProjectView.vue";
-import ProjectRegistrationView from "../views/project/RegistrationView.vue";
-import ProjectAoi from "../views/project/AoiView.vue";
-import ProjectCharacteristics from "../views/project/CharacteristicsView.vue";
-import ProjectActivities from "../views/project/ActivitiesView.vue";
-import ProjectIndicators from "../views/project/IndicatorsView.vue";
-import ProjectInformation from "../views/project/InformationView.vue";
-import ProjectResults from "../views/project/ResultsView.vue";
 
-import BestPracticeListView from "../views/bestpractices/BestPracticeListView.vue";
-import BestPracticeView from "../views/bestpractices/BestPracticeView.vue";
-import ObjectivesView from "../views/bestpractices/ObjectivesView.vue";
-import MethodologyView from "../views/bestpractices/MethodologyView.vue";
-import KeyFactorsView from "../views/bestpractices/KeyFactorsView.vue";
-import BenefitsView from "../views/bestpractices/BenefitsView.vue";
-import AdditionalResourcesView from "../views/bestpractices/AdditionalResourcesView.vue";
+// import HomeView from "../views/HomeView.vue";
+// import LoginView from "../views/LoginView.vue";
+// import ProjectView from "../views/project/ProjectView.vue";
+// import ProjectRegistrationView from "../views/project/RegistrationView.vue";
+// import ProjectAoi from "../views/project/AoiView.vue";
 
+// import ProjectCharacteristics from "../views/project/CharacteristicsView.vue";
+// import ProjectActivities from "../views/project/ActivitiesView.vue";
+// import ProjectIndicators from "../views/project/IndicatorsView.vue";
+// import ProjectInformation from "../views/project/InformationView.vue";
+// import ProjectResults from "../views/project/ResultsView.vue";
+
+// import BestPracticeListView from "../views/bestpractices/BestPracticeListView.vue";
+// import BestPracticeView from "../views/bestpractices/BestPracticeView.vue";
+// import ObjectivesView from "../views/bestpractices/ObjectivesView.vue";
+// import MethodologyView from "../views/bestpractices/MethodologyView.vue";
+// import KeyFactorsView from "../views/bestpractices/KeyFactorsView.vue";
+// import BenefitsView from "../views/bestpractices/BenefitsView.vue";
+// import AdditionalResourcesView from "../views/bestpractices/AdditionalResourcesView.vue";
+// import ProjectListViewVue from "../views/project/ProjectListView.vue";
+
+const HomeView = () => import('../views/HomeView.vue')
+const LoginView = () => import('../views/LoginView.vue')
+const ProjectView = () => import('../views/project/ProjectView.vue')
+const ProjectRegistrationView = () => import('../views/project/RegistrationView.vue')
+const ProjectAoi = () => import('../views/project/AoiView.vue')
+
+const ProjectCharacteristics = () => import('../views/project/CharacteristicsView.vue')
+const ProjectActivities = () => import('../views/project/ActivitiesView.vue')
+const ProjectIndicators = () => import('../views/project/IndicatorsView.vue')
+const ProjectInformation = () => import('../views/project/InformationView.vue')
+const ProjectResults = () => import('../views/project/ResultsView.vue')
+
+const BestPracticeListView = () => import('../views/bestpractices/BestPracticeListView.vue')
+const BestPracticeView = () => import('../views/bestpractices/BestPracticeView.vue')
+const ObjectivesView = () => import('../views/bestpractices/ObjectivesView.vue')
+const MethodologyView = () => import('../views/bestpractices/MethodologyView.vue')
+const KeyFactorsView = () => import('../views/bestpractices/KeyFactorsView.vue')
+const BenefitsView = () => import('../views/bestpractices/BenefitsView.vue')
+const AdditionalResourcesView = () => import('../views/bestpractices/AdditionalResourcesView.vue')
+const ProjectListViewVue = () => import('../views/project/ProjectListView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,7 +66,16 @@ const router = createRouter({
       component: () => import("../views/AboutView.vue"),
     },
     {
-      path: '/projects/:id',
+      path: '/initiatives',
+      name: 'initiatives',
+      component: ProjectListViewVue,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/initiatives/:id',
+      name: 'initiative',
       component: ProjectView,
       meta: {
         requiresAuth: true
@@ -51,7 +83,7 @@ const router = createRouter({
       children: [
         {
           path: 'info',
-          name: 'info',
+          name: 'initiative-info',
           component: ProjectRegistrationView,
           meta: {
             requiresAuth: true
@@ -65,35 +97,35 @@ const router = createRouter({
           }
         }, {
           path: 'characteristics',
-          name: 'characteristics',
+          name: 'initiative-characteristics',
           component: ProjectCharacteristics,
           meta: {
             requiresAuth: true
           }
         }, {
           path: 'activities',
-          name: 'activities',
+          name: 'initiative-activities',
           component: ProjectActivities,
           meta: {
             requiresAuth: true
           }
         }, {
           path: 'indicators',
-          name: 'indicators',
+          name: 'initiative-indicators',
           component: ProjectIndicators,
           meta: {
             requiresAuth: true
           }
         }, {
           path: 'information',
-          name: 'information',
+          name: 'initiative-information',
           component: ProjectInformation,
           meta: {
             requiresAuth: true
           }
         }, {
           path: 'results',
-          name: 'results',
+          name: 'initiative-results',
           component: ProjectResults,
           meta: {
             requiresAuth: true
@@ -102,12 +134,16 @@ const router = createRouter({
       ]
     },
     {
-      path: '/best-practices',
-      component: BestPracticeListView
+      path: '/good-practices',
+      component: BestPracticeListView,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
-      path: '/best-practices/:id',
+      path: '/good-practices/:id',
       component: BestPracticeView,
+      name: 'bestPractice',
       meta: {
         requiresAuth: true
       },
@@ -157,18 +193,6 @@ const router = createRouter({
     }
   ],
 });
-
-// router.beforeEach(async (to) => {
-//   // redirect to login page if not logged in and trying to access a restricted page 
-//   const publicPages = ['/account/login', '/account/register'];
-//   const authRequired = !publicPages.includes(to.path);
-//   const authStore = useAuthStore();
-
-//   if (authRequired && !authStore.user) {
-//       authStore.returnUrl = to.fullPath;
-//       return '/account/login';
-//   }
-// });
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();

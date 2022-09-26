@@ -7,7 +7,8 @@ import TextAreaFormGroup from "./base/TextareaFormGroup.vue"
 defineProps({
     modelValue: {
         type: Object as PropType<{
-            timing?: string,
+            details?: string,
+            // timing?: string,
             // equipment?: string,
             // labour?: string,
             // species?: string,
@@ -22,8 +23,9 @@ defineProps({
 <template>
     <div>
         <TextAreaFormGroup
-            v-model="modelValue.timing"
-            label="Details of the step" />
+            v-model="modelValue.details"
+            label="Details of the step"
+            :required="true" />
         <!-- <TextAreaFormGroup
             v-model="modelValue.equipment"
             label="Equipment / Material used (If applicable)" />

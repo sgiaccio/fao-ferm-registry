@@ -1,28 +1,52 @@
 <script setup lang="ts">
-// import Info from "@/components/project/Project.vue";
-
-// import { RouterLink, RouterView } from "vue-router";
-// import Navbar from "./components/Navbar.vue"
-// import HelloWorld from "./components/HelloWorld.vue";
-
-import { computed } from 'vue'
+import { onBeforeMount, onMounted, computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+// import router from '@/router';
+
+import { useProjectStore } from '../../stores/project';
+
+const { fetchProject, saveProject, createEmptyProject } = useProjectStore();
+
+const store = useProjectStore();
+
+onBeforeMount(async () => {
+    if (route.params.id === 'new') {
+        console.log(route.params.id)
+        createEmptyProject()
+    } else {
+        await fetchProject(route.params.id as string);
+    }
+});
+
+// onMounted(() => {
+//     router.push({ name: 'initiatives-info', params: { id: route.params.id } });
+// });
 
 const route = useRoute();
 
 const tabs = computed (() => [
   { name: 'Initiative', href: 'info', current: 'info' === route.name },
-  { name: 'AOI', href: 'aoi', current: 'aoi' === route.name },
+  { name: 'Area', href: 'aoi', current: 'aoi' === route.name },
   { name: 'Characteristics', href: 'characteristics', current: 'characteristics' === route.name },
   { name: 'Activities', href: 'activities', current: 'activities' === route.name },
   { name: 'Indicators', href: 'indicators', current: 'indicators' === route.name },
   { name: 'Information', href: 'information', current: 'information' === route.name },
   { name: 'Results', href: 'results', current: 'results' === route.name },
-])
+]);
+
+const showJson = ref(false);
+function toggleJson() { showJson.value = !showJson.value }
+
+function save() {
+    saveProject();
+}
 </script>
 
 <template>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+
     <div>
         <div class="sm:hidden">
             <label for="tabs" class="sr-only">Select a tab</label>
@@ -43,5 +67,23 @@ const tabs = computed (() => [
             </div>
         </div>
     </div>
-    <RouterView />
+    <RouterView v-if="store.project"/>
+
+
+
+
+
+    <div class="w-full relative">
+        <button
+            @click="save"
+            type="button"
+            class="absolute right-0 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ">Save and leave
+        </button>
+        <button 
+            class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
+            @click="toggleJson">JSON</button>
+        <pre v-if="showJson" class="text-xs font-medium absolute text-amber-700 dark:text-amber-600 top-20">{{JSON.stringify(store.project, null, 2)}}</pre>
+    </div>
+    <div class="h-24"></div> <!-- TODO -->
+    </div></div>
 </template>

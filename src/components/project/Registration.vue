@@ -41,7 +41,9 @@ const data = ref({
     website: "website.com",
     testSelect: 1,
     targetArea: { value: 10, units: "ha" },
-    organizations: []
+    organizations: [],
+    adminAreas: []
+    // adminArea: null
   },
   // updateTime: {
   //   seconds: 1659502327,
@@ -65,8 +67,6 @@ const data = ref({
 // }
 
 // DynamicHeading.props = ['level']
-
-
 </script>
 
 
@@ -82,16 +82,16 @@ const data = ref({
       <TextFormGroup
           v-model="data.title"
           label="Title"
-          description="Title of the initiative/project as stated in the official project document">
+          description="Title of the initiative as stated in the official initiative document">
       </TextFormGroup>
       <TextareaFormGroup
           v-model="data.description"
           label="Description"
-          description="Short description of the initiative/project (max xx characters)"></TextareaFormGroup>
+          description="Short description of the initiative (max xx characters)"></TextareaFormGroup>
       <TextFormGroup
           v-model="data.website"
           label="Website"
-          description="Website of the project"
+          description="Website of the initiative"
           placeholder="www.example.com">
       </TextFormGroup>
       <AreaFormGroup
@@ -109,7 +109,7 @@ const data = ref({
       <TextFormGroup
           v-model="data.document"
           label="Document"
-          description="Upload one project document (xx formats accepted, max xx MB)">
+          description="Upload one initiative document (xx formats accepted, max xx MB)">
       </TextFormGroup> <!-- TODO -->
       <!-- <TextareaFormGroup
           v-model="data.purpose"
@@ -132,7 +132,7 @@ const data = ref({
                       v-model="data.objectives"
                       label="Objectives"
                       description="Objectives of the initiatives"></SelectFormGroup> -->
-    </div>
+      </div>
   </div>
 
   <!-- <DynamicHeading level=2>asdf</DynamicHeading> -->

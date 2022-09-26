@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { PropType } from "vue";
-import { computed } from "vue";
 
 import baseProps from "../formGroupProps";
 import FormGroup from "../FormGroup.vue";

@@ -6,7 +6,7 @@ import { ref, computed } from "vue";
 
 const props = defineProps({
     options: { type: Array as PropType<Array<{value: any, label: String}>> },
-    placeholder: { type: String },
+    placeholder: { type: String, default: 'Please select' },
     modelValue: { type: null },
     required: { type: Boolean, default: false }
 });
@@ -32,7 +32,7 @@ const errorMessages = computed(() => {
 
 <template>
     <select
-        class="dark:text-zinc-400 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 dark:border-black dark:focus:border-black dark:bg-zinc-900 focus:ring-0 rounded-md"
+        class="dark:text-zinc-400 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 dark:border-black dark:focus:border-black dark:bg-zinc-900 focus:ring-0 rounded-md transition ease-in-out duration-270 delay-50"
         :value="modelValue"
         @input="onInput">
         <option value="">{{placeholder}}</option>

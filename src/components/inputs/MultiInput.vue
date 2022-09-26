@@ -4,10 +4,12 @@ import { TrashIcon } from '@heroicons/vue/20/solid';
 
 
 const props = defineProps({
+    deleteConfirmMessage: { type: String, default: "Are you sure you want to delete this item?" },
     modelValue: { type: null },
     inputComponents: null,
     numbering: null, // TODO fn(number) => string
-    deleteConfirmMsg: String
+    deleteConfirmMsg: String,
+    required: { type: Boolean, default: false } // TODO
 });
 
 // Sample inputComponents:
@@ -33,15 +35,14 @@ function getKey(obj: any) {
 
 
 function addNewItem(type: string) {
-    // Not updating modelValue directly, is it needed?
-    const tempProp = props.modelValue ? props.modelValue : []
+    const tempProp = props.modelValue ? [...props.modelValue] : []
     const newData = props.inputComponents[type].newData;
     tempProp.push({ [type]: newData ? JSON.parse(JSON.stringify(newData)) : undefined });
     emit('update:modelValue', tempProp)
 }
 
 function deleteItem(i: number) {
-    if (confirm("Are you sure you want to delete this item?")) {
+    if (confirm(props.deleteConfirmMessage)) {
         const tempProp = props.modelValue ? [...props.modelValue] : []
         tempProp.splice(i, 1);
         emit('update:modelValue', tempProp);
@@ -55,12 +56,20 @@ const addLabels = computed(() => {
     }
     return arr.sort();
 });
+
+const errorMessages = computed(() => {
+    if (props.required && !props.modelValue.length) {
+        return ["This field is mandatory."];
+    }
+    return [];
+});
+
 </script>
 
 <template>
-    <div class="border-2 rounded-md divide-y-2 border-stone-700 divide-stone-700">
+    <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 dark:border-stone-700 dark:divide-stone-700">
         <div v-for="v, i in modelValue" class="p-3">
-            <div class="text-gray-100 text-lg font-bold" v-if="numbering">{{numbering(i + 1)}}</div>
+            <div class="text-gray-400 dark:text-gray-100 text-lg font-bold" v-if="numbering">{{numbering(i + 1)}}</div>
             <component
                 :key="v"
                 :is="inputComponents[getKey(v)].component"
@@ -83,6 +92,7 @@ const addLabels = computed(() => {
             </button>
         </div>
     </div>
+    <p v-if="errorMessages.length" v-for="message in errorMessages" class="mt-2 text-sm text-red-600" id="email-error">{{message}}</p>
 </template>
 
 

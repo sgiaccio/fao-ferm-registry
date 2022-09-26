@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { ref, watch, reactive } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, watch } from 'vue'
 
-import { useProjectStore } from "../../stores/project";
+import { storeToRefs } from 'pinia'
 
 import TextFormGroup from "../../components/inputs/base/TextFormGroup.vue";
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
-import LatLongFormGroup from "../../components/inputs/LatLongFormGroup.vue";
-import TreeItem from "../../components/inputs/base/TreeItem.vue";
+// import LatLongFormGroup from "../../components/inputs/LatLongFormGroup.vue";
 
 import { objectives, ecosystems, drivers, activities } from "../../components/project/menus";
 
@@ -31,7 +29,7 @@ type Objectives = {
     objectivesOther?: [{"other": string}],
     title?: string,
     ecosystems?: number[],
-    coordinates?: { latitude: number, longitude: number },
+    // coordinates?: { latitude: number, longitude: number },
     context?: string,
     drivers?: number[],
     additionalInformation?: string,
@@ -39,77 +37,51 @@ type Objectives = {
     activities?: number[]
 }
 
-// const props = defineProps<{
-//   modelValue: Objectives,
-// }>();
-// console.log(props.modelValue)
-// const emit = defineEmits(["update:modelValue"]);
+const selectedAreas = ref([]);
+const selectedActivities = ref([]);
 
-
-// const { bestPractice } = storeToRefs(useBestPracticesStore());
-
-// watch(props.modelValue, asdf => {
-//     console.log(props.modelValue);
-//     emit('update:modelValue', asdf);
-// });
-
-
-function toCamel(o: any) {
-    let newO: any;
-    if (o instanceof Array) {
-        return o.map(value => {
-            if (typeof value === "object") {
-                value = toCamel(value);
-            }
-            return value;
-        });
+const flattenedActivities: [{ value: number, label: string}] = [];
+(function flatten(data) {
+    if (!data.children) {
+        flattenedActivities.push({ value: data.value, label: data.label });
     } else {
-        newO = {}
-        for (let origKey in o) {
-            if (o.hasOwnProperty(origKey)) {
-                const newKey = origKey.replace(/-./g, x => x[1].toUpperCase());
-                let value = o[origKey];
-                if (value instanceof Array || (value !== null && value.constructor === Object)) {
-                    value = toCamel(value);
-                }
-                newO[newKey] = value;
-            }
-        }
+        data.children.forEach(c => { flatten(c) });
     }
-    return newO;
-}
+})(activities)
 
-// TODO uncomment all this
-// const route = useRoute();
-// const projectData = ref();
-// watch(
-//     () => route.params,
-//     async () => {
-//         const { fetchProject } = useProjectStore();
-//         if (bestPractice.value) {
-//             const project = fetchProject(bestPractice.value.projectId);
-//             projectData.value = toCamel((await project).data());
-//         }
-//     },
-//     // fetch the data when the view is created and the data is already being observed
-//     { immediate: true },
-// )
+// Build the area menu - collect all the areas from the related project
+let areasMenu = ref([]);
+watch(() => store.projectAreas, areas => {
+    if (areas) {
+        areasMenu.value = areas.map((el: any, index: number) => ({
+            value: index,
+            label: (Object.values(el)[0]).siteName || 'Area name not provided'
+        }));
+    }
+});
 
-// // Build the AOI menu. Showing all AOIs from the related project
-// const aoiMenu = ref<{ label: string, value: number }[]>([])
-// // const activitiesMenu = ref<number[]>([])
-// watch(projectData, data => {
-//     aoiMenu.value = data.aoi.map((area: AOI, i: number) => ({
-//         label: Object.values(area)[0]["siteName"] || `Area ${i}`, value: i
-//     }));
+// From the selected areas from the menu, build the activities menu
+let activitiesMenu = ref([]);
+watch(selectedAreas, areas => {
+    // This array of activities contains duplicates but it doesn't matter
+    // as we are using it to select from flattenedActivities
+    const activityIds = store.projectAreas
+        .filter((_: any, index: number) => areas?.includes(index))
+        .reduce((prev: number[], current) => {
+            const newActivities = Object.values(current)[0].activities;
+            return [...prev, ...newActivities];
+        }, [])
+        .sort();
+    
+    activitiesMenu.value = flattenedActivities.filter(a => activityIds.includes(a.value));
+    
+    // Delete from the selected activities the ones that are not on the menu anymore
+    // selectedActivities.value is undefined if selection is empty
+    selectedActivities.value = selectedActivities.value ? selectedActivities.value.filter(v => activityIds.includes(v)) : [];
+});
 
-//     // TODO build activities menu
-// });
-
-// // Convert current selection of AOI indexes (number[]) from the menu to a vector of AOIs
-// const aoiSelection = reactive<number []>([]);
-// watch(aoiSelection, selection => {
-//     bestPractice.value.aoi = selection.map(n => projectData.value.aoi[n]);
+// watch(selectedActivities, areas => {
+//     console.log('Activities selection changed');
 // });
 </script>
 
@@ -119,61 +91,72 @@ function toCamel(o: any) {
         <h1 class="text-4xl dark:text-zinc-300">Objectives and Context</h1>
         <!-- <p class="dark:text-zinc-200">In this tab, basic information about your initiative is needed. The title and a summary of the aims and expected results of the initiative can be provided in the description section. You also need to provide further information such as when the initiative is expected to start and end, sources of funding and responsible organisms.</p> -->
 
-        <div class="divide-y divide-stone-900">
+        <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextFormGroup
                 v-model="store.bestPractice.title"
                 label="Title"
                 description="Title of the restoration practice."
                 :required=true>
             </TextFormGroup>
-            <MultiSelectFormGroup
+            <!-- <MultiSelectFormGroup
                 :options="objectives"
                 v-model="store.bestPractice.objectives"
                 label="Objectives"
                 description="Objectives of the initiatives."
                 :required="true"
                 :otherEnabled="true"
-                v-model:others="store.bestPractice.objectivesOther" />
+                v-model:others="store.bestPractice.objectivesOther" /> -->
+            <MultiSelectFormGroup
+                :options="objectives"
+                v-model="store.bestPractice.objectives"
+                label="Objectives"
+                description="Please select the main objectives of the practice."
+                :required="true" />
             <TextareaFormGroup
-                v-model="store.bestPractice.additionalInformation"
-                label="Additional information"
+                v-model="store.bestPractice.objectivesAdditionalInformation"
+                label="Objectives additional information"
                 description="Feel free to provide additional information on specific objectives of the practice." />
             <MultiSelectFormGroup
                 :options="ecosystems"
                 v-model="store.bestPractice.ecosystems"
                 label="Ecosystems"
-                description="Ecosystems where the practice was applied (Mandatory) [Select all that apply]"
-                :required="true"></MultiSelectFormGroup>
-            <LatLongFormGroup
+                description="Ecosystems where the practice was applied [Select all that apply]"></MultiSelectFormGroup>
+            <!-- <LatLongFormGroup
                 v-model="store.bestPractice.coordinates"
                 label="Geographic coordinates"
-                description="If available, please insert the geographic coordinates of the restoration area. Please use the WGS84 Geographic Reference System."></LatLongFormGroup>
+                description="If available, please insert the geographic coordinates of the restoration area. Please use the WGS84 Geographic Reference System."></LatLongFormGroup> -->
+            <TextareaFormGroup
+                v-model="store.bestPractice.ecosystemAdditionalInfo"
+                label="Ecosystems additional information"
+                dangerousHtmlDescription="Please provide additional information on specific types of ecosystem(s) where the practice was applied. Please use the Ecosystem Functional Groups from the IUCN Global Ecosystem Typology here: <a class='text-blue-600' target='_blank' href='https://global-ecosystems.org/analyse'>https://global-ecosystems.org/analyse</a>"></TextareaFormGroup>
             <TextareaFormGroup
                 v-model="store.bestPractice.context"
                 label="Context"
-                description="Please feel free to share any relevant socioeconomic and cultural context for the practice's implementation."></TextareaFormGroup>
-            <TreeItem
-                v-model="store.bestPractice.activities"
-                :treeData="activities" />
+                description="Please share any relevant ecological, socioeconomic and cultural context for the practice's implementation." />
+            <MultiSelectFormGroup
+                v-if="areasMenu.length"
+                :options="areasMenu"
+                v-model="selectedAreas"
+                label="Areas"
+                description="Select the areas where the practice was implemented." />
+            {{selectedActivities}}
+            <MultiSelectFormGroup
+                :options="activitiesMenu"
+                v-model="selectedActivities"
+                label="Activities"
+                description="Activities"
+                :required="true" />
             <MultiSelectFormGroup
                 :options="drivers"
                 v-model="store.bestPractice.drivers"
                 label="Drivers"
-                description="Drivers of degradation addressed by the practice [Select all that apply]."
+                description="Direct and indirect drivers of degradation addressed by the practice [Select all that apply]."
                 :required="true">
             </MultiSelectFormGroup>
             <TextareaFormGroup
-                v-model="store.bestPractice.additionalInformation"
-                label="Additional information"
+                v-model="store.bestPractice.driversAdditionalInformation"
+                label="Drivers additional information"
                 description="Feel free to provide additional information to explain how the practice contributed to addressing the drivers of ecosystem degradation selected above."></TextareaFormGroup>
-            <!-- TODO uncomment -->
-            <!-- <template v-if="projectData">
-                <MultiSelectFormGroup
-                    :options="aoiMenu"
-                    v-model="aoiSelection"
-                    label="AOIs"
-                    description="Select the AOIs where the practice was implemented." />
-            </template> -->
         </div>
     </div>
 </template>

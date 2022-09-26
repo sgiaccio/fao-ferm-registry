@@ -20,8 +20,8 @@ const yesNo = [
 
 <template>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-4xl dark:text-zinc-300">Benefits and validation</h1>
-        <div class="divide-y divide-stone-900">
+        <h1 class="text-4xl dark:text-zinc-300">Additional Resources</h1>
+        <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextareaFormGroup
                 v-model="store.bestPractice.links"
                 label="Links"
@@ -29,9 +29,13 @@ const yesNo = [
             <SelectFormGroup
                 v-model="store.bestPractice.details"
                 :options="yesNo"
-                label="Details"
+                label="Additional information on costs and benefits"
                 :required="true"
-                description="Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO´s team on Economics of Ecosystem Restoration (TEER)." />
+                description="Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO's Team on Economics of Ecosystem Restoration (TEER)." />
+            <TextareaFormGroup
+                v-model="store.bestPractice.additionalComments"
+                label="Additional comments"
+                description="Feel free to share any additional information regarding the practice." />
         </div>
     </div>
     <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->

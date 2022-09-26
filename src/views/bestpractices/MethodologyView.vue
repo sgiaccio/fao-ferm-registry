@@ -16,11 +16,12 @@ const store = useBestPracticesStore();
 type Methodology = {
     description?: string,
     implementationSteps?: {
-        timing?: string,
-        equipment?: string,
-        labour?: string,
-        species?: string,
-        additionalInformation?: string
+        details?: string
+        // timing?: string,
+        // equipment?: string,
+        // labour?: string,
+        // species?: string,
+        // additionalInformation?: string
     }[],
     engagement?: number[],
     knowledgeTypes?: number[],
@@ -68,7 +69,7 @@ const multiInputComponents = {
 }
 
 function enableSpecifyReplicability() {
-    return store.bestPractice.value.replicability && ["1", "2"].includes(store.bestPractice.value.replicability.toString())
+    return store.bestPractice?.replicability && ["1", "2"].includes(store.bestPractice.replicability.toString())
 }
 </script>
 
@@ -81,18 +82,19 @@ function enableSpecifyReplicability() {
         
         <p class="dark:text-zinc-300 italic"><span class="font-bold">Please provide all the information that another practitioner needs to have in order to be able to replicate this practice</span>. Please provide a description of the practice and explain in detail the steps for its implementation in the table below, including when applicable: timing, equipment, labour, species used, and all other relevant information.</p>
 
-        <div class="divide-y divide-stone-900">
+        <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextareaFormGroup
                 v-model="store.bestPractice.description"
                 label="Description"
                 description="Description of the practice." />
             <div>
-                <p class="text-white mt-6">Please provide for each step: timing, equipment, labour, species used, and all other relevant information</p>
+                <p class="text-gray-600 dark:text-white mt-6">Please provide for each step: timing, equipment, labour, species used, and all other relevant information</p>
                 <MultiInputFormGroup
                     label="Steps for implementation"
                     :inputComponents="multiInputComponents"
                     v-model="store.bestPractice.implementationSteps"
-                    :numbering="(n: number) => `Step ${n}`"/>
+                    :numbering="(n: number) => `Step ${n}`"
+                    :required="true"/>
             </div>
             <MultiSelectFormGroup
                 :options="menus.engagement"
@@ -116,7 +118,7 @@ function enableSpecifyReplicability() {
                 label="Scale"
                 description="Please indicate the scale(s) at which the practice has been implemented and/or replicated."
                 :required="true" />
-            <!-- <div>
+            <div>
                 <SelectFormGroup
                     :options="menus.replicability"
                     v-model="store.bestPractice.replicability"
@@ -127,7 +129,7 @@ function enableSpecifyReplicability() {
                     v-model="store.bestPractice.specifyReplicability"
                     description="If yes, please briefly explain where it was replicated, how many times, and with what results."
                     :enabled="enableSpecifyReplicability" />
-            </div> -->
+            </div>
         </div>
     </div>
     <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->
