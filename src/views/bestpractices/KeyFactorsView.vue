@@ -25,7 +25,7 @@ const constraintsComponents = {
     constraint: {
         component: Constraint,
         newData: {},
-        addItemLabel: "constraint",
+        addItemLabel: "Add constraint",
     }
 }
 

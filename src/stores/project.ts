@@ -1,17 +1,18 @@
-import { getDocs, getDoc, collection, writeBatch, setDoc, addDoc, doc, query, where, serverTimestamp } from "firebase/firestore"
-import { defineStore } from "pinia";
+import { getDocs, getDoc, collection, writeBatch, setDoc, addDoc, doc, query, where, serverTimestamp, orderBy } from 'firebase/firestore'
+import { defineStore } from 'pinia';
 
-import { db } from "../firebase";
+import { db } from '../firebase';
 
-import { snakeToCamel } from "../lib/util"
+import { snakeToCamel } from '../lib/util'
 
 import { useAuthStore } from './auth';
 
-const projectsCollection = collection(db, "registry")
-const areaCollection = collection(db, "areas")
+const projectsCollection = collection(db, 'registry')
+const areaCollection = collection(db, 'areas')
+const bestPracticesCollection = collection(db, 'bestPractices');
 
 export const useProjectStore = defineStore({
-    id: "project",
+    id: 'project',
     state: () => ({
         projects: [] as any[],
         id: null as string | null,
@@ -24,38 +25,54 @@ export const useProjectStore = defineStore({
             this.project = null;
             this.projectAreas = [];
         },
-        async fetchProject(id: string) {
-            const docRef = doc(db, 'registry', id);
-            this.project = snakeToCamel((await getDoc(docRef)).data());
+        async fetchProject(projectId: string) {
+            const docRef = doc(db, 'registry', projectId);
+            this.project = {
+                project: {},
+                indicators: [],
+                results: {},
+                ...snakeToCamel((await getDoc(docRef)).data())
+            };
 
             // This is needed before data is transformed to the detached AOI version
             // Detach areas if present (has not been edited) and store them in a separate variable
             if (this.project.aoi) {
                 this.projectAreas = this.project.aoi
                 delete this.project.aoi
+                this.projectAreas = [];
             } else {
                 // TODO else fetch AOIs from separate collection
-                const areasRef = doc(areaCollection, id);
+                const areasRef = doc(areaCollection, projectId);
                 this.projectAreas = (await getDoc(areasRef)).data()?.areas || [];
             }
-            this.id = id;
+
+            this.id = projectId;
         },
         async fetchGroupOwnedProjects() {
             const authStore = useAuthStore();
             const userGroups = Object.keys(authStore.privileges);
 
-            const q = query(projectsCollection, where("group", "in", userGroups));
+            const q = query(projectsCollection, where('group', 'in', userGroups));
             const querySnapshot = await getDocs(q);
-            querySnapshot.docs;
             this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
+
+            // Get related good practices
+            this.projects.forEach(async (p: any) => {
+                const projectId = p.id;
+                const q2 = query(bestPracticesCollection, where('projectId', '==', projectId));
+                const querySnapshot2 = await getDocs(q2);
+                p.nBestPractices = querySnapshot2.size;
+            });
         },
-        createEmptyProject() {
+        createEmptyProject(groupId: string) {
             this.id = null;
             this.project = {
+                group: groupId,
                 project: {},
                 indicators: [],
                 results: {}
             }
+            this.projectAreas = [];
         },
         async saveProject() {
             const authStore = useAuthStore();
@@ -63,8 +80,6 @@ export const useProjectStore = defineStore({
             // Set project additional information
             const projectToBeSaved = {
                 ...this.project,
-                group: 'MUKCRgfAZxOeevfaerdx',
-                created_by: authStore.user.uid,
                 'update-time': serverTimestamp()
             };
 
@@ -74,8 +89,10 @@ export const useProjectStore = defineStore({
             let projectRef;
             if (this.id) {
                 projectToBeSaved['create-time'] = serverTimestamp();
+
                 projectRef = doc(projectsCollection, this.id);
             } else {
+                projectToBeSaved['created_by'] = authStore.user.uid
                 projectRef = doc(projectsCollection);
             }
 
@@ -88,11 +105,33 @@ export const useProjectStore = defineStore({
             await batch.commit();
 
             this.resetProjectState();
+        },
+        async deleteProject(projectId: string) {
+            const batch = writeBatch(db);
+
+            // Delete project
+            const projectRef = doc(db, 'registry', projectId);
+            batch.delete(projectRef);
+
+            // Delete areas
+            const areasRef = doc(db, 'areas', projectId);
+            batch.delete(areasRef);
+
+            // Delete best practices
+            // TODO repetition from bestpractices store
+            const q = query(bestPracticesCollection, where('projectId', '==', projectId));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach(doc => { batch.delete(doc.ref) });
+
+            await batch.commit();
+            return this.fetchGroupOwnedProjects();
         }
     }
 });
 
-
+// (defn delete [project-id]
+//     (deleteDoc (doc registry-collection project-id)))
+  
 
 // (defn get-user-accessible-projects
 //     "Returns a list of records accessible by the current user (either public or belonging to one of his groups)"

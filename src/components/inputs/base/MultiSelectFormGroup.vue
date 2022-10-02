@@ -67,7 +67,7 @@ const inputComponents = {
     other: {
         component: TextInput,
         // newData: "",
-        addItemLabel: "other"
+        addItemLabel: "Add other"
     }
 }
 

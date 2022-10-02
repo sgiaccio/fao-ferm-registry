@@ -17,7 +17,7 @@ const multiInputComponents = {
     poc: {
         component: PointOfContact,
         newData: {},
-        addItemLabel: "POC",
+        addItemLabel: "Add POC",
     },
 }
 </script>

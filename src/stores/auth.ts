@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 
+import { auth } from '../firebase'
 import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
@@ -9,18 +10,24 @@ import {
     // sendPasswordResetEmail,
     // sendEmailVerification
 } from "firebase/auth";
+import { collection, query, getDocs, where, documentId } from "@firebase/firestore";
 
-import { auth } from '../firebase'
+
 import router from '@/router';
+
+import { db } from '../firebase';
+
+// import { useUserPrefsStore } from './userPreferences'
 
 
 export const useAuthStore = defineStore({
     id: "auth",
     state: () => ({
+        authLoaded: false,
         user: null as any,
         isAdmin: false,
         privileges: {},
-
+        userGroups: {},
         returnUrl: '/'
     }),
     actions: {
@@ -65,7 +72,7 @@ export const useAuthStore = defineStore({
 
         async login(email: string, password: string) {
             try {
-                await signInWithEmailAndPassword(auth, email, password); 
+                await signInWithEmailAndPassword(auth, email, password);
             } catch (error: any) {
                 switch(error.code) {
                     case "auth/user-not-found":
@@ -83,7 +90,6 @@ export const useAuthStore = defineStore({
             this.user = auth.currentUser;
 
             const idToken = await this.user.getIdTokenResult();
-            console.log(idToken)
             if (idToken) {
                 this.isAdmin = idToken.claims.admin,
                 this.privileges = idToken.claims.privileges || {}
@@ -130,8 +136,38 @@ export const useAuthStore = defineStore({
                     if (router.currentRoute.value.path === "/login") {
                         router.push(this.returnUrl); // TODO
                     }
+
+                    // get user groups
+                    const groupIds = Object.keys(this.privileges);
+
+                    const groupsCollection = collection(db, 'groups');
+                    const setUserGroups = getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
+                        .then(groups => {
+                            // this.userGroups = groups
+                            this.userGroups = groups.docs.reduce((prev, current) =>
+                                ({ ...prev, [current.id]: current.data().name }), {});
+                        });
+
+                    // TODO fetch user preferences in parallel
+                    
+                    await setUserGroups
+                    // TODO await for user pref
                 }
+                this.authLoaded = true;
             });
-        }
+        },
+
+        // (defn get-groups []
+        //     (.then (getDocs (query groups-collection))
+        //            (fn [query-snapshot]
+        //              ^js/Array (.-docs query-snapshot))))
+          
+        
+        // getAccessToken() {
+        //     return this.user.accessToken;
+        // }
     }
 });
+// (defn get-access-token []
+//     (.. auth -currentUser -accessToken))
+  

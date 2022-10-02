@@ -37,10 +37,10 @@ type Objectives = {
     activities?: number[]
 }
 
-const selectedAreas = ref([]);
-const selectedActivities = ref([]);
+// const selectedAreas = ref([]);
+// const selectedActivities = ref([]);
 
-const flattenedActivities: [{ value: number, label: string}] = [];
+const flattenedActivities: [{ value: number, label: string}] | [] = [];
 (function flatten(data) {
     if (!data.children) {
         flattenedActivities.push({ value: data.value, label: data.label });
@@ -60,29 +60,48 @@ watch(() => store.projectAreas, areas => {
     }
 });
 
-// From the selected areas from the menu, build the activities menu
 let activitiesMenu = ref([]);
-watch(selectedAreas, areas => {
+
+function setActivitiesMenu(areas) {
     // This array of activities contains duplicates but it doesn't matter
     // as we are using it to select from flattenedActivities
     const activityIds = store.projectAreas
         .filter((_: any, index: number) => areas?.includes(index))
         .reduce((prev: number[], current) => {
-            const newActivities = Object.values(current)[0].activities;
+            const newActivities = Object.values(current)[0].activities || [];
             return [...prev, ...newActivities];
         }, [])
         .sort();
     
     activitiesMenu.value = flattenedActivities.filter(a => activityIds.includes(a.value));
+
+    return activityIds;
+}
+
+// From the selected areas from the menu, build the activities menu
+// watching areasMenu as we need to setup the activitiesMenu on page load    
+watch(() => store.bestPracticeAreaIdxs, (areas) => {
+    if (!store.bestPractice) return // it has been saved and set to null, so nothing to do here
+
+    // // This array of activities contains duplicates but it doesn't matter
+    // // as we are using it to select from flattenedActivities
+    // const activityIds = store.projectAreas
+    //     .filter((_: any, index: number) => areas?.includes(index))
+    //     .reduce((prev: number[], current) => {
+    //         const newActivities = Object.values(current)[0].activities || [];
+    //         return [...prev, ...newActivities];
+    //     }, [])
+    //     .sort();
     
+    // activitiesMenu.value = flattenedActivities.filter(a => activityIds.includes(a.value));
+
+    const activityIds = setActivitiesMenu(areas)
+
     // Delete from the selected activities the ones that are not on the menu anymore
     // selectedActivities.value is undefined if selection is empty
-    selectedActivities.value = selectedActivities.value ? selectedActivities.value.filter(v => activityIds.includes(v)) : [];
+    store.bestPractice.activities = store.bestPractice.activities ? store.bestPractice.activities.filter(v => activityIds.includes(v)) : [];
 });
 
-// watch(selectedActivities, areas => {
-//     console.log('Activities selection changed');
-// });
 </script>
 
 
@@ -136,13 +155,12 @@ watch(selectedAreas, areas => {
             <MultiSelectFormGroup
                 v-if="areasMenu.length"
                 :options="areasMenu"
-                v-model="selectedAreas"
+                v-model="store.bestPracticeAreaIdxs"
                 label="Areas"
                 description="Select the areas where the practice was implemented." />
-            {{selectedActivities}}
             <MultiSelectFormGroup
                 :options="activitiesMenu"
-                v-model="selectedActivities"
+                v-model="store.bestPractice.activities"
                 label="Activities"
                 description="Activities"
                 :required="true" />

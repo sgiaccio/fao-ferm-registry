@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-
 import { useBestPracticesStore } from '../../stores/bestpractices';
 
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
@@ -64,7 +62,7 @@ const multiInputComponents = {
     step: {
         component: ImplementationStep,
         newData: {},
-        addItemLabel: "step",
+        addItemLabel: "Add step",
     },
 }
 

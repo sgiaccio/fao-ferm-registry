@@ -1164,3 +1164,22 @@ export const indicators = {
         }
     ]
 }
+
+export const achieved = [
+    { value: 1, label: 'Yes' },
+    { value: 3, label: ' Partially' },
+    { value: 2, label: 'No' }
+];
+
+export const achievingTargets = [
+    { value: 1, label: 'Reforest degraded lands' },
+    { value: 2, label: 'Improve soil health' },
+    { value: 3, label: 'Increase food and products production' },
+    { value: 4, label: 'Improve biodiversity' },
+    { value: 5, label: 'Contribute to climate change adaptation and mitigation' },
+    { value: 6, label: 'Improve water availability and quality' },
+    { value: 7, label: 'Improving livelihoods' },
+    { value: 8, label: 'Improve access to energy' },
+    { value: 9, label: 'Rights and culture' },
+    { value: 10, label: 'Ensure sustainability of restoration practices' },
+]

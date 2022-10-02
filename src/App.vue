@@ -10,21 +10,26 @@ import { useAuthStore } from "./stores/auth"
 // import "./lib/firestore";
 
 
+const authStore = useAuthStore();
+
 onBeforeMount(() => {
-  const { fetchUser } = useAuthStore();
+  const { fetchUser } = authStore;
   fetchUser();
 })
 </script>
 
 <template>
-  <div class="dark:bg-slate-900">
-    <Navbar></Navbar>
-  </div>
-  <!-- <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl mx-auto"> -->
-      <!-- <Suspense> -->
-      <RouterView />
-      <!-- </Suspense> -->
-    <!-- </div>
-  </div> -->
+  <template v-if="authStore.authLoaded">
+    <div class="dark:bg-slate-900">
+      <Navbar></Navbar>
+    </div>
+    <!-- <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto"> -->
+        <!-- <Suspense> -->
+        <RouterView/>
+        <!-- </Suspense> -->
+      <!-- </div>
+    </div> -->
+    </template>
+    <div v-else>Loading the registry...</div>
 </template>

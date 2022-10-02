@@ -2,7 +2,7 @@
   <div class="bg-white dark:bg-zinc-800">
     <main>
       <div class="relative sm:mt-6 lg:mt-8">
-        <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gray-100 dark:bg-zinc-600"></div>
+        <!-- <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gray-100 dark:bg-zinc-600"></div> -->
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div class="relative shadow-xl sm:rounded-2xl sm:overflow-hidden">
             <div class="absolute inset-0">
@@ -46,7 +46,7 @@
         </div>
       </div>
       <div class="relative pt-16 pb-32 overflow-hidden">
-        <div aria-hidden="true" class="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-zinc-600"></div>
+        <div aria-hidden="true" class="absolute inset-x-0 top-0 h-48 _bg-gradient-to-t _from-zinc-600"></div>
         <div class="relative">
           <div class="lg:mx-auto lg:max-w-7xl lg:px-8 lg:grid lg:grid-cols-2 lg:grid-flow-col-dense lg:gap-24">
             <div class="px-4 max-w-xl mx-auto sm:px-6 lg:py-16 lg:max-w-none lg:mx-0 lg:px-0">

@@ -1,5 +1,10 @@
 <script setup lang="ts">
-  import { useProjectStore } from '../../stores/project';
+import { getStorage, ref, uploadBytes, listAll } from 'firebase/storage';
+import * as vue from 'vue';
+
+
+
+import { useProjectStore } from '../../stores/project';
 
   import TextFormGroup from "@/components/inputs/base/TextFormGroup.vue";
   import DateFormGroup from "@/components/inputs/base/DateFormGroup.vue";
@@ -73,7 +78,7 @@
     organization: {
         component: Organization,
         newData: {},
-        addItemLabel: "organization",
+        addItemLabel: "Add organization",
     },
   }
 
@@ -81,11 +86,43 @@ const pointsOfContact = {
     poc: {
         component: PointOfContact,
         newData: {},
-        addItemLabel: "POC",
+        addItemLabel: "Add point of contact",
     },
   }
 
   const store = useProjectStore();
+
+
+  const selectedFile = vue.ref(null);
+  const uploadStatus = vue.ref('idle');
+  function setSelectedFile(event: Event) {
+    selectedFile.value = (event.target as HTMLInputElement).files![0];
+  }
+
+  const storage = getStorage();
+  function uploadFile(projectId: string) {
+    const storageRef = ref(storage, `${projectId}/documents/${selectedFile.value!.name}`);
+    const uploadTask = uploadBytes(storageRef, selectedFile.value!);
+    uploadTask.then(snapshot => console.log(snapshot));
+  }
+
+  async function listFiles(projectId: string) {
+    const dirRef = ref(storage, projectId + '/documents/');
+    return listAll(dirRef);
+  }
+
+  // (defn list-files [path]
+  // (let [dir-ref (ref storage path)
+  //       ;; _ (js/console.log project-id)
+  //       ;; _ (js/console.log path)
+  //       ]
+  //   (listAll dir-ref)))
+
+  const fileName = vue.ref<string>();
+  vue.watch(() => store.id as string, async (id) => {
+    const fList = await listFiles(id);
+    fileName.value = fList.items && fList.items.length && fList.items[0].name // only one file can be uploaded
+  })
   </script>
   
   
@@ -125,11 +162,45 @@ const pointsOfContact = {
             v-model="store.project.project.endingDate"
             label="Ending date"
             description="Date when the initiative finished or is expected to finish"></DateFormGroup>
-        <TextFormGroup
+
+  <div v-if="!fileName">
+    <div>Upload one initiative document</div>
+    <label for="file" class="block text-sm font-medium text-gray-700" />
+    <div class="mt-1 flex rounded-md shadow-sm">
+        <div class="flex-grow focus-within:z-10">
+            <input
+                type="file"
+                name="file"
+                class="pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
+                @change="setSelectedFile">
+        </div>
+        <button
+                type="button"
+                class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none"
+                :class="['idle' === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
+                @click="uploadFile(store.id)">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-5 w-5 text-gray-400" :class="[ selectedFile ? 'animate-bounce' : '' ]"
+                     viewBox="0 0 20 20"
+                    fill="currentColor"
+                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd">
+                    <path
+                        fill-rule="evenodd"
+                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                        clip-rule="evenodd"></path>
+            </svg>
+        </button>
+    </div>
+    <div v-if="selectedFile" class="text-red-500 text-sm">Remember to click the upload button before saving.</div>
+</div>
+<div class="dark:text-white" v-else>Initiative file: {{fileName}}</div>
+
+<!-- <TextFormGroup
             v-model="store.project.project.document"
             label="Document"
             description="Upload one initiative document (xx formats accepted, max xx MB)">
-        </TextFormGroup> <!-- TODO -->
+        </TextFormGroup> TODO -->
         <!-- <TextareaFormGroup
             v-model="store.project.project.purpose"
             label="Initiative Objectives"

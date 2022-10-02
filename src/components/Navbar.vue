@@ -4,7 +4,19 @@ import { ref, watch } from 'vue'
 import { Disclosure, DisclosureButton, DisclosurePanel, Switch, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 
+import { useRoute } from 'vue-router';
+
 import { useAuthStore } from "../stores/auth"
+
+const route = useRoute();
+
+console.log(route.path);
+
+watch(() => route.path, n => {
+  console.log(n)
+
+})
+
 
 // import { storeToRefs } from 'pinia'
 // import { useAuthStore } from '../stores/auth'
@@ -48,9 +60,13 @@ watch (enabled, (status) => {
         </div>
         <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
           <div class="flex-shrink-0 flex items-center">
-            <img class="block lg:hidden h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg" alt="Workflow" />
+            <router-link to="/">
+                <img class="block lg:hidden h-8 w-auto" src="@/assets/FERM_LOGO_MASTER_colour_small.svg" alt="Workflow" />            
+              </router-link>
             <!-- <img class="hidden lg:block h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg" alt="Workflow" /> -->
-            <img class="hidden lg:block h-10 w-auto" src="@/assets/FERM_LOGO_MASTER_colour_small.svg" alt="Workflow" />
+            <router-link to="/">
+              <img class="hidden lg:block h-10 w-auto" src="@/assets/FERM_LOGO_MASTER_colour_small.svg" alt="Workflow" />
+            </router-link>
           </div>
           <!-- <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
@@ -64,6 +80,9 @@ watch (enabled, (status) => {
             <BellIcon class="h-6 w-6" aria-hidden="true" />
           </button> -->
 
+          <div class="flex space-x-4" v-if="route.path.includes('good-practices')">
+              <a target="_blank" href="https://forms.office.com/Pages/ResponsePage.aspx?id=aMQ6Frir0ESB_dnbFeOvltHYPNSbGydEq11y7AZvREZUMFhUTUNaRlZYQzBYT0xGNVdBUkFET0pXQS4u" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Feedback</a>
+            </div>
           <Switch v-model="enabled" :class="[enabled ? 'bg-indigo-600' : 'bg-indigo-200', 'ml-3 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2_ focus:ring-indigo-500_ focus:ring-offset-2_']">
             <span class="sr-only">Use setting</span>
             <span :class="[enabled ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']">
@@ -84,21 +103,24 @@ watch (enabled, (status) => {
           </Switch>
 
           <!-- Profile dropdown -->
-          <!-- <Menu as="div" class="ml-3 relative">
+          <Menu as="div" class="ml-3 relative">
             <div>
-              <MenuButton class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+              <MenuButton class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white text-white">
                 <span class="sr-only">Open user menu</span>
-                <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
+                <!-- <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" /> -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 rounded-full">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
               </MenuButton>
             </div>
             <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
               <MenuItems class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <MenuItem v-slot="{ active }">
+                <!-- <MenuItem v-slot="{ active }">
                   <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Your Profile</a>
                 </MenuItem>
                 <MenuItem v-slot="{ active }">
                   <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Settings</a>
-                </MenuItem>
+                </MenuItem> -->
                 <MenuItem v-slot="{ active }">
                   <a href="#"
                      :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
@@ -106,7 +128,7 @@ watch (enabled, (status) => {
                 </MenuItem>
               </MenuItems>
             </transition>
-          </Menu> -->
+          </Menu>
         </div>
       </div>
     </div>

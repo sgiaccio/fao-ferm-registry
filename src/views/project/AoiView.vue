@@ -1,15 +1,29 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import { useProjectStore } from '../../stores/project'
 
 import MultiInput from '../../components/inputs/MultiInput.vue'
+import MapInput from '../../components/inputs/base/MapInput.vue'
 import AdminArea from '../../components/inputs/AdminArea.vue'
+import MapUpload from '../../components/inputs/base/MapUpload.vue'
 
 
 const multiInputComponents = {
     adminArea: {
         component: AdminArea,
         newData: {},
-        addItemLabel: 'admin area'
+        addItemLabel: 'Add admin area'
+    },
+    draw: {
+        component: MapInput,
+        newData: {},
+        addItemLabel: 'Draw polygon'
+    },
+    upload: {
+        component: MapUpload,
+        newData: {},
+        addItemLabel: 'Upload shapefile'
     }
 };
 
@@ -26,10 +40,10 @@ const store = useProjectStore();
             <li>Draw directly on the platform</li>
         </ul>
         <MultiInput
-            :numbering="(n) => `Area #${n}`"
+            :numbering="(n: number) => `Area #${n}`"
             :inputComponents="multiInputComponents"
             v-model="store.projectAreas"
-            deleteConfirmMessage="Are you sure you want to delete this area? Related characteristics and activities will also be deleted!"/>
+            deleteConfirmMessage="Are you sure you want to delete this area? The related characteristics and activities will also be deleted."/>
     </div>
-    <pre class="text-black">{{JSON.stringify(store.projectAreas, null, 2)}}</pre>
+    <!-- <pre class="text-black">{{JSON.stringify(store.projectAreas, null, 2)}}</pre> -->
 </template>

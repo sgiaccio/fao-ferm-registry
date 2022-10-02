@@ -16,7 +16,7 @@ const store = useProjectStore();
         <h1 class="text-3xl dark:text-zinc-300">Indicator selection</h1>
         <p class="dark:text-zinc-200">There are various forms of activities to support ecosystem restoration. They range from technologies to approaches, at local to watershed levels. Different parameters are identified to categorize activities and better identify related indicators and datasets for each area of interest.</p>
 
-        <FormGroup label="Activities">
+        <FormGroup label="Activities" v-if="store.projectAreas?.length">
             <div class="flex flex-col gap-y-4">
                 <div
                     v-for="area, i in store.projectAreas"
@@ -31,6 +31,7 @@ const store = useProjectStore();
                 </div>
             </div>
         </FormGroup>
+        <div v-else class="text-red-600 font-bold text-lg">Please enter at least one area in the <router-link class="text-blue-400 underline hover:text-blue-600" :to="{name: 'aoi'}">Area tab</router-link></div>
     </div>
 </template>
 

@@ -51,7 +51,7 @@ function deleteItem(i: number) {
 
 const addLabels = computed(() => {
     const arr: string[] = [];
-    for (const [key, value] of Object.entries(props.inputComponents)) {
+    for (const [key, _] of Object.entries(props.inputComponents)) {
         arr.push(props.inputComponents[key].addItemLabel);
     }
     return arr.sort();
@@ -83,12 +83,13 @@ const errorMessages = computed(() => {
                 </button>
             </div>
         </div>
-        <div v-if="addLabels.length === 1" class="p-3">
+        <div class="flex p-3 gap-x-3">
             <button
+                v-for="(value, key) in props.inputComponents"
                 type="button"
-                @click="addNewItem(getKey(props.inputComponents))"
+                @click="addNewItem(key)"
                 class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Add {{addLabels[0]}}
+                {{value.addItemLabel}}
             </button>
         </div>
     </div>

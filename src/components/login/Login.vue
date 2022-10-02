@@ -81,20 +81,20 @@ function togglePasswordReset() {
                         </button>
                     </div>
                 </form>
-                <div class="flex items-center justify-between">
+                <!-- <div class="flex items-center justify-between">
                     <div class="text-sm">
                         <span @click="togglePasswordReset" class="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-200 dark:hover:text-indigo-300">
                             Forgot your password?
                         </span>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="font-semibold mt-10 dark:text-gray-200">
                     No account?
-                    <span class="text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400 cursor-pointer underline"
-                            @click="">
+                    <a class="text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400 cursor-pointer underline"
+                            href="https://forms.gle/BKDQzgtnfHEdvnHM8">
                         Ask for one, you will be contacted soon.
-                    </span>
+                </a>
                 </div>
             </div>
         </div>

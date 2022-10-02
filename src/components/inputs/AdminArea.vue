@@ -6,12 +6,16 @@ import SelectInput from './base/SelectInput.vue';
 import TextInput from './base/TextInput.vue';
 
 
-const props = defineProps({
-    modelValue: { type: null }
-    // options: { type: Array as PropType<Array<{value: any, label: String}>> },
-    // placeholder: { type: String, default: 'Please select' },
-    // required: { type: Boolean, default: false }
-});
+const props = defineProps<{
+  modelValue: {
+    siteName: string,
+    admin0: number,
+    admin1: number,
+    admin2: number,
+    activities: number[]
+  }
+}>()
+
 const emit = defineEmits(['update:modelValue']);
 
 const admin0 = ref(props.modelValue?.admin0);
@@ -40,7 +44,9 @@ watch(admin0, val => {
 
     if (!val) emit('update:modelValue', undefined)
     emit('update:modelValue', {
-        activities: props.modelValue.activities, // Preserve activities when the area changes
+        // activities: props.modelValue.activities, // Preserve activities when the area changes
+        // siteName: props.modelValue.siteName,
+        ...props.modelValue,
         admin0: admin0.value || undefined,
         admin1: admin1.value || undefined,
         admin2: admin2.value || undefined
@@ -59,7 +65,9 @@ watch(admin1, val => {
 
     if (!admin0.value && !val) emit('update:modelValue', undefined);
     emit('update:modelValue', {
-        activities: props.modelValue.activities,
+        // activities: props.modelValue.activities,
+        // siteName: props.modelValue.siteName,
+        ...props.modelValue,
         admin0: admin0.value || undefined,
         admin1: admin1.value || undefined,
         admin2: admin2.value || undefined
@@ -68,7 +76,9 @@ watch(admin1, val => {
 watch(admin2, val => {
     if (!admin0.value && !admin1.value && !val) emit('update:modelValue', undefined);
     emit('update:modelValue', {
-        activities: props.modelValue.activities,
+        // activities: props.modelValue.activities,
+        // siteName: props.modelValue.siteName,
+        ...props.modelValue,
         admin0: admin0.value || undefined,
         admin1: admin1.value || undefined,
         admin2: admin2.value || undefined
