@@ -5,6 +5,7 @@ import { ref, computed } from 'vue'
 // import FormGroup from '../FormGroup.vue';
 
 const props = defineProps({
+    uid: null,
     modelValue: null,
     treeData: Object,
     level: { type: Number, default: 0 },
@@ -48,13 +49,12 @@ function deleteOption(value: string) {
     emit('update:modelValue', props.modelValue.filter(v => v !== value).sort(sortCheckedValues));
 }
 
-let flattenedOptions: number[] = []
+let flattenedOptions: any = {}
 function flatten(data) {
     if (!data.children) {
         flattenedOptions[data.value] = data.label;
-    }
-    else {
-        data.children.forEach(c => { flatten(c) });
+    } else {
+        data.children.forEach(flatten);
     }
 }
 
@@ -66,7 +66,10 @@ function flatten(data) {
 
 if (props.level === 0) {
     flatten(props.treeData);
+    console.log(flattenedOptions)
 }
+
+const uid = props.uid || Math.ceil(Math.random() * 1e9) // TODO
 
 function bubble(val: number[]) {
     emit("update:modelValue", val && val.length ? val : undefined);
@@ -101,21 +104,22 @@ function bubble(val: number[]) {
         <div v-else class="relative flex items-start">
             <div class="flex h-5 items-center">
                 <input
-                    :id="treeData?.value"
+                    :id="`${uid}_${treeData?.value}`"
                     @change="check(($event.target as HTMLInputElement).checked, treeData?.value)"
                     aria-describedby="comments-description"
-                    name="comments"
+                    name="`${uid}_${treeData?.value}`"
                     type="checkbox"
                     :checked="(modelValue || []).includes(treeData?.value)"
                     class="cursor-pointer h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
             </div>
             <div class="ml-3 text-sm">
-                <label :for="treeData?.value" class="font-normal dark:text-zinc-300 cursor-pointer">{{ treeData?.label }}</label>
+                <label :for="`${uid}_${treeData?.value}`" class="font-normal dark:text-zinc-300 cursor-pointer">{{ treeData?.label }}</label>
             </div>
         </div>
         <ul class="ml-10" v-show="isOpen" v-if="isFolder">
             <TreeItem
                 v-for="child in treeData?.children"
+                :uid="uid"
                 :modelValue="modelValue"
                 @update:modelValue="bubble"
                 :treeData="child"
@@ -127,35 +131,31 @@ function bubble(val: number[]) {
         </ul>
     </dl>
     <div v-else>
-        <!-- <FormGroup
-            label="Activities"
-            description="Restoration activities to which the practice belongs to."> -->
-            <!-- <input v-model="searchText"> -->
+        <div
+            class="border border-slate-400 rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
+            <div class="ml-2 text-gray-600" v-if="!props.modelValue?.length">Please select from the list below</div>
             <div
-                class="border border-slate-400 rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
-                <div class="ml-2 text-gray-600" v-if="!props.modelValue?.length">Please select from the list below</div>
-                <div
-                    v-for="value in (props.modelValue || []).sort(sortCheckedValues)"
-                    class="text-stone-800 m-0 flex items-center rounded-lg pl-2.5 pr-1 bg-pink-200 min-h-7 p-1 border border-stone-800">
-                    <span class="align-middle">
-                        {{flattenedOptions[value]}}
-                    </span>
-                    <div>
-                        <svg @click="deleteOption(value)" class="ml-0.5 w-5 h-5 text-gray-600 hover:text-gray-800 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
+                v-for="value in (props.modelValue || []).sort(sortCheckedValues)"
+                class="text-white m-0 flex items-center rounded-lg pl-2.5 pr-1 bg-blue-500 min-h-7 p-1 border border-stone-800">
+                <span class="align-middle">
+                    {{flattenedOptions[value]}}
+                </span>
+                <div>
+                    <svg @click="deleteOption(value)" class="ml-0.5 w-5 h-5 text-gray-300 hover:text-gray-400 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                    </svg>
                 </div>
             </div>
-            <ul class="dark:text-white cursor-default">
-                <TreeItem
-                    v-for="child in treeData?.children"
-                    :modelValue="modelValue"
-                    @update:modelValue="bubble"
-                    :treeData="child"
-                    :level="props.level + 1"
-                    :expandLevel="expandLevel" />
-            </ul>
-        <!-- </FormGroup> -->
+        </div>
+        <ul class="dark:text-white cursor-default">
+            <TreeItem
+                v-for="child in treeData?.children"
+                :uid="uid"
+                :modelValue="modelValue"
+                @update:modelValue="bubble"
+                :treeData="child"
+                :level="props.level + 1"
+                :expandLevel="expandLevel" />
+        </ul>
     </div>
 </template>

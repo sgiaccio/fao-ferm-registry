@@ -6,7 +6,7 @@ import router from '@/router';
 
 import { useBestPracticesStore } from '../../stores/bestpractices';
 
-import Guidelines from './Guidelines.vue';
+// import Guidelines from './Guidelines.vue';
 
 
 const route = useRoute();
@@ -41,7 +41,7 @@ onMounted(() => {
 
 async function save() {
     await saveBestPractice();
-    router.push('/initiatives');
+    router.push('/objectives');
 }
 
 const showJson = ref(false)
@@ -52,7 +52,7 @@ function toggleJson() {
 </script>
 
 <template>
-    <Guidelines></Guidelines>
+    <!-- <Guidelines></Guidelines> -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="max-w-3xl mx-auto">
         <div>

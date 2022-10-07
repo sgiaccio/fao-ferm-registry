@@ -6,7 +6,7 @@ import MultiInputFormGroup from "../../components/inputs/MultiInputFormGroup.vue
 import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
 import Constraint from "../../components/inputs/Constraint.vue"
 
-import * as menus from "../../components/project/menus";
+import { keyFactors } from "../../components/project/menus";
 
 
 type KeyFactors = {
@@ -39,7 +39,7 @@ const constraintsComponents = {
         <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <div>
                 <MultiSelectFormGroup
-                    :options="menus.keyFactors"
+                    :options="keyFactors"
                     v-model="store.bestPractice.keyFactors"
                     label="Key factors"
                     description="What are the key factors that need to be in place for the successful implementation of the practice."

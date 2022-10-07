@@ -4,7 +4,7 @@ import { useBestPracticesStore } from '../../stores/bestpractices';
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
 
-import * as menus from "../../components/project/menus";
+import { positiveOutcomes } from "../../components/project/menus";
 
 
 type Benefits = {
@@ -22,7 +22,7 @@ const store = useBestPracticesStore();
         
         <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <MultiSelectFormGroup
-                :options="menus.positiveOutcomes"
+                :options="positiveOutcomes"
                 v-model="store.bestPractice.outcomes"
                 label="Outcomes"
                 description="Please select the ecological, cultural and environmental and/or socio-economic outcomes of implementing the practice."

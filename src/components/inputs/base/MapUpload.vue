@@ -19,7 +19,7 @@ const emit = defineEmits(['update:modelValue']);
 const projectStore = useProjectStore();
 
 const selectedFile = ref<File | null>(null);
-const uploadStatus = ref('idle');
+const uploadStatus = ref<'idle' | 'uploading' | 'uploaded'>('idle');
 
 function setSelectedFile(event: Event) {
     selectedFile.value = (event.target as HTMLInputElement).files![0];
@@ -44,8 +44,12 @@ async function uploadFile() {
                 // 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             },
             body: formData
-        }).then(
-            response => response.text()
+        }).then(response => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.text()
+            }
         ).then(uuid => {
             alert(`File uploaded with uuid ${uuid}`);
             uploadStatus.value = 'uploaded'
@@ -67,9 +71,11 @@ async function uploadFile() {
     <label for="file" class="block text-sm font-medium text-gray-700" />
     <div class="mt-1 flex rounded-md shadow-sm">
         <div class="flex-grow focus-within:z-10">
+            <p class="text-black dark:text-white">Please upload a zip file containing all the shapefile files (.shp, .shx, .dbf, ...).</p>
             <input
                 type="file"
                 name="file"
+                accept=".zip"
                 class="pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
                 @change="setSelectedFile">
         </div>
@@ -79,8 +85,9 @@ async function uploadFile() {
                 :class="[uploadStatus === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
                 @click="uploadFile()">
                 <svg xmlns="http://www.w3.org/2000/svg"
-                     class="h-5 w-5 text-gray-400" :class="[ selectedFile ? 'animate-bounce' : '' ]"
-                     viewBox="0 0 20 20"
+                    v-if="uploadStatus === 'idle'" 
+                    :class="[ selectedFile ? 'text-red-600 animate-pulse' : '', 'h-5 w-5 text-gray-400' ]"
+                    viewBox="0 0 20 20"
                     fill="currentColor"
                     d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
                     clip-rule="evenodd">
@@ -88,6 +95,11 @@ async function uploadFile() {
                         fill-rule="evenodd"
                         d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
                         clip-rule="evenodd"></path>
+            </svg>
+            <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 animate-spin">
+                <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clip-rule="evenodd" />
             </svg>
         </button>
     </div>

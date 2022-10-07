@@ -131,7 +131,7 @@ function onInput(e: any) { //TODO
 
 
         <div class="relative content-center cursor-default flex flex-wrap gap-x-2 gap-y-1 text-sm items-center px-2 py-0.5 h-10_ bg-white w-full shadow-sm border-gray-300 rounded-md dark:text-zinc-400 max-w-lg_ sm:text-sm dark:border-black dark:focus:border-black dark:bg-zinc-900">
-            <div v-for="keyword, i in props.modelValue || []" class="text-stone-800 m-0 flex items-center rounded-full pl-2.5 pr-1 bg-pink-200 h-7 border border-stone-800">
+            <div v-for="keyword, i in props.modelValue || []" class="text-stone-900 m-0 flex items-center rounded-full pl-2.5 pr-1 bg-amber-400 dark:bg-amber-500 h-7 border border-stone-800">
                 <span class="align-middle">
                     {{keyword}}
                 </span>

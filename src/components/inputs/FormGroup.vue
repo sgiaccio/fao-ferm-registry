@@ -10,17 +10,17 @@ defineProps(baseProps);
             <legend class="block text-sm font-bold text-gray-700 dark:text-zinc-300 sm:mt-px">
                 {{label}}
             </legend>
-            <div class="mt-1 sm:mt-0 sm:col-span-3">
-                <slot></slot>
+            <div class="sm:col-span-3">
                 <p
                     v-if="description"
-                    class="font-semibold mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    class="font-semibold mb-3 text-sm text-gray-500 dark:text-gray-400">
                     {{description}}
                 </p>
                 <p
                     v-else-if="dangerousHtmlDescription"
                     v-html="dangerousHtmlDescription"
-                    class="font-semibold mt-2 text-sm text-gray-500 dark:text-gray-400" />
+                    class="font-semibold mb-3 text-sm text-gray-500 dark:text-gray-400" />
+                <slot></slot>
             </div>
         </div>
     </fieldset>

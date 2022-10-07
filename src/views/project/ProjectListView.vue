@@ -119,18 +119,14 @@ async function deleteProject(projectId: string) {
                 :to="{ name: 'initiative', params: { id: 'new' }}"
                 class="mt-6 cursor-pointer inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Add new initiative</router-link> -->
 
-            <div class="mt-8 overflow-hidden bg-white shadow sm:rounded-md pb-96">
+            <div class="mt-8 overflow-hidden_ bg-white shadow sm:rounded-md">
                 <ul role="list" class="divide-y divide-gray-200">
                     <li v-for="project in projectStore.projects" :key="project.id">
                         <div class="sm:flex sm:flex-row">
                             <div class="px-4 py-4 sm:px-6 sm:grow">
-                                <span :to="{ name: 'initiative-info', params: { id: project.id }}" href="#"
-                                    class="block hover:bg-gray-50_">
+                                <span class="block hover:bg-gray-50_">
                                     <div class="flex items-center justify-between">
-                                        <p class="truncate text-sm font-medium"
-                                            :class="[project.data.project?.title ? 'text-indigo-600' : 'italic text-gray-400']">
-                                            {{
-                                            project.data.project?.title || 'No title' }}</p>
+                                        <router-link :to="{ name: 'initiative-info', params: { id: project.id }}" :class="[project.data.project?.title ? 'text-indigo-600' : 'italic text-gray-400', 'truncate_ text-sm font-medium hover:text-indigo-500']">{{project.data.project?.title || 'No title' }}</router-link>
                                         <!-- <div class="ml-2 flex flex-shrink-0">
                             <p class="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">{{ position.type }}</p>
                             </div> -->
@@ -150,15 +146,28 @@ async function deleteProject(projectId: string) {
                                             <Menu as="p" class="relative inline-block text-left">
                                                 <div class="sm:mt-0 sm:ml-6 text-sm">
                                                     <MenuButton @click="showBestPractices(project.id)"
-                                                        class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                                                        <span class="text-gray-600">{{project.nBestPractices}} good
-                                                            practices</span>
+                                                        class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none">
+                                                        <span class="text-gray-600">{{project.nBestPractices}} good practices</span>
                                                         <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
                                                             aria-hidden="true" />
                                                     </MenuButton>
                                                 </div>
 
-                                                <transition enter-active-class="transition ease-out duration-100"
+                                                <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
+                                                    <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                        <div v-if="bestPractices.length" class="py-1">
+                                                            <MenuItem v-slot="{ active }" v-for="bp in bestPractices">
+                                                                <router-link :to="`/good-practices/${bp.id}/objectives`" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">{{bp.data.title || "No title"}}</router-link>
+                                                            </MenuItem>
+                                                        </div>
+                                                        <div class="py-1">
+                                                            <MenuItem v-slot="{ active }">
+                                                                <router-link :to="{ name: 'objectives', params: { id: 'new' }, query: { projectId: project.id }}" href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Add new good practice</router-link>
+                                                            </MenuItem>
+                                                        </div>
+                                                    </MenuItems>
+                                                </transition>
+                                                <!-- <transition enter-active-class="transition ease-out duration-100"
                                                     enter-from-class="transform opacity-0 scale-95"
                                                     enter-to-class="transform opacity-100 scale-100"
                                                     leave-active-class="transition ease-in duration-75"
@@ -172,7 +181,7 @@ async function deleteProject(projectId: string) {
                                                             {{bp.data.title || "No title"}}</router-link>
                                                         </MenuItem>
                                                     </MenuItems>
-                                                </transition>
+                                                </transition> -->
                                             </Menu>
 
                                         </div>
@@ -194,7 +203,7 @@ async function deleteProject(projectId: string) {
                                 <Menu as="div" class="relative inline-block text-left">
                                     <div>
                                         <MenuButton
-                                            class="flex items-center rounded-full bg-gray-100_ text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                                            class="flex items-center rounded-full bg-gray-100_ text-gray-400 hover:text-gray-600 focus:outline-none">
                                             <span class="sr-only">Open options</span>
                                             <EllipsisVerticalIcon class="h-5 w-5" aria-hidden="true" />
                                         </MenuButton>
@@ -226,7 +235,7 @@ async function deleteProject(projectId: string) {
                                     </MenuItem> -->
                                                 <MenuItem v-slot="{ active }">
                                                 <router-link
-                                                    :to="{ name: 'bestPractice', params: { id: 'new' }, query: { projectId: project.id }}"
+                                                    :to="{ name: 'objectives', params: { id: 'new' }, query: { projectId: project.id }}"
                                                     :class="[canAddBestPractice(project) ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
                                                     Add good practice
                                                 </router-link>

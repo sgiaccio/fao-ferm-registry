@@ -5,7 +5,7 @@ import { activities } from '../../components/project/menus';
 
 import FormGroup from '../../components/inputs/FormGroup.vue';
 import TreeItem from '../../components/inputs/base/TreeItem.vue';
-
+import DateFormGroup from '../../components/inputs/base/DateFormGroup.vue';
 
 
 const store = useProjectStore();
@@ -25,6 +25,12 @@ const store = useProjectStore();
                         Area {{i + 1}}
                         <span class="text-black" v-if="area[Object.keys(area)[0]].siteName">: {{area[Object.keys(area)[0]].siteName}}</span>
                     </div>
+                    <DateFormGroup
+                        v-model="area[Object.keys(area)[0]].startingDate"
+                        label="Starting date"></DateFormGroup>
+                    <DateFormGroup
+                        v-model="area[Object.keys(area)[0]].endingDate"
+                        label="Ending date"></DateFormGroup>
                     <TreeItem
                         v-model="area[Object.keys(area)[0]].activities"
                         :treeData="activities" />

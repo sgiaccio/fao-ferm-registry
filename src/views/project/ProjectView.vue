@@ -19,9 +19,9 @@ onBeforeMount(async () => {
     }
 });
 
-onMounted(() => {
-    router.push({ name: 'initiative-info', params: { id: route.params.id } });
-});
+// onMounted(() => {
+//     router.push({ name: 'initiative-info', params: { id: route.params.id } });
+// });
 
 const route = useRoute();
 

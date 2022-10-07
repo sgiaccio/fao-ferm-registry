@@ -9,9 +9,9 @@ import TextInput from './base/TextInput.vue';
 const props = defineProps<{
   modelValue: {
     siteName: string,
-    admin0: number,
-    admin1: number,
-    admin2: number,
+    admin0: number | null,
+    admin1: number | null,
+    admin2: number | null,
     activities: number[]
   }
 }>()
@@ -31,7 +31,7 @@ const admin2Menu = ref();
 const findInJson = (json, value) => (json.find(a => a.code === value))['children'];
 
 // TODO
-watch(admin0, val => {
+watch(admin0, (val, prev) => {
     if (val) {
         const t0 = findInJson(json, val);
         admin1Menu.value =t0.map(getSelectOptions);
@@ -39,8 +39,12 @@ watch(admin0, val => {
         admin1Menu.value = undefined;
     }
 
-    admin1.value = null;
-    admin2.value = null;
+    // if prev is null it means that the page was just loaded, don't change values
+    // only change values when the selection was changed by the user
+    if (prev) {
+        admin1.value = null;
+        admin2.value = null;
+    }
 
     if (!val) emit('update:modelValue', undefined)
     emit('update:modelValue', {
@@ -51,8 +55,9 @@ watch(admin0, val => {
         admin1: admin1.value || undefined,
         admin2: admin2.value || undefined
     });
-});
-watch(admin1, val => {
+}, { immediate: true });
+
+watch(admin1, (val, prev) => {
     if (val) {
         const t0 = findInJson(json, admin0.value);
         const t1 = findInJson(t0, val);
@@ -61,8 +66,10 @@ watch(admin1, val => {
         admin2Menu.value = undefined;
     }
 
-    admin2.value = null;
-
+    if (prev) {
+       admin2.value = null;
+    }
+    
     if (!admin0.value && !val) emit('update:modelValue', undefined);
     emit('update:modelValue', {
         // activities: props.modelValue.activities,
@@ -72,7 +79,8 @@ watch(admin1, val => {
         admin1: admin1.value || undefined,
         admin2: admin2.value || undefined
     });
-})
+}, { immediate: true });
+
 watch(admin2, val => {
     if (!admin0.value && !admin1.value && !val) emit('update:modelValue', undefined);
     emit('update:modelValue', {
@@ -83,7 +91,7 @@ watch(admin2, val => {
         admin1: admin1.value || undefined,
         admin2: admin2.value || undefined
     });
-});
+}, { immediate: true });
 </script>
 
 <template>

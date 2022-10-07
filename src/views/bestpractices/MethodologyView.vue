@@ -7,7 +7,7 @@ import MultiInputFormGroup from "../../components/inputs/MultiInputFormGroup.vue
 import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
 import SelectFormGroup from "../../components/inputs/base/SelectFormGroup.vue";
 
-import * as menus from "../../components/project/menus";
+import { engagement, knowledgeTypes, scale, replicability } from "../../components/project/menus";
 
 const store = useBestPracticesStore();
 
@@ -95,13 +95,13 @@ function enableSpecifyReplicability() {
                     :required="true"/>
             </div>
             <MultiSelectFormGroup
-                :options="menus.engagement"
+                :options="engagement"
                 v-model="store.bestPractice.engagement"
                 label="Stakeholders' engagement"
                 description="Please indicate which stakeholder groups were/are actively involved in the practice."
                 :required="true" />
             <MultiSelectFormGroup
-                :options="menus.knowledgeTypes"
+                :options="knowledgeTypes"
                 v-model="store.bestPractice.knowledgeTypes"
                 label="Types of knowledge"
                 description="What types of knowledge have been included in the practice?"
@@ -111,14 +111,14 @@ function enableSpecifyReplicability() {
                 label="Participatory approaches"
                 description="Please describe to what extent the practice has meaningfully fostered engagement and knowledge integration from the stakeholders, right-holders, and under-represented groups (if any) selected above." />
             <MultiSelectFormGroup
-                :options="menus.scale"
+                :options="scale"
                 v-model="store.bestPractice.scale"
                 label="Scale"
                 description="Please indicate the scale(s) at which the practice has been implemented and/or replicated."
                 :required="true" />
             <div>
                 <SelectFormGroup
-                    :options="menus.replicability"
+                    :options="replicability"
                     v-model="store.bestPractice.replicability"
                     label="Replicability"
                     description="Has this practice been replicated? In the same context or different contexts?"

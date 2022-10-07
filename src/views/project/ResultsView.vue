@@ -17,7 +17,7 @@
     //   import Organization from "@/components/inputs/organizations/Organization.vue"
     //   import PointOfContact from "@/components/inputs/pointsOfContact/pointOfContact.vue"
 
-    import * as menus from "../../components/project/menus";
+    import { achieved, achievingTargets }from "../../components/project/menus";
       
     //   import { objectives } from "../../components/project/menus";
       
@@ -139,7 +139,7 @@
       
           <div class="divide-y divide-stone-900">
             <SelectFormGroup
-                    :options="menus.achieved"
+                    :options="achieved"
                     v-model="store.project.results.achieved"
                     label="Achievements"
                     description="Were the restoration objectives achieved?" />
@@ -155,7 +155,7 @@
                                 :edit       @edit}] -->
 
             <SelectFormGroup
-                    :options="menus.achievingTargets"
+                    :options="achievingTargets"
                     v-model="store.project.results.achievingTargets"
                     label="Results achieved based on targets" />
 
