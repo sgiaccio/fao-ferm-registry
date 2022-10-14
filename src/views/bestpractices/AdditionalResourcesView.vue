@@ -24,17 +24,17 @@ const yesNo = [
         <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextareaFormGroup
                 v-model="store.bestPractice.links"
-                label="Links"
+                label="5.1 Links"
                 description="Please provide links to pictures, positive testimonials from the field, websites, and social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice." />
             <SelectFormGroup
                 v-model="store.bestPractice.details"
                 :options="yesNo"
-                label="Additional information on costs and benefits"
+                label="5.2 Additional information on costs and benefits"
                 :required="true"
                 description="Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO's Team on Economics of Ecosystem Restoration (TEER)." />
             <TextareaFormGroup
                 v-model="store.bestPractice.additionalComments"
-                label="Additional comments"
+                label="5.3 Additional comments"
                 description="Feel free to share any additional information regarding the practice." />
         </div>
     </div>

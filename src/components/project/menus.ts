@@ -43,7 +43,7 @@ export const agencyRoles = [
 
 export const drivers = [
     { value: 1, label: "Grazing land management (e.g. Change in extent of grazing lands; Rotation regimes)" },
-    { value: 2, label: "Croplands and agroforestry  management (e.g. Change in extent of croplands including drainage of wetlands; Agricultural inputs)" },
+    { value: 2, label: "Croplands management (e.g. Change in extent of croplands including drainage of wetlands; Agricultural inputs)" },
     { value: 3, label: "Forests and tree plantation management (e.g. Change in extent of managed and planted forest; Harvesting intensity)" },
     { value: 4, label: "Non-timber natural resource extraction (e.g. Fuelwood harvesting; Hunting)" },
     { value: 5, label: "Fire regimes changes (e.g. Changes in frequency, intensity, season and timing of fire, including fire suppression)" },
@@ -77,7 +77,8 @@ export const engagement = [
     { value: 14, label: 'International development partners, regional organization, network and initiatives' },
     { value: 15, label: 'Research/academia' },
     { value: 16, label: 'Education' },
-    { value: 17, label: 'Finance sector' }
+    { value: 17, label: 'Finance sector' },
+    { value: 0, label: "Other" }
 ];
 
 export const knowledgeTypes = [

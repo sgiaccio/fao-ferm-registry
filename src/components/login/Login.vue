@@ -6,21 +6,21 @@ import { useAuthStore } from '../../stores/auth'
 
 const loginForm = ref({
     email: null,
-    password: null
+    // password: null
 });
 // const registerForm = ref({});
 const { login } = useAuthStore();
 
 function authenticate() {
-    const { email, password } = loginForm.value;
-    if (email !== null && password !== null) {
-        login(email, password);
+    const { email } = loginForm.value;
+    if (email !== null) {
+        login(email);
     }
 }
 
-function togglePasswordReset() {
-    alert('TODO');
-}
+// function togglePasswordReset() {
+//     alert('TODO');
+// }
 </script>
 
 <template>
@@ -51,7 +51,7 @@ function togglePasswordReset() {
                                placeholder="Email address"
                                v-model="loginForm.email">
                     </div>
-                    <div>
+                    <!-- <div>
                         <label for="password" class="sr-only">Password</label>
                         <input id="password"
                                name="password"
@@ -62,7 +62,7 @@ function togglePasswordReset() {
                                         'appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900focus:outline-none focus:z-10 sm:text-sm']"
                                placeholder="Password"
                                v-model="loginForm.password">
-                    </div>
+                    </div> -->
                     <div>
                         <button type="submit"
                                class="mt-6 group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">

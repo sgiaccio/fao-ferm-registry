@@ -24,21 +24,21 @@ const store = useBestPracticesStore();
             <MultiSelectFormGroup
                 :options="positiveOutcomes"
                 v-model="store.bestPractice.outcomes"
-                label="Outcomes"
+                label="4.1 Outcomes"
                 description="Please select the ecological, cultural and environmental and/or socio-economic outcomes of implementing the practice."
                 :required="true" />
             <TextareaFormGroup
                 v-model="store.bestPractice.positiveImpacts"
-                label="Positive impacts"
+                label="4.2 Positive impacts"
                 description="Please describe the positive ecological, cultural and/or socio-economic  impacts of the practice." />
             <TextareaFormGroup
                 v-model="store.bestPractice.negativeImpacts"
-                label="Negative impacts"
+                label="4.3 Negative impacts"
                 :required="true"
                 description="Does the practice have any negative ecological, cultural and socio-economic impact(s)? If so, please describe." />
             <TextareaFormGroup
                 v-model="store.bestPractice.validation"
-                label="Validation"
+                label="4.4 Validation"
                 :required="true"
                 description="Please describe how the practice was validated from a technical and methodological point of view to measure its effectiveness, and how the practice was validated with the beneficiaries" />
         </div>

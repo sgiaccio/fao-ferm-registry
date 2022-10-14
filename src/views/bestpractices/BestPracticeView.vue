@@ -5,14 +5,15 @@ import { useRoute } from 'vue-router';
 import router from '@/router';
 
 import { useBestPracticesStore } from '../../stores/bestpractices';
+import { useUserPrefsStore } from '../../stores/userPreferences';
 
-// import Guidelines from './Guidelines.vue';
+import Guidelines from './Guidelines.vue';
 
 
 const route = useRoute();
 const { fetchBestPractice, saveBestPractice, createEmptyBestPractice } = useBestPracticesStore();
 const store = useBestPracticesStore();
-// const { bestPractice } = storeToRefs(store); // TODO delete
+const userPrefsStore = useUserPrefsStore()
 
 
 const tabs = [
@@ -32,27 +33,54 @@ onBeforeMount(async () => {
     }
 });
 
-onMounted(() => {
+const showGuidelines = ref(false);
+const bpConsentAccepted = ref(false);
+
+onMounted(async () => {
     const id = route.params.id;
     let nextRoute = { name: 'objectives', params: { id } }
     if (id === 'new') nextRoute = { ...nextRoute, query: { projectId: route.query.projectId }}
     router.push(nextRoute);
+
+    // await userPrefsStore.fetchUserPrefs();
+    showGuidelines.value = !userPrefsStore.userPrefs.bpConsentAccepted;
+    bpConsentAccepted.value = !!userPrefsStore.userPrefs.bpConsentAccepted;
 });
 
 async function save() {
     await saveBestPractice();
-    router.push('/objectives');
+    router.push({ name: 'initiatives' });
 }
 
-const showJson = ref(false)
-function toggleJson() {
-    showJson.value = !showJson.value;
-}
+// const showJson = ref(false)
+// function toggleJson() {
+//     showJson.value = !showJson.value;
+// }
 
+async function closeGuidelines(accepted: boolean) {
+    showGuidelines.value = false;
+    bpConsentAccepted.value = accepted;
+    if (accepted) {
+        await userPrefsStore.acceptBpConsent().catch(_ => alert('Error in saving consent status'));
+    }
+}
 </script>
 
 <template>
-    <!-- <Guidelines></Guidelines> -->
+<Teleport to="#content-specific">
+    <div class="flex space-x-4 cursor-pointer" @click="showGuidelines = true">
+        <span class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Guidelines</span>
+    </div>
+    <div class="flex space-x-4">
+        <a
+            target="_blank"
+            href="https://forms.office.com/Pages/ResponsePage.aspx?id=aMQ6Frir0ESB_dnbFeOvltHYPNSbGydEq11y7AZvREZUMFhUTUNaRlZYQzBYT0xGNVdBUkFET0pXQS4u"
+            class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+            Feedback
+        </a>
+    </div>
+</Teleport>
+<guidelines :open="showGuidelines" :consentAccepted="bpConsentAccepted" @close="closeGuidelines" />
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="max-w-3xl mx-auto">
         <div>

@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { onBeforeMount, watch } from "vue";
 import { RouterView } from "vue-router";
+import { storeToRefs } from 'pinia'
+
 import Navbar from "./components/Navbar.vue";
 
-import { onBeforeMount } from "vue";
 import { useAuthStore } from "./stores/auth"
+import { useUserPrefsStore } from "./stores/userPreferences"
 
 // import HelloWorld from "./components/HelloWorld.vue";
 
@@ -11,10 +14,16 @@ import { useAuthStore } from "./stores/auth"
 
 
 const authStore = useAuthStore();
+const userPrefsStore = useUserPrefsStore();
 
-onBeforeMount(() => {
-  const { fetchUser } = authStore;
-  fetchUser();
+onBeforeMount(async () => {
+  await authStore.fetchUser();
+})
+
+const { user } = storeToRefs(authStore);
+
+watch(user, async () => {
+  userPrefsStore.fetchUserPrefs();
 })
 </script>
 
@@ -30,6 +39,6 @@ onBeforeMount(() => {
         <!-- </Suspense> -->
       <!-- </div>
     </div> -->
-    </template>
-    <div v-else>Loading the registry...</div>
+  </template>
+  <div v-else>Loading the registry...</div>
 </template>

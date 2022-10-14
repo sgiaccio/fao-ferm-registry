@@ -6,7 +6,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div class="relative shadow-xl sm:rounded-2xl sm:overflow-hidden">
             <div class="absolute inset-0">
-              <img class="h-full w-full object-cover" src="@/assets/bg.jpg" alt="Green forest" />
+              <img class="h-full w-full object-cover z-0" src="@/assets/bg.jpg" alt="Green forest" />
               <div class="absolute inset-0 bg-gradient-to-r from-lime-800 to-green-900 mix-blend-multiply" />
             </div>
             <div class="relative px-4 py-16 sm:px-6 sm:py-16 lg:py-24 lg:px-8">

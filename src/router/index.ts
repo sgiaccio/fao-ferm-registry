@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 const HomeView = () => import('../views/HomeView.vue')
 const LoginView = () => import('../views/LoginView.vue')
+const AdminView = () => import('../views/AdminView.vue')
 const ProjectView = () => import('../views/project/ProjectView.vue')
 const ProjectRegistrationView = () => import('../views/project/RegistrationView.vue')
 const ProjectAoi = () => import('../views/project/AoiView.vue')
@@ -39,13 +40,21 @@ const router = createRouter({
       component: LoginView,
     },
     {
-      path: "/about",
-      name: "about",
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import("../views/AboutView.vue"),
+      path: "/admin",
+      name: "admin",
+      component: AdminView,
+      meta: {
+        requiresAuth: true
+      }
     },
+    // {
+    //   path: "/about",
+    //   name: "about",
+    //   // route level code-splitting
+    //   // this generates a separate chunk (About.[hash].js) for this route
+    //   // which is lazy-loaded when the route is visited.
+    //   component: () => import("../views/AboutView.vue"),
+    // },
     {
       path: '/initiatives',
       name: 'initiatives',
@@ -185,7 +194,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.matched.some(record => record.meta.requiresAuth) && !authStore.user) {  
-    authStore.returnUrl = to.fullPath;
+    // alert(authStore.returnUrl);
     next("/login");
     return;
   }

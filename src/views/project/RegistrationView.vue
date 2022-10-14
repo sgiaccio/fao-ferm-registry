@@ -168,7 +168,7 @@ const pointsOfContact = {
         <TextareaFormGroup
             v-model="store.project.project.description"
             label="Description"
-            description="Short description of the initiative (max xx characters)"></TextareaFormGroup>
+            description="Short description of the initiative"></TextareaFormGroup> <!-- TODO Short description of the initiative (max xx characters) -->
         <TextFormGroup
             v-model="store.project.project.website"
             label="Website"

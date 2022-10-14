@@ -54,7 +54,7 @@ async function uploadFile() {
             alert(`File uploaded with uuid ${uuid}`);
             uploadStatus.value = 'uploaded'
             emit('update:modelValue', { ...props.modelValue, uuid: uuid });
-        }).catch(error => {
+        }).catch(_ => {
             alert('Error uploading the Shapefile');
             uploadStatus.value = 'idle';
         }).finally(() => {

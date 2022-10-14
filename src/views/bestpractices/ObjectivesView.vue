@@ -113,7 +113,7 @@ watch(() => store.bestPracticeAreaIdxs, (areas) => {
         <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextFormGroup
                 v-model="store.bestPractice.title"
-                label="Title"
+                label="1.1 Title"
                 description="Title of the restoration practice."
                 :required=true>
             </TextFormGroup>
@@ -128,17 +128,17 @@ watch(() => store.bestPracticeAreaIdxs, (areas) => {
             <MultiSelectFormGroup
                 :options="objectives"
                 v-model="store.bestPractice.objectives"
-                label="Objectives"
+                label="1.2 Objectives"
                 description="Please select the main objectives of the practice."
                 :required="true" />
             <TextareaFormGroup
                 v-model="store.bestPractice.objectivesAdditionalInformation"
-                label="Objectives additional information"
+                label="1.3 Objectives additional information"
                 description="Feel free to provide additional information on specific objectives of the practice." />
             <MultiSelectFormGroup
                 :options="ecosystems"
                 v-model="store.bestPractice.ecosystems"
-                label="Ecosystems"
+                label="1.4 Ecosystems"
                 description="Ecosystems where the practice was applied [Select all that apply]"></MultiSelectFormGroup>
             <!-- <LatLongFormGroup
                 v-model="store.bestPractice.coordinates"
@@ -146,34 +146,33 @@ watch(() => store.bestPracticeAreaIdxs, (areas) => {
                 description="If available, please insert the geographic coordinates of the restoration area. Please use the WGS84 Geographic Reference System."></LatLongFormGroup> -->
             <TextareaFormGroup
                 v-model="store.bestPractice.ecosystemAdditionalInfo"
-                label="Ecosystems additional information"
+                label="1.5 Ecosystems additional information"
                 dangerousHtmlDescription="Please provide additional information on specific types of ecosystem(s) where the practice was applied. Please use the Ecosystem Functional Groups from the IUCN Global Ecosystem Typology here: <a class='text-blue-600' target='_blank' href='https://global-ecosystems.org/analyse'>https://global-ecosystems.org/analyse</a>"></TextareaFormGroup>
             <TextareaFormGroup
                 v-model="store.bestPractice.context"
-                label="Context"
+                label="1.6 Context"
                 description="Please share any relevant ecological, socioeconomic and cultural context for the practice's implementation." />
             <MultiSelectFormGroup
-                v-if="areasMenu.length"
                 :options="areasMenu"
                 v-model="store.bestPracticeAreaIdxs"
-                label="Areas"
-                description="Select the areas where the practice was implemented." />
+                label="1.7 Areas"
+                :description="areasMenu.length ? 'Select the areas where the practice was implemented.' : 'No area was selected for the project.'" />
             <MultiSelectFormGroup
                 :options="activitiesMenu"
                 v-model="store.bestPractice.activities"
-                label="Activities"
-                description="Activities"
+                label="1.8 Activities"
+                :description="areasMenu.length ? 'Select the activities of your restoration initiative to which the practice belongs.' : 'No activity was selected for the project.'"
                 :required="true" />
             <MultiSelectFormGroup
                 :options="drivers"
                 v-model="store.bestPractice.drivers"
-                label="Drivers"
+                label="1.9 Drivers"
                 description="Direct and indirect drivers of degradation addressed by the practice [Select all that apply]."
                 :required="true">
             </MultiSelectFormGroup>
             <TextareaFormGroup
                 v-model="store.bestPractice.driversAdditionalInformation"
-                label="Drivers additional information"
+                label="1.10 Drivers additional information"
                 description="Feel free to provide additional information to explain how the practice contributed to addressing the drivers of ecosystem degradation selected above."></TextareaFormGroup>
         </div>
     </div>

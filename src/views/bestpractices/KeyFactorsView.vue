@@ -41,22 +41,22 @@ const constraintsComponents = {
                 <MultiSelectFormGroup
                     :options="keyFactors"
                     v-model="store.bestPractice.keyFactors"
-                    label="Key factors"
+                    label="3.1 Key factors"
                     description="What are the key factors that need to be in place for the successful implementation of the practice."
                     :required="true" />
                 <TextareaFormGroup
-                    label="Key factors additional information"
+                    label="3.2 Key factors additional information"
                     v-model="store.bestPractice.specifyKeyFactors"
                     description="Feel free to provide additional information on the key factors mentioned above." />
             </div>
             <MultiInputFormGroup
-                label="Constraints"
+                label="3.3 Constraints"
                 description="What are the technical, economic and environmental challenges, constraints and/or risks encountered in applying the practice? How were they addressed?"
                 :inputComponents="constraintsComponents"
                 v-model="store.bestPractice.constraints" />
             <TextareaFormGroup
                 v-model="store.bestPractice.lessonsLearned"
-                label="Lessons learned/Recommendations"
+                label="3.4 Lessons learned/Recommendations"
                 :required="true"
                 description="What lessons learned/recommendations would you like to share with other practitioners intending to replicate, adapt or scale up this practice?" />
         </div>

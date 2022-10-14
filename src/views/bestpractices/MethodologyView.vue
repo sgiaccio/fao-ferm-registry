@@ -83,12 +83,12 @@ function enableSpecifyReplicability() {
         <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextareaFormGroup
                 v-model="store.bestPractice.description"
-                label="Description"
+                label="2.1 Description"
                 description="Description of the practice." />
             <div>
-                <p class="text-gray-600 dark:text-white mt-6">Please provide for each step: timing, equipment, labour, species used, and all other relevant information</p>
+                <p class="text-gray-600 dark:text-white mt-6">Please provide for each step (if applicable): timing, equipment, labour, species used, and all other relevant information</p>
                 <MultiInputFormGroup
-                    label="Steps for implementation"
+                    label="2.2 Steps for implementation"
                     :inputComponents="multiInputComponents"
                     v-model="store.bestPractice.implementationSteps"
                     :numbering="(n: number) => `Step ${n}`"
@@ -97,34 +97,39 @@ function enableSpecifyReplicability() {
             <MultiSelectFormGroup
                 :options="engagement"
                 v-model="store.bestPractice.engagement"
-                label="Stakeholders' engagement"
+                label="2.3 Stakeholders' engagement"
                 description="Please indicate which stakeholder groups were/are actively involved in the practice."
                 :required="true" />
+            <TextareaFormGroup
+                v-model="store.bestPractice.stakeholdersInfo"
+                label="2.4 Stakeholder's additional information"
+                description="Feel free to provide additional information on stakeholder's engagement in the practice" />
             <MultiSelectFormGroup
                 :options="knowledgeTypes"
                 v-model="store.bestPractice.knowledgeTypes"
-                label="Types of knowledge"
+                label="2.5 Types of knowledge"
                 description="What types of knowledge have been included in the practice?"
                 :required="true" />
             <TextareaFormGroup
                 v-model="store.bestPractice.participatoryApproaches"
-                label="Participatory approaches"
-                description="Please describe to what extent the practice has meaningfully fostered engagement and knowledge integration from the stakeholders, right-holders, and under-represented groups (if any) selected above." />
+                label="2.6 Participatory approaches"
+                description="Please describe who are the implementers and beneficiaries of the practice, and to what extent the practice has meaningfully fostered engagement and knowledge integration from the stakeholders, right-holders, and under-represented groups (if any) selected above." />
             <MultiSelectFormGroup
                 :options="scale"
                 v-model="store.bestPractice.scale"
-                label="Scale"
+                label="2.7 Scale"
                 description="Please indicate the scale(s) at which the practice has been implemented and/or replicated."
                 :required="true" />
             <div>
                 <SelectFormGroup
                     :options="replicability"
                     v-model="store.bestPractice.replicability"
-                    label="Replicability"
+                    label="2.8 Replicability"
                     description="Has this practice been replicated? In the same context or different contexts?"
                     :required="true" />
                 <TextareaFormGroup
                     v-model="store.bestPractice.specifyReplicability"
+                    label="2.9"
                     description="If yes, please briefly explain where it was replicated, how many times, and with what results."
                     :enabled="enableSpecifyReplicability" />
             </div>
