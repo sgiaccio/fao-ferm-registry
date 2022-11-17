@@ -55,7 +55,7 @@ async function postGeoJson() {
     uploadStatus.value = 'uploading';
     const geoJson = getGeoJson();
     fetch(
-        'https://europe-west3-fao-ferm.cloudfunctions.net/load_json',
+        'https://europe-west3-fao-ferm.cloudfunctions.net/load_area_json',
         {
             method: 'POST',
             headers: {
@@ -66,10 +66,11 @@ async function postGeoJson() {
         }
     ).then(
         response => response.text()
-    ).then(uuid => {
+    ).then(([uuid]) => {
+        // load_area_json returns an array of uuids but in this case there's only one
         alert(`Area uploaded with uuid ${uuid}`);
         emit('update:modelValue', { ...props.modelValue, uuid: uuid });
-        uploadStatus.value = 'uploaded'
+        uploadStatus.value = 'uploaded';
     }).catch(error => {
         alert('Error uploading the JSON file');
         uploadStatus.value = 'idle'
@@ -78,8 +79,11 @@ async function postGeoJson() {
 
 async function fetchGeoJson() {
     return fetch(
-        `https://europe-west3-fao-ferm.cloudfunctions.net/get_area?area_uuid=${props.modelValue.uuid}`, {
-            method: 'GET'
+        `https://europe-west3-fao-ferm.cloudfunctions.net/get_area_json?area_uuid=${props.modelValue.uuid}&project_id=${projectStore.id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${authStore.user.accessToken}`,
+            },
         }
     ).then(response => response.json());
 }

@@ -62,16 +62,16 @@ async function deleteProject(projectId: string) {
         <div class="max-w-3xl mx-auto">
             <h1 class="mt-12 font-semibold text-4xl text-gray-800 dark:text-white mb-8">Initiatives</h1>
 
-            <p class=" dark:text-white">Restoration projects, programs and initiatives at all spatial scales, from
+            <p class=" dark:text-white">Restoration projects, programs and initiatives at all spatial scales, from
                 individual
-                sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for
+                sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for
                 sustaining
-                life on Earth. The FERM registry allows you to consistently and transparently monitor, report, and share
-                information on restoration initiatives and best practices. The information published in the FERM
+                life on Earth. The FERM registry allows you to consistently and transparently monitor, report, and share
+                information on restoration initiatives good practices. The information published in the FERM
                 Registry will
-                be used to officially report on hectares under restoration during the United Nations Decade on Ecosystem
-                Restoration and for the Convention on Biological Diversity Post-2020 Global
-                Biodiversity Framework Target 2.</p>
+                be used to officially report on hectares under restoration during the United Nations Decade on Ecosystem
+                Restoration and for the Convention on Biological Diversity Post-2020 Global
+                Biodiversity Framework Target 2.</p>
 
 
 
@@ -101,7 +101,7 @@ async function deleteProject(projectId: string) {
                             <div class="py-1">
                                 <MenuItem v-for="[id, name] in Object.entries(authStore.userGroups)"
                                     v-slot="{ active }">
-                                <router-link :to="{ name: 'initiative', params: { id: 'new' }, query: { groupId: id } }"
+                                <router-link :to="{ name: 'initiative-info', params: { id: 'new' }, query: { groupId: id } }"
                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                                     {{name}}
                                 </router-link>

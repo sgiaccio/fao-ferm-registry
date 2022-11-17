@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { PropType } from "vue";
-import TextFormGroup from "./base/TextFormGroup.vue"
 import TextAreaFormGroup from "./base/TextareaFormGroup.vue"
 
 

@@ -47,11 +47,11 @@ const constraintsComponents = {
                 <TextareaFormGroup
                     label="3.2 Key factors additional information"
                     v-model="store.bestPractice.specifyKeyFactors"
-                    description="Feel free to provide additional information on the key factors mentioned above." />
+                    description="Feel free to provide additional information on the key factors required for the successful implementation of the practice." />
             </div>
             <MultiInputFormGroup
                 label="3.3 Constraints"
-                description="What are the technical, economic and environmental challenges, constraints and/or risks encountered in applying the practice? How were they addressed?"
+                description="What are the technical, economic, social and environmental challenges, constraints and/or risks encountered in applying the practice? How were they addressed?"
                 :inputComponents="constraintsComponents"
                 v-model="store.bestPractice.constraints" />
             <TextareaFormGroup

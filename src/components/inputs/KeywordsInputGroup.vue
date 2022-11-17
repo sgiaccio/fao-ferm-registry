@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, type PropType } from 'vue'
 
 import baseProps from "./formGroupProps"
 import FormGroup from "./FormGroup.vue"

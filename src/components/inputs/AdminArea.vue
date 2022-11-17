@@ -6,12 +6,22 @@ import SelectInput from './base/SelectInput.vue';
 import TextInput from './base/TextInput.vue';
 
 
+type AdminArea = {
+    code?: string,
+    name?: string,
+    children?: AdminArea
+}[]
+
+// const asdf: AdminArea = { asdf: 1 }
+
+// const asdf = json as AdminArea;
+
 const props = defineProps<{
   modelValue: {
     siteName: string,
-    admin0: number | null,
-    admin1: number | null,
-    admin2: number | null,
+    admin0?: string,
+    admin1?: string,
+    admin2?: string,
     activities: number[]
   }
 }>()
@@ -28,13 +38,16 @@ const admin0Menu = json.map(getSelectOptions);
 const admin1Menu = ref();
 const admin2Menu = ref();
 
-const findInJson = (json, value) => (json.find(a => a.code === value))['children'];
+function findInJson(json: AdminArea, value?: string) {
+    if (!value) return
+    const item = (json.find(a => a.code === value));
+    return item ? item['children'] : null;
+}
 
-// TODO
 watch(admin0, (val, prev) => {
     if (val) {
-        const t0 = findInJson(json, val);
-        admin1Menu.value =t0.map(getSelectOptions);
+        const children = findInJson(json, val);
+        admin1Menu.value = children ? children.map(getSelectOptions) : undefined
     } else {
         admin1Menu.value = undefined;
     }
@@ -42,14 +55,12 @@ watch(admin0, (val, prev) => {
     // if prev is null it means that the page was just loaded, don't change values
     // only change values when the selection was changed by the user
     if (prev) {
-        admin1.value = null;
-        admin2.value = null;
+        admin1.value = undefined;
+        admin2.value = undefined;
     }
 
     if (!val) emit('update:modelValue', undefined)
     emit('update:modelValue', {
-        // activities: props.modelValue.activities, // Preserve activities when the area changes
-        // siteName: props.modelValue.siteName,
         ...props.modelValue,
         admin0: admin0.value || undefined,
         admin1: admin1.value || undefined,
@@ -60,14 +71,16 @@ watch(admin0, (val, prev) => {
 watch(admin1, (val, prev) => {
     if (val) {
         const t0 = findInJson(json, admin0.value);
+        if (!t0) return
         const t1 = findInJson(t0, val);
+        if (!t1) return
         admin2Menu.value = t1.map(getSelectOptions);
     } else {
         admin2Menu.value = undefined;
     }
 
     if (prev) {
-       admin2.value = null;
+       admin2.value = undefined;
     }
     
     if (!admin0.value && !val) emit('update:modelValue', undefined);

@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
-import { ref, computed } from 'vue'
+import { ref, computed, type PropType } from 'vue'
 
-import baseProps from "../formGroupProps"
-import FormGroup from "../FormGroup.vue"
-import MultiInput from "../MultiInput.vue"
-import TextInput from "../base/TextInput.vue"
+import baseProps from '../formGroupProps'
+import FormGroup from '../FormGroup.vue'
+import MultiInput from '../MultiInput.vue'
+import TextInput from '../base/TextInput.vue'
 
+import type { Menu, MenuValue } from '../../project/menus'
 
 const props = defineProps({
     ...baseProps,
     ...{
-        options: { type: Array as PropType<Array<{value: any, label: string}>> },
+        options: { type: Object as PropType<Menu> },
         placeholder: { type: String },
-        modelValue: { type: Array as PropType<Array<any>>, required: true, default: [] },
+        modelValue: { type: Array as PropType<Array<MenuValue>>, required: true, default: [] },
         required: { type: Boolean, default: false },
         otherEnabled: { type: Boolean, default: false },
         others: { type: Array as PropType<Array<string>>, default: [] },
@@ -34,12 +34,12 @@ const errorMessages = computed(() => {
 
 const showValidation = computed(() => !!errorMessages.value.length && focusedOut.value);
 
-function isChecked(value: string): boolean {
+function isChecked(value: MenuValue): boolean {
     return props.modelValue.includes(value);
 }
 
 // TODO simplify as in TreeItem.vue
-function check(event: Event, value: string) {
+function check(event: Event, value: MenuValue) {
     const tempModel = [...props.modelValue]
     if ((event.target as HTMLInputElement).checked) {
         if (tempModel.includes(value)) {
@@ -84,7 +84,7 @@ const id_ = Math.ceil(Math.random() * 1e9) // TODO
             <div v-for="option in options" class="relative flex items-start">
                 <div class="flex items-center h-5">
                     <input 
-                        :id="option.value + id_"
+                        :id="('' + option.value) + id_"
                         type="checkbox"
                         :checked="isChecked(option.value)"
                         @change="check($event, option.value)"
@@ -92,7 +92,7 @@ const id_ = Math.ceil(Math.random() * 1e9) // TODO
                 </div>
                 <div class="ml-3 text-sm">
                     <label
-                        :for="option.value + id_"
+                        :for="('' + option.value) + id_"
                         class="dark:text-zinc-300 font-font-medium text-gray-700">{{option.label}}
                     </label>
                 </div>

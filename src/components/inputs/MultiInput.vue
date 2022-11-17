@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { TrashIcon } from '@heroicons/vue/20/solid';
 
+
+const openedDialog = ref<string | null>(null);
 
 const props = defineProps({
     deleteConfirmMessage: { type: String, default: "Are you sure you want to delete this item?" },
@@ -34,11 +36,29 @@ function getKey(obj: any) {
 }
 
 
-function addNewItem(type: string) {
+function addNewItem(type: string, newData: any) {
     const tempProp = props.modelValue ? [...props.modelValue] : []
-    const newData = props.inputComponents[type].newData;
     tempProp.push({ [type]: newData ? JSON.parse(JSON.stringify(newData)) : undefined });
-    emit('update:modelValue', tempProp)
+
+    emit('update:modelValue', tempProp);
+}
+
+function addButtonPushed(type: string) {
+    const newData = props.inputComponents[type].newData;
+    if (props.inputComponents[type].addDialog) {
+        openedDialog.value = type;
+    } else {
+        addNewItem(type, newData)
+    }
+}
+
+function addFromDialog(type: string, dataArr: any) {
+    const newValues = dataArr.map(d => ({ [type]: d }));
+    const tempProp = props.modelValue ? [...props.modelValue, ...newValues] : newValues
+
+    emit('update:modelValue', tempProp);
+
+    openedDialog.value = null;
 }
 
 function deleteItem(i: number) {
@@ -49,13 +69,7 @@ function deleteItem(i: number) {
     }
 }
 
-const addLabels = computed(() => {
-    const arr: string[] = [];
-    for (const [key, _] of Object.entries(props.inputComponents)) {
-        arr.push(props.inputComponents[key].addItemLabel);
-    }
-    return arr.sort();
-});
+const dialogs = computed(() => Object.entries(props.inputComponents).filter((entry: any) => entry[1].addDialog));
 
 const errorMessages = computed(() => {
     if (props.required && !props.modelValue.length) {
@@ -63,11 +77,16 @@ const errorMessages = computed(() => {
     }
     return [];
 });
-
 </script>
 
 <template>
     <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 dark:border-stone-700 dark:divide-stone-700">
+        <component
+            v-for="([k, d]) in dialogs" class="p-3"
+            :is="d.addDialog"
+            :open="openedDialog === k"
+            @cancel="openedDialog = null"
+            @done="(newData: any)=> addFromDialog(k, newData)" />
         <div v-for="v, i in modelValue" class="p-3">
             <div class="text-gray-400 dark:text-gray-100 text-lg font-bold" v-if="numbering">{{numbering(i + 1)}}</div>
             <component
@@ -79,7 +98,7 @@ const errorMessages = computed(() => {
                 <button
                     type="button"
                     @click="deleteItem(i)">
-                    <TrashIcon class="h-5 w-5" ></TrashIcon>
+                    <TrashIcon class="h-5 w-5" />
                 </button>
             </div>
         </div>
@@ -87,7 +106,7 @@ const errorMessages = computed(() => {
             <button
                 v-for="(value, key) in props.inputComponents"
                 type="button"
-                @click="addNewItem(key)"
+                @click="addButtonPushed(key)"
                 class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 {{value.addItemLabel}}
             </button>
@@ -95,80 +114,3 @@ const errorMessages = computed(() => {
     </div>
     <p v-if="errorMessages.length" v-for="message in errorMessages" class="mt-2 text-sm text-red-600" id="email-error">{{message}}</p>
 </template>
-
-
-<!-- (defn multi-input
-  "Creates a multi-input from an input-component, adding \"add\" and \"delete\"
-   buttons to add/delete items. @data must be a vector. Can handle multiple input types
-   
-   Sample arg:
-   
-   {:input-components {:keyword #(inputs/keywords {:data %})
-                       :text    #(inputs/text-input {:data %})}
-    :new-data         {:keyword {:type :author :keywords [\"kw\"]}
-                       :text \"new text \"}
-    :label            \"Keywords or text \"
-    :add-labels       {:text \"Text \" :keyword \"Keyword\"}
-    :data             [[:keyword {:type :discipline :keywords [\"kw1\" \"kw2\"]}]
-                       [:text \"text \"]]}"
-  [{:keys [input-components description data new-data add-labels edit numbering delete-confirm-message]
-    :or {numbering false delete-confirm-message "Are you sure you want to delete this item?"}}]
-  (with-let [;;button-id (gen-dom-id)
-            ;;  _ (js/console.log (clj->js @data))
-             ]
-    [:div {:class "border p-3 rounded rounded-md divide-y"}
-     (doall (for [n (range (count @data))]
-              ; TODO using n as a key for now - will find a proper one
-              [:div {:key n}
-               (when numbering
-                ;;  [:div {:class "mt-5"}]
-                 [:span {:href "#", :class "mt-5 flex items-center text-sm font-medium", :aria-current "n"}
-                  [:span {:class "flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 border-indigo-600 rounded-full"}
-                   [:span {:class "text-indigo-600"} (+ 1 n)]]])
-               [:div {:class "flex flex-row my-5 w-full"}
-                (let [input-component-def  (nth @data n)
-                      input-component-type (-> input-component-def first first) ; get key - there's only one
-                      input-component-data (cursor data [n input-component-type])
-                      input-component      (get input-components input-component-type)]
-                  [:div {:class "pl-0 w-full"} (input-component input-component-data)])
-                (when edit
-                  [:div {:class "pl-3 pt-3"}
-                   [:div {:class "text-red-600 cursor-pointer"
-                          :on-click (fn []
-                                      (when (js/confirm delete-confirm-message)
-                                        (swap! data #(vec-remove n %))))}
-                    icons/trash]])]]))
-     (when description [:p {:class "mt-1 text-sm text-gray-500"} description])
-
-     ; "Add" button
-     (when edit
-       (if (> (count input-components) 1)
-       ; If there's more than one input component, show a dropdown menu
-         [:div {:class "flex gap-4 pt-4"}
-          [:div "Add"]
-
-          (doall (for [component input-components
-                       :let [k (key component)]]
-                   [:button {:key      k
-                             :type     "button"
-                             :on-click (fn [] (reset! data (into [] (conj @data {k (get new-data k)}))))
-                             :class    "inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"}
-                    (get add-labels k)]
-                    ;; [:a {:key      k
-                    ;;                  ; Not using swap! - Using into and reset!
-                    ;;                  ; because (conj nil x) returns (x) instead of [x].
-                    ;;                  ; Causes problems when adding the first item
-                    ;;      :on-click (fn [] (reset! data (into [] (conj @data {k (get new-data k)}))))}
-                    ;;  (get add-labels k)]
-                   ))]
-         ; Otherwise, show just a button
-         [:button {:type "button" 
-                   :on-click #(reset! data (into [] (conj @data new-data)))
-                   :class "inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"}
-          "Add " (-> add-labels first val)]))]))
-
-        ;;  [:div.btn.btn-primary.btn-sm {:type "button"
-        ;;                              ; Using into and reset! - see comment above
-        ;;                                :on-click #(reset! data (into [] (conj @data new-data)))}
-        ;;   "Add " (-> add-labels first val)]
-          -->

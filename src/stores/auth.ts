@@ -14,7 +14,7 @@ import {
     // sendPasswordResetEmail,
     // sendEmailVerification
 } from "firebase/auth";
-import { collection, query, getDocs, where, documentId } from "@firebase/firestore";
+import { collection, query, getDocs, where, documentId } from "firebase/firestore";
 
 
 import router from '@/router';
@@ -29,8 +29,11 @@ import { db } from '../firebase';
 const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this
     // URL must be in the authorized domains list in the Firebase Console.
+    url: process.env.NODE_ENV === 'development'
+        ? 'http://127.0.0.1:5173'
+        : 'http://ferm.fao.org',
     // url: 'http://ferm.fao.org',
-    url: 'http://127.0.0.1:5173',
+    // url: 'http://127.0.0.1:5173',
     // This must be true.
     handleCodeInApp: true,
     // iOS: {
@@ -43,7 +46,6 @@ const actionCodeSettings = {
     // },
     // dynamicLinkDomain: 'example.page.link'
 };
-
 
 //   auth.onAuthStateChanged(async user => {
 //     if (user === null) {
@@ -86,7 +88,7 @@ export const useAuthStore = defineStore({
     id: "auth",
     state: () => ({
         authLoaded: false,
-        user: null as any,
+        user: null as User | null,
         isAdmin: false,
         privileges: {},
         userGroups: {},

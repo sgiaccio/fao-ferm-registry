@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+// import { ref } from 'vue'
 
 import { useProjectStore } from '../../stores/project'
 
@@ -7,6 +7,10 @@ import MultiInput from '../../components/inputs/MultiInput.vue'
 import MapInput from '../../components/inputs/base/MapInput.vue'
 import AdminArea from '../../components/inputs/AdminArea.vue'
 import MapUpload from '../../components/inputs/base/MapUpload.vue'
+import ShapefileUploadDialog from './ShapefileUploadDialog.vue'
+
+import FormGroup from '../../components/inputs/FormGroup.vue';
+import NumberInput from '../../components/inputs/base/NumberInput.vue';
 
 
 const multiInputComponents = {
@@ -23,7 +27,8 @@ const multiInputComponents = {
     upload: {
         component: MapUpload,
         newData: {},
-        addItemLabel: 'Upload shapefile'
+        addItemLabel: 'Upload shapefile',
+        addDialog: ShapefileUploadDialog
     }
 };
 
@@ -39,11 +44,14 @@ const store = useProjectStore();
             <li>Upload polygons/vector</li>
             <li>Draw directly on the platform</li>
         </ul>
+        <FormGroup label="Total area under restoration (ha)">
+            <NumberInput v-model="store.project.project.areaUnderRestoration" />
+        </FormGroup>
         <MultiInput
             :numbering="(n: number) => `Area #${n}`"
             :inputComponents="multiInputComponents"
             v-model="store.projectAreas"
             deleteConfirmMessage="Are you sure you want to delete this area? The related characteristics and activities will also be deleted."/>
     </div>
-    <!-- <pre class="text-black">{{JSON.stringify(store.projectAreas, null, 2)}}</pre> -->
+    <!-- <pre class="text-white">{{JSON.stringify(store.projectAreas, null, 2)}}</pre> -->
 </template>

@@ -35,8 +35,8 @@ const tabs = computed (() => [
   { name: 'Results', href: 'results', current: 'results' === route.name },
 ]);
 
-const showJson = ref(false);
-function toggleJson() { showJson.value = !showJson.value }
+// const showJson = ref(false);
+// function toggleJson() { showJson.value = !showJson.value }
 
 async function save() {
     await saveProject();

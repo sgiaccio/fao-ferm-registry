@@ -1,13 +1,14 @@
 <script setup lang="ts">
 
-import { ref, computed } from 'vue'
+import { ref, computed, type PropType } from 'vue'
+import type { MenuValue, RecursiveMenu } from '../../project/menus';
 
 // import FormGroup from '../FormGroup.vue';
 
 const props = defineProps({
     uid: null,
-    modelValue: null,
-    treeData: Object,
+    modelValue: Array as PropType<Array<MenuValue>>,
+    treeData: { type: Object as PropType<RecursiveMenu>, required: true },
     level: { type: Number, default: 0 },
     expandLevel: { type: Number, default: 1 }
 });
@@ -24,17 +25,17 @@ function toggleFolder() {
 }
 
 function sortCheckedValues(a: any, b: any) {
-    if (a instanceof Number && b instanceof Number) {
-        return Math.sign((a as number) - (b as number));
-    }
-    else {
+    // if (a instanceof Number && b instanceof Number) {
+    //     return Math.sign((a as number) - (b as number));
+    // }
+    // else {
         if ((a as String) > (b as String)) return 1
         else if ((a as String) < (b as String)) return -1
         return 0;
-    }
+    // }
 }
 
-function check(checked: boolean, value: string) {
+function check(checked: boolean, value: MenuValue) {
     if (checked) {
         if (!props.modelValue?.includes(value)) {
             const tempModel = props.modelValue ? [ ...props.modelValue,  value ] : [value]; // TODO - Deep copy?
@@ -45,14 +46,17 @@ function check(checked: boolean, value: string) {
     }  
 }
 
-function deleteOption(value: string) {
+function deleteOption(value: MenuValue) {
+    if (!props.modelValue) return;
     emit('update:modelValue', props.modelValue.filter(v => v !== value).sort(sortCheckedValues));
 }
 
 let flattenedOptions: any = {}
-function flatten(data) {
+function flatten(data: RecursiveMenu) {
     if (!data.children) {
-        flattenedOptions[data.value] = data.label;
+        if (data.value) {
+            flattenedOptions[data.value] = data.label;
+        }
     } else {
         data.children.forEach(flatten);
     }
@@ -66,7 +70,6 @@ function flatten(data) {
 
 if (props.level === 0) {
     flatten(props.treeData);
-    console.log(flattenedOptions)
 }
 
 const uid = props.uid || Math.ceil(Math.random() * 1e9) // TODO
@@ -101,15 +104,15 @@ function bubble(val: number[]) {
             </div>
             <span class="text-sm self-center dark:text-zinc-100">{{ treeData?.label }}</span>
         </div>
-        <div v-else class="relative flex items-start">
+        <div v-else-if="treeData.value" class="relative flex items-start">
             <div class="flex h-5 items-center">
                 <input
-                    :id="`${uid}_${treeData?.value}`"
-                    @change="check(($event.target as HTMLInputElement).checked, treeData?.value)"
+                    :id="`${uid}_${treeData.value}`"
+                    @change="check(($event.target as HTMLInputElement).checked, treeData.value!)"
                     aria-describedby="comments-description"
                     name="`${uid}_${treeData?.value}`"
                     type="checkbox"
-                    :checked="(modelValue || []).includes(treeData?.value)"
+                    :checked="(modelValue || []).includes(treeData.value)"
                     class="cursor-pointer h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
             </div>
             <div class="ml-3 text-sm">

@@ -92,7 +92,7 @@ const pointsOfContact = {
   const store = useProjectStore();
 
 
-  const selectedFile = vue.ref(null);
+  const selectedFile = vue.ref<File | null>(null);
   const uploadStatus = vue.ref<'idle' | 'uploading' | 'uploaded'>('idle');
   function setSelectedFile(event: Event) {
     selectedFile.value = (event.target as HTMLInputElement).files![0];
@@ -100,7 +100,9 @@ const pointsOfContact = {
 
   const storage = getStorage();
 
-  function uploadFile(projectId: string) {
+  function uploadFile(projectId: string | null) {
+    if (projectId === null) return
+
     if (uploadStatus.value !== 'idle') return;
 
     const storageRef = ref(storage, `${projectId}/documents/${selectedFile.value!.name}`);
@@ -129,13 +131,15 @@ const pointsOfContact = {
   //       ]
   //   (listAll dir-ref)))
 
-  const fileName = vue.ref<string>();
+  const fileName = vue.ref<string | null>();
   async function getFiles(id: string) {
     const fList = await listFiles(id);
-    fileName.value = fList.items && fList.items.length && fList.items[0].name // only one file can be uploaded
+    fileName.value = fList.items && fList.items.length && fList.items[0].name || null // only one file can be uploaded
   }
   
-  function deleteFile(projectId: string, fileName: string) {
+  function deleteFile(projectId: string | null, fileName: string) {
+    if (projectId === null) return
+
     if (!confirm(`Are you sure you want to delete the file ${fileName}`)) return;
     const fRef = ref(storage, `${projectId}/documents/${fileName}`);
     deleteObject(fRef).then(() => {

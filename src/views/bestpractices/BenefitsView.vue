@@ -7,11 +7,11 @@ import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGr
 import { positiveOutcomes } from "../../components/project/menus";
 
 
-type Benefits = {
-    positiveOutcomes?: number[],
-    negativeOutcomes?: string,
-    validation?: string,
-}
+// type Benefits = {
+//     positiveOutcomes?: number[],
+//     negativeOutcomes?: string,
+//     validation?: string,
+// }
 
 const store = useBestPracticesStore();
 </script>
@@ -25,17 +25,17 @@ const store = useBestPracticesStore();
                 :options="positiveOutcomes"
                 v-model="store.bestPractice.outcomes"
                 label="4.1 Outcomes"
-                description="Please select the ecological, cultural and environmental and/or socio-economic outcomes of implementing the practice."
+                description="Please select the ecological and/or cultural and/or socio-economic outcomes of implementing the practice."
                 :required="true" />
             <TextareaFormGroup
                 v-model="store.bestPractice.positiveImpacts"
                 label="4.2 Positive impacts"
-                description="Please describe the positive ecological, cultural and/or socio-economic  impacts of the practice." />
+                description="Please describe the positive ecological and/or cultural and/or socio-economic impacts of the practice." />
             <TextareaFormGroup
                 v-model="store.bestPractice.negativeImpacts"
                 label="4.3 Negative impacts"
                 :required="true"
-                description="Does the practice have any negative ecological, cultural and socio-economic impact(s)? If so, please describe." />
+                description="Does the practice have any negative ecological and/or cultural and/or socio-economic impact(s)? If so, please describe." />
             <TextareaFormGroup
                 v-model="store.bestPractice.validation"
                 label="4.4 Validation"

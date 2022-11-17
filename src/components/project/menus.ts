@@ -1,4 +1,17 @@
-export const objectives = [
+export type MenuValue = string | number
+
+export type MenuItem = { value: MenuValue, label: string }
+
+export type Menu = Array<MenuItem>
+
+export interface RecursiveMenu {
+    label: string;
+    value?: MenuValue;
+    children?: RecursiveMenu[];
+}
+
+
+export const objectives: Menu = [
     { value: 1, label: 'Reforest degraded lands' },
     { value: 2, label: 'Improve soil health' },
     { value: 3, label: 'Increase food and products production' },
@@ -9,11 +22,11 @@ export const objectives = [
     { value: 8, label: 'Improve access to energy' },
     { value: 9, label: 'Ensure/protect rights and culture' },
     { value: 10, label: 'Ensure sustainability of restoration practices' },
-    { value: 11, label: ' Enhance ecosystem resilience' },
+    { value: 11, label: 'Enhance ecosystem resilience' },
     { value: 0, label: 'Other' }
 ];
 
-export const ecosystems = [
+export const ecosystems: Menu = [
     { value: 1, label: 'Farmlands' },
     { value: 2, label: 'Forests' },
     { value: 3, label: 'Freshwaters' },
@@ -21,11 +34,10 @@ export const ecosystems = [
     { value: 5, label: 'Mountains' },
     { value: 6, label: 'Oceans and coasts' },
     { value: 7, label: 'Peatlands' },
-    { value: 8, label: 'Urban areas' },
-    { value: 9, label: 'Deserts and semi-deserts' }
+    { value: 8, label: 'Urban areas' }
 ];
 
-export const agencyTypes = [
+export const agencyTypes: Menu = [
     { value: 1, label: 'Government' },
     { value: 2, label: 'NGO' },
     { value: 3, label: 'Public Private Partnership' },
@@ -36,31 +48,31 @@ export const agencyTypes = [
     { value: 0, label: 'Other' }
 ];
 
-export const agencyRoles = [
+export const agencyRoles: Menu = [
     { value: 1, label: 'Leading' },
     { value: 2, label: 'Supporting' }
 ];
 
-export const drivers = [
-    { value: 1, label: "Grazing land management (e.g. Change in extent of grazing lands; Rotation regimes)" },
-    { value: 2, label: "Croplands management (e.g. Change in extent of croplands including drainage of wetlands; Agricultural inputs)" },
-    { value: 3, label: "Forests and tree plantation management (e.g. Change in extent of managed and planted forest; Harvesting intensity)" },
-    { value: 4, label: "Non-timber natural resource extraction (e.g. Fuelwood harvesting; Hunting)" },
-    { value: 5, label: "Fire regimes changes (e.g. Changes in frequency, intensity, season and timing of fire, including fire suppression)" },
-    { value: 6, label: "Introduction of invasive species " },
-    { value: 7, label: "Extractive industry development (e.g. Extraction and refining techniques; Pollutant discharge and spoil disposal)" },
-    { value: 8, label: "Infrastructure and industrial development and urbanization (e.g. Dams and hydroelectric power plants; Roads and railways)" },
-    { value: 9, label: "Climate change" },
-    { value: 10, label: "Illegal activities (e.g. Land grabbing; Human rights violations)" },
-    { value: 11, label: "Demographic (e.g. Population growth rate; Migration and population mobility)" },
-    { value: 12, label: "Economic (e.g. Demand and consumption; Poverty)" },
-    { value: 13, label: "Science, knowledge and technology (e.g. Lack of education and integration of local and traditional knowledge; Lack of investment in research and development)" },
-    { value: 14, label: "Institutions and governance (e.g. Regulatory and incentive based public policy; Property rights)" },
-    { value: 15, label: "Cultural (e.g. Consumer behaviour; Diet)" },
-    { value: 0, label: "Other" }
+export const drivers: Menu = [
+    { value: 1, label: 'Grazing land management (e.g. Change in extent of grazing lands; Rotation regimes)' },
+    { value: 2, label: 'Croplands management (e.g. Change in extent of croplands including drainage of wetlands; Agricultural inputs)' },
+    { value: 3, label: 'Forests and tree plantation management (e.g. Change in extent of managed and planted forest; Harvesting intensity)' },
+    { value: 4, label: 'Non-timber natural resource extraction (e.g. Fuelwood harvesting; Hunting)' },
+    { value: 5, label: 'Fire regimes changes (e.g. Changes in frequency, intensity, season and timing of fire, including fire suppression)' },
+    { value: 6, label: 'Introduction of invasive species' },
+    { value: 7, label: 'Extractive industry development (e.g. Extraction and refining techniques; Pollutant discharge and spoil disposal)' },
+    { value: 8, label: 'Infrastructure and industrial development and urbanization (e.g. Dams and hydroelectric power plants; Roads and railways)' },
+    { value: 9, label: 'Climate change' },
+    { value: 10, label: 'Illegal activities (e.g. Land grabbing; Human rights violations)' },
+    { value: 11, label: 'Demographic (e.g. Population growth rate; Migration and population mobility)' },
+    { value: 12, label: 'Economic (e.g. Demand and consumption; Poverty)' },
+    { value: 13, label: 'Science, knowledge and technology (e.g. Lack of education and integration of local and traditional knowledge; Lack of investment in research and development)' },
+    { value: 14, label: 'Institutions and governance (e.g. Regulatory and incentive based public policy; Property rights)' },
+    { value: 15, label: 'Cultural (e.g. Consumer behaviour; Diet)' },
+    { value: 0, label: 'Other' }
 ];
 
-export const engagement = [
+export const engagement: Menu = [
     { value: 1, label: 'Community leaders' },
     { value: 2, label: 'Indigenous groups' },
     { value: 3, label: 'Women\'s organizations' },
@@ -78,16 +90,16 @@ export const engagement = [
     { value: 15, label: 'Research/academia' },
     { value: 16, label: 'Education' },
     { value: 17, label: 'Finance sector' },
-    { value: 0, label: "Other" }
+    { value: 0, label: 'Other' }
 ];
 
-export const knowledgeTypes = [
+export const knowledgeTypes: Menu = [
     { value: 1, label: 'Traditional knowledge: a cumulative body of knowledge, practice and belief, evolving by adaptive processes and handed down through generations by cultural transmission, about the relationship of living beings (including humans) with one another and with their environment (Berkes, 1993). It is mostly transmitted orally, place-based and could be both individual and collective.' },
     { value: 2, label: 'Scientific knowledge: quantitative and based on experimentation and systematic accumulation of facts (Berkes, 1993).' },
     { value: 3, label: 'Practical knowledge: knowledge from ecosystem restoration practitioners gained through their experiences implementing initiatives.' }
 ];
 
-export const scale = [
+export const scale: Menu = [
     { value: 1, label: 'Local level (community, farm level)' },
     { value: 2, label: 'Landscape level' },
     { value: 3, label: 'Regional' },
@@ -95,13 +107,13 @@ export const scale = [
     { value: 5, label: 'Global' }
 ];
 
-export const replicability = [
+export const replicability: Menu = [
     { value: 1, label: 'Yes, in the same context' },
     { value: 2, label: 'Yes, in different contexts' },
     { value: 3, label: 'No' }
 ];
 
-export const keyFactors = [
+export const keyFactors: Menu = [
     { value: 1, label: 'Awareness of social, economic and/or environmental benefits' },
     { value: 2, label: 'Ecological conditions are suitable' },
     { value: 3, label: 'Value chains for products from restored area exist' },
@@ -118,7 +130,7 @@ export const keyFactors = [
     { value: 14, label: 'Actions are coordinated among stakeholders, institutions and sectors' }
 ];
 
-export const positiveOutcomes = [
+export const positiveOutcomes: Menu = [
     { value: 1, label: 'Protected sacred land or cultural site' },
     { value: 2, label: 'Improved recreational opportunities' },
     { value: 3, label: 'Ensured land and natural resource tenure' },
@@ -140,7 +152,9 @@ export const positiveOutcomes = [
     { value: 0, label: 'Other' }
 ];
 
-export const activities = {
+
+  
+export const activities: RecursiveMenu = {
     label: 'Activities',
     children: [
         {
@@ -238,7 +252,7 @@ export const activities = {
     ]
 }
 
-export const indicators = {
+export const indicators: RecursiveMenu = {
     label: 'Indicators',
     children: [
         {
@@ -1166,13 +1180,13 @@ export const indicators = {
     ]
 }
 
-export const achieved = [
+export const achieved: Menu = [
     { value: 1, label: 'Yes' },
     { value: 3, label: ' Partially' },
     { value: 2, label: 'No' }
 ];
 
-export const achievingTargets = [
+export const achievingTargets: Menu = [
     { value: 1, label: 'Reforest degraded lands' },
     { value: 2, label: 'Improve soil health' },
     { value: 3, label: 'Increase food and products production' },
@@ -1185,182 +1199,182 @@ export const achievingTargets = [
     { value: 10, label: 'Ensure sustainability of restoration practices' },
 ]
 
-export const gefIndicators = {
-    label: "GEF indicators",
+export const gefIndicators: RecursiveMenu = {
+    label: 'GEF indicators',
     children: [{
-        value: "-1",
-        label: "1. Terrestrial protected areas created or under improved management for conservation and sustainable use (hectares)",
+        value: '-1',
+        label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use (hectares)',
         children: [{
-            value: "-1",
-            label: "Component Sub-Indicators",
+            value: '-1',
+            label: 'Component Sub-Indicators',
             children: [{
-                value: "GEF1.1",
-                label: "1.1 Terrestrial protected areas newly created",
+                value: 'GEF1.1',
+                label: '1.1 Terrestrial protected areas newly created',
             }, {
-                value: "GEF1.2",
-                label: "1.2 Terrestrial protected areas under improved management effectiveness",
+                value: 'GEF1.2',
+                label: '1.2 Terrestrial protected areas under improved management effectiveness',
             }]
         }]
     }, {
-        value: "-1",
-        label: "2. Marine protected areas created or under improved management for conservation and sustainable use (hectares)",
+        value: '-1',
+        label: '2. Marine protected areas created or under improved management for conservation and sustainable use (hectares)',
         children: [{
-            value: "-1",
-            label: "Component Sub-Indicators",
+            value: '-1',
+            label: 'Component Sub-Indicators',
             children: [{
-                value: "GEF2.1",
-                label: "2.1 Marine protected areas newly created",
+                value: 'GEF2.1',
+                label: '2.1 Marine protected areas newly created',
             }, {
-                value: "GEF2.2",
-                label: "2.2 Marine protected areas under improved management effectiveness",
+                value: 'GEF2.2',
+                label: '2.2 Marine protected areas under improved management effectiveness',
             }]
         }]
     }, {
-        value: "-1",
-        label: "3. Area of land restored (hectares)",
+        value: '-1',
+        label: '3. Area of land restored (hectares)',
         children: [{
-            value: "-1",
-            label: "Component Sub-Indicators",
+            value: '-1',
+            label: 'Component Sub-Indicators',
             children: [{
-                value: "GEF3.1",
-                label: "3.1 Area of degraded agricultural lands restored",
+                value: 'GEF3.1',
+                label: '3.1 Area of degraded agricultural lands restored',
             }, {
-                value: "GEF3.2",
-                label: "3.2 Area of forest and forest land restored",
+                value: 'GEF3.2',
+                label: '3.2 Area of forest and forest land restored',
             }, {
-                value: "GEF3.3",
-                label: "3.3 Area of natural grass and shrublands restored",
+                value: 'GEF3.3',
+                label: '3.3 Area of natural grass and shrublands restored',
             }, {
-                value: "GEF3.4",
-                label: "3.4 Area of wetlands (including estuaries and mangroves) restored",
+                value: 'GEF3.4',
+                label: '3.4 Area of wetlands (including estuaries and mangroves) restored',
             }]
         }]
     }, {
-        value: "-1",
-        label: "4. Area of landscapes under improved practices (hectares; excluding protected areas)",
+        value: '-1',
+        label: '4. Area of landscapes under improved practices (hectares; excluding protected areas)',
         children: [{
-            value: "-1",
-            label: "Component Sub-Indicators",
+            value: '-1',
+            label: 'Component Sub-Indicators',
             children: [{
-                value: "GEF4.1",
-                label: "4.1 Area of landscapes under improved management to benefit biodiversity (qualitative assessment, non-certified)",
+                value: 'GEF4.1',
+                label: '4.1 Area of landscapes under improved management to benefit biodiversity (qualitative assessment, non-certified)',
             }, {
-                value: "GEF4.2",
-                label: "4.2 Area of landscapes that meet national or international third-party certification and that incorporates biodiversity considerations",
+                value: 'GEF4.2',
+                label: '4.2 Area of landscapes that meet national or international third-party certification and that incorporates biodiversity considerations',
             }, {
-                value: "GEF4.3",
-                label: "4.3 Area of landscapes under sustainable land management in production systems",
+                value: 'GEF4.3',
+                label: '4.3 Area of landscapes under sustainable land management in production systems',
             }, {
-                value: "GEF4.4",
-                label: "4.4 Area of High Conservation Value forest loss avoided",
+                value: 'GEF4.4',
+                label: '4.4 Area of High Conservation Value forest loss avoided',
             }]
         }]
     }, {
-        value: "-1",
-        label: "5. Area of marine habitat under improved practices to benefit biodiversity (hectares; excluding protected areas)",
+        value: '-1',
+        label: '5. Area of marine habitat under improved practices to benefit biodiversity (hectares; excluding protected areas)',
         children: [{
-            value: "-1",
-            label: "Contextual Sub-Indicators",
+            value: '-1',
+            label: 'Contextual Sub-Indicators',
             children: [{
-                value: "GEF5.1",
-                label: "5.1 Number of fisheries that meet national or international third-party certification that incorporates biodiversity considerations",
+                value: 'GEF5.1',
+                label: '5.1 Number of fisheries that meet national or international third-party certification that incorporates biodiversity considerations',
             }, {
-                value: "GEF5.2",
-                label: "5.2 Number of Large Marine Ecosystems with reduced pollution and hypoxia",
+                value: 'GEF5.2',
+                label: '5.2 Number of Large Marine Ecosystems with reduced pollution and hypoxia',
             }, {
-                value: "GEF5.3",
-                label: "5.3 Amount of Marine Litter Avoided",
+                value: 'GEF5.3',
+                label: '5.3 Amount of Marine Litter Avoided',
             }]
         }]
     }, {
-        value: "-1",
-        label: "6. Greenhouse gas emissions mitigated (metric tons of carbon dioxide equivalent)",
+        value: '-1',
+        label: '6. Greenhouse gas emissions mitigated (metric tons of carbon dioxide equivalent)',
         children: [{
-            value: "-1",
-            label: "Component Sub-Indicators",
+            value: '-1',
+            label: 'Component Sub-Indicators',
             children: [{
-                value: "GEF6.1",
-                label: "6.1 Carbon sequestered, or emissions avoided in the sector of Agriculture, Forestry and Other Land Use",
+                value: 'GEF6.1',
+                label: '6.1 Carbon sequestered, or emissions avoided in the sector of Agriculture, Forestry and Other Land Use',
             }, {
-                value: "GEF6.2",
-                label: "6.2 Emissions avoided outside Agriculture, Forestry and Other Land Use (AFOLU) sector Contextual Sub-Indicators",
+                value: 'GEF6.2',
+                label: '6.2 Emissions avoided outside Agriculture, Forestry and Other Land Use (AFOLU) sector Contextual Sub-Indicators',
             }, {
-                value: "GEF6.3",
-                label: "6.3 Energy saved",
+                value: 'GEF6.3',
+                label: '6.3 Energy saved',
             }, {
-                value: "GEF6.4",
-                label: "6.4 Increase in installed renewable energy capacity per technology",
+                value: 'GEF6.4',
+                label: '6.4 Increase in installed renewable energy capacity per technology',
             }]
         }]
     }, {
-        value: "-1",
-        label: "7. Number of shared water ecosystems (fresh or marine) under new or improved cooperative management",
+        value: '-1',
+        label: '7. Number of shared water ecosystems (fresh or marine) under new or improved cooperative management',
         children: [{
-            value: "-1",
-            label: "Contextual Sub-Indicators",
+            value: '-1',
+            label: 'Contextual Sub-Indicators',
             children: [{
-                value: "GEF7.1",
-                label: "7.1 Level of Transboundary Diagnostic Analysis and Strategic Action Program formulation and implementation",
+                value: 'GEF7.1',
+                label: '7.1 Level of Transboundary Diagnostic Analysis and Strategic Action Program formulation and implementation',
             }, {
-                value: "GEF7.2",
-                label: "7.2 Level of regional legal agreements and regional management institution(s) to support its implementation",
+                value: 'GEF7.2',
+                label: '7.2 Level of regional legal agreements and regional management institution(s) to support its implementation',
             }, {
-                value: "GEF7.3",
-                label: "7.3 Level of national/local reforms and active participation of Inter-Ministerial Committees",
+                value: 'GEF7.3',
+                label: '7.3 Level of national/local reforms and active participation of Inter-Ministerial Committees',
             }, {
-                value: "GEF7.4",
-                label: "7.4 Level of engagement in IW:LEARN through participation and delivery of key products",
+                value: 'GEF7.4',
+                label: '7.4 Level of engagement in IW:LEARN through participation and delivery of key products',
             }]
         }]
     }, {
-        value: "GEF8",
-        label: "8. Globally over-exploited fisheries moved to more sustainable levels (metric tons)",
+        value: 'GEF8',
+        label: '8. Globally over-exploited fisheries moved to more sustainable levels (metric tons)',
     }, {
-        value: "-1",
-        label: "9. Reduction, disposal/destruction, phase out, elimination and avoidance of chemicals of global concern and their waste in the environment and in processes, materials, and products (metric tons of toxic chemicals reduced)",
+        value: '-1',
+        label: '9. Reduction, disposal/destruction, phase out, elimination and avoidance of chemicals of global concern and their waste in the environment and in processes, materials, and products (metric tons of toxic chemicals reduced)',
         children: [{
-            value: "-1",
-            label: "Component Sub-Indicators",
+            value: '-1',
+            label: 'Component Sub-Indicators',
             children: [{
-                value: "GEF9.1",
-                label: "9.1 Solid and liquid Persistent Organic Pollutants (POPs) removed or disposed (POPs type)",
+                value: 'GEF9.1',
+                label: '9.1 Solid and liquid Persistent Organic Pollutants (POPs) removed or disposed (POPs type)',
             }, {
-                value: "GEF9.2",
-                label: "9.2 Quantity of mercury reduced",
+                value: 'GEF9.2',
+                label: '9.2 Quantity of mercury reduced',
             }, {
-                value: "GEF9.3",
-                label: "9.3 Hydrochlorofluorocarbons reduced/phased out",
+                value: 'GEF9.3',
+                label: '9.3 Hydrochlorofluorocarbons reduced/phased out',
             }]
         }, {
-            value: "-1",
-            label: "Contextual Sub-Indicators",
+            value: '-1',
+            label: 'Contextual Sub-Indicators',
             children: [{
-                value: "GEF9.4",
-                label: "9.4 Number of countries with legislation and policy implemented to control chemicals and waste",
+                value: 'GEF9.4',
+                label: '9.4 Number of countries with legislation and policy implemented to control chemicals and waste',
             }, {
-                value: "GEF9.5",
-                label: "9.5 Number of low-chemical/non-chemical systems implemented, particularly in food production, manufacturing, and cities",
+                value: 'GEF9.5',
+                label: '9.5 Number of low-chemical/non-chemical systems implemented, particularly in food production, manufacturing, and cities',
             }, {
-                value: "GEF9.6",
-                label: "9.6 Quantity of products/materials containing POPs/Mercury directly avoided",
+                value: 'GEF9.6',
+                label: '9.6 Quantity of products/materials containing POPs/Mercury directly avoided',
             }]
         }]
     }, {
-        value: "-1",
-        label: "10. Reduction, avoidance of emissions of POPS to air from point and non-point sources (grams of toxic equivalent gTEQ)",
+        value: '-1',
+        label: '10. Reduction, avoidance of emissions of POPS to air from point and non-point sources (grams of toxic equivalent gTEQ)',
         children: [{
-            value: "-1",
-            label: "Contextual Sub-Indicators",
+            value: '-1',
+            label: 'Contextual Sub-Indicators',
             children: [{
-                value: "GEF10.1",
-                label: "10.1 Number of countries with legislation and policies implemented to control emissions of POPs to air",
+                value: 'GEF10.1',
+                label: '10.1 Number of countries with legislation and policies implemented to control emissions of POPs to air',
             }, {
-                value: "GEF10.2",
-                label: "10.2 Number of emission control technologies/practices implemented",
+                value: 'GEF10.2',
+                label: '10.2 Number of emission control technologies/practices implemented',
             }]
         }]
     }, {
-        value: "GEF11",
-        label: "11. Number of direct beneficiaries disaggregated by gender as co-benefit of GEF investment",
+        value: 'GEF11',
+        label: '11. Number of direct beneficiaries disaggregated by gender as co-benefit of GEF investment',
     }]
 }

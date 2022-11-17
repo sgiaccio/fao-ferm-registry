@@ -78,7 +78,7 @@ function enableSpecifyReplicability() {
         
         <h2 class="text-2xl pt-6 dark:text-zinc-300">Implementation of the practice</h2>
         
-        <p class="dark:text-zinc-300 italic"><span class="font-bold">Please provide all the information that another practitioner needs to have in order to be able to replicate this practice</span>. Please provide a description of the practice and explain in detail the steps for its implementation in the table below, including when applicable: timing, equipment, labour, species used, and all other relevant information.</p>
+        <p class="dark:text-zinc-300 italic"><span class="font-bold">Please provide all the information that another practitioner needs to have in order to be able to replicate this practice</span>. Please provide a description of the practice and explain in detail the steps for its implementation including when applicable: timing, equipment, labour, species used, and all other relevant information.</p>
 
         <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextareaFormGroup
@@ -97,7 +97,7 @@ function enableSpecifyReplicability() {
             <MultiSelectFormGroup
                 :options="engagement"
                 v-model="store.bestPractice.engagement"
-                label="2.3 Stakeholders' engagement"
+                label="2.3 Stakeholder engagement"
                 description="Please indicate which stakeholder groups were/are actively involved in the practice."
                 :required="true" />
             <TextareaFormGroup
@@ -129,7 +129,7 @@ function enableSpecifyReplicability() {
                     :required="true" />
                 <TextareaFormGroup
                     v-model="store.bestPractice.specifyReplicability"
-                    label="2.9"
+                    label="2.9 Replicability additional information"
                     description="If yes, please briefly explain where it was replicated, how many times, and with what results."
                     :enabled="enableSpecifyReplicability" />
             </div>

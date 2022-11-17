@@ -1,49 +1,48 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import { storeToRefs } from 'pinia'
-
 import TextFormGroup from "../../components/inputs/base/TextFormGroup.vue";
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
-// import LatLongFormGroup from "../../components/inputs/LatLongFormGroup.vue";
 
-import { objectives, ecosystems, drivers, activities } from "../../components/project/menus";
+import { objectives, ecosystems, drivers, activities, type Menu, type MenuItem } from "../../components/project/menus";
 
 import { useBestPracticesStore } from '../../stores/bestpractices';
 
 const store = useBestPracticesStore();
 
-type AOI = {
-    adminArea: {
-        siteName?: string,
-        admin0: string,
-        admin1: string,
-        admin2: string,
-    }
-};
+// type AOI = {
+//     adminArea: {
+//         siteName?: string,
+//         admin0: string,
+//         admin1: string,
+//         admin2: string,
+//     }
+// };
 
-type Objectives = {
-    projectId?: string,
-    objectives?: number[],
-    objectivesOther?: [{"other": string}],
-    title?: string,
-    ecosystems?: number[],
-    // coordinates?: { latitude: number, longitude: number },
-    context?: string,
-    drivers?: number[],
-    additionalInformation?: string,
-    aoi?: AOI[],
-    activities?: number[]
-}
+// type Objectives = {
+//     projectId?: string,
+//     objectives?: number[],
+//     objectivesOther?: [{"other": string}],
+//     title?: string,
+//     ecosystems?: number[],
+//     // coordinates?: { latitude: number, longitude: number },
+//     context?: string,
+//     drivers?: number[],
+//     additionalInformation?: string,
+//     aoi?: AOI[],
+//     activities?: number[]
+// }
 
 // const selectedAreas = ref([]);
 // const selectedActivities = ref([]);
 
-const flattenedActivities: [{ value: number, label: string}] | [] = [];
+const flattenedActivities: MenuItem[] = [];
 (function flatten(data) {
     if (!data.children) {
-        flattenedActivities.push({ value: data.value, label: data.label });
+        if (data.value) {
+            flattenedActivities.push({ value: data.value, label: data.label });
+        }
     } else {
         data.children.forEach(c => { flatten(c) });
     }
@@ -55,20 +54,20 @@ watch(() => store.projectAreas, areas => {
     if (areas) {
         areasMenu.value = areas.map((el: any, index: number) => ({
             value: index,
-            label: (Object.values(el)[0]).siteName || 'Area name not provided'
+            label: (Object.values(el)[0] as any).siteName || 'Area name not provided'
         }));
     }
 });
 
-let activitiesMenu = ref([]);
+let activitiesMenu = ref<MenuItem[]>([]);
 
-function setActivitiesMenu(areas) {
+function setActivitiesMenu(areas: number[]) {
     // This array of activities contains duplicates but it doesn't matter
     // as we are using it to select from flattenedActivities
     const activityIds = store.projectAreas
-        .filter((_: any, index: number) => areas?.includes(index))
-        .reduce((prev: number[], current) => {
-            const newActivities = Object.values(current)[0].activities || [];
+        .filter((_: any, index: number) => areas.includes(index))
+        .reduce((prev: number[], current: any) => { // TODO
+            const newActivities = (Object.values(current)[0] as any).activities || [];
             return [...prev, ...newActivities];
         }, [])
         .sort();
@@ -80,7 +79,7 @@ function setActivitiesMenu(areas) {
 
 // From the selected areas from the menu, build the activities menu
 // watching areasMenu as we need to setup the activitiesMenu on page load    
-watch(() => store.bestPracticeAreaIdxs, (areas) => {
+watch(() => store.bestPracticeAreaIdxs, areas => {
     if (!store.bestPractice) return // it has been saved and set to null, so nothing to do here
 
     // // This array of activities contains duplicates but it doesn't matter
@@ -99,7 +98,9 @@ watch(() => store.bestPracticeAreaIdxs, (areas) => {
 
     // Delete from the selected activities the ones that are not on the menu anymore
     // selectedActivities.value is undefined if selection is empty
-    store.bestPractice.activities = store.bestPractice.activities ? store.bestPractice.activities.filter(v => activityIds.includes(v)) : [];
+    store.bestPractice.activities = store.bestPractice.activities
+        ? store.bestPractice.activities.filter((v: number) => activityIds.includes(v))
+        : [];
 });
 
 </script>
@@ -147,7 +148,7 @@ watch(() => store.bestPracticeAreaIdxs, (areas) => {
             <TextareaFormGroup
                 v-model="store.bestPractice.ecosystemAdditionalInfo"
                 label="1.5 Ecosystems additional information"
-                dangerousHtmlDescription="Please provide additional information on specific types of ecosystem(s) where the practice was applied. Please use the Ecosystem Functional Groups from the IUCN Global Ecosystem Typology here: <a class='text-blue-600' target='_blank' href='https://global-ecosystems.org/analyse'>https://global-ecosystems.org/analyse</a>"></TextareaFormGroup>
+                dangerousHtmlDescription="Please provide additional information on specific types of ecosystem(s) where the practice was applied. Please use the biomes from the IUCN Global Ecosystem Typology here: <a class='text-blue-600' target='_blank' href='https://global-ecosystems.org/analyse'>https://global-ecosystems.org/analyse</a>"></TextareaFormGroup>
             <TextareaFormGroup
                 v-model="store.bestPractice.context"
                 label="1.6 Context"

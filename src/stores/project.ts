@@ -65,7 +65,8 @@ export const useProjectStore = defineStore({
             });
         },
         createEmptyProject(groupId: string) {
-            this.id = null;
+            const projectRef = doc(projectsCollection);
+            this.id = projectRef.id
             this.project = {
                 group: groupId,
                 project: {},
@@ -80,22 +81,21 @@ export const useProjectStore = defineStore({
             // Set project additional information
             const projectToBeSaved = {
                 ...this.project,
-                'update-time': serverTimestamp()
+                'updateTime': serverTimestamp()
             };
 
             // Use a Firestore transaction
             const batch = writeBatch(db);
 
             let projectRef;
-            if (this.id) {
-                projectToBeSaved['create-time'] = serverTimestamp();
-
-                projectRef = doc(projectsCollection, this.id);
-            } else {
+            if (!projectToBeSaved['createTime']) {
+                // It's a new project
+                projectToBeSaved['createTime'] = serverTimestamp();
                 projectToBeSaved['created_by'] = authStore.user.uid
                 projectRef = doc(projectsCollection);
             }
 
+            projectRef = doc(projectsCollection, this.id);
             batch.set(projectRef, projectToBeSaved);
 
             // Save areas in a separate collection
@@ -128,10 +128,6 @@ export const useProjectStore = defineStore({
         }
     }
 });
-
-// (defn delete [project-id]
-//     (deleteDoc (doc registry-collection project-id)))
-  
 
 // (defn get-user-accessible-projects
 //     "Returns a list of records accessible by the current user (either public or belonging to one of his groups)"

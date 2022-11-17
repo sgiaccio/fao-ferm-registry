@@ -2,9 +2,9 @@
   "name": "ferm-ts",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "NODE_ENV=production vite",
     "build_": "run-p type-check build-only",
-    "build": "run-p build-only",
+    "build": "NODE_ENV=development run-p build-only",
     "preview": "vite preview --port 4173",
     "test:unit": "vitest --environment jsdom",
     "build-only": "vite build",

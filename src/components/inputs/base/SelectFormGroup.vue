@@ -6,13 +6,15 @@ import FormGroup from "../FormGroup.vue";
 
 import SelectInput from "./SelectInput.vue";
 
+import type { Menu, MenuValue } from '../../project/menus'
+
 
 defineProps({
     ...baseProps,
     ...{
-        options: { type: Array as PropType<Array<{value: any, label: String}>> },
+        options: { type: Array as PropType<Menu> },
         placeholder: { type: String },
-        modelValue: { type: null },
+        modelValue: [ String, Number ],
         required: { type: Boolean, default: false }
     }
 });

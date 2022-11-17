@@ -57,7 +57,10 @@ function close() {
                                             </div>
                                         </p>
 
-                                        <p class="mt-2 text-sm text-gray-600">
+                                        <h4 class="mt-3 mb-1 text-base font-semibold leading-6 text-gray-900">
+                                            What is a good practice for ecosystem restoration? 
+                                        </h4>
+                                        <p class="text-gray-600">
                                             A good practice for ecosystem restoration is a successful approach, process,
                                             technique or technology that contributed to achieve one or more objectives
                                             of a restoration initiative, maximizing benefits for nature and people.
