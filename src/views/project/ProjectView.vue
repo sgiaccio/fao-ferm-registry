@@ -12,7 +12,6 @@ const store = useProjectStore();
 
 onBeforeMount(async () => {
     if (route.params.id === 'new') {
-        console.log(route.params.id)
         createEmptyProject(route.query.groupId as string)
     } else {
         await fetchProject(route.params.id as string);
@@ -30,6 +29,7 @@ const tabs = computed (() => [
   { name: 'Area', href: 'aoi', current: 'aoi' === route.name },
   { name: 'Characteristics', href: 'characteristics', current: 'characteristics' === route.name },
   { name: 'Activities', href: 'activities', current: 'activities' === route.name },
+  { name: 'Ecosystems', href: 'ecosystems', current: 'ecosystems' === route.name },
   { name: 'Indicators', href: 'indicators', current: 'indicators' === route.name },
 //   { name: 'Information', href: 'information', current: 'information' === route.name },
   { name: 'Results', href: 'results', current: 'results' === route.name },

@@ -11,6 +11,7 @@ const ProjectAoi = () => import('../views/project/AoiView.vue')
 
 const ProjectCharacteristics = () => import('../views/project/CharacteristicsView.vue')
 const ProjectActivities = () => import('../views/project/ActivitiesView.vue')
+const ProjectEcosystems = () => import('../views/project/EcosystemsView.vue')
 const ProjectIndicators = () => import('../views/project/IndicatorsView.vue')
 // const ProjectInformation = () => import('../views/project/InformationView.vue')
 const ProjectResults = () => import('../views/project/ResultsView.vue')
@@ -96,6 +97,13 @@ const router = createRouter({
           path: 'activities',
           name: 'initiative-activities',
           component: ProjectActivities,
+          meta: {
+            requiresAuth: true
+          }
+        }, {
+          path: 'ecosystems',
+          name: 'initiative-ecosystems',
+          component: ProjectEcosystems,
           meta: {
             requiresAuth: true
           }

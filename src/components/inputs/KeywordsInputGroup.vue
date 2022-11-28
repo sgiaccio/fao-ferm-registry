@@ -29,7 +29,7 @@ function getCaretPosition() {
   if (window.getSelection && window.getSelection()?.getRangeAt) {
     const range = window.getSelection()?.getRangeAt(0);
     const selectedObj = window.getSelection();
-    const rangeCount = 0;
+    let rangeCount = 0;
     const childNodes = selectedObj?.anchorNode?.parentNode?.childNodes;
     if (selectedObj && childNodes) {
         for (let i = 0; i < childNodes.length; i++) {

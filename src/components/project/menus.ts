@@ -1378,3 +1378,88 @@ export const gefIndicators: RecursiveMenu = {
         label: '11. Number of direct beneficiaries disaggregated by gender as co-benefit of GEF investment',
     }]
 }
+
+export const iucnEcosystems: RecursiveMenu = {
+	label: "ecosystems",
+	children: [{
+		label: "a. Terrestrial",
+		children: [{
+			value: "i.T1", label: "i.T1 Tropical-subtropical forests biome",
+        }, {
+			value: "ii.T2", label: "ii.T2 Temperate-boreal forests and woodlands biome",
+        }, {
+			value: "iii.T3", label: "iii.T3 Shrublands and shrubby woodlands biome",
+        }, {
+			value: "iv.T4", label: "iv.T4 Savannas and grasslands biome",
+        }, {
+			value: "v.T5", label: "v.T5 Deserts and semi-deserts biome",
+        }, {
+			value: "vi.T6", label: "vi.T6 Polar/alpine (cryogenic) biome",
+        }, {
+			value: "vii.T7", label: "vii.T7 Intensive land-use biome"
+        }]
+	}, {
+		label: "b. Marine",
+		children: [{
+			value: "i.M1", label: "i.M1 Marine shelf biome",
+        }, {
+			value: "ii.M2", label: "ii.M2 Pelagic ocean waters biome",
+        }, {
+			value: "iii.M3", label: "iii.M3 Deep sea floors biome",
+        }, {
+			value: "iv.M4", label: "iv.M4 Anthropogenic marine biome"
+        }]
+	}, {
+		label: "c. Freshwater",
+		children: [{
+			value: "i.F1", label: "i.F1 Rivers and streams biome",
+        }, {
+			value: "ii.F2", label: "ii.F2 Lakes biome",
+        }, {
+			value: "iii.F3", label: "iii.F3 Artificial wetlands biome"
+        }]
+	}, {
+		label: "d. Subterranean",
+		children: [{
+			value: "i.S1", label: "i.S1 Subterranean lithic biome",
+        }, {
+			value: "ii.S2", label: "ii.S2 Anthropogenic subterranean voids biome"
+        }]
+	}, {
+		label: "e. Marine-Terrestrial",
+		children: [{
+			value: "i.MT1", label: "i.MT1 Shorelines biome",
+        }, {
+			value: "ii.MT2", label: "ii.MT2 Supralittoral coastal biome",
+        }, {
+			value: "iii.MT3", label: "iii.MT3 Anthropogenic shorelines biome"
+        }]
+	}, {
+		label: "f. Subterranean-Freshwater",
+		children: [{
+			value: "i.SF1", label: "i.SF1 Subterranean freshwaters biome",
+        }, {
+			value: "ii.SF2", label: "ii.SF2 Anthropogenic subterranean freshwaters biome"
+        }]
+	}, {
+		label: "g. Freshwater-Marine",
+		children: [{
+			value: "i.FM1", label: "i.FM1 Semi-confined transitional waters biome"
+        }]
+	}, {
+		label: "h. Marine-Freshwater-Terrestrial",
+		children: [{
+			value: "i.MFT1", label: "i.MFT1 Brackish tidal biome"
+        }]
+	}, {
+		label: "i. Subterranean-Marine",
+		children: [{
+			value: "i.SM1", label: "i.SM1 Subterranean tidal biome"
+        }]
+	}, {
+		label: "j. Terrestrial-Freshwater",
+		children: [{
+			value: "i.TF1", label: "i.TF1 Palustrine wetlands biome"
+        }]
+	}]
+}

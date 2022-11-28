@@ -106,7 +106,7 @@ async function uploadFile() {
     <div v-if="selectedFile" class="text-red-500 text-sm">Remember to click the upload button before saving.</div>
 </div>
 <div v-else>
-    <MapInput :model-value="props.modelValue"></MapInput>
+    <MapInput :model-value="modelValue"></MapInput>
 </div>
 </template>
 

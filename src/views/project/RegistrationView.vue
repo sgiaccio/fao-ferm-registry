@@ -110,7 +110,7 @@ const pointsOfContact = {
 
     uploadStatus.value = 'uploading';
     uploadTask.then(snapshot => {
-      console.log(snapshot)
+      // console.log(snapshot)
       getFiles(projectId);
       selectedFile.value = null;
       uploadStatus.value = 'uploaded';
