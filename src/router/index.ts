@@ -9,7 +9,7 @@ const ProjectView = () => import('../views/project/ProjectView.vue')
 const ProjectRegistrationView = () => import('../views/project/RegistrationView.vue')
 const ProjectAoi = () => import('../views/project/AoiView.vue')
 
-const ProjectCharacteristics = () => import('../views/project/CharacteristicsView.vue')
+const ProjectCharacteristics = () => import('../views/project/characteristics/CharacteristicsView.vue')
 const ProjectActivities = () => import('../views/project/ActivitiesView.vue')
 const ProjectEcosystems = () => import('../views/project/EcosystemsView.vue')
 const ProjectIndicators = () => import('../views/project/IndicatorsView.vue')

@@ -22,7 +22,8 @@ const props = defineProps<{
   modelValue: {
     siteName: string,
     uuid: string,
-    activities: number[]
+    activities: number[],
+    ecosystems: string[]
   }
 }>()
 

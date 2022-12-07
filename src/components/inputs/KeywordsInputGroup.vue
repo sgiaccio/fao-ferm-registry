@@ -20,7 +20,6 @@ const props = defineProps({
 const tempKeywords = ["keyword1", "keyword2", "test"]
 
 const inputRef = ref<HTMLDivElement>();
-// const keywords = ref(["asdf", "qwer"]);
 const inputText = ref("");
 const searchText = ref("");
 const caretPosition = ref(0)

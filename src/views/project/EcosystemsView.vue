@@ -5,8 +5,6 @@ import { iucnEcosystems } from '../../components/project/menus';
 
 import FormGroup from '../../components/inputs/FormGroup.vue';
 import TreeItem from '../../components/inputs/base/TreeItem.vue';
-import DateFormGroup from '../../components/inputs/base/DateFormGroup.vue';
-
 
 const store = useProjectStore();
 </script>

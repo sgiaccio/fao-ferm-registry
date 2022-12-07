@@ -12,10 +12,6 @@ type AdminArea = {
     children?: AdminArea
 }[]
 
-// const asdf: AdminArea = { asdf: 1 }
-
-// const asdf = json as AdminArea;
-
 const props = defineProps<{
   modelValue: {
     siteName: string,
