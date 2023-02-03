@@ -21,7 +21,7 @@
       
 
     withDefaults(defineProps<{
-        edit: boolean
+        edit?: boolean
     }>(), {
         edit: true
     });

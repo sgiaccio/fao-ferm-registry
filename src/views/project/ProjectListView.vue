@@ -40,7 +40,6 @@ async function showBestPractices(projectId: string) {
 }
 
 function canEdit(project) {
-    // return true; // TODO
     if (authStore.isAdmin) return true;
 
     const level = authStore.privileges[project.data.group];
@@ -56,13 +55,9 @@ function getAccessLevel(group: string): string {
 }
 
 function canAddBestPractice(project) {
-    // return true; // TODO
     if (authStore.isAdmin) return true;
-
     const level = authStore.privileges[project.data.group];
-    if (level === 'admin' || level === 'editor') return true;
-
-    return false;
+    return ['admin', 'editor'].includes(level);
 }
 
 async function deleteProject(projectId: string) {

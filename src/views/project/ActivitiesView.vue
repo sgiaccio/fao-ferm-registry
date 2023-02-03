@@ -9,7 +9,7 @@ import DateFormGroup from '../../components/inputs/base/DateFormGroup.vue';
 
 
 withDefaults(defineProps<{
-    edit: boolean
+    edit?: boolean
 }>(), {
     edit: true
 });

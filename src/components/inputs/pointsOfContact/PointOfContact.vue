@@ -8,7 +8,7 @@ withDefaults(defineProps<{
         individualName: string,
         email: string,
     },
-    edit: boolean
+    edit?: boolean
 }>(), { edit: true });
 </script>
 

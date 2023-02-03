@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<{
         admin2?: string,
         activities: number[]
     },
-    edit: boolean
+    edit?: boolean
 }>(), { edit: true });
 
 const emit = defineEmits(['update:modelValue']);

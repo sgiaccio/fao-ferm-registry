@@ -7,7 +7,7 @@ import TreeItem from '../../components/inputs/base/TreeItem.vue';
 const store = useProjectStore();
 
 withDefaults(defineProps<{
-    edit: boolean
+    edit?: boolean
 }>(), {
     edit: true
 });

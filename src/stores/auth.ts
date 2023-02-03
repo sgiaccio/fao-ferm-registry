@@ -16,8 +16,6 @@ import router from '@/router';
 
 import { db } from '../firebase';
 
-import { useUserPrefsStore } from './userPreferences'
-
 
 const baseUrl = process.env.NODE_ENV === 'development'
     ? 'http://localhost:5173'
@@ -139,7 +137,6 @@ export const useAuthStore = defineStore({
                     // if they open the link on the same device.
                     window.localStorage.setItem('emailForSignIn', email);
                     alert("An email was sent to you to complete the login, please click on the link provided.");
-                    // ...
                 })
                 .catch((error) => {
                     // const errorCode = error.code;
@@ -256,11 +253,20 @@ export const useAuthStore = defineStore({
                         // You can check if the user is new or existing:
                         // result.additionalUserInfo.isNewUser
 
-                        const user = result.user;
+                        // const user = result.user;
                         // console.log(user);
                         // await this.setUserData(user);
+
+                        // TODO handle continueUrl
+                        // const queryString = window.location.search;
+                        // const urlParams = new URLSearchParams(queryString);
+                        // let continueUrl = urlParams.get('continueUrl');
+                        // if (!continueUrl || continueUrl.includes('login')) {
+                        //     continueUrl = '/';
+                        // }
+                        await this.setUserData(result.user);
                     })
-                    .catch((error) => {
+                    .catch(error => {
                         alert('Some error occurred: ' + error.code);
                         // Some error occurred, you can inspect the code: error.code
                         // Common errors could be invalid email and invalid or expired OTPs.

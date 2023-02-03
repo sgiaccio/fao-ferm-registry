@@ -7,7 +7,7 @@ import ImageUploadFormGroup from "../../components/inputs/base/ImageUploadFormGr
 
 
 withDefaults(defineProps<{
-    edit: boolean
+    edit?: boolean
 }>(), {
     edit: true
 });

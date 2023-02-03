@@ -11,7 +11,7 @@ import { useBestPracticesStore } from '../../stores/bestpractices';
 
 
 withDefaults(defineProps<{
-    edit: boolean
+    edit?: boolean
 }>(), {
     edit: true
 });

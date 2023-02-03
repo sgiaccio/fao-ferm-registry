@@ -14,7 +14,7 @@ import NumberInput from '../../components/inputs/base/NumberInput.vue';
 
 
 withDefaults(defineProps<{
-    edit: boolean
+    edit?: boolean
 }>(), {
     edit: true
 });

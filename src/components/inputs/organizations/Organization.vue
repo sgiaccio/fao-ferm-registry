@@ -12,7 +12,7 @@ withDefaults(defineProps<{
         type: string,
         role: string
     },
-    edit: boolean
+    edit?: boolean
 }>(), { edit: true });
 </script>
 

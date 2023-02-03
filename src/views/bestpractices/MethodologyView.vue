@@ -11,7 +11,7 @@ import { engagement, knowledgeTypes, scale, replicability } from "../../componen
 
 
 withDefaults(defineProps<{
-    edit: boolean
+    edit?: boolean
 }>(), {
     edit: true
 });

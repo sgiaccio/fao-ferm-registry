@@ -20,7 +20,7 @@ import { keyFactors } from "../../components/project/menus";
 // }
 
 withDefaults(defineProps<{
-    edit: boolean
+    edit?: boolean
 }>(), {
     edit: true
 });
