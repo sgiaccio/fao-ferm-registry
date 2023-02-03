@@ -13,8 +13,9 @@ defineProps({
             // species?: string,
             // additionalInformation?: string
         }>,
-        default: {}
+        default: {},
     },
+    edit: { type: Boolean, default: true }
 });
 
 </script>
@@ -24,7 +25,8 @@ defineProps({
         <TextAreaFormGroup
             v-model="modelValue.details"
             label="Details of the step"
-            :required="true" />
+            :required="true"
+            :edit="edit" />
         <!-- <TextAreaFormGroup
             v-model="modelValue.equipment"
             label="Equipment / Material used (If applicable)" />

@@ -9,14 +9,13 @@ import { useProjectStore } from './project';
 const bestPracticesCollection = collection(db, 'bestPractices');
 const areaCollection = collection(db, "areas")
 
-const authStore = useAuthStore();
-// const privileges = useAuthStore().privileges;
-// console.log(privileges);
+const authStore = useAuthStore();  
 
 const newBestPractice = {
     implementationSteps: [
         { step: {} }
-    ]};
+    ]
+};
 
 export const useBestPracticesStore = defineStore({
     id: 'bestPractices',
@@ -41,7 +40,6 @@ export const useBestPracticesStore = defineStore({
 
             const q = query(bestPracticesCollection, where('group', 'in', userGroups));
             const querySnapshot = await getDocs(q);
-            // querySnapshot.docs;
 
             return querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
         },
@@ -50,7 +48,7 @@ export const useBestPracticesStore = defineStore({
             const querySnapshot = await getDocs(q);
             return querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
         },
-        async fetchBestPractice(id: string) {
+        async fetch(id: string) {
             const docRef = doc(db, 'bestPractices', id);
             this.bestPractice = (await getDoc(docRef)).data();
             this.id = id;
@@ -72,14 +70,14 @@ export const useBestPracticesStore = defineStore({
             const areasRef = doc(areaCollection, projectId);
             this.projectAreas = (await getDoc(areasRef)).data()?.areas || [];
         },
-        async saveBestPractice() {
+
+        async save() {
             const batch = writeBatch(db);
 
             const toBeSaved = { ...this.bestPractice, lastModified: serverTimestamp() }
             let bpRef;
             if (this.id) {
                 bpRef = doc(bestPracticesCollection, this.id);
-                // await setDoc(doc(db, 'bestPractices', this.id), toBeSaved);
             } else {
                 toBeSaved.created = serverTimestamp();
                 toBeSaved.created_by = authStore.user.uid
@@ -88,7 +86,7 @@ export const useBestPracticesStore = defineStore({
                 // TODO check if projectId is not in bestPractice first!
 
                 toBeSaved.group = projectStore.project.group;
-                console.log(toBeSaved);
+
                 bpRef = doc(bestPracticesCollection);
                 this.id = bpRef.id;
             }
@@ -114,39 +112,49 @@ export const useBestPracticesStore = defineStore({
             batch.set(areasRef, { areas: projectAreasCopy });
                         
             await batch.commit();
+        },
 
-            // Reset state
+        resetBestPracticeState() {
             this.id = this.bestPractice = null;
             this.projectAreas = null;
             this.bestPracticeAreaIdxs = [];
         },
-        async createEmptyBestPractice(projectId: string) {
+
+        async saveAndExit() {
+            await this.save();
+            this.resetBestPracticeState();
+        },
+
+        async createEmpty(projectId: string) {
             this.id = null;
             this.bestPractice = { ...newBestPractice, projectId };
             await this.fetchProjectAreas(projectId);
+        },
+        async submit(id: string) {
+            const bpRef = doc(bestPracticesCollection, id);
+            setDoc(bpRef, { status: 'submitted' }, { merge: true });
+        },
+        
+        async canSetStatus(newStatus: 'draft' | 'submitted' | 'published') {
+            // Global administrators can do whatever they want
+            if (authStore.isAdmin) return true;
+
+            const projectStore = useProjectStore();
+            try {
+                await projectStore.fetchProject(this.bestPractice.projectId);
+                const level = authStore.privileges[projectStore.project.group];
+
+                // Group administrators can do whatever they want in their group
+                if (level === 'admin') return true;
+
+                // Editors can only change from draft to submitted
+                if (level === 'editor' && projectStore.project.created_by === authStore.user!.uid) {
+                    return newStatus === 'submitted' && (!this.bestPractice.status || this.bestPractice.status === 'draft');
+                }
+            } catch (e) {
+                alert("Error in checking privileges for this record");
+            }
+            return false;
         }
     }
 });
-
-// (defn get-all-projects []
-//     (.then (getDocs (query registry-collection))
-//            (fn [query-snapshot]
-//              ;; (doall (map #(.data %) (.-docs query-snapshot)))
-//              ^js/Array (.-docs query-snapshot))))
-  
-/*
-(defn get-user-accessible-projects
-    "Returns a list of records accessible by the current user (either public or belonging to one of his groups)"
-    []
-    (let [user-groups (-> @privileges keys clj->js)
-          q           (query registry-collection (where "group" "in" user-groups))
-          group-owned (getDocs q)
-          user-owned  (query registry-collection (where "created_by" "==" @userid))
-          public      (get-public-projects)]
-      (.then (js/Promise.all #js [group-owned user-owned public])
-             (fn [[g u p]]
-               ;; Deduplicate results from the two queries
-               (let [duplicates (concat (vec p) (vec ^js/Array (.-docs u)) (vec ^js/Array (.-docs g)))
-                     t (into {} (map #(-> [(.-id %) %]) duplicates))]
-                 (vals t))))))
-  */

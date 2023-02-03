@@ -19,6 +19,13 @@
 
     import { achieved, achievingTargets }from "../../components/project/menus";
       
+
+    withDefaults(defineProps<{
+        edit: boolean
+    }>(), {
+        edit: true
+    });
+
     //   import { objectives } from "../../components/project/menus";
       
     //   // import { h } from 'vue'
@@ -139,6 +146,7 @@
       
           <div class="divide-y divide-stone-900">
             <SelectFormGroup
+                    :edit="edit"
                     :options="achieved"
                     v-model="store.project.results.achieved"
                     label="Achievements"
@@ -155,6 +163,7 @@
                                 :edit       @edit}] -->
 
             <SelectFormGroup
+                    :edit="edit"
                     :options="achievingTargets"
                     v-model="store.project.results.achievingTargets"
                     label="Results achieved based on targets" />

@@ -105,7 +105,7 @@ onMounted(async () => {
         }),
     });
 
-    if (!areaUploaded.value) {
+    if (!areaUploaded.value && edit) {
         m.addInteraction(draw);
         m.addInteraction(modify);
         m.addInteraction(snap);
@@ -120,7 +120,7 @@ onMounted(async () => {
 });
 
 watch(areaUploaded, (uploaded) => {
-    if (uploaded) {
+    if (uploaded && edit) {
         m.removeInteraction(draw);
         m.removeInteraction(modify);
         m.removeInteraction(snap);
@@ -130,15 +130,18 @@ watch(areaUploaded, (uploaded) => {
         m.addInteraction(snap);
     }
 });
+
+const edit = true;
 </script>
 
 <template>
     <TextInput
+        v-if="edit"
         placeholder="Site name"
         v-model="modelValue.siteName" />
     <div class="mt-4" ref="mapRoot" style="width: 600px; height: 400px" />
     <button
-        v-if="!areaUploaded"
+        v-if="!areaUploaded && edit"
         class="mt-4 inline-flex items-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-default']"
         @click="postGeoJson()">Upload</button>

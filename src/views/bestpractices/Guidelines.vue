@@ -40,25 +40,41 @@ function close() {
                                         class="text-center text-xl font-semibold leading-6 text-gray-900">Guidelines
                                     </DialogTitle>
                                     <div class="mt-2 text-sm text-gray-600">
-                                        <p v-if="!consentAccepted" class="italic"><span class="font-semibold">Consent:</span> By submitting this form and attaching the accompanying documents/media, you agree to be contacted by the review panel and to authorize the information/documents to be made publicly available and freely used and amended by FAO in order to prepare for publication on the FERM Platform.</p>
+                                        <template v-if="consentAccepted">
+                                            <p class="italic">
+                                                I consented that by submitting this form and attaching the accompanying documents/media, I agree to be contacted by the review panel and to authorize the information/documents to be made publicly available and freely used and amended by FAO in order to prepare for publication on the FERM Platform. 
+                                            </p>
+                                        </template>
+                                        <template v-else>
+                                            <p class="italic"><span
+                                                class="font-semibold">Consent:</span> By submitting this form and
+                                                attaching the accompanying documents/media, you agree to be contacted by
+                                                the review panel and to authorize the information/documents to be made
+                                                publicly available and freely used and amended by FAO in order to
+                                                prepare for publication on the FERM Platform.</p>
 
-                                        <p v-if="!consentAccepted" class="italic mt-2 text-sm text-gray-600">
-                                            Please check the box
+                                            <p class="italic mt-2 text-sm text-gray-600">
+                                                Please check the box
 
-                                            <div class="italic inline-block align-middle ml-3">
-                                            <div class="relative flex items-start">
-                                                <div class="flex h-5 items-center">
-                                                    <input v-model="accepted" id="comments" aria-describedby="comments-description" name="comments" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                                                <div class="italic inline-block align-middle ml-3">
+                                                    <div class="relative flex items-start">
+                                                        <div class="flex h-5 items-center">
+                                                            <input v-model="accepted" id="comments"
+                                                                aria-describedby="comments-description" name="comments"
+                                                                type="checkbox"
+                                                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                                                        </div>
+                                                        <div class="ml-3 text-sm">
+                                                            <label for="comments"
+                                                                class="font-medium text-gray-700">Yes</label>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="ml-3 text-sm">
-                                                    <label for="comments" class="font-medium text-gray-700">Yes</label>
-                                                </div>
-                                                </div>
-                                            </div>
-                                        </p>
+                                            </p>
+                                        </template>
 
                                         <h4 class="mt-3 mb-1 text-base font-semibold leading-6 text-gray-900">
-                                            What is a good practice for ecosystem restoration? 
+                                            What is a good practice for ecosystem restoration?
                                         </h4>
                                         <p class="text-gray-600">
                                             A good practice for ecosystem restoration is a successful approach, process,
@@ -68,19 +84,21 @@ function close() {
                                                 contexts and therefore, can be easily transferred and/or adapted to
                                                 other projects with similar goals</span>. If a practice has been tested
                                             <span class="font-semibold">solely in a specific context</span>, it is
-                                            considered a <span class="font-semibold">promising practice</span> that needs to
+                                            considered a <span class="font-semibold">promising practice</span> that
+                                            needs to
                                             be proven for replicability and adaptability to various contexts.
                                         </p>
 
                                         <h4 class="mt-3 mb-1 text-base font-semibold leading-6 text-gray-900">Guidelines
-for submission</h4>
+                                            for submission</h4>
                                         <p>
                                             When preparing your submission, please consider the following
                                             recommendations and information:
                                         </p>
                                         <ol class="list-decimal list-inside">
                                             <li>Check if your restoration practices are <span class="font-semibold">as
-                                                    compliant as possible</span> with the <span class="font-semibold">ten
+                                                    compliant as possible</span> with the <span
+                                                    class="font-semibold">ten
                                                     criteria below</span> derived from the <a class="text-blue-600"
                                                     href="https://www.fao.org/documents/card/en/c/cb6591en/">ten
                                                     principles for ecosystem restoration.</a></li>
@@ -92,7 +110,8 @@ for submission</h4>
                                                 registered in the FERM registry. <span class="font-semibold">Please note
                                                     that the platform allows for documentation of multiple practices per
                                                     each initiative registered</span>. </li>
-                                            <li><span class="font-semibold">What will happen after your submission?</span>
+                                            <li><span class="font-semibold">What will happen after your
+                                                    submission?</span>
                                                 The information shared will be assessed by a panel of experts based on
                                                 the ten criteria below. The practice must meet the minimum score for
                                                 each of the criteria. If endorsed, you will then be contacted if any
@@ -114,7 +133,8 @@ for submission</h4>
                                                     Sustainable Development Goals (SDGs).</span> The practice
                                                 contributes to the achievement of at least one of the 17 Sustainable
                                                 Development Goals (SDGs), especially SDGs 3, 13, 14 and 15.</li>
-                                            <li><span class="font-semibold">Participatory and inclusive.</span>The practice
+                                            <li><span class="font-semibold">Participatory and inclusive.</span>The
+                                                practice
                                                 has fostered meaningful and inclusive involvement of stakeholders and
                                                 right-holders, particularly from under-represented and often
                                                 marginalized groups (e.g., local communities, Indigenous Peoples, ethnic
@@ -146,7 +166,8 @@ for submission</h4>
                                             <li><span class="font-semibold">Implemented at different scales.</span>The
                                                 practice can be implemented and replicated at different scales (local
                                                 and landscape/seascape level). </li>
-                                            <li><span class="font-semibold">Properly validated.</span>The practice has been
+                                            <li><span class="font-semibold">Properly validated.</span>The practice has
+                                                been
                                                 properly validated from a technical and methodological point of view, to
                                                 demonstrate that it has achieved its goals. In addition, beneficiaries
                                                 of the practice have also validated its positive impacts. </li>

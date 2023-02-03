@@ -2,17 +2,12 @@ import { defineStore } from "pinia";
 
 // import { auth } from '../firebase'
 import {
-    // signInWithEmailAndPassword,
-    // createUserWithEmailAndPassword,
     signOut,
     getAuth,
     sendSignInLinkToEmail,
     isSignInWithEmailLink,
     signInWithEmailLink,
     type User
-    // onAuthStateChanged,
-    // sendPasswordResetEmail,
-    // sendEmailVerification
 } from "firebase/auth";
 import { collection, query, getDocs, where, documentId } from "firebase/firestore";
 
@@ -21,17 +16,17 @@ import router from '@/router';
 
 import { db } from '../firebase';
 
-// import { useUserPrefsStore } from './userPreferences'
+import { useUserPrefsStore } from './userPreferences'
 
 
-// const baseUrl = 'http://127.0.0.1:5173';
+const baseUrl = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5173'
+    : 'http://ferm.fao.org';
 
 const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this
     // URL must be in the authorized domains list in the Firebase Console.
-    url: process.env.NODE_ENV === 'development'
-        ? 'http://127.0.0.1:5173'
-        : 'http://ferm.fao.org',
+    url: baseUrl,
     // url: 'http://ferm.fao.org',
     // url: 'http://127.0.0.1:5173',
     // This must be true.
@@ -136,7 +131,7 @@ export const useAuthStore = defineStore({
 
         async login(email: string) {
             const auth = getAuth();
-            // actionCodeSettings.url = baseUrl + this.returnUrl;
+            actionCodeSettings.url = baseUrl + this.returnUrl;
             sendSignInLinkToEmail(auth, email, actionCodeSettings)
                 .then(() => {
                     // The link was successfully sent. Inform the user.
@@ -147,11 +142,11 @@ export const useAuthStore = defineStore({
                     // ...
                 })
                 .catch((error) => {
-                    const errorCode = error.code;
+                    // const errorCode = error.code;
                     const errorMessage = error.message;
-                    // ...
                     alert(`Sorry, something went wrong: ${errorMessage}`);
-                });            // try {
+                });
+            // try {
             //     await signInWithEmailAndPassword(auth, email, password);
             // } catch (error: any) {
             //     switch(error.code) {
@@ -201,44 +196,42 @@ export const useAuthStore = defineStore({
         },
         async setUserData(user: User | null) {
             if (user === null) {
-                //
+                console.log('user is null');
             } else {
                 this.user = user;
 
                 // Get user privileges
-                const idToken = await user.getIdTokenResult();
+                const idToken = await user.getIdTokenResult(true);
                 if (idToken) {
                     this.isAdmin = idToken.claims.admin as unknown as boolean,
                         this.privileges = idToken.claims.privileges || {};
                 }
-        
                 await router.isReady();
+                if (router.currentRoute.value.path === "/login") {
+                    router.push(this.returnUrl);
+                }
 
-                // if (router.currentRoute.value.path === "/login") {
-                router.push('/'); // TODO
-                // }
-        
                 // Get user group names
                 const groupIds = Object.keys(this.privileges);
                 const groupsCollection = collection(db, 'groups');
-                const setUserGroups = getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
-                    .then(groups => {
-                        // this.userGroups = groups
-                        this.userGroups = groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
-                    });
-        
-                // TODO fetch user preferences in parallel
-                await setUserGroups;
+
+                if (groupIds.length) {
+                    const setUserGroups = getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
+                        .then(groups => {
+                            // this.userGroups = groups
+                            this.userGroups = groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+                        });
+
+                    // TODO fetch user preferences in parallel
+                    await setUserGroups;
+                }
                 // const userPrefsStore = useUserPrefsStore();
                 // await userPrefsStore.fetchUserPrefs();
-
-                // TODO await for user pref
             }
             this.authLoaded = true;
         },
         async fetchUser() {
             const auth = getAuth();
-            // this.authLoaded = true; // TODO remove
 
             if (isSignInWithEmailLink(auth, window.location.href)) {
                 // Additional state parameters can also be passed via URL.
@@ -264,8 +257,8 @@ export const useAuthStore = defineStore({
                         // result.additionalUserInfo.isNewUser
 
                         const user = result.user;
-
-                        await this.setUserData(user);
+                        // console.log(user);
+                        // await this.setUserData(user);
                     })
                     .catch((error) => {
                         alert('Some error occurred: ' + error.code);
@@ -274,8 +267,14 @@ export const useAuthStore = defineStore({
                     });
             }
 
-            auth.onAuthStateChanged(async user => { this.setUserData(user); })
+            auth.onAuthStateChanged(async user => { this.setUserData(user); });
         },
+
+        async getAllGroups() {
+            const groupsCollection = collection(db, 'groups');
+            const groups = await getDocs(query(groupsCollection));
+            return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+        }
 
         // fetchUser_() {
         //     const auth = getAuth();

@@ -11,6 +11,7 @@
             }>,
             default: {}
         },
+        edit: { type: Boolean, default: true }
     });
     
     </script>
@@ -19,10 +20,12 @@
         <div>
             <TextAreaFormGroup
                 v-model="modelValue.constraint"
-                label="Constraints / Challenges / Risks" />
+                label="Constraints / Challenges / Risks"
+                :edit="edit" />
             <TextAreaFormGroup
                 v-model="modelValue.addressing"
-                label="How can they be addressed?" />
+                label="How can they be addressed?"
+                :edit="edit" />
         </div>
     </template>
     

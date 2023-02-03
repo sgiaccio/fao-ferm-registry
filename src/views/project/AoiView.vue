@@ -13,6 +13,12 @@ import FormGroup from '../../components/inputs/FormGroup.vue';
 import NumberInput from '../../components/inputs/base/NumberInput.vue';
 
 
+withDefaults(defineProps<{
+    edit: boolean
+}>(), {
+    edit: true
+});
+
 const multiInputComponents = {
     adminArea: {
         component: AdminArea,
@@ -45,13 +51,16 @@ const store = useProjectStore();
             <li>Draw directly on the platform</li>
         </ul>
         <FormGroup label="Total area under restoration (ha)">
-            <NumberInput v-model="store.project.project.areaUnderRestoration" />
+            <NumberInput
+                :edit="edit"
+                v-model="store.project.project.areaUnderRestoration" />
         </FormGroup>
         <MultiInput
+            :edit="edit"
             :numbering="(n: number) => `Area #${n}`"
             :inputComponents="multiInputComponents"
             v-model="store.projectAreas"
-            deleteConfirmMessage="Are you sure you want to delete this area? The related characteristics and activities will also be deleted."/>
+            deleteConfirmMessage="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted."/>
     </div>
     <!-- <pre class="text-white">{{JSON.stringify(store.projectAreas, null, 2)}}</pre> -->
 </template>

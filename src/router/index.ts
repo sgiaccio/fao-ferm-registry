@@ -8,7 +8,6 @@ const AdminView = () => import('../views/AdminView.vue')
 const ProjectView = () => import('../views/project/ProjectView.vue')
 const ProjectRegistrationView = () => import('../views/project/RegistrationView.vue')
 const ProjectAoi = () => import('../views/project/AoiView.vue')
-
 const ProjectCharacteristics = () => import('../views/project/characteristics/CharacteristicsView.vue')
 const ProjectActivities = () => import('../views/project/ActivitiesView.vue')
 const ProjectEcosystems = () => import('../views/project/EcosystemsView.vue')
@@ -25,9 +24,19 @@ const BenefitsView = () => import('../views/bestpractices/BenefitsView.vue')
 const AdditionalResourcesView = () => import('../views/bestpractices/AdditionalResourcesView.vue')
 const ProjectListViewVue = () => import('../views/project/ProjectListView.vue')
 
+const BestPracticePrintView = () => import('../views/bestpractices/BestPracticePrint.vue')
+const ProjectPrintView = () => import('../views/project/ProjectPrint.vue')
+
 const NotFoundView = () => import('../views/NotFoundView.vue');
 
 const router = createRouter({
+  scrollBehavior(to, from, savedPosition) {
+    // always scroll to top
+    return {
+      top: 0,
+      behavior: 'smooth'
+    }
+  },
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
@@ -73,6 +82,13 @@ const router = createRouter({
       },
       children: [
         {
+          path: 'print',
+          name: 'printProject',
+          component: ProjectPrintView,
+          meta: {
+            requiresAuth: true
+          }
+        }, {
           path: 'info',
           name: 'initiative-info',
           component: ProjectRegistrationView,
@@ -147,6 +163,13 @@ const router = createRouter({
       },
       children: [
         {
+          path: 'print',
+          name: 'printBestPractice',
+          component: BestPracticePrintView,
+          meta: {
+            requiresAuth: true
+          }
+        }, {
           path: 'objectives',
           name: 'objectives',
           component: ObjectivesView,
@@ -189,13 +212,14 @@ const router = createRouter({
         }
       ]
     },
+    
     { path: '/:pathMatch(.*)', component: NotFoundView }
   ],
 });
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
-
+  
   if (to.path === "/login" && authStore.user) {
     next("/");
     return;
@@ -203,6 +227,7 @@ router.beforeEach(async (to, from, next) => {
 
   if (to.matched.some(record => record.meta.requiresAuth) && !authStore.user) {  
     // alert(authStore.returnUrl);
+    authStore.returnUrl = to.fullPath;
     next("/login");
     return;
   }

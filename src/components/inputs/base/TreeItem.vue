@@ -10,7 +10,8 @@ const props = defineProps({
     modelValue: Array as PropType<Array<MenuValue>>,
     treeData: { type: Object as PropType<RecursiveMenu>, required: true },
     level: { type: Number, default: 0 },
-    expandLevel: { type: Number, default: 1 }
+    expandLevel: { type: Number, default: 1 },
+    edit: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["update:modelValue", "update:others"])
@@ -136,21 +137,24 @@ function bubble(val: number[]) {
     <div v-else>
         <div
             class="border border-slate-400 rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
-            <div class="ml-2 text-gray-600" v-if="!props.modelValue?.length">Please select from the list below</div>
+            <div class="ml-2 text-gray-600" v-if="!props.modelValue?.length">
+                <template v-if="edit">Please select from the list below</template>
+                <template v-else>None selected</template>
+            </div>
             <div
                 v-for="value in (props.modelValue || []).sort(sortCheckedValues)"
                 class="text-white m-0 flex items-center rounded-lg pl-2.5 pr-1 bg-blue-500 min-h-7 p-1 border border-stone-800">
                 <span class="align-middle">
                     {{flattenedOptions[value]}}
                 </span>
-                <div>
+                <div v-if="edit">
                     <svg @click="deleteOption(value)" class="ml-0.5 w-5 h-5 text-gray-300 hover:text-gray-400 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
                     </svg>
                 </div>
             </div>
         </div>
-        <ul class="dark:text-white cursor-default">
+        <ul v-if="edit" class="dark:text-white cursor-default">
             <TreeItem
                 v-for="child in treeData?.children"
                 :uid="uid"

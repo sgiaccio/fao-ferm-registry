@@ -13,6 +13,12 @@ import { positiveOutcomes } from "../../components/project/menus";
 //     validation?: string,
 // }
 
+withDefaults(defineProps<{
+    edit: boolean
+}>(), {
+    edit: true
+});
+
 const store = useBestPracticesStore();
 </script>
 
@@ -26,21 +32,25 @@ const store = useBestPracticesStore();
                 v-model="store.bestPractice.outcomes"
                 label="4.1 Outcomes"
                 description="Please select the ecological and/or cultural and/or socio-economic outcomes of implementing the practice."
-                :required="true" />
+                :required="true"
+                :edit=edit />
             <TextareaFormGroup
                 v-model="store.bestPractice.positiveImpacts"
                 label="4.2 Positive impacts"
-                description="Please describe the positive ecological and/or cultural and/or socio-economic impacts of the practice." />
+                description="Please describe the positive ecological and/or cultural and/or socio-economic impacts of the practice."
+                :edit=edit />
             <TextareaFormGroup
                 v-model="store.bestPractice.negativeImpacts"
                 label="4.3 Negative impacts"
                 :required="true"
-                description="Does the practice have any negative ecological and/or cultural and/or socio-economic impact(s)? If so, please describe." />
+                description="Does the practice have any negative ecological and/or cultural and/or socio-economic impact(s)? If so, please describe."
+                :edit=edit />
             <TextareaFormGroup
                 v-model="store.bestPractice.validation"
                 label="4.4 Validation"
                 :required="true"
-                description="Please describe how the practice was validated from a technical and methodological point of view to measure its effectiveness, and how the practice was validated with the beneficiaries" />
+                description="Please describe how the practice was validated from a technical and methodological point of view to measure its effectiveness, and how the practice was validated with the beneficiaries"
+                :edit=edit />
         </div>
     </div>
     <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->

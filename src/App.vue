@@ -24,7 +24,7 @@ const { user } = storeToRefs(authStore);
 
 watch(user, async () => {
   userPrefsStore.fetchUserPrefs();
-})
+});
 </script>
 
 <template>

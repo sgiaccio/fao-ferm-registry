@@ -43,14 +43,16 @@ function updateUnits(newUnits) {
             <div class="flex flex-col gap-1">
                 <NumberInput
                     :modelValue="modelValue.value"
-                    @update:modelValue="updateArea" />
+                    @update:modelValue="updateArea"
+                    :edit="edit" />
                 <span class="text-gray-300 text-sm">Area</span>
             </div>
             <div class="flex flex-col gap-1">
                 <SelectInput
                     :modelValue="modelValue.units"
                     @update:modelValue="updateUnits"
-                    :options="[{value: 'ha', label: 'Hectare'}, {value: 'km2', label: 'Square km'}, {value: 'ac', label: 'Acre'}]" />
+                    :options="[{value: 'ha', label: 'Hectare'}, {value: 'km2', label: 'Square km'}, {value: 'ac', label: 'Acre'}]"
+                    :edit="edit" />
                 <span class="text-gray-300 text-sm">Units</span>
             </div>
         </div>

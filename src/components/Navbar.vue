@@ -121,9 +121,9 @@ watch (darkMode, (mode) => {
                 <!-- <MenuItem v-slot="{ active }">
                   <a href="#" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Settings</a>
                 </MenuItem> -->
-                <MenuItem v-slot="{ active }" v-if="authStore.isAdmin">
-                  <router-link :to="{name: 'admin'}"
-                     :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">Admin</router-link>
+                <MenuItem>
+                  <div
+                     :class="['font-semibold block px-4 py-2 text-sm text-gray-400 cursor-default']">{{authStore.user.email}}</div>
                 </MenuItem>
                 <MenuItem v-slot="{ active }">
                   <a href="#"

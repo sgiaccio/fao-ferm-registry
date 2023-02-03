@@ -7,9 +7,6 @@
     import { useEditingStore } from '../../../stores/editing.js'
 
 
-    const { editing } = storeToRefs(useEditingStore())
-    const { toggleEditing } = useEditingStore()
-
     defineProps({
         ...baseProps,
         ...{
@@ -17,7 +14,10 @@
         }
     });
 
-    const emit = defineEmits(['update:modelValue'])
+    const { editing } = storeToRefs(useEditingStore())
+    const { toggleEditing } = useEditingStore()
+
+    const emit = defineEmits(['update:modelValue']);
 </script>
 
 <template>
@@ -25,10 +25,13 @@
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
-        <input type="date"
+        <input v-if="edit"
+            type="date"
             class="dark:text-zinc-400 block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 dark:border-black dark:focus:border-black dark:bg-zinc-900 focus:ring-0 rounded-md"
                style="height:38px"
                :value="modelValue"
                @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)">
+        <div v-else-if="modelValue">{{modelValue}}</div>
+        <div v-else class="italic text-gray-400">Not available</div>
     </FormGroup>
 </template>

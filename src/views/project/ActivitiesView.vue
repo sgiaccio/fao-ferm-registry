@@ -8,6 +8,12 @@ import TreeItem from '../../components/inputs/base/TreeItem.vue';
 import DateFormGroup from '../../components/inputs/base/DateFormGroup.vue';
 
 
+withDefaults(defineProps<{
+    edit: boolean
+}>(), {
+    edit: true
+});
+
 const store = useProjectStore();
 </script>
 
@@ -25,12 +31,15 @@ const store = useProjectStore();
                         Area {{i + 1}}<span class="text-black dark:text-gray-100" v-if="area[Object.keys(area)[0]].siteName">: {{area[Object.keys(area)[0]].siteName}}</span>
                     </div>
                     <DateFormGroup
+                        :edit="edit"
                         v-model="area[Object.keys(area)[0]].startingDate"
                         label="Starting date"></DateFormGroup>
                     <DateFormGroup
+                        :edit="edit"
                         v-model="area[Object.keys(area)[0]].endingDate"
                         label="Ending date"></DateFormGroup>
                     <TreeItem
+                    :edit="edit"
                         v-model="area[Object.keys(area)[0]].activities"
                         :treeData="activities" />
                 </div>

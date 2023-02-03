@@ -30,6 +30,7 @@ function valueChanged(value: string) {
             :placeholder="placeholder"
             @update:modelValue="valueChanged"
             :required="required"
+            :edit="edit"
         />
     </FormGroup>
 </template>

@@ -9,15 +9,21 @@ import Constraint from "../../components/inputs/Constraint.vue"
 import { keyFactors } from "../../components/project/menus";
 
 
-type KeyFactors = {
-    keyFactors?: number[],
-    specifyKeyFactors?: string,
-    constraints?: {
-        constraint?: string,
-        addressing?: string,
-    }[],
-    lessonsLearned?: string,
-}
+// type KeyFactors = {
+//     keyFactors?: number[],
+//     specifyKeyFactors?: string,
+//     constraints?: {
+//         constraint?: string,
+//         addressing?: string,
+//     }[],
+//     lessonsLearned?: string,
+// }
+
+withDefaults(defineProps<{
+    edit: boolean
+}>(), {
+    edit: true
+});
 
 const store = useBestPracticesStore();
 
@@ -43,22 +49,26 @@ const constraintsComponents = {
                     v-model="store.bestPractice.keyFactors"
                     label="3.1 Key factors"
                     description="What are the key factors that need to be in place for the successful implementation of the practice."
-                    :required="true" />
+                    :required="true"
+                    :edit=edit />
                 <TextareaFormGroup
                     label="3.2 Key factors additional information"
                     v-model="store.bestPractice.specifyKeyFactors"
-                    description="Feel free to provide additional information on the key factors required for the successful implementation of the practice." />
+                    description="Feel free to provide additional information on the key factors required for the successful implementation of the practice."
+                    :edit=edit />
             </div>
             <MultiInputFormGroup
                 label="3.3 Constraints"
                 description="What are the technical, economic, social and environmental challenges, constraints and/or risks encountered in applying the practice? How were they addressed?"
                 :inputComponents="constraintsComponents"
-                v-model="store.bestPractice.constraints" />
+                v-model="store.bestPractice.constraints"
+                :edit=edit />
             <TextareaFormGroup
                 v-model="store.bestPractice.lessonsLearned"
                 label="3.4 Lessons learned/Recommendations"
                 :required="true"
-                description="What lessons learned/recommendations would you like to share with other practitioners intending to replicate, adapt or scale up this practice?" />
+                description="What lessons learned/recommendations would you like to share with other practitioners intending to replicate, adapt or scale up this practice?"
+                :edit=edit />
         </div>
     </div>
     <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->

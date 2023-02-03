@@ -11,7 +11,8 @@ const props = defineProps({
     inputComponents: null,
     numbering: null, // TODO fn(number) => string
     deleteConfirmMsg: String,
-    required: { type: Boolean, default: false } // TODO
+    required: { type: Boolean, default: false }, // TODO
+    edit: { type: Boolean, default: true }
 });
 
 // Sample inputComponents:
@@ -92,9 +93,11 @@ const errorMessages = computed(() => {
             <component
                 :key="v"
                 :is="inputComponents[getKey(v)].component"
-                v-bind="inputComponents[getKey(v)].props"
+                v-bind="{ ...inputComponents[getKey(v)].props, edit }"
                 v-model="v[getKey(v)]" />
-            <div class="w-full text-orange-600 text-right hover:text-orange-500">
+            <div
+                v-if="edit" 
+                class="w-full text-orange-600 text-right hover:text-orange-500">
                 <button
                     type="button"
                     @click="deleteItem(i)">
@@ -102,11 +105,11 @@ const errorMessages = computed(() => {
                 </button>
             </div>
         </div>
-        <div class="flex p-3 gap-x-3">
+        <div v-if="edit" class="flex p-3 gap-x-3">
             <button
                 v-for="(value, key) in props.inputComponents"
                 type="button"
-                @click="addButtonPushed(key)"
+                @click="addButtonPushed('' + key)"
                 class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 {{value.addItemLabel}}
             </button>

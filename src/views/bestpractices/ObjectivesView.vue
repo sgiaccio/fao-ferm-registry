@@ -5,9 +5,16 @@ import TextFormGroup from "../../components/inputs/base/TextFormGroup.vue";
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
 
-import { objectives, ecosystems, drivers, activities, type Menu, type MenuItem } from "../../components/project/menus";
+import { objectives, ecosystems, drivers, activities, iucnEcosystems, type MenuItem, type RecursiveMenu } from "../../components/project/menus";
 
 import { useBestPracticesStore } from '../../stores/bestpractices';
+
+
+withDefaults(defineProps<{
+    edit: boolean
+}>(), {
+    edit: true
+});
 
 const store = useBestPracticesStore();
 
@@ -38,15 +45,40 @@ const store = useBestPracticesStore();
 // const selectedActivities = ref([]);
 
 const flattenedActivities: MenuItem[] = [];
-(function flatten(data) {
+const flattenedIucnEcosystems: MenuItem[] = [];
+
+function flatten(data: RecursiveMenu, flattenedArray: MenuItem[]) {
     if (!data.children) {
         if (data.value) {
-            flattenedActivities.push({ value: data.value, label: data.label });
+            flattenedArray.push({ value: data.value, label: data.label });
         }
     } else {
-        data.children.forEach(c => { flatten(c) });
+        data.children.forEach(c => { flatten(c, flattenedArray) });
     }
-})(activities)
+}
+
+flatten(activities, flattenedActivities);
+flatten(iucnEcosystems, flattenedIucnEcosystems);
+
+// (function flatten(data) {
+//     if (!data.children) {
+//         if (data.value) {
+//             flattenedActivities.push({ value: data.value, label: data.label });
+//         }
+//     } else {
+//         data.children.forEach(c => { flatten(c) });
+//     }
+// })(activities);
+
+// (function flatten(data) {
+//     if (!data.children) {
+//         if (data.value) {
+//             flattenedIucnEcosystems.push({ value: data.value, label: data.label });
+//         }
+//     } else {
+//         data.children.forEach(c => { flatten(c) });
+//     }
+// })(iucnEcosystems);
 
 // Build the area menu - collect all the areas from the related project
 let areasMenu = ref([]);
@@ -60,8 +92,7 @@ watch(() => store.projectAreas, areas => {
 });
 
 let activitiesMenu = ref<MenuItem[]>([]);
-
-function setActivitiesMenu(areas: number[]) {
+function setActivitiesMenu(areas: number[] = []) {
     // This array of activities contains duplicates but it doesn't matter
     // as we are using it to select from flattenedActivities
     const activityIds = store.projectAreas
@@ -77,78 +108,80 @@ function setActivitiesMenu(areas: number[]) {
     return activityIds;
 }
 
+let ecosystemsMenu = ref<MenuItem[]>([]);
+function setEcosystemsMenu(areas: number[] = []) {
+    // This array of ecosystems contains duplicates but it doesn't matter
+    // as we are using it to select from flattenedEcosystems
+    const ecosystemIds = store.projectAreas
+        .filter((_: any, index: number) => areas.includes(index))
+        .reduce((prev: number[], current: any) => { // TODO
+            const newEcosystems = (Object.values(current)[0] as any).ecosystems || [];
+            return [...prev, ...newEcosystems];
+        }, [])
+        .sort();
+    
+    ecosystemsMenu.value = flattenedIucnEcosystems.filter(a => ecosystemIds.includes(a.value));
+
+    return ecosystemIds;
+}
+
+
 // From the selected areas from the menu, build the activities menu
 // watching areasMenu as we need to setup the activitiesMenu on page load    
 watch(() => store.bestPracticeAreaIdxs, areas => {
     if (!store.bestPractice) return // it has been saved and set to null, so nothing to do here
 
-    // // This array of activities contains duplicates but it doesn't matter
-    // // as we are using it to select from flattenedActivities
-    // const activityIds = store.projectAreas
-    //     .filter((_: any, index: number) => areas?.includes(index))
-    //     .reduce((prev: number[], current) => {
-    //         const newActivities = Object.values(current)[0].activities || [];
-    //         return [...prev, ...newActivities];
-    //     }, [])
-    //     .sort();
-    
-    // activitiesMenu.value = flattenedActivities.filter(a => activityIds.includes(a.value));
-
-    const activityIds = setActivitiesMenu(areas)
-
+    const activityIds = setActivitiesMenu(areas);
     // Delete from the selected activities the ones that are not on the menu anymore
-    // selectedActivities.value is undefined if selection is empty
     store.bestPractice.activities = store.bestPractice.activities
         ? store.bestPractice.activities.filter((v: number) => activityIds.includes(v))
         : [];
-});
 
+    const ecosystemIds = setEcosystemsMenu(areas);
+    // Delete from the selected ecosystems the ones that are not on the menu anymore
+    store.bestPractice.iucnEcosystems = store.bestPractice.iucnEcosystems
+        ? store.bestPractice.iucnEcosystems.filter((v: number) => ecosystemIds.includes(v))
+        : [];
+});
 </script>
 
 
 <template>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
         <h1 class="text-4xl dark:text-zinc-300">Objectives and Context</h1>
-        <!-- <p class="dark:text-zinc-200">In this tab, basic information about your initiative is needed. The title and a summary of the aims and expected results of the initiative can be provided in the description section. You also need to provide further information such as when the initiative is expected to start and end, sources of funding and responsible organisms.</p> -->
-
         <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextFormGroup
                 v-model="store.bestPractice.title"
                 label="1.1 Title"
                 description="Title of the restoration practice."
-                :required=true>
+                :required=true
+                :edit=edit>
             </TextFormGroup>
-            <!-- <MultiSelectFormGroup
-                :options="objectives"
-                v-model="store.bestPractice.objectives"
-                label="Objectives"
-                description="Objectives of the initiatives."
-                :required="true"
-                :otherEnabled="true"
-                v-model:others="store.bestPractice.objectivesOther" /> -->
             <MultiSelectFormGroup
                 :options="objectives"
                 v-model="store.bestPractice.objectives"
                 label="1.2 Objectives"
                 description="Please select the main objectives of the practice."
-                :required="true" />
+                :required="true"
+                :edit=edit />
             <TextareaFormGroup
                 v-model="store.bestPractice.objectivesAdditionalInformation"
                 label="1.3 Objectives additional information"
-                description="Feel free to provide additional information on specific objectives of the practice." />
+                description="Feel free to provide additional information on specific objectives of the practice."
+                :edit=edit />
             <MultiSelectFormGroup
                 :options="ecosystems"
                 v-model="store.bestPractice.ecosystems"
                 label="1.4 Ecosystems"
-                description="Ecosystems where the practice was applied [Select all that apply]"></MultiSelectFormGroup>
-            <!-- <LatLongFormGroup
-                v-model="store.bestPractice.coordinates"
-                label="Geographic coordinates"
-                description="If available, please insert the geographic coordinates of the restoration area. Please use the WGS84 Geographic Reference System."></LatLongFormGroup> -->
-            <TextareaFormGroup
-                v-model="store.bestPractice.ecosystemAdditionalInfo"
+                description="Ecosystems where the practice was applied [Select all that apply]"
+                :edit=edit />
+            <MultiSelectFormGroup
+                :options="ecosystemsMenu"
+                v-model="store.bestPractice.iucnEcosystems"
                 label="1.5 Ecosystems additional information"
-                dangerousHtmlDescription="Please provide additional information on specific types of ecosystem(s) where the practice was applied. Please use the biomes from the IUCN Global Ecosystem Typology here: <a class='text-blue-600' target='_blank' href='https://global-ecosystems.org/analyse'>https://global-ecosystems.org/analyse</a>"></TextareaFormGroup>
+                description="Select the specific types of ecosystem(s) where the practice was applied."
+                :required="true"
+                :edit=edit />
             <TextareaFormGroup
                 v-model="store.bestPractice.context"
                 label="1.6 Context"
@@ -157,24 +190,27 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
                 :options="areasMenu"
                 v-model="store.bestPracticeAreaIdxs"
                 label="1.7 Areas"
-                :description="areasMenu.length ? 'Select the areas where the practice was implemented.' : 'No area was selected for the project.'" />
+                :description="areasMenu.length ? 'Select the areas where the practice was implemented.' : 'No area was selected for the project.'"
+                :edit=edit />
             <MultiSelectFormGroup
                 :options="activitiesMenu"
                 v-model="store.bestPractice.activities"
                 label="1.8 Activities"
                 :description="areasMenu.length ? 'Select the activities of your restoration initiative to which the practice belongs.' : 'No activity was selected for the project.'"
-                :required="true" />
+                :required="true"
+                :edit=edit />
             <MultiSelectFormGroup
                 :options="drivers"
                 v-model="store.bestPractice.drivers"
                 label="1.9 Drivers"
                 description="Direct and indirect drivers of degradation addressed by the practice [Select all that apply]."
-                :required="true">
-            </MultiSelectFormGroup>
+                :required="true"
+                :edit=edit />
             <TextareaFormGroup
                 v-model="store.bestPractice.driversAdditionalInformation"
                 label="1.10 Drivers additional information"
-                description="Feel free to provide additional information to explain how the practice contributed to addressing the drivers of ecosystem degradation selected above."></TextareaFormGroup>
+                description="Feel free to provide additional information to explain how the practice contributed to addressing the drivers of ecosystem degradation selected above."
+                :edit=edit />
         </div>
     </div>
 </template>

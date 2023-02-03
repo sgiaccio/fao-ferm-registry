@@ -3,12 +3,19 @@ import { useBestPracticesStore } from '../../stores/bestpractices';
 
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import SelectFormGroup from "../../components/inputs/base/SelectFormGroup.vue";
+import ImageUploadFormGroup from "../../components/inputs/base/ImageUploadFormGroup.vue";
 
 
-type AdditionalResources = {
-    links?: string,
-    details?: string,
-}
+withDefaults(defineProps<{
+    edit: boolean
+}>(), {
+    edit: true
+});
+
+// type AdditionalResources = {
+//     links?: string,
+//     details?: string,
+// }
 
 const store = useBestPracticesStore();
 
@@ -25,17 +32,25 @@ const yesNo = [
             <TextareaFormGroup
                 v-model="store.bestPractice.links"
                 label="5.1 Links"
-                description="Please provide links to pictures, positive testimonials from the field, websites, and social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice." />
+                description="Please provide links to pictures, positive testimonials from the field, websites, and social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice."
+                :edit=edit />
             <SelectFormGroup
                 v-model="store.bestPractice.details"
                 :options="yesNo"
                 label="5.2 Additional information on costs and benefits"
                 :required="true"
-                description="Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO's Team on Economics of Ecosystem Restoration (TEER)." />
+                description="Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO's Team on Economics of Ecosystem Restoration (TEER)."
+                :edit=edit />
             <TextareaFormGroup
                 v-model="store.bestPractice.additionalComments"
                 label="5.3 Additional comments"
-                description="Feel free to share any additional information regarding the practice." />
+                description="Feel free to share any additional information regarding the practice."
+                :edit=edit />
+            <ImageUploadFormGroup
+                label="5.4. Feel free to upload a picture of the practice"
+                bucket-url="gs://fao-ferm-goodpractices"
+                :folder="`${store.id}/images/`"
+                :edit=edit />
         </div>
     </div>
     <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->

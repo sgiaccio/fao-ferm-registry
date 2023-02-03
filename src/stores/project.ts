@@ -48,11 +48,21 @@ export const useProjectStore = defineStore({
 
             this.id = projectId;
         },
-        async fetchGroupOwnedProjects() {
+        async fetchGroupOwnedProjects(groupId: string | null) {
             const authStore = useAuthStore();
-            const userGroups = Object.keys(authStore.privileges);
+            let userGroups = null;
+            if (groupId) {
+                userGroups = [groupId]
+            } else {
+                if (!authStore.isAdmin) {
+                    userGroups = Object.keys(authStore.privileges);
+                }
+            }
 
-            const q = query(projectsCollection, where('group', 'in', userGroups));
+            const q = userGroups 
+                ? query(projectsCollection, where('group', 'in', userGroups))
+                : query(projectsCollection)
+            // const q = query(projectsCollection, where('group', 'in', userGroups));
             const querySnapshot = await getDocs(q);
             this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
 
@@ -75,7 +85,7 @@ export const useProjectStore = defineStore({
             }
             this.projectAreas = [];
         },
-        async saveProject() {
+        async save() {
             const authStore = useAuthStore();
 
             // Set project additional information
@@ -103,7 +113,9 @@ export const useProjectStore = defineStore({
             batch.set(areasRef, { areas: this.projectAreas });
             
             await batch.commit();
-
+        },
+        async saveAndExit() {
+            await this.save();
             this.resetProjectState();
         },
         async deleteProject(projectId: string) {

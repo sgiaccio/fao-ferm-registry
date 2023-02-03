@@ -12,15 +12,16 @@ type AdminArea = {
     children?: AdminArea
 }[]
 
-const props = defineProps<{
-  modelValue: {
-    siteName: string,
-    admin0?: string,
-    admin1?: string,
-    admin2?: string,
-    activities: number[]
-  }
-}>()
+const props = withDefaults(defineProps<{
+    modelValue: {
+        siteName: string,
+        admin0?: string,
+        admin1?: string,
+        admin2?: string,
+        activities: number[]
+    },
+    edit: boolean
+}>(), { edit: true });
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -106,10 +107,24 @@ watch(admin2, val => {
 <template>
     <FormGroup label="Administrative area">
         <div class="flex flex-col gap-y-3">
-            <TextInput v-model="modelValue.siteName" />
-            <SelectInput v-model="admin0" :options="admin0Menu" placeholder="Please select Country" />
-            <SelectInput v-model="admin1" :options="admin1Menu" placeholder="Please select Region" />
-            <SelectInput v-model="admin2" :options="admin2Menu" placeholder="Please select Province" />
+            <TextInput
+                :edit="edit"
+                v-model="modelValue.siteName" />
+            <SelectInput
+                :edit="edit"
+                v-model="admin0"
+                :options="admin0Menu"
+                placeholder="Please select Country" />
+            <SelectInput
+                :edit="edit"
+                v-model="admin1"
+                :options="admin1Menu"
+                placeholder="Please select Region" />
+            <SelectInput
+                :edit="edit"
+                v-model="admin2"
+                :options="admin2Menu"
+                placeholder="Please select Province" />
         </div>
     </FormGroup>
 </template>

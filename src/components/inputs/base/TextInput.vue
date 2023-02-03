@@ -5,7 +5,8 @@ import { ref, computed } from 'vue'
 const props = defineProps({
     modelValue: { type: String },
     placeholder: { type: String },
-    required: { type: Boolean, default: false }
+    required: { type: Boolean, default: false },
+    edit: { type: Boolean, default: true }
 });
 
 const emit = defineEmits(['update:modelValue'])
@@ -28,23 +29,27 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
 </script>
 
 <template>
-    <div class="relative mt-1 rounded-md shadow-sm">
-        <input
-            type="text"
-            class="dark:text-zinc-400 block w-full rounded-md pr-10 focus:outline-none border-gray-300 dark:bg-zinc-900 sm:text-sm transition ease-in-out duration-270 delay-50"
-            :placeholder="placeholder"
-            :class="{ 'border-red-400 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500': showValidation, 'focus:ring-0 dark:border-black dark:focus:border-black': !showValidation }"
-            :value="modelValue"
-            @input="onInput"
-            @focusout="focusedOut = true"
-            :aria-invalid="showValidation"
-            aria-describedby="error">
-        <div v-if="showValidation" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <!-- Heroicon name: mini/exclamation-circle -->
-            <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-            </svg>
-        </div>
-    </div>  
-    <p v-if="showValidation" v-for="message in errorMessages" class="mt-2 text-sm text-red-600" id="email-error">{{message}}</p>
+    <template v-if="edit">
+        <div class="relative mt-1 rounded-md shadow-sm">
+            <input
+                type="text"
+                class="dark:text-zinc-400 block w-full rounded-md pr-10 focus:outline-none border-gray-300 dark:bg-zinc-900 sm:text-sm transition ease-in-out duration-270 delay-50"
+                :placeholder="placeholder"
+                :class="{ 'border-red-400 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500': showValidation, 'focus:ring-0 dark:border-black dark:focus:border-black': !showValidation }"
+                :value="modelValue"
+                @input="onInput"
+                @focusout="focusedOut = true"
+                :aria-invalid="showValidation"
+                aria-describedby="error">
+            <div v-if="showValidation" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <!-- Heroicon name: mini/exclamation-circle -->
+                <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+            </div>
+        </div>  
+        <p v-if="showValidation" v-for="message in errorMessages" class="mt-2 text-sm text-red-600" id="email-error">{{message}}</p>
+    </template>
+    <div v-else-if="modelValue">{{modelValue}}</div>
+    <div v-else class="italic text-gray-400">Not available</div>
 </template>

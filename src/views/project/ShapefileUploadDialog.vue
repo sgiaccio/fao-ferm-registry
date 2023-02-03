@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<{
     open?: boolean
 }>(), {
     open: true
-})
+});
 
 const emit = defineEmits(['cancel', 'done'])
 
@@ -40,7 +40,7 @@ async function parseDbfFromZip(f: File) {
     let shpFile: string | null = null;
     zip.forEach((_, zipEntry) => {
         const name = zipEntry.name;
-        if (name.endsWith('.shp')) {
+        if (name.endsWith('.shp') && !name.includes('._')) {
             if (shpFile) {
                 throw Error('Zip file contains more than one shp files');
             }
@@ -107,13 +107,12 @@ async function uploadFile() {
             body: formData
         }).then(response => {
             if (!response.ok) {
-                throw Error(response.statusText);
+                return response.text().then(text => { throw new Error(text) })
             }
             return response.text();
         }).then(uuids => {
             const uuidsArr: string[] = JSON.parse(uuids)
             uploadStatus.value = 'uploaded';
-            debugger;
             emit('done', uuidsArr.map((uuid, i) => ({
                 siteName: (rows.value!)[i][(areaNameField.value as string)],
                 uuid: uuid,
@@ -121,11 +120,11 @@ async function uploadFile() {
             })));
             selectedFile.value = null;
             alert(`Files uploaded with UUIDs ${uuidsArr}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
-        }).catch(_ => {
-            alert('Error uploading the Shapefile');
+        }).catch(e => {
+            alert('Error uploading the Shapefile: ' + e.message);
+            console.log(e);
             uploadStatus.value = 'idle';
-        }
-        );
+        });
 }
 
 function cancel() {
@@ -165,14 +164,23 @@ const getAreaName = ref(false);
                                     <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">Upload
                                         shapefile</DialogTitle>
                                     <div class="mt-2">
-                                        <p class="text-sm text-gray-500">Please upload a polygon or multipolygon zip
-                                            file with all the shapefile files (.shp, .shx, .dbf, ...).</p>
-                                        <p class="text-sm text-gray-500 mt-2">Please note: one area per feature will be
-                                            created, i.e. if your shapefile contains n polygons, n new areas will be
-                                            added</p>
+                                        <ul class="text-sm ml-4 text-gray-800 list-disc list-inside font-light">
+                                            <li>Please upload a <span class="font-semibold">zip file</span> containing
+                                                the <span class="font-semibold italic text-red-600">.shp, .shx,
+                                                    .dbf</span>, and .<span
+                                                    class="font-semibold italic text-red-600">prj</span> files.</li>
+                                            <li>The shapefile can contain one or many <span
+                                                    class="font-semibold">polygons</span> or <span
+                                                    class="font-semibold">multipolygons</span>.</li>
+                                            <li>For each feature on the shapefile, one area will be
+                                                added to the registry.</li>
+                                            <li>If possible, the shapefile should be in <span
+                                                    class="font-semibold">geographic projection</span>
+                                                (latitude/longitude). If not, the system will try to reproject it.</li>
+                                        </ul>
                                         <div class="mt-2 flex rounded-md shadow-sm">
                                             <div class="flex-grow focus-within:z-10">
-                                                <input type="file" name="file" accept=".zip,.dbf"
+                                                <input type="file" name="file" accept=".zip"
                                                     class="pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
                                                     @change="setSelectedFile">
                                             </div>
@@ -184,7 +192,7 @@ const getAreaName = ref(false);
                                 <div class="relative flex items-start">
                                     <div class="flex h-5 items-center">
                                         <input id="comments" aria-describedby="comments-description" name="comments"
-                                            type="checkbox" v-model="getAreaName" @change=""
+                                            type="checkbox" v-model="getAreaName"
                                             class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                                     </div>
                                     <div class="ml-3 text-sm">

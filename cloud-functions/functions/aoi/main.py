@@ -14,9 +14,13 @@ from google.cloud import storage
 
 from werkzeug.utils import secure_filename
 import fiona
-# from fiona.crs import to_string
+from fiona.crs import to_string
 from shapely import wkt
 from shapely.geometry import shape
+from shapely.ops import transform
+
+import pyproj
+from pyproj.exceptions import CRSError
 
 import psycopg2
 from zipfile import ZipFile, BadZipFile
@@ -151,25 +155,34 @@ def _insert_into_postgis(project_id, shp_file_path, bucket_path, orig_filename):
     uuid_list = []
     try:
         with fiona.open(shp_file_path) as source:
-            # print(source.crs);
-            # print(to_string(source.crs))
+            p_in = pyproj.Proj(source.crs)
+            project = pyproj.Transformer.from_proj(
+                p_in, # source coordinate system
+                pyproj.Proj(init='epsg:4326')) # destination coordinate system
 
             for record in source:
-                # job = BQ.query(f"""INSERT INTO `fao-ferm.registry.areas` (geometry, project_id, area_uuid, public, last_change_date, deleted) VALUES (ST_GEOGFROMGEOJSON('{json.dumps(record['geometry'])}'), "{project_id}", "{str(uuid)}", {True}, CURRENT_DATE(), {False})""")
-                # print(job.result())
                 uuid = uuid1()
                 geometry_type = record['geometry']['type']
                 assert geometry_type in ['Polygon', 'MultiPolygon', '3D Polygon', '3D MultiPolygon'], 'Invalid geometry type: %s' % geometry_type
 
                 polygon = shape(record['geometry'])
-                cursor.execute("INSERT INTO project_areas (source, project_id, area_uuid, geom, bucket_path, orig_filename) VALUES ('shapefile', %s, %s, ST_Force2D(ST_GeomFromText(%s, 4326)), %s, %s)", (project_id, str(uuid), wkt.dumps(polygon), bucket_path, orig_filename))
+
+                # Reproject the polygon
+                polygon4326 = transform(project.transform, polygon)  # apply projection
+
+                cursor.execute("INSERT INTO project_areas (source, project_id, area_uuid, geom, bucket_path, orig_filename) VALUES ('shapefile', %s, %s, ST_Force2D(ST_GeomFromText(%s, 4326)), %s, %s)", (project_id, str(uuid), wkt.dumps(polygon4326), bucket_path, orig_filename))
 
                 uuid_list.append(str(uuid))
         conn.commit()
         return uuid_list
+    except CRSError as e:
+        conn.rollback()
+        print('Unknown projection')
+        print(e)
+        raise
     except Exception as e:
         conn.rollback()
-        print("error inserting polygons into db")
+        print("Error inserting polygons into db")
         print(e)
         raise
     finally:
@@ -240,6 +253,9 @@ def load_shapefile_multiple(request):
     except BadZipFile as error:
         print(traceback.format_exc())
         return ('Uploaded file is not a valid zip file', 400, { 'Access-Control-Allow-Origin': '*' } )
+    except CRSError as error:
+        print(traceback.format_exc())
+        return ('Unknown projection', 400, { 'Access-Control-Allow-Origin': '*' } )
     except Exception as error:
         print(traceback.format_exc())
         return ('Internal server error: %s' % str(error), 400, { 'Access-Control-Allow-Origin': '*' } )

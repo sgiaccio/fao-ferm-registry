@@ -37,12 +37,14 @@ function updateLongitude(lon: number) {
                 <NumberInput
                     :modelValue="modelValue.latitude"
                     @update:modelValue="updateLatitude"
+                    edit="edit"
                 />
                 <span class="text-gray-300 text-sm">Latitude</span>
             </div>
             <div class="flex flex-col gap-1">
                 <NumberInput
-                :modelValue="modelValue.longitude"
+                    :edit="edit"
+                    :modelValue="modelValue.longitude"
                     @update:modelValue="updateLongitude"
                 />
                 <span class="text-gray-300 text-sm">Longitude</span>

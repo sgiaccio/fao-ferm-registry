@@ -6,7 +6,15 @@ import { iucnEcosystems } from '../../components/project/menus';
 import FormGroup from '../../components/inputs/FormGroup.vue';
 import TreeItem from '../../components/inputs/base/TreeItem.vue';
 
+
 const store = useProjectStore();
+
+withDefaults(defineProps<{
+    edit: boolean
+}>(), {
+    edit: true
+});
+
 </script>
 
 <template>
@@ -26,6 +34,7 @@ const store = useProjectStore();
                         Area {{i + 1}}<span class="text-black dark:text-gray-100" v-if="area[Object.keys(area)[0]].siteName">: {{area[Object.keys(area)[0]].siteName}}</span>
                     </div>
                     <TreeItem
+                        :edit="edit"
                         v-model="area[Object.keys(area)[0]].ecosystems"
                         :treeData="iucnEcosystems"
                         :expandLevel="0" />

@@ -25,6 +25,7 @@ const emit = defineEmits(['update:modelValue'])
                     :inputComponents="inputComponents"
                     :numbering="numbering"
                     :deleteConfirmMsg="deleteConfirmMsg"
-                    :required="true" />
+                    :required="true"
+                    :edit="edit" />
     </FormGroup>
 </template>

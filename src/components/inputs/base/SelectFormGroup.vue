@@ -32,6 +32,7 @@ function valueChanged(value: string) {
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
         <SelectInput
+            :edit="edit"
             :options="options"
             :model-value="modelValue"
             @update:modelValue="valueChanged"

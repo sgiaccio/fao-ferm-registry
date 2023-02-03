@@ -17,8 +17,6 @@ onMounted(async () => {
         return {id: p.id, data: p.data }
     });
 });
-
-
 </script>
 
 <template>
@@ -34,9 +32,12 @@ onMounted(async () => {
                     <router-link :to="`/good-practices/${bestPractice.id}/objectives`" href="#" class="block hover:bg-gray-50">
                         <div class="px-4 py-4 sm:px-6">
                             <div class="flex items-center justify-between">
-                            <p class="truncate text-sm font-medium" :class="[bestPractice.data.title ? 'text-indigo-600' : 'italic text-gray-400']">{{ bestPractice.data.title || 'No title'}}</p>
+                                <p class="truncate text-sm font-medium" :class="[bestPractice.data.title ? 'text-indigo-600' : 'italic text-gray-400']">
+                                    {{ bestPractice.data.title || 'No title'}}
+                                </p>
                                 <div class="ml-2 flex flex-shrink-0">
-                                    <p class="inline-flex rounded-full bg-yellow-400 px-2 text-xs font-semibold leading-5 text-gray-800">Draft</p>
+                                    <p v-if="!bestPractice.data.status || bestPractice.data.status === 'draft'" class="inline-flex rounded-full bg-red-500 px-2 text-xs font-semibold leading-5 text-gray-100">Draft</p>
+                                    <p v-if="bestPractice.data.status === 'submitted'" class="inline-flex rounded-full bg-yellow-400 px-2 text-xs font-semibold leading-5 text-gray-800">Submitted</p>
                                 </div>
                             </div>
                             <div class="mt-2 sm:flex sm:justify-between">

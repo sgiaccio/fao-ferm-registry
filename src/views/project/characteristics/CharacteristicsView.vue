@@ -11,6 +11,12 @@ import LandCover from './LandCover.vue';
 // import TreeItem from '../../components/inputs/base/TreeItem.vue';
 
 
+withDefaults(defineProps<{
+    edit: boolean
+}>(), {
+    edit: true
+});
+
 const store = useProjectStore();
 
 async function fetchPolygonIndicator(areaUuid: string, statistics: string) {
@@ -46,7 +52,7 @@ interface Statistics {
     template: any // TODO vue template
 }
 
-function calculateAverages(values: any[]): { mean: number, min: number, max: number } {
+function calculateAverages(values: any[]): { mean: string, min: string, max: string } {
     function calculateAverage(key: string) {
         return (values.reduce((prev, curr) => prev + curr[key], 0) / values.length).toFixed(2);
     }
@@ -71,16 +77,16 @@ const statistics: Statistics[] = [{
     fn: result => {
         const k = calculateAverages(result);
         return {
-            mean: (k.mean - 273.15).toFixed(2),
-            min: (k.min - 273.15).toFixed(2),
-            max: (k.max - 273.15).toFixed(2),
+            mean: (+k.mean - 273.15).toFixed(2),
+            min: (+k.min - 273.15).toFixed(2),
+            max: (+k.max - 273.15).toFixed(2),
         }
     },
     template: MeanMinMax
 }, {
     requestId: 'precipitation',
     dbId: 'precipitation',
-    label: 'Precipitation [mm]',
+    label: 'Precipitation [mm/pentad]',
     fn: calculateAverages,
     template: MeanMinMax
 }, {
@@ -105,11 +111,11 @@ function fetchIndicators(area: any) {
         return;
     }
 
-    let intervalId;
+    let intervalId: number;
 
     statistics.forEach(async stats => {
         if (nLoading.value === 0) {
-            intervalId = setInterval(() => nDots.value = (nDots.value + 1) % 4, 600);
+            intervalId = window.setInterval(() => nDots.value = (nDots.value + 1) % 4, 600);
         }
         nLoading.value += 1;
 
@@ -132,20 +138,6 @@ function fetchIndicators(area: any) {
         }
     });
 }
-
-
-// (defn fetch-polygon-indicator [{:keys [area-uuid statistics f]}]
-//   (js/Promise. (fn [resolve reject]
-//                  (GET (str "https://europe-west3-fao-ferm.cloudfunctions.net/get_polygon_zonal_stats"
-//                            "?area_uuid=" area-uuid
-//                            "&statistics=" statistics)
-//                    {:response-format :json
-//                     :keywords? true
-//                     :handler #(-> % f resolve)
-//                     :error-handler (fn [err]
-//                                      (js/console.log err)
-//                                      (js/alert err)
-//                                      (reject err))}))))
 </script>
 
 <template>
@@ -199,7 +191,7 @@ function fetchIndicators(area: any) {
                             </template>
                         </template>
                     </div>
-                    <div class="w-full flex place-content-end">
+                    <div class="w-full flex place-content-end" v-if="Object.keys(area)[0] === 'upload'">
                         <button
                             type="button"
                             class="inline-flex items-center rounded border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"

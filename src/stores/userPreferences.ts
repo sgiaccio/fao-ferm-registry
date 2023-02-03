@@ -44,7 +44,7 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
             darkMode.value = false;
             window.localStorage.setItem('darkMode', 'false');
         } else {
-            darkMode.value = darkModeSt === 'true'
+            darkMode.value = darkModeSt === 'true';
         }
 
     }

@@ -19,7 +19,7 @@ function authenticate() {
 }
 
 // function togglePasswordReset() {
-//     alert('TODO');
+//     Non needed, we are using email based login
 // }
 </script>
 
