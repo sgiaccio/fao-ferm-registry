@@ -74,49 +74,52 @@ const inputComponents = {
 const id_ = Math.ceil(Math.random() * 1e9) // TODO
 </script>
 
+
 <template>
-    <FormGroup
-        :label="label"
-        :description="description"
-        :dangerousHtmlDescription="dangerousHtmlDescription"
-        v-on:focusout="focusedOut = true">
+    <FormGroup :label="label"
+               :description="description"
+               :dangerousHtmlDescription="dangerousHtmlDescription"
+               v-on:focusout="focusedOut = true">
         <template v-if="edit">
             <fieldset class="space-y-2">
-                <div v-for="option in options" class="relative flex items-start">
+                <div v-for="option in options"
+                     class="relative flex items-start">
                     <div class="flex items-center h-5">
-                        <input 
-                            :id="('' + option.value) + id_"
-                            type="checkbox"
-                            :checked="isChecked(option.value)"
-                            @change="check($event, option.value)"
-                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <input :id="('' + option.value) + id_.toString()"
+                               type="checkbox"
+                               :checked="isChecked(option.value)"
+                               @change="check($event, option.value)"
+                               class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
                     </div>
                     <div class="ml-3 text-sm">
-                        <label
-                            :for="('' + option.value) + id_"
-                            class="dark:text-zinc-300 font-font-medium text-gray-700">{{option.label}}
+                        <label :for="('' + option.value) + id_.toString()"
+                               class="dark:text-zinc-300 font-font-medium text-gray-700">
+                            <span v-if="option.dangerousHtmlLabel"
+                                  v-html="option.dangerousHtmlLabel"></span>
+                            <template v-else>{{ option.label }}</template>
                         </label>
                     </div>
                 </div>
             </fieldset>
-            <div v-if="otherEnabled" class="flex flex-row space-x-6 mt-3">
+            <div v-if="otherEnabled"
+                 class="flex flex-row space-x-6 mt-3">
                 <div class="dark:text-zinc-400 font-bold text-sm">Other:</div>
                 <div class="flex-grow">
-                    <MultiInput
-                        :modelValue="others"
-                        @update:modelValue="val => emit('update:others', val)"
-                        :inputComponents="inputComponents" />
+                    <MultiInput :modelValue="others"
+                                @update:modelValue="val => emit('update:others', val)"
+                                :inputComponents="inputComponents" />
                 </div>
             </div>
-            <div
-                v-if="showValidation"
-                class="mt-2 text-sm text-red-600">This field is mandatory.</div>
+            <div v-if="showValidation"
+                 class="mt-2 text-sm text-red-600">This field is mandatory.</div>
         </template>
         <template v-else-if="modelValue?.length">
-            <ul class="list-disc list-inside" v-for="option in options">
-                <li v-if="isChecked(option.value)">{{option.label}}</li>
+            <ul class="list-disc list-inside"
+                v-for="option in options">
+                <li v-if="isChecked(option.value)">{{ option.label }}</li>
             </ul>
         </template>
-        <div class="italic text-gray-400" v-else>None selected</div>
+        <div class="italic text-gray-400"
+             v-else>None selected</div>
     </FormGroup>
 </template>

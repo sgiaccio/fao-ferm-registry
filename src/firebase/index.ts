@@ -1,7 +1,6 @@
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import type { Auth } from "firebase/auth"
-import { initializeFirestore, Firestore } from "firebase/firestore";
+import { getAuth, connectAuthEmulator, type Auth } from "firebase/auth";
+import { initializeFirestore, Firestore, connectFirestoreEmulator } from "firebase/firestore";
 
 
 const firebaseConfig = {
@@ -22,8 +21,11 @@ if (!getApps().length) {
     db = initializeFirestore(app, {
         ignoreUndefinedProperties: true
     });
-    // db = getFirestore(app);
+
+    if (process.env.NODE_ENV === 'development') {
+        connectFirestoreEmulator(db, 'localhost', 8080);
+        connectAuthEmulator(auth, "http://localhost:9099");
+    }
 }
 
 export { auth, db }
-

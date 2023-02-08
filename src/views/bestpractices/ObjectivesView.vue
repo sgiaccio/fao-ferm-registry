@@ -209,7 +209,7 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
             <TextareaFormGroup
                 v-model="store.bestPractice.driversAdditionalInformation"
                 label="1.10 Drivers additional information"
-                description="Feel free to provide additional information to explain how the practice contributed to addressing the drivers of ecosystem degradation selected above."
+                description="Please provide additional information to explain how the practice contributed to reducing the drivers of ecosystem degradation selected above."
                 :edit=edit />
         </div>
     </div>

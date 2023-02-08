@@ -32,7 +32,7 @@ const yesNo = [
             <TextareaFormGroup
                 v-model="store.bestPractice.links"
                 label="5.1 Links"
-                description="Please provide links to pictures, positive testimonials from the field, websites, and social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice."
+                description="Please provide links to pictures, scientific articles and publications, positive testimonials from the field, websites, and social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice."
                 :edit=edit />
             <SelectFormGroup
                 v-model="store.bestPractice.details"
@@ -47,7 +47,7 @@ const yesNo = [
                 description="Feel free to share any additional information regarding the practice."
                 :edit=edit />
             <ImageUploadFormGroup
-                label="5.4. Feel free to upload a picture of the practice"
+                label="5.4 Please upload a picture of the practice"
                 bucket-url="gs://fao-ferm-goodpractices"
                 :folder="`${store.id}/images/`"
                 :edit=edit />

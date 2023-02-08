@@ -94,6 +94,7 @@ function enableSpecifyReplicability() {
                 description="Description of the practice." />
             <div>
                 <p class="text-gray-600 dark:text-white mt-6">Please provide for each step (if applicable): timing, equipment, labour, species used, and all other relevant information</p>
+                <p class="text-gray-600 dark:text-white mt-2"><span class="font-bold">NOTE:</span> It is recommended that the steps for implementation are logical, detailed, well-described, and technically and socially feasible, allowing for replication or adaptation. </p>
                 <MultiInputFormGroup
                     label="2.2 Steps for implementation"
                     :inputComponents="multiInputComponents"
@@ -112,7 +113,7 @@ function enableSpecifyReplicability() {
             <TextareaFormGroup
                 v-model="store.bestPractice.stakeholdersInfo"
                 label="2.4 Stakeholder's additional information"
-                description="Feel free to provide additional information on stakeholder's engagement in the practice"
+                description="Please provide additional information on stakeholder's engagement and describe who are the implementers and beneficiaries of the practice."
                 :edit=edit />
             <MultiSelectFormGroup
                 :options="knowledgeTypes"
@@ -130,7 +131,7 @@ function enableSpecifyReplicability() {
                 :options="scale"
                 v-model="store.bestPractice.scale"
                 label="2.7 Scale"
-                description="Please indicate the scale(s) at which the practice has been implemented and/or replicated."
+                dangerousHtmlDescription="Please describe to what extent the practice has meaningfully fostered engagement and knowledge integration from the stakeholders, right-holders, and under-represented groups (if any) selected above (e.g., local communities, Indigenous peoples, ethnic minorities, women, youth and LGBTIQ+ people). <br>NOTE: If Indigenous Peoples\' traditional knowledge was selected above, please explain how the practice has complied with the right of <a class='text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400' target='_blank' href='https://www.fao.org/indigenous-peoples/our-pillars/fpic/en/'>Free, Prior and Informed Consent.</a>"
                 :required="true"
                 :edit=edit />
             <div>
@@ -138,13 +139,13 @@ function enableSpecifyReplicability() {
                     :options="replicability"
                     v-model="store.bestPractice.replicability"
                     label="2.8 Replicability"
-                    description="Has this practice been replicated? In the same context or different contexts?"
+                    description="Has the practice been tested and replicated in different contexts?"
                     :required="true"
                     :edit=edit />
                 <TextareaFormGroup
                     v-model="store.bestPractice.specifyReplicability"
                     label="2.9 Replicability additional information"
-                    description="If yes, please briefly explain where it was replicated, how many times, and with what results."
+                    description="Please briefly explain where it was replicated and tested, how many times, and with what results."
                     :enabled="enableSpecifyReplicability"
                     :edit=edit />
             </div>

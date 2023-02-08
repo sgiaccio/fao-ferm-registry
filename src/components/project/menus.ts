@@ -1,6 +1,6 @@
 export type MenuValue = string | number
 
-export type MenuItem = { value: MenuValue, label: string }
+export type MenuItem = { value: MenuValue, label?: string, dangerousHtmlLabel?: string }
 
 export type Menu = Array<MenuItem>
 
@@ -94,9 +94,10 @@ export const engagement: Menu = [
 ];
 
 export const knowledgeTypes: Menu = [
-    { value: 1, label: 'Traditional knowledge: a cumulative body of knowledge, practice and belief, evolving by adaptive processes and handed down through generations by cultural transmission, about the relationship of living beings (including humans) with one another and with their environment (Berkes, 1993). It is mostly transmitted orally, place-based and could be both individual and collective.' },
+    { value: 1, dangerousHtmlLabel: 'Indigenous Peoples\' traditional knowledge: Cumulative body of knowledge (for example know-how), practices and manifestations maintained and developed by Indigenous Peoples with long histories of interaction with their natural environment. Indigenous Peoples’ knowledge is adapted to the local culture and transmitted orally from generation to generation. <a target="_blank" class="text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400" href="https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704">https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704</a>' },
     { value: 2, label: 'Scientific knowledge: quantitative and based on experimentation and systematic accumulation of facts (Berkes, 1993).' },
-    { value: 3, label: 'Practical knowledge: knowledge from ecosystem restoration practitioners gained through their experiences implementing initiatives.' }
+    { value: 3, label: 'Practical knowledge: knowledge from ecosystem restoration practitioners gained through their experiences implementing initiatives.' },
+    { value: 4, dangerousHtmlLabel: 'Local knowledge: Local knowledge is the knowledge that people in a given community have developed over time and continue to develop. <a target="_blank" class="text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400" href="https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>' }
 ];
 
 export const scale: Menu = [
@@ -108,9 +109,10 @@ export const scale: Menu = [
 ];
 
 export const replicability: Menu = [
-    { value: 1, label: 'Yes, in the same context' },
-    { value: 2, label: 'Yes, in different contexts' },
-    { value: 3, label: 'No' }
+    { value: 1, label: 'Yes, the practice has been tested and replicated in multiple contexts and scales and therefore, can be easily transferred and/or adapted to other initiatives with similar goals.' },
+    { value: 2, label: 'No, the practice has been tested and replicated only in the same context and scale, but it is currently being proven for replicability and adaptability to various contexts.' },
+    { value: 3, label: 'No, the practice has been tested and replicated only in the same context and scale, it needs to be proven for replicability and adaptability to various contexts.' },
+    { value: 4, label: 'No, the practice has not been tested so it cannot be transferred and/or adapted to other initiatives. ' }
 ];
 
 export const keyFactors: Menu = [

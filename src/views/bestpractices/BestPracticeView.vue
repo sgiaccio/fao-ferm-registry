@@ -18,7 +18,7 @@ const canSubmit = ref<boolean>()
 
 const currentRouteIdx = computed(() => tabs.findIndex(tab => tab.href === route.name));
 
-const lastTab = computed(() => { 
+const lastTab = computed(() => {
     return (currentRouteIdx.value === tabs.length - 1);
 });
 
@@ -78,7 +78,7 @@ async function saveAndExit() {
 
 async function saveAndNext() {
     await store.save();
-    
+
     if (lastTab.value) {
         router.push({ name: 'initiatives' });
     } else {
@@ -104,10 +104,10 @@ async function submit() {
     }
 }
 
-// const showJson = ref(false)
-// function toggleJson() {
-//     showJson.value = !showJson.value;
-// }
+const showJson = ref(false)
+function toggleJson() {
+    showJson.value = !showJson.value;
+}
 
 async function closeGuidelines(accepted: boolean) {
     showGuidelines.value = false;
@@ -125,18 +125,21 @@ function print() {
 
 <template>
     <Teleport to="#content-specific">
-        <div class="flex space-x-4 cursor-pointer" @click="showGuidelines = true">
+        <div class="flex space-x-4 cursor-pointer"
+             @click="showGuidelines = true">
             <span class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Guidelines</span>
         </div>
         <div class="flex space-x-4">
             <a target="_blank"
-                href="https://forms.office.com/Pages/ResponsePage.aspx?id=aMQ6Frir0ESB_dnbFeOvltHYPNSbGydEq11y7AZvREZUMFhUTUNaRlZYQzBYT0xGNVdBUkFET0pXQS4u"
-                class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+               href="https://forms.office.com/Pages/ResponsePage.aspx?id=aMQ6Frir0ESB_dnbFeOvltHYPNSbGydEq11y7AZvREZUMFhUTUNaRlZYQzBYT0xGNVdBUkFET0pXQS4u"
+               class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Feedback
             </a>
         </div>
     </Teleport>
-    <guidelines :open="showGuidelines" :consentAccepted="bpConsentAccepted" @close="closeGuidelines" />
+    <guidelines :open="showGuidelines"
+                :consentAccepted="bpConsentAccepted"
+                @close="closeGuidelines" />
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
             <!-- Old nav bar -->
@@ -166,7 +169,9 @@ function print() {
             <nav aria-label="Section">
                 <ol role="list"
                     class="mt-4 md:mt-6 divide-y divide-gray-300 rounded-md border border-gray-300 md:flex md:divide-y-0">
-                    <li v-for="(step, stepIdx) in tabs" :key="step.name" class="relative md:flex md:flex-1">
+                    <li v-for="(step, stepIdx) in tabs"
+                        :key="step.name"
+                        class="relative md:flex md:flex-1">
                         <!-- <a v-if="step.status === 'complete'" :href="step.href" class="group flex w-full items-center">
                         <span class="flex items-center px-6 py-4 text-sm font-medium">
                             <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600 group-hover:bg-indigo-800">
@@ -175,8 +180,10 @@ function print() {
                             <span class="ml-4 text-sm font-medium text-gray-900">{{ step.name }}</span>
                         </span>
                         </a> -->
-                        <router-link v-if="route.name === step.href" :to="step.href"
-                            class="flex items-center py-4 text-sm font-medium" aria-current="step">
+                        <router-link v-if="route.name === step.href"
+                                     :to="step.href"
+                                     class="flex items-center py-4 text-sm font-medium"
+                                     aria-current="step">
                             <!-- <span
                                 class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-indigo-600">
                                 <span class="text-indigo-600">{{ step.id }}</span>
@@ -184,18 +191,26 @@ function print() {
                             <span class="ml-4 text-sm font-medium text-indigo-600">{{ step.name }}</span>
                         </router-link>
 
-                        <router-link v-else :to="step.href" :key="step.name" class="group flex items-center">
+                        <router-link v-else
+                                     :to="step.href"
+                                     :key="step.name"
+                                     class="group flex items-center">
                             <span class="flex items-center py-4 text-sm font-medium">
-                                <span class="ml-4 text-sm font-medium text-gray-500 group-hover:text-gray-900">{{step.name}}</span>
+                                <span class="ml-4 text-sm font-medium text-gray-500 group-hover:text-gray-900">{{ step.name }}</span>
                             </span>
                         </router-link>
                         <template v-if="stepIdx !== tabs.length - 1">
                             <!-- Arrow separator for lg screens and up -->
-                            <div class="absolute top-0 right-0 hidden h-full w-5 md:block" aria-hidden="true">
-                                <svg class="h-full w-full text-gray-300" viewBox="0 0 22 80" fill="none"
-                                    preserveAspectRatio="none">
-                                    <path d="M0 -2L20 40L0 82" vector-effect="non-scaling-stroke" stroke="currentcolor"
-                                        stroke-linejoin="round" />
+                            <div class="absolute top-0 right-0 hidden h-full w-5 md:block"
+                                 aria-hidden="true">
+                                <svg class="h-full w-full text-gray-300"
+                                     viewBox="0 0 22 80"
+                                     fill="none"
+                                     preserveAspectRatio="none">
+                                    <path d="M0 -2L20 40L0 82"
+                                          vector-effect="non-scaling-stroke"
+                                          stroke="currentcolor"
+                                          stroke-linejoin="round" />
                                 </svg>
                             </div>
                         </template>
@@ -204,56 +219,57 @@ function print() {
             </nav>
 
             <!-- TODO, important -->
-            <router-view v-slot="{ Component, route }" v-if="store.bestPractice">
+            <router-view v-slot="{ Component, route }"
+                         v-if="store.bestPractice">
                 <keep-alive include="BestPracticeObjectivesView">
-                    <component :is="Component" :key="route.path" />
+                    <component :is="Component"
+                               :key="route.path" />
                 </keep-alive>
             </router-view>
 
             <div class="w-full mb-8 flex gap-x-6">
                 <div class="shrink">
-                    <button
-                        @click="saveAndExit" type="button"
-                        class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <button @click="saveAndExit"
+                            type="button"
+                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         Save and exit
                     </button>
                 </div>
-                <div  v-if="!lastTab" class="shrink">
-                    <button
-                        @click="saveAndNext" type="button"
-                        class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                            Save and next
+                <div v-if="!lastTab"
+                     class="shrink">
+                    <button @click="saveAndNext"
+                            type="button"
+                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Save and next
                     </button>
                 </div>
                 <div class="shrink">
-                    <button
-                        @click="cancel"
-                        type="button"
-                        class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <button @click="cancel"
+                            type="button"
+                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         Cancel
                     </button>
                 </div>
                 <div class="grow relative flex flex-row">
                     <div class="grow"></div>
-                    <button
-                        v-if="canSubmit"
-                        @click="submit"
-                        type="button"
-                        class="shrink inline-flex items-center rounded-full border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+                    <button v-if="canSubmit"
+                            @click="submit"
+                            type="button"
+                            class="shrink inline-flex items-center rounded-full border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
                         Submit for review
                     </button>
-                    <button
-                        @click="print"
-                        type="button"
-                        class="ml-6 shrink inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <button @click="print"
+                            type="button"
+                            class="ml-6 shrink inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         Print
                     </button>
                 </div>
-                <!-- <button 
-                class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
-                @click="toggleJson">JSON</button> -->
-                <!-- <pre v-if="showJson" class="text-xs font-medium absolute text-amber-700 dark:text-amber-600 top-20">{{JSON.stringify(store.bestPractice, null, 2)}}</pre> -->
             </div>
+            sadfasdfasfd
+            <button class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
+                    @click="toggleJson">JSON</button>
+            <pre v-if="showJson"
+                 class="text-xs font-medium text-amber-700 dark:text-amber-600 top-20">{{ JSON.stringify(store.bestPractice, null, 2) }}</pre>
         </div>
     </div>
 </template>

@@ -54,7 +54,7 @@ const constraintsComponents = {
                 <TextareaFormGroup
                     label="3.2 Key factors additional information"
                     v-model="store.bestPractice.specifyKeyFactors"
-                    description="Feel free to provide additional information on the key factors required for the successful implementation of the practice."
+                    description="Please provide additional information on the key factors required for the successful implementation of the practice."
                     :edit=edit />
             </div>
             <MultiInputFormGroup

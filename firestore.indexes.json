@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "registry",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "group",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "`update-time`",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
