@@ -99,7 +99,7 @@ service cloud.firestore {
                             && (
                               // User is admin
                               request.auth.token.admin == true
-                            
+                              
                               ||
                               request.auth.token.privileges[resource.data.group] in ["editor"]
                               && request.auth.uid == resource.data.created_by

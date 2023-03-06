@@ -2,35 +2,42 @@ import { useAuthStore } from "../stores/auth"
 
 import { createRouter, createWebHistory } from "vue-router";
 
-const HomeView = () => import('../views/HomeView.vue')
+const HomeView  = () => import('../views/HomeView.vue')
 const LoginView = () => import('../views/LoginView.vue')
-const AdminView = () => import('../views/AdminView.vue')
-const ProjectView = () => import('../views/project/ProjectView.vue')
+const AdminView = () => import('../views/admin/AdminView.vue')
+
+// Projects
+const ProjectView             = () => import('../views/project/ProjectView.vue')
 const ProjectRegistrationView = () => import('../views/project/RegistrationView.vue')
-const ProjectAoi = () => import('../views/project/AoiView.vue')
-const ProjectCharacteristics = () => import('../views/project/characteristics/CharacteristicsView.vue')
-const ProjectActivities = () => import('../views/project/ActivitiesView.vue')
-const ProjectEcosystems = () => import('../views/project/EcosystemsView.vue')
-const ProjectIndicators = () => import('../views/project/IndicatorsView.vue')
-// const ProjectInformation = () => import('../views/project/InformationView.vue')
-const ProjectResults = () => import('../views/project/ResultsView.vue')
+const ProjectAoi              = () => import('../views/project/AoiView.vue')
+const ProjectCharacteristics  = () => import('../views/project/characteristics/CharacteristicsView.vue')
+const ProjectActivities       = () => import('../views/project/ActivitiesView.vue')
+const ProjectEcosystems       = () => import('../views/project/EcosystemsView.vue')
+const ProjectIndicators       = () => import('../views/project/IndicatorsView.vue')
+const ProjectResults          = () => import('../views/project/ResultsView.vue')
 
-const BestPracticeListView = () => import('../views/bestpractices/BestPracticeListView.vue')
-const BestPracticeView = () => import('../views/bestpractices/BestPracticeView.vue')
-const ObjectivesView = () => import('../views/bestpractices/ObjectivesView.vue')
-const MethodologyView = () => import('../views/bestpractices/MethodologyView.vue')
-const KeyFactorsView = () => import('../views/bestpractices/KeyFactorsView.vue')
-const BenefitsView = () => import('../views/bestpractices/BenefitsView.vue')
+// Best practices
+const BestPracticeListView    = () => import('../views/bestpractices/BestPracticeListView.vue')
+const BestPracticeView        = () => import('../views/bestpractices/BestPracticeView.vue')
+const ObjectivesView          = () => import('../views/bestpractices/ObjectivesView.vue')
+const MethodologyView         = () => import('../views/bestpractices/MethodologyView.vue')
+const KeyFactorsView          = () => import('../views/bestpractices/KeyFactorsView.vue')
+const BenefitsView            = () => import('../views/bestpractices/BenefitsView.vue')
 const AdditionalResourcesView = () => import('../views/bestpractices/AdditionalResourcesView.vue')
-const ProjectListViewVue = () => import('../views/project/ProjectListView.vue')
+const ProjectListViewVue      = () => import('../views/project/ProjectListView.vue')
 
+// Admin
+const UserListView = () => import ('../views/admin/UserListView.vue');
+
+// Print
 const BestPracticePrintView = () => import('../views/bestpractices/BestPracticePrint.vue')
-const ProjectPrintView = () => import('../views/project/ProjectPrint.vue')
+const ProjectPrintView      = () => import('../views/project/ProjectPrint.vue')
 
 const NotFoundView = () => import('../views/NotFoundView.vue');
 
+
 const router = createRouter({
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(_to, _from, _savedPosition) {
     // always scroll to top
     return {
       top: 0,
@@ -55,7 +62,25 @@ const router = createRouter({
       component: AdminView,
       meta: {
         requiresAuth: true
-      }
+      },
+      children: [
+        {
+          path: 'users',
+          name: 'users',
+          component: UserListView,
+          meta: {
+            requiresAuth: true
+          }
+        },
+        {
+          path: 'groups',
+          name: 'groups',
+          component: UserListView,
+          meta: {
+            requiresAuth: true
+          }
+        }
+      ]
     },
     // {
     //   path: "/about",
@@ -71,7 +96,7 @@ const router = createRouter({
       component: ProjectListViewVue,
       meta: {
         requiresAuth: true
-      }
+      },
     },
     {
       path: '/initiatives/:id',
@@ -94,8 +119,9 @@ const router = createRouter({
           component: ProjectRegistrationView,
           meta: {
             requiresAuth: true
-          }
-        }, { 
+          },
+          // props: { edit: true }
+        }, {
           path: 'aoi',
           name: 'aoi',
           component: ProjectAoi,
@@ -131,13 +157,6 @@ const router = createRouter({
             requiresAuth: true
           }
         }, {
-        //   path: 'information',
-        //   name: 'initiative-information',
-        //   component: ProjectInformation,
-        //   meta: {
-        //     requiresAuth: true
-        //   }
-        // }, {
           path: 'results',
           name: 'initiative-results',
           component: ProjectResults,
@@ -212,20 +231,20 @@ const router = createRouter({
         }
       ]
     },
-    
+
     { path: '/:pathMatch(.*)', component: NotFoundView }
   ],
 });
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
-  
+
   if (to.path === "/login" && authStore.user) {
     next("/");
     return;
   }
 
-  if (to.matched.some(record => record.meta.requiresAuth) && !authStore.user) {  
+  if (to.matched.some(record => record.meta.requiresAuth) && !authStore.user) {
     authStore.returnUrl = to.fullPath;
     next("/login");
     return;
@@ -233,7 +252,5 @@ router.beforeEach(async (to, from, next) => {
 
   next();
 });
-
-
 
 export default router;

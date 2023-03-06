@@ -5,6 +5,9 @@ import * as vue from 'vue';
 
 import { useProjectStore } from '../../stores/project';
 
+import TabTemplate from "../TabTemplate.vue";
+
+import FormGroup from "../../components/inputs/FormGroup.vue";
 import TextFormGroup from "../../components/inputs/base/TextFormGroup.vue";
 import DateFormGroup from "../../components/inputs/base/DateFormGroup.vue";
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
@@ -25,54 +28,6 @@ withDefaults(defineProps<{
 });
 
 // import { h } from 'vue'
-
-// const data = ref({
-//     keywords: ["keyword1"],
-//     uuid: "c4e57e20-c61f-4950-8265-43640cf1b4fe",
-//     reportingProcess: "ferm",
-//     startingDate: "2022-08-23",
-//     topicCategories: [
-//       {
-//         topicCategory: "Inland waters"
-//       }
-//     ],
-//     pointsOfContact: [
-//       {
-//         poc: {
-//           email: "asdf",
-//           organization: "asdf",
-//           individualName: "asdf",
-//           // address: null
-//         }
-//       }
-//     ],
-//     objectives: [1],
-//     endingDate: "2022-08-21",
-//     description: "description",
-//     title: "test admin",
-//     website: "website.com",
-//     testSelect: 1,
-//     targetArea: { value: 10, units: "ha" },
-//     organizations: [],
-//     adminAreas: []
-//     // adminArea: null
-//   },
-//   // updateTime: {
-//   //   seconds: 1659502327,
-//   //   nanoseconds: 151000000
-//   // },
-//   // createTime: {
-//   //   seconds: 1651849897,
-//   //   nanoseconds: 160000000
-//   // },
-//   // group: "fMBz8DktwRHxLjVgMSpg"
-// )
-
-// export default defineComponent({
-//   setup() {
-
-//   },
-// })
 
 // const DynamicHeading = (props, context) => {
 //   return h(`h${props.level}`, context.attrs, context.slots)
@@ -163,162 +118,108 @@ vue.watch(() => store.id as string, async id => {
 
 
 <template>
-    <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-3xl dark:text-zinc-300 font-roboto-slab">Initiative Registration</h1>
-        <p class="dark:text-zinc-200">In this tab, basic information about your initiative is needed. The title and a
-            summary of the aims and expected results of the initiative can be provided in the description section. You
-            also
-            need to provide further information such as when the initiative is expected to start and end, sources of
-            funding
-            and responsible organisms.</p>
-        <div class="divide-y divide-stone-900">
-            <TextFormGroup
-                :edit="edit"
-                v-model="store.project.project.title"
-                label="Title"
-                description="Title of the initiative as stated in the official initiative document" />
-            <TextareaFormGroup
-                :edit="edit"
-                v-model="store.project.project.description"
-                label="Description"
-                description="Short description of the initiative" />
+    <TabTemplate title="Initiative Registration">
+        <template #description>
+            <p>
+                In this tab, basic information about your initiative is needed. The title and a summary of the aims and expected results of the initiative can be provided in the description section. You also need to provide further information such as when the initiative is expected to start and end, sources of funding and responsible organisms.
+            </p>
+        </template>
+            <TextFormGroup :edit="edit"
+                           v-model="store.project.project.title"
+                           label="Title"
+                           description="Title of the initiative as stated in the official initiative document" />
+            <TextareaFormGroup :edit="edit"
+                               v-model="store.project.project.description"
+                               label="Description"
+                               description="Short description of the initiative" />
             <!-- TODO Short description of the initiative (max xx characters) -->
-            <TextFormGroup
-                :edit="edit"
-                v-model="store.project.project.website"
-                label="Website"
-                description="Website of the initiative"
-                placeholder="www.example.com" />
-            <AreaFormGroup
-                :edit="edit"
-                label="Target area"
-                v-model="store.project.project.targetArea"
-                description="Area of the restoration target" />
-            <DateFormGroup
-                :edit="edit"
-                v-model="store.project.project.startingDate"
-                label="Starting date"
-                description="Date when the initiative started" />
-            <DateFormGroup
-                :edit="edit"
-                v-model="store.project.project.endingDate"
-                label="Ending date"
-                description="Date when the initiative finished or is expected to finish" />
-
-            <div>
-                <div>Upload one initiative document</div>
+            <TextFormGroup :edit="edit"
+                           v-model="store.project.project.website"
+                           label="Website"
+                           description="Website of the initiative"
+                           placeholder="www.example.com" />
+            <AreaFormGroup :edit="edit"
+                           label="Target area"
+                           v-model="store.project.project.targetArea"
+                           description="Area of the restoration target" />
+            <DateFormGroup :edit="edit"
+                           v-model="store.project.project.startingDate"
+                           label="Starting date"
+                           description="Date when the initiative started" />
+            <DateFormGroup :edit="edit"
+                           v-model="store.project.project.endingDate"
+                           label="Ending date"
+                           description="Date when the initiative finished or is expected to finish" />
+            <FormGroup label="Upload one initiative document">
                 <div v-if="edit">
                     <div v-if="!fileName">
-                        <label for="file" class="block text-sm font-medium text-gray-700" />
+                        <label for="file"
+                               class="block text-sm font-medium text-gray-700" />
                         <div class="mt-1 flex rounded-md shadow-sm">
                             <div class="flex-grow focus-within:z-10">
-                                <input
-                                    type="file"
-                                    name="file"
-                                    class="pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
-                                    @change="setSelectedFile">
+                                <input type="file"
+                                       name="file"
+                                       class="pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
+                                       @change="setSelectedFile">
                             </div>
                             <button type="button"
-                                class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none"
-                                :class="['idle' === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
-                                @click="uploadFile(store.id)">
-                                <svg v-if="uploadStatus === 'idle'" xmlns="http://www.w3.org/2000/svg"
-                                    :class="[selectedFile ? 'text-red-600 animate-pulse' : 'text-gray-400', 'h-5 w-5']"
-                                    viewBox="0 0 20 20" fill="currentColor"
-                                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                                    clip-rule="evenodd">
+                                    class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none"
+                                    :class="['idle' === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
+                                    @click="uploadFile(store.id)">
+                                <svg v-if="uploadStatus === 'idle'"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     :class="[selectedFile ? 'text-red-600 animate-pulse' : 'text-gray-400', 'h-5 w-5']"
+                                     viewBox="0 0 20 20"
+                                     fill="currentColor"
+                                     d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                                     clip-rule="evenodd">
                                     <path fill-rule="evenodd"
-                                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                                        clip-rule="evenodd"></path>
+                                          d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                                          clip-rule="evenodd"></path>
 
                                 </svg>
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                    class="w-5 h-5 animate-spin">
+                                <svg v-else
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     viewBox="0 0 20 20"
+                                     fill="currentColor"
+                                     class="w-5 h-5 animate-spin">
                                     <path fill-rule="evenodd"
-                                        d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
-                                        clip-rule="evenodd" />
+                                          d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
+                                          clip-rule="evenodd" />
                                 </svg>
                             </button>
                         </div>
-                        <div v-if="selectedFile" class="text-red-500 text-sm">Remember to click the upload button before saving.
+                        <div v-if="selectedFile"
+                             class="text-red-500 text-sm">Remember to click the upload button before saving.
                         </div>
                     </div>
 
-                    <div class="dark:text-white" v-else>Initiative file: {{ fileName }} <span
-                            @click="deleteFile(store.id, fileName!)">[delete]</span></div>
+                    <div class="dark:text-white"
+                         v-else>Initiative file: {{ fileName }} <span @click="deleteFile(store.id, fileName!)">[delete]</span></div>
                 </div>
                 <template v-else>
                     <div v-if="selectedFile">Initiative file: {{ fileName }}</div>
                     <div v-else>File not uploaded</div>
                 </template>
-            </div>
-            <!-- <TextFormGroup
-          v-model="store.project.project.document"
-          label="Document"
-          description="Upload one initiative document (xx formats accepted, max xx MB)">
-      </TextFormGroup> TODO -->
-            <!-- <TextareaFormGroup
-          v-model="store.project.project.purpose"
-          label="Initiative Objectives"
-          description="Summary of the intentions with which the resource(s) was developed"></TextareaFormGroup> -->
-            <MultiSelectFormGroup
-                :edit="edit"
-                :options="objectives"
-                v-model="store.project.project.objectives"
-                label="Objectives"
-                description="Objectives of the initiatives" />
-            <MultiInputFormGroup
-                :edit="edit"
-                label="Points of contact"
-                :inputComponents="pointsOfContact"
-                v-model="store.project.project.pointsOfContact" />
-            <KeywordsInputGroup
-                :edit="edit"
-                v-model="store.project.project.keywords"
-                label="Keywords" />
-            <MultiInputFormGroup
-                :edit="edit"
-                label="Organizations"
-                description="Organizations that implement the project/initiative"
-                :inputComponents="organizations"
-                v-model="store.project.project.organizations" />
-            <!-- <Organizations
-          v-model="store.project.project.organizations"></Organizations> -->
-            <!-- <SelectFormGroup :options="objectives"
-                      v-model="data.objectives"
-                      label="Objectives"
-                      description="Objectives of the initiatives"></SelectFormGroup> -->
-        </div>
-    </div>
-
-    <!-- <DynamicHeading level=2>asdf</DynamicHeading> -->
+            </FormGroup>
+            <MultiSelectFormGroup :edit="edit"
+                                  :options="objectives"
+                                  v-model="store.project.project.objectives"
+                                  label="Objectives"
+                                  description="Objectives of the initiatives" />
+            <MultiInputFormGroup :edit="edit"
+                                 label="Points of contact"
+                                 :inputComponents="pointsOfContact"
+                                 v-model="store.project.project.pointsOfContact" />
+            <KeywordsInputGroup :edit="edit"
+                                v-model="store.project.project.keywords"
+                                label="Keywords" />
+            <MultiInputFormGroup :edit="edit"
+                                 label="Organizations"
+                                 description="Organizations that implement the project/initiative"
+                                 :inputComponents="organizations"
+                                 v-model="store.project.project.organizations" />
+    </TabTemplate>
+    <!-- <DynamicHeading level=2>Title</DynamicHeading> -->
     <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->
-    <!-- <MultiInput :inputComponents="multiInputComponents"
-              v-model="mi"></MultiInput>
-  <br>
-  <br>
-  <MultiInputFormGroup label="Same content"
-                       :inputComponents="multiInputComponents"
-                       v-model="mi"></MultiInputFormGroup>
-  <br> -->
-    <!-- <TextFormGroup v-model="ttt" label="asdf" description="tet"></TextFormGroup>
-  <br>
-  <DateFormGroup v-model="ddd" label="qwer" dangerousHtmlDescription="<b>test!!!</b>"></DateFormGroup>
-  <br>
-  <TextareaFormGroup v-model="ta" label="qwer" dangerousHtmlDescription="<b>TEXTAREA</b>"></TextareaFormGroup>
-  <br> -->
-
-    <!-- <span class="text-white">data.testSelect = {{data.testSelect}}</span>
-  <SelectFormGroup :options="[{value: 1, label: 'a'}, {value: 2, label: 'b'}]"
-                   v-model="data.testSelect"
-                   label="Select"
-                   description="Test"></SelectFormGroup> -->
-    <!-- <div class="greetings">
-    <h1 class="green">Info</h1>
-    <h3>
-      You’ve successfully created a project with
-      <a target="_blank" href="https://vitejs.dev/">Vite</a> +
-      <a target="_blank" href="https://vuejs.org/">Vue 3</a>. What's next?
-    </h3>
-  </div> -->
 </template>

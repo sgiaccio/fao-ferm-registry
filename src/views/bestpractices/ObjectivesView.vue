@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
+import TabTemplate from "../TabTemplate.vue"
+
 import TextFormGroup from "../../components/inputs/base/TextFormGroup.vue";
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
@@ -102,7 +104,7 @@ function setActivitiesMenu(areas: number[] = []) {
             return [...prev, ...newActivities];
         }, [])
         .sort();
-    
+
     activitiesMenu.value = flattenedActivities.filter(a => activityIds.includes(a.value));
 
     return activityIds;
@@ -119,7 +121,7 @@ function setEcosystemsMenu(areas: number[] = []) {
             return [...prev, ...newEcosystems];
         }, [])
         .sort();
-    
+
     ecosystemsMenu.value = flattenedIucnEcosystems.filter(a => ecosystemIds.includes(a.value));
 
     return ecosystemIds;
@@ -145,72 +147,64 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
 });
 </script>
 
-
 <template>
-    <div v-if="store.bestPractice" class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-4xl dark:text-zinc-300 font-roboto-slab">Objectives and Context</h1>
-        <div class="divide-y divide-stone-300 dark:divide-stone-900">
-            <TextFormGroup
-                v-model="store.bestPractice.title"
-                label="1.1 Title"
-                description="Title of the restoration practice."
-                :required=true
-                :edit=edit>
-            </TextFormGroup>
-            <MultiSelectFormGroup
-                :options="objectives"
-                v-model="store.bestPractice.objectives"
-                label="1.2 Objectives"
-                description="Please select the main objectives of the practice."
-                :required="true"
-                :edit=edit />
-            <TextareaFormGroup
-                v-model="store.bestPractice.objectivesAdditionalInformation"
-                label="1.3 Objectives additional information"
-                description="Feel free to provide additional information on specific objectives of the practice."
-                :edit=edit />
-            <MultiSelectFormGroup
-                :options="ecosystems"
-                v-model="store.bestPractice.ecosystems"
-                label="1.4 Ecosystems"
-                description="Ecosystems where the practice was applied [Select all that apply]"
-                :edit=edit />
-            <MultiSelectFormGroup
-                :options="ecosystemsMenu"
-                v-model="store.bestPractice.iucnEcosystems"
-                label="1.5 Ecosystems additional information"
-                description="Select the specific types of ecosystem(s) where the practice was applied."
-                :required="true"
-                :edit=edit />
-            <TextareaFormGroup
-                v-model="store.bestPractice.context"
-                label="1.6 Context"
-                description="Please share any relevant ecological, socioeconomic and cultural context for the practice's implementation." />
-            <MultiSelectFormGroup
-                :options="areasMenu"
-                v-model="store.bestPracticeAreaIdxs"
-                label="1.7 Areas"
-                :description="areasMenu.length ? 'Select the areas where the practice was implemented.' : 'No area was selected for the project.'"
-                :edit=edit />
-            <MultiSelectFormGroup
-                :options="activitiesMenu"
-                v-model="store.bestPractice.activities"
-                label="1.8 Activities"
-                :description="areasMenu.length ? 'Select the activities of your restoration initiative to which the practice belongs.' : 'No activity was selected for the project.'"
-                :required="true"
-                :edit=edit />
-            <MultiSelectFormGroup
-                :options="drivers"
-                v-model="store.bestPractice.drivers"
-                label="1.9 Drivers"
-                description="Direct and indirect drivers of degradation addressed by the practice [Select all that apply]."
-                :required="true"
-                :edit=edit />
-            <TextareaFormGroup
-                v-model="store.bestPractice.driversAdditionalInformation"
-                label="1.10 Drivers additional information"
-                description="Please provide additional information to explain how the practice contributed to reducing the drivers of ecosystem degradation selected above."
-                :edit=edit />
-        </div>
-    </div>
+    <TabTemplate title="Objectives and Context">
+        <template #default>
+            <template v-if="store.bestPractice">
+                <TextFormGroup v-model="store.bestPractice.title"
+                               label="1.1 Title"
+                               description="Title of the restoration practice."
+                               :required=true
+                               :edit=edit>
+                </TextFormGroup>
+                <MultiSelectFormGroup :options="objectives"
+                                      v-model="store.bestPractice.objectives"
+                                      label="1.2 Objectives"
+                                      description="Please select the main objectives of the practice."
+                                      :required="true"
+                                      :edit=edit />
+                <TextareaFormGroup v-model="store.bestPractice.objectivesAdditionalInformation"
+                                   label="1.3 Objectives additional information"
+                                   description="Feel free to provide additional information on specific objectives of the practice."
+                                   :edit=edit />
+                <MultiSelectFormGroup :options="areasMenu"
+                                      v-model="store.bestPracticeAreaIdxs"
+                                      label="1.4 Areas"
+                                      :description="areasMenu.length ? 'Select the areas where the practice was implemented.' : 'No area was selected for the project.'"
+                                      :edit=edit />
+                <MultiSelectFormGroup :options="ecosystems"
+                                      v-model="store.bestPractice.ecosystems"
+                                      label="1.5 Ecosystems"
+                                      description="Ecosystems where the practice was applied [Select all that apply]"
+                                      :edit=edit />
+                <MultiSelectFormGroup :options="ecosystemsMenu"
+                                      v-model="store.bestPractice.iucnEcosystems"
+                                      label="1.6 Ecosystems additional information"
+                                      description="Select the specific types of ecosystem(s) where the practice was applied."
+                                      :required="true"
+                                      :edit=edit />
+                <TextareaFormGroup v-model="store.bestPractice.context"
+                                   label="1.7 Context"
+                                   description="Please share any relevant ecological, socioeconomic and cultural context for the practice's implementation." />
+                <MultiSelectFormGroup :options="activitiesMenu"
+                                      v-model="store.bestPractice.activities"
+                                      label="1.8 Activities"
+                                      :description="areasMenu.length ? 'Select the activities of your restoration initiative to which the practice belongs.' : 'No activity was selected for the project.'"
+                                      :required="true"
+                                      :edit=edit />
+                <MultiSelectFormGroup :options="drivers"
+                                      v-model="store.bestPractice.drivers"
+                                      label="1.9 Drivers"
+                                      description="Direct and indirect drivers of degradation addressed by the practice [Select all that apply]."
+                                      :required="true"
+                                      :edit=edit />
+                <TextareaFormGroup v-model="store.bestPractice.driversAdditionalInformation"
+                                   label="1.10 Drivers additional information"
+                                   description="Please provide additional information to explain how the practice contributed to reducing the drivers of ecosystem degradation selected above."
+                                   :edit=edit />
+            </template>
+        </template>
+    </TabTemplate>
+    <!-- <pre class="text-white">{{JSON.stringify(store.projectAreas, null, 2)}}</pre> -->
 </template>
+

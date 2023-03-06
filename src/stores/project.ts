@@ -59,7 +59,7 @@ export const useProjectStore = defineStore({
                 }
             }
 
-            const q = userGroups 
+            const q = userGroups
                 ? query(projectsCollection, where('group', 'in', userGroups))
                 : query(projectsCollection)
             // const q = query(projectsCollection, where('group', 'in', userGroups));
@@ -84,6 +84,23 @@ export const useProjectStore = defineStore({
                 results: {}
             }
             this.projectAreas = [];
+        },
+        canEdit() {
+            const authStore = useAuthStore();
+
+            if (authStore.isAdmin) {
+                return true;
+            }
+
+            const level = authStore.privileges[this.project.data.group];
+            if (level === 'admin') {
+                return true;
+            }
+            if (level === 'editor' && this.project.data.created_by === authStore.user.uid) {
+                return true
+            }
+
+            return false;
         },
         async save() {
             const authStore = useAuthStore();
@@ -111,7 +128,7 @@ export const useProjectStore = defineStore({
             // Save areas in a separate collection
             const areasRef = doc(areaCollection, projectRef.id);
             batch.set(areasRef, { areas: this.projectAreas });
-            
+
             await batch.commit();
         },
         async saveAndExit() {
@@ -155,4 +172,3 @@ export const useProjectStore = defineStore({
 //                (let [duplicates (concat (vec p) (vec ^js/Array (.-docs u)) (vec ^js/Array (.-docs g)))
 //                      t (into {} (map #(-> [(.-id %) %]) duplicates))]
 //                  (vals t))))))
-  

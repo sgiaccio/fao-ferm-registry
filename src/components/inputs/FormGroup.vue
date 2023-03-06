@@ -6,7 +6,7 @@ defineProps(baseProps);
 
 <template>
     <fieldset>
-        <div class="sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start sm:py-5 sm:content-center">
+        <div class="sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start py-5 sm:content-center">
             <legend class="block text-sm font-bold text-gray-700 dark:text-zinc-300 sm:mt-px">
                 {{label}}
             </legend>

@@ -7,7 +7,8 @@ import {
     sendSignInLinkToEmail,
     isSignInWithEmailLink,
     signInWithEmailLink,
-    type User
+    type User,
+    getRedirectResult
 } from "firebase/auth";
 import { collection, query, getDocs, where, documentId } from "firebase/firestore";
 
@@ -15,6 +16,16 @@ import { collection, query, getDocs, where, documentId } from "firebase/firestor
 import router from '@/router';
 
 import { db } from '../firebase';
+
+
+
+
+import { GoogleAuthProvider } from "firebase/auth";
+import { signInWithRedirect } from "firebase/auth";
+
+const provider = new GoogleAuthProvider();
+const auth = getAuth();
+
 
 
 const baseUrl = process.env.NODE_ENV === 'development'
@@ -280,6 +291,10 @@ export const useAuthStore = defineStore({
             const groupsCollection = collection(db, 'groups');
             const groups = await getDocs(query(groupsCollection));
             return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+        },
+
+        loginWithGoogle() {
+            signInWithRedirect(auth, provider);
         }
 
         // fetchUser_() {

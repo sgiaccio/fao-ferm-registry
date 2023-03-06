@@ -4,7 +4,7 @@ import type { PropType } from "vue";
 import baseProps from "../formGroupProps";
 import FormGroup from "../FormGroup.vue";
 
-import SelectInput from "./SelectInput.vue";
+import RadioInput from "./RadioInput.vue";
 
 import type { Menu } from '../../project/menus'
 
@@ -31,7 +31,7 @@ function valueChanged(value: string) {
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
-        <SelectInput
+        <RadioInput
             :edit="edit"
             :options="options"
             :model-value="modelValue"

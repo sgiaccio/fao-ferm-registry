@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */ 
+
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   content: [
     "./index.html",
@@ -7,6 +10,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
         'roboto-slab': ['"Roboto Slab"'],
       },
     },

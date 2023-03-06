@@ -100,7 +100,6 @@ async function uploadFile() {
         {
             method: 'POST',
             headers: {
-                // TODO
                 'Authorization': `Bearer ${authStore.user.accessToken}`,
                 // 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             },

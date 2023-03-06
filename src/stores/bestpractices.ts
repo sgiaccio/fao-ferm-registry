@@ -123,16 +123,17 @@ export const useBestPracticesStore = defineStore({
             this.bestPracticeAreaIdxs = [];
         },
 
-        async saveAndExit() {
-            await this.save();
-            this.resetBestPracticeState();
-        },
+        // async saveAndExit() {
+        //     await this.save();
+        //     this.resetBestPracticeState();
+        // },
 
         async createEmpty(projectId: string) {
             this.id = null;
             this.bestPractice = { ...newBestPractice, projectId };
             await this.fetchProjectAreas(projectId);
         },
+
         async submit(id: string) {
             const bpRef = doc(bestPracticesCollection, id);
             setDoc(bpRef, { status: 'submitted' }, { merge: true });
@@ -140,19 +141,27 @@ export const useBestPracticesStore = defineStore({
         
         async canSetStatus(newStatus: 'draft' | 'submitted' | 'published') {
             // Global administrators can do whatever they want
-            if (authStore.isAdmin) return true;
+            if (authStore.isAdmin) {
+                return newStatus === 'submitted' && (!this.bestPractice.status || this.bestPractice.status === 'draft');
+                // TODO add other conditions
+            }
 
             const projectStore = useProjectStore();
             try {
+                debugger;
                 await projectStore.fetchProject(this.bestPractice.projectId);
                 const level = authStore.privileges[projectStore.project.group];
 
                 // Group administrators can do whatever they want in their group
-                if (level === 'admin') return true;
+                if (level === 'admin') {
+                    return newStatus === 'submitted' && (!this.bestPractice.status || this.bestPractice.status === 'draft');
+                    // TODO add other conditions
+                }
 
                 // Editors can only change from draft to submitted
                 if (level === 'editor' && projectStore.project.created_by === authStore.user!.uid) {
                     return newStatus === 'submitted' && (!this.bestPractice.status || this.bestPractice.status === 'draft');
+                    // TODO add other conditions
                 }
             } catch (e) {
                 alert("Error in checking privileges for this record");
