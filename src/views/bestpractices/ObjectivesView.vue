@@ -147,8 +147,8 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
 
 
 <template>
-    <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-4xl dark:text-zinc-300">Objectives and Context</h1>
+    <div v-if="store.bestPractice" class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
+        <h1 class="text-4xl dark:text-zinc-300 font-roboto-slab">Objectives and Context</h1>
         <div class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextFormGroup
                 v-model="store.bestPractice.title"

@@ -5,7 +5,11 @@ module.exports = {
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'roboto-slab': ['"Roboto Slab"'],
+      },
+    },
   },
   plugins: [require('@tailwindcss/forms')],
   darkMode: 'class',

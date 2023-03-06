@@ -81,13 +81,13 @@ function enableSpecifyReplicability() {
 
 <template>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-4xl dark:text-zinc-300">Methodology</h1>
+        <h1 class="text-4xl dark:text-zinc-300 font-roboto-slab">Methodology</h1>
         
         <h2 class="text-2xl pt-6 dark:text-zinc-300">Implementation of the practice</h2>
         
         <p class="dark:text-zinc-300 italic"><span class="font-bold">Please provide all the information that another practitioner needs to have in order to be able to replicate this practice</span>. Please provide a description of the practice and explain in detail the steps for its implementation including when applicable: timing, equipment, labour, species used, and all other relevant information.</p>
 
-        <div class="divide-y divide-stone-300 dark:divide-stone-900">
+        <div v-if="store.bestPractice" class="divide-y divide-stone-300 dark:divide-stone-900">
             <TextareaFormGroup
                 v-model="store.bestPractice.description"
                 label="2.1 Description"

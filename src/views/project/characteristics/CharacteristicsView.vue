@@ -142,7 +142,7 @@ function fetchIndicators(area: any) {
 
 <template>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-3xl dark:text-zinc-300">Characteristics</h1>
+        <h1 class="text-3xl dark:text-zinc-300 font-roboto-slab">Characteristics</h1>
         <p class="dark:text-zinc-200">The project area is characterized by a number of default parameters. They are automatically generated for each aoi based on global data sources. More information about the data source will be soon made available.</p>
         <div class="text-sm text-gray-800 dark:text-zinc-300">
             <p>

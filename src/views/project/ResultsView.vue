@@ -138,7 +138,7 @@
       
       <template>
         <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-          <h1 class="text-3xl dark:text-zinc-300">Results</h1>
+          <h1 class="text-3xl dark:text-zinc-300 font-roboto-slab">Results</h1>
           <p class="dark:text-zinc-200">Results are calculated for selected indicators in each area of interests. The indicator calculation is based on available global layers and cloud computing environment such as SEPAL. The standard operating procedure to assess ecosystem restoration indicators is under preparation.</p>
           <!-- <div class="my-6 font-bold dark:text-zinc-300">uuid: -->
             <!-- <span class="font-mono">{{data.uuid}}</span> -->

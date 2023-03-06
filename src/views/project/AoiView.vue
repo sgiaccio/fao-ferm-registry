@@ -43,7 +43,7 @@ const store = useProjectStore();
 
 <template>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-3xl dark:text-zinc-300">Area</h1>
+        <h1 class="text-3xl dark:text-zinc-300 font-roboto-slab">Area</h1>
         <p class="dark:text-zinc-200">Identification of geographic areas of ecosystem restoration is key for geospatial applications. One initiative implements ecosystem restoration in one or more geographic areas. initiatives can identify one or more initiative areas. Identification of activities, indicators, characterization and results will be provided for each area. Geographic areas can be identified based on different options:</p>
         <ul class="list-disc ml-10 dark:text-zinc-200">
             <li>Select administrative areas</li>

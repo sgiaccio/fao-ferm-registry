@@ -164,7 +164,7 @@ vue.watch(() => store.id as string, async id => {
 
 <template>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-3xl dark:text-zinc-300">Initiative Registration</h1>
+        <h1 class="text-3xl dark:text-zinc-300 font-roboto-slab">Initiative Registration</h1>
         <p class="dark:text-zinc-200">In this tab, basic information about your initiative is needed. The title and a
             summary of the aims and expected results of the initiative can be provided in the description section. You
             also

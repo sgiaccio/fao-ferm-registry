@@ -19,7 +19,7 @@ withDefaults(defineProps<{
 
 <template>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-3xl dark:text-zinc-300">Ecosystems</h1>
+        <h1 class="text-3xl dark:text-zinc-300 font-roboto-slab">Ecosystems</h1>
         <p class="dark:text-zinc-200">It is crucial to identify the ecosystems that your initiative is restoring. If spatially explicit information of an area is provided and represents the entirety of the area under restoration (i.e. polygons of the areas are provided), the ecosystems can be calculated based on a map overlay. If only tabular data of an area is provided, we kindly ask you to select the corresponding ecosystems using biomes of the IUCN Global Ecosystem Typology 2.0 (Keith et al., 2022).
         </p>
         <p>

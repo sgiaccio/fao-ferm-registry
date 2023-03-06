@@ -11,11 +11,11 @@
             </div>
             <div class="relative px-4 py-16 sm:px-6 sm:py-16 lg:py-24 lg:px-8">
               <img class="mx-auto h-32 w-auto mb-4" src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg" alt="UN Decade" />
-              <h1 class="text-center text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-                <span class="block text-gray-200">The FERM registry</span>
+              <h1 class="text-center text-4xl font-extrabold tracking-normal sm:text-5xl lg:text-6xl">
+                <span class="block text-gray-200 mb-4">The FERM registry</span>
                 <span class="block text-yellow-500">Monitoring restoration</span>
               </h1>
-              <p class="mt-6 max-w-lg mx-auto text-center text-xl text-white sm:max-w-3xl">Join #GenerationRestoration and share your restoration initiatives and good practices with the world.</p>
+              <p class="mt-10 max-w-lg mx-auto text-center text-xl text-white sm:max-w-3xl">Join #GenerationRestoration and share your restoration initiatives and good practices with the world.</p>
               <div class="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center">
                 <div class="space-y-4 sm:mx-auto sm:inline-grid sm:grid-cols-1 sm:gap-5">
                   <router-link

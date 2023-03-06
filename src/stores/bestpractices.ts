@@ -6,6 +6,9 @@ import { db } from '../firebase';
 import { useAuthStore } from './auth';
 import { useProjectStore } from './project';
 
+import type BestPractice from '../lib/bestpractice';
+
+
 const bestPracticesCollection = collection(db, 'bestPractices');
 const areaCollection = collection(db, "areas")
 
@@ -21,7 +24,7 @@ export const useBestPracticesStore = defineStore({
     id: 'bestPractices',
     state: () => ({
         id: null as string | null,
-        bestPractice: null as any, // TODO type
+        bestPractice: null as BestPractice | null,
         projectAreas: null as any, // TODO use the ones in project store?
         bestPracticeAreaIdxs: []
     }),

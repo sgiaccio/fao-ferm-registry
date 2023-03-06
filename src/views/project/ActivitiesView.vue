@@ -19,7 +19,7 @@ const store = useProjectStore();
 
 <template>
     <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
-        <h1 class="text-3xl dark:text-zinc-300">Activities</h1>
+        <h1 class="text-3xl dark:text-zinc-300 font-roboto-slab">Activities</h1>
         <p class="dark:text-zinc-200">There are various forms of activities to support ecosystem restoration. They range from technologies to approaches, at local to watershed levels. Different parameters are identified to categorize activities and better identify related indicators and datasets for each area of interest.</p>
 
         <FormGroup label="Activities" v-if="store.projectAreas?.length">

@@ -77,7 +77,7 @@ async function filterByGroup(groupId: string | null) {
 <template>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
-            <h1 class="mt-12 font-semibold text-4xl text-gray-800 dark:text-white mb-8">Initiatives</h1>
+            <h1 class="mt-12 font-roboto-slab text-4xl text-gray-800 dark:text-white mb-8">Initiatives</h1>
 
             <p class=" dark:text-white">Restoration projects, programs and initiatives at all spatial scales, from
                 individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for
