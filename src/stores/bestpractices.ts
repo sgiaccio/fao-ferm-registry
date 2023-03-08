@@ -148,7 +148,6 @@ export const useBestPracticesStore = defineStore({
 
             const projectStore = useProjectStore();
             try {
-                debugger;
                 await projectStore.fetchProject(this.bestPractice.projectId);
                 const level = authStore.privileges[projectStore.project.group];
 

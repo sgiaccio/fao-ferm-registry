@@ -217,7 +217,7 @@ function fetchIndicators(area: any) {
             </div>
             <div v-else
                  class="text-red-600 font-bold text-lg pb-4">Please enter at least one area in the <router-link class="text-blue-400 underline hover:text-blue-600"
-                             :to="{ name: 'aoi' }">Area tab</router-link></div>
+                             :to="{ path: 'aoi' }">Area tab</router-link></div>
         </template>
     </TabTemplate>
 </template>

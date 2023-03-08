@@ -152,7 +152,7 @@ async function filterByGroup(groupId: string | null) {
                             <div class="py-1">
                                 <MenuItem v-for="[id, name] in Object.entries(authStore.userGroups)"
                                           v-slot="{ active }">
-                                <router-link :to="{ name: 'initiative-info', params: { id: 'new' }, query: { groupId: id } }"
+                                <router-link :to="{ path: '/initiatives/new/edit/info', query: { groupId: id } }"
                                              :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                                     {{ name }}
                                 </router-link>
@@ -172,7 +172,7 @@ async function filterByGroup(groupId: string | null) {
                             <div class="px-4 py-4 sm:px-6 sm:grow">
                                 <span class="block hover:bg-gray-50_">
                                     <div class="flex items-center justify-between">
-                                        <router-link :to="{ name: 'initiative-info', params: { id: project.id } }"
+                                        <router-link :to="{ path: `/initiatives/${project.id}/info` }"
                                                      :class="[project.data.project?.title ? 'text-indigo-600' : 'italic text-gray-400', 'truncate_ text-sm font-medium hover:text-indigo-500']">
                                             {{
                                                 project.data.project?.title
@@ -216,16 +216,16 @@ async function filterByGroup(groupId: string | null) {
                                                                 <div class="flex flex-row">
                                                                     <!-- <div class="">{{JSON.stringify(bp, null, 2)}}</div> -->
                                                                     <div>
-                                                                    <PencilSquareIcon v-if="!bp.data.status || bp.data.status === 'draft'"
-                                                                                      class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                      aria-hidden="true" />
-                                                                    <PaperAirplaneIcon v-else-if="bp.data.status === 'submitted'"
-                                                                                      class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                      aria-hidden="true" />
-                                                                    <MegaphoneIcon v-else-if="bp.data.status === 'published'"
-                                                                                      class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                      aria-hidden="true" />
-                                                                                      </div>
+                                                                        <PencilSquareIcon v-if="!bp.data.status || bp.data.status === 'draft'"
+                                                                                          class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                          aria-hidden="true" />
+                                                                        <PaperAirplaneIcon v-else-if="bp.data.status === 'submitted'"
+                                                                                           class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                           aria-hidden="true" />
+                                                                        <MegaphoneIcon v-else-if="bp.data.status === 'published'"
+                                                                                       class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                       aria-hidden="true" />
+                                                                    </div>
                                                                     <div class="truncate">{{ bp.data.title || "No title" }}</div>
                                                                 </div>
                                                             </router-link>
@@ -285,7 +285,7 @@ async function filterByGroup(groupId: string | null) {
                                         <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                             <div class="py-1">
                                                 <MenuItem v-slot="{ active }">
-                                                <router-link :to="{ name: 'initiative-info', params: { id: project.id } }"
+                                                <router-link :to="{ path: `/initiatives/${project.id}/info` }"
                                                              :class="[projectStore.canEdit() ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
                                                     Edit</router-link>
                                                 </MenuItem>

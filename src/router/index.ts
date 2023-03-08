@@ -2,38 +2,83 @@ import { useAuthStore } from "../stores/auth"
 
 import { createRouter, createWebHistory } from "vue-router";
 
-const HomeView  = () => import('../views/HomeView.vue')
+const HomeView = () => import('../views/HomeView.vue')
 const LoginView = () => import('../views/LoginView.vue')
 const AdminView = () => import('../views/admin/AdminView.vue')
 
 // Projects
-const ProjectView             = () => import('../views/project/ProjectView.vue')
+const ProjectView = () => import('../views/project/ProjectView.vue')
 const ProjectRegistrationView = () => import('../views/project/RegistrationView.vue')
-const ProjectAoi              = () => import('../views/project/AoiView.vue')
-const ProjectCharacteristics  = () => import('../views/project/characteristics/CharacteristicsView.vue')
-const ProjectActivities       = () => import('../views/project/ActivitiesView.vue')
-const ProjectEcosystems       = () => import('../views/project/EcosystemsView.vue')
-const ProjectIndicators       = () => import('../views/project/IndicatorsView.vue')
-const ProjectResults          = () => import('../views/project/ResultsView.vue')
+const ProjectAoi = () => import('../views/project/AoiView.vue')
+const ProjectCharacteristics = () => import('../views/project/characteristics/CharacteristicsView.vue')
+const ProjectActivities = () => import('../views/project/ActivitiesView.vue')
+const ProjectEcosystems = () => import('../views/project/EcosystemsView.vue')
+const ProjectIndicators = () => import('../views/project/IndicatorsView.vue')
+const ProjectResults = () => import('../views/project/ResultsView.vue')
 
 // Best practices
-const BestPracticeListView    = () => import('../views/bestpractices/BestPracticeListView.vue')
-const BestPracticeView        = () => import('../views/bestpractices/BestPracticeView.vue')
-const ObjectivesView          = () => import('../views/bestpractices/ObjectivesView.vue')
-const MethodologyView         = () => import('../views/bestpractices/MethodologyView.vue')
-const KeyFactorsView          = () => import('../views/bestpractices/KeyFactorsView.vue')
-const BenefitsView            = () => import('../views/bestpractices/BenefitsView.vue')
+const BestPracticeListView = () => import('../views/bestpractices/BestPracticeListView.vue')
+const BestPracticeView = () => import('../views/bestpractices/BestPracticeView.vue')
+const ObjectivesView = () => import('../views/bestpractices/ObjectivesView.vue')
+const MethodologyView = () => import('../views/bestpractices/MethodologyView.vue')
+const KeyFactorsView = () => import('../views/bestpractices/KeyFactorsView.vue')
+const BenefitsView = () => import('../views/bestpractices/BenefitsView.vue')
 const AdditionalResourcesView = () => import('../views/bestpractices/AdditionalResourcesView.vue')
-const ProjectListViewVue      = () => import('../views/project/ProjectListView.vue')
+const ProjectListViewVue = () => import('../views/project/ProjectListView.vue')
 
 // Admin
-const UserListView = () => import ('../views/admin/UserListView.vue');
+const UserListView = () => import('../views/admin/UserListView.vue');
 
 // Print
 const BestPracticePrintView = () => import('../views/bestpractices/BestPracticePrint.vue')
-const ProjectPrintView      = () => import('../views/project/ProjectPrint.vue')
+const ProjectPrintView = () => import('../views/project/ProjectPrint.vue')
 
 const NotFoundView = () => import('../views/NotFoundView.vue');
+
+
+const projectTabs = [{
+  path: 'info',
+  component: ProjectRegistrationView,
+  meta: {
+    requiresAuth: true
+  }
+}, {
+  path: 'aoi',
+  component: ProjectAoi,
+  meta: {
+    requiresAuth: true
+  }
+}, {
+  path: 'characteristics',
+  component: ProjectCharacteristics,
+  meta: {
+    requiresAuth: true
+  }
+}, {
+  path: 'activities',
+  component: ProjectActivities,
+  meta: {
+    requiresAuth: true
+  }
+}, {
+  path: 'ecosystems',
+  component: ProjectEcosystems,
+  meta: {
+    requiresAuth: true
+  }
+}, {
+  path: 'indicators',
+  component: ProjectIndicators,
+  meta: {
+    requiresAuth: true
+  }
+}, {
+  path: 'results',
+  component: ProjectResults,
+  meta: {
+    requiresAuth: true
+  }
+}];
 
 
 const router = createRouter({
@@ -113,57 +158,19 @@ const router = createRouter({
           meta: {
             requiresAuth: true
           }
-        }, {
-          path: 'info',
-          name: 'initiative-info',
-          component: ProjectRegistrationView,
-          meta: {
-            requiresAuth: true
-          },
-          // props: { edit: true }
-        }, {
-          path: 'aoi',
-          name: 'aoi',
-          component: ProjectAoi,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'characteristics',
-          name: 'initiative-characteristics',
-          component: ProjectCharacteristics,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'activities',
-          name: 'initiative-activities',
-          component: ProjectActivities,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'ecosystems',
-          name: 'initiative-ecosystems',
-          component: ProjectEcosystems,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'indicators',
-          name: 'initiative-indicators',
-          component: ProjectIndicators,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'results',
-          name: 'initiative-results',
-          component: ProjectResults,
-          meta: {
-            requiresAuth: true
-          }
-        }
+        },
+        ...projectTabs
+      ]
+    }, {
+      path: '/initiatives/:id/edit',
+      name: 'initiative-edit',
+      component: ProjectView,
+      props: { edit: true },
+      meta: {
+        requiresAuth: true
+      },
+      children: [
+        ...projectTabs
       ]
     },
     {
