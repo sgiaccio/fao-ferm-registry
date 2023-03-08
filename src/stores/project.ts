@@ -92,11 +92,11 @@ export const useProjectStore = defineStore({
                 return true;
             }
 
-            const level = authStore.privileges[this.project.data.group];
+            const level = authStore.privileges[this.project.group];
             if (level === 'admin') {
                 return true;
             }
-            if (level === 'editor' && this.project.data.created_by === authStore.user.uid) {
+            if (level === 'editor' && this.project.created_by === authStore.user.uid) {
                 return true
             }
 
