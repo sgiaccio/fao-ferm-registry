@@ -131,7 +131,7 @@ function enableSpecifyReplicability() {
                     <RadioFormGroup :options="replicability"
                                      v-model="store.bestPractice.replicability"
                                      label="2.8 Replicability"
-                                     description="Has the practice been tested and replicated in different contexts?"
+                                     description="Has the practice been tested and replicated in different contexts (e.g., geographic location, type of ecosystem, different socio-economic groups involved, different locations within a region, etc.)?"
                                      :required="true"
                                      :edit=edit />
                     <TextareaFormGroup v-model="store.bestPractice.specifyReplicability"

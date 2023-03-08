@@ -97,7 +97,8 @@ export const knowledgeTypes: Menu = [
     { value: 1, dangerousHtmlLabel: 'Indigenous Peoples\' traditional knowledge: Cumulative body of knowledge (for example know-how), practices and manifestations maintained and developed by Indigenous Peoples with long histories of interaction with their natural environment. Indigenous Peoples’ knowledge is adapted to the local culture and transmitted orally from generation to generation. <a target="_blank" class="text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400" href="https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704">https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704</a>' },
     { value: 2, label: 'Scientific knowledge: quantitative and based on experimentation and systematic accumulation of facts (Berkes, 1993).' },
     { value: 3, label: 'Practical knowledge: knowledge from ecosystem restoration practitioners gained through their experiences implementing initiatives.' },
-    { value: 4, dangerousHtmlLabel: 'Local knowledge: Local knowledge is the knowledge that people in a given community have developed over time and continue to develop. <a target="_blank" class="text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400" href="https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>' }
+    { value: 4, dangerousHtmlLabel: 'Local knowledge: Local knowledge is the knowledge that people in a given community have developed over time and continue to develop. <a target="_blank" class="text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400" href="https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>' },
+    { value: 0, label: 'Others' }
 ];
 
 export const scale: Menu = [
