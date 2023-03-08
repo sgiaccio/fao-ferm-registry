@@ -51,7 +51,7 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
 
     async function acceptBpConsent() {
         const authStore = useAuthStore();
-        const userRef = doc(userCollection, authStore.user.uid);
+        const userRef = doc(userCollection, authStore.user!.uid);
         return setDoc(userRef, { bpConsentAccepted: true }, { merge: true }).then(() => {
             userPrefs.value.bpConsentAccepted = true;
         });

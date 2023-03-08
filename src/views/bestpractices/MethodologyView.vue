@@ -129,15 +129,19 @@ function enableSpecifyReplicability() {
                                       :edit=edit />
                 <div>
                     <RadioFormGroup :options="replicability"
-                                     v-model="store.bestPractice.replicability"
-                                     label="2.8 Replicability"
-                                     description="Has the practice been tested and replicated in different contexts?"
-                                     :required="true"
-                                     :edit=edit />
-                    <TextareaFormGroup v-model="store.bestPractice.specifyReplicability"
+                                    v-model="store.bestPractice.replicability"
+                                    label="2.8 Replicability"
+                                    description="Has the practice been tested and replicated in different contexts (e.g., geographic location, type of ecosystem, different socio-economic groups involved, different locations within a region, etc.)?"
+                                    :required="true"
+                                    :edit=edit />
+                    <!-- <TextareaFormGroup v-model="store.bestPractice.specifyReplicability"
                                        label="2.9 Replicability additional information"
                                        description="Please briefly explain where it was replicated and tested, how many times, with what results and the future opportunities for replication or adaptation."
                                        :enabled="enableSpecifyReplicability"
+                                       :edit=edit /> -->
+                    <TextareaFormGroup v-model="store.bestPractice.specifyReplicability"
+                                       label="2.9 Replicability additional information"
+                                       description="Please briefly explain where it was replicated and tested, how many times, with what results and the future opportunities for replication or adaptation."
                                        :edit=edit />
                 </div>
             </template>

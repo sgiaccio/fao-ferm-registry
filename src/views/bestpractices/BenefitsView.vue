@@ -46,7 +46,7 @@ const store = useBestPracticesStore();
                 <TextareaFormGroup v-model="store.bestPractice.validation"
                                    label="4.4 Validation"
                                    :required="true"
-                                   description="Please describe how the practice was evaluated (e.g., meta-analysis, expert review, cost-efficiency analysis) from a technical and methodological point of view to measure its effectiveness, and how the impacts of the practice have been validated with the beneficiaries, and how the lessons learned have been integrated."
+                                   description="Please describe how the practice was evaluated (e.g., meta-analysis, expert review, cost-efficiency analysis) from a technical and methodological point of view to demonstrate that it has achieved its measurable objectives, how the impacts of the practice have been validated with the beneficiaries, and how the lessons learned have been integrated."
                                    :edit=edit />
             </template>
         </template>
