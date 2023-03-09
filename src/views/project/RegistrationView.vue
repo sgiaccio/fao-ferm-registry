@@ -112,7 +112,8 @@ function deleteFile(projectId: string | null, fileName: string) {
 }
 
 vue.watch(() => store.id as string, async id => {
-    getFiles(id)
+    if (id)
+        getFiles(id)
 });
 </script>
 
