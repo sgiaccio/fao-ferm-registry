@@ -19,12 +19,12 @@ import TextInput from './TextInput.vue'
 
 
 const props = defineProps<{
-  modelValue: {
-    siteName: string,
-    uuid: string,
-    activities: number[],
-    ecosystems: string[]
-  }
+    modelValue: {
+        siteName: string,
+        uuid: string,
+        activities: number[],
+        ecosystems: string[]
+    }
 }>()
 
 const uploadStatus = ref('idle');
@@ -65,13 +65,16 @@ async function postGeoJson() {
             },
             body: `project_id=${projectStore.id}&geojson=${encodeURIComponent(geoJson)}`
         }
-    ).then(
-        response => response.text()
-    ).then(([uuid]) => {
-        // load_area_json returns an array of uuids but in this case there's only one
-        alert(`Area uploaded with uuid ${uuid}`);
-        emit('update:modelValue', { ...props.modelValue, uuid: uuid });
+    ).then(response => {
+        if (!response.ok) {
+            return response.text().then(text => { throw new Error(text) })
+        }
+        return response.text();
+    }).then(uuids => {
+        const uuidsArr: string[] = JSON.parse(uuids)
         uploadStatus.value = 'uploaded';
+        emit('update:modelValue', { ...props.modelValue, uuid: uuidsArr[0] });
+        alert(`Area uploaded with UUID ${uuidsArr[0]}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
     }).catch(error => {
         alert('Error uploading the JSON file');
         uploadStatus.value = 'idle'
@@ -81,11 +84,11 @@ async function postGeoJson() {
 async function fetchGeoJson() {
     return fetch(
         `https://europe-west3-fao-ferm.cloudfunctions.net/get_area_json?area_uuid=${props.modelValue.uuid}&project_id=${projectStore.id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${authStore.user.accessToken}`,
-            },
-        }
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${authStore.user.accessToken}`,
+        },
+    }
     ).then(response => response.json());
 }
 
@@ -112,7 +115,7 @@ onMounted(async () => {
     } else {
         const geoJson = await fetchGeoJson();
         const olGeoJsonObj = new GeoJSON({ dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
-        const source = new VectorSource({features: olGeoJsonObj.readFeatures(geoJson)});
+        const source = new VectorSource({ features: olGeoJsonObj.readFeatures(geoJson) });
         m.removeLayer(vectorLayer);
         m.addLayer(new VectorLayer({ source }));
         m.getView().fit(source.getExtent());
@@ -135,14 +138,14 @@ const edit = true;
 </script>
 
 <template>
-    <TextInput
-        v-if="edit"
-        placeholder="Site name"
-        v-model="modelValue.siteName" />
-    <div class="mt-4" ref="mapRoot" style="width: 600px; height: 400px" />
-    <button
-        v-if="!areaUploaded && edit"
-        class="mt-4 inline-flex items-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-default']"
-        @click="postGeoJson()">Upload</button>
+    <TextInput v-if="edit"
+               placeholder="Site name"
+               v-model="modelValue.siteName" />
+    <div class="mt-4"
+         ref="mapRoot"
+         style="width: 600px; height: 400px" />
+    <button v-if="!areaUploaded && edit"
+            class="mt-4 inline-flex items-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-default']"
+            @click="postGeoJson()">Upload</button>
 </template>

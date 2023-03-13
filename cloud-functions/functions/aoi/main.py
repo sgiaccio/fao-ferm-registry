@@ -42,6 +42,13 @@ initialize_app()
 #     --stage-bucket=fao-ferm-functions-staging \
 #     --trigger-http --allow-unauthenticated \
 #     --set-env-vars DB_USER=foo,DB_PASS=bar,DB_NAME=boo,INSTANCE_UNIX_SOCKET=vaf
+#
+# gcloud functions deploy load_area_json --region=${REGION} \
+#     --source=./ --runtime=python39 \
+#     --stage-bucket=fao-ferm-functions-staging \
+#     --trigger-http --allow-unauthenticated \
+#     --set-env-vars DB_USER=foo,DB_PASS=bar,DB_NAME=boo,INSTANCE_UNIX_SOCKET=vaf
+
 
 
 # TODO use Google secrets
@@ -334,3 +341,5 @@ def get_area_json(request):
     except Exception as error:
         print(traceback.format_exc())
         return (str(error), 400, { 'Access-Control-Allow-Origin': '*' } )
+    finally:
+        cursor.close()
