@@ -11,8 +11,27 @@ import { useAuthStore } from './auth';
 
 const userCollection = collection(db, "users")
 
+// institution: "",
+// ecosystem: false,
+// flagship: false,
+// partner: false,
+// other: false,
+// other_text: "",
+// purpose: "",
+
+interface RegistrationData {
+    institution: string,
+    ecosystem: boolean,
+    flagship: boolean,
+    partner: boolean,
+    other: boolean,
+    other_text: string,
+    purpose: string,
+}
+
 interface UserPrefs {
-    bpConsentAccepted?: boolean
+    bpConsentAccepted?: boolean,
+    registrationData?: RegistrationData
 }
 
 export const useUserPrefsStore = defineStore('userPreferences', () => {
@@ -39,6 +58,7 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
 
         // this.bpDisclaimerAccepted querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
 
+        // Set dark mode, get it from local storage if it exists
         const darkModeSt = window.localStorage.getItem('darkMode');
         if (!darkModeSt) {
             darkMode.value = false;
@@ -57,33 +77,20 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
         });
     }
 
+    async function register(registrationData: RegistrationData) {
+        const authStore = useAuthStore();
+        const userRef = doc(userCollection, authStore.user!.uid);
+
+        return setDoc(userRef, { registrationData }, { merge: true }).then(() => {
+            // TODO this is not needed, we just need to know if the user has registered
+            userPrefs.value.registrationData = registrationData;
+        });
+    }
+    
     function setDarkMode(mode: boolean) {
         darkMode.value = mode;
         window.localStorage.setItem('darkMode', '' + mode);
     }
 
-    return { userPrefs, fetchUserPrefs, acceptBpConsent, darkMode, setDarkMode }
+    return { userPrefs, fetchUserPrefs, acceptBpConsent, register, darkMode, setDarkMode };
 });
-
-// (defn get-all-projects []
-//     (.then (getDocs (query registry-collection))
-//            (fn [query-snapshot]
-//              ;; (doall (map #(.data %) (.-docs query-snapshot)))
-//              ^js/Array (.-docs query-snapshot))))
-  
-/*
-(defn get-user-accessible-projects
-    "Returns a list of records accessible by the current user (either public or belonging to one of his groups)"
-    []
-    (let [user-groups (-> @privileges keys clj->js)
-          q           (query registry-collection (where "group" "in" user-groups))
-          group-owned (getDocs q)
-          user-owned  (query registry-collection (where "created_by" "==" @userid))
-          public      (get-public-projects)]
-      (.then (js/Promise.all #js [group-owned user-owned public])
-             (fn [[g u p]]
-               ;; Deduplicate results from the two queries
-               (let [duplicates (concat (vec p) (vec ^js/Array (.-docs u)) (vec ^js/Array (.-docs g)))
-                     t (into {} (map #(-> [(.-id %) %]) duplicates))]
-                 (vals t))))))
-  */

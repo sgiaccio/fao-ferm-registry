@@ -1,85 +1,52 @@
 import { useAuthStore } from "../stores/auth"
+import { useUserPrefsStore } from "../stores/userPreferences"
 
 import { createRouter, createWebHistory } from "vue-router";
-
-const HomeView = () => import('../views/HomeView.vue')
-const LoginView = () => import('../views/LoginView.vue')
-const AdminView = () => import('../views/admin/AdminView.vue')
-
-// Projects
-const ProjectView = () => import('../views/project/ProjectView.vue')
-const ProjectRegistrationView = () => import('../views/project/RegistrationView.vue')
-const ProjectAoi = () => import('../views/project/AoiView.vue')
-const ProjectCharacteristics = () => import('../views/project/characteristics/CharacteristicsView.vue')
-const ProjectActivities = () => import('../views/project/ActivitiesView.vue')
-const ProjectEcosystems = () => import('../views/project/EcosystemsView.vue')
-const ProjectIndicators = () => import('../views/project/IndicatorsView.vue')
-const ProjectResults = () => import('../views/project/ResultsView.vue')
-
-// Best practices
-const BestPracticeListView = () => import('../views/bestpractices/BestPracticeListView.vue')
-const BestPracticeView = () => import('../views/bestpractices/BestPracticeView.vue')
-const ObjectivesView = () => import('../views/bestpractices/ObjectivesView.vue')
-const MethodologyView = () => import('../views/bestpractices/MethodologyView.vue')
-const KeyFactorsView = () => import('../views/bestpractices/KeyFactorsView.vue')
-const BenefitsView = () => import('../views/bestpractices/BenefitsView.vue')
-const AdditionalResourcesView = () => import('../views/bestpractices/AdditionalResourcesView.vue')
-const ProjectListViewVue = () => import('../views/project/ProjectListView.vue')
-
-// Admin
-const UserListView = () => import('../views/admin/UserListView.vue');
-
-// Print
-const BestPracticePrintView = () => import('../views/bestpractices/BestPracticePrint.vue')
-const ProjectPrintView = () => import('../views/project/ProjectPrint.vue')
-
-const NotFoundView = () => import('../views/NotFoundView.vue');
 
 
 const projectTabs = [{
   path: 'info',
-  component: ProjectRegistrationView,
+  component: () => import('../views/project/RegistrationView.vue'),
   meta: {
     requiresAuth: true
   }
 }, {
   path: 'aoi',
-  component: ProjectAoi,
+  component: () => import('../views/project/AoiView.vue'),
   meta: {
     requiresAuth: true
   }
 }, {
   path: 'characteristics',
-  component: ProjectCharacteristics,
+  component: () => import('../views/project/characteristics/CharacteristicsView.vue'),
   meta: {
     requiresAuth: true
   }
 }, {
   path: 'activities',
-  component: ProjectActivities,
+  component: () => import('../views/project/ActivitiesView.vue'),
   meta: {
     requiresAuth: true
   }
 }, {
   path: 'ecosystems',
-  component: ProjectEcosystems,
+  component: () => import('../views/project/EcosystemsView.vue'),
   meta: {
     requiresAuth: true
   }
 }, {
   path: 'indicators',
-  component: ProjectIndicators,
+  component: () => import('../views/project/IndicatorsView.vue'),
   meta: {
     requiresAuth: true
   }
 }, {
   path: 'results',
-  component: ProjectResults,
+  component: () => import('../views/project/ResultsView.vue'),
   meta: {
     requiresAuth: true
   }
 }];
-
 
 const router = createRouter({
   scrollBehavior(_to, _from, _savedPosition) {
@@ -94,17 +61,26 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: HomeView,
-    },
-    {
+      component: () => import('../views/HomeView.vue')
+    }, {
       path: "/login",
       name: "login",
-      component: LoginView,
-    },
-    {
+      component: () => import('../views/LoginView.vue')
+    }, {
+      path: "/signup",
+      name: "signup",
+      component: () => import('../views/SignUpView.vue')
+    }, {
+      path: "/registration",
+      name: "registration",
+      component: () => import('../views/RegistrationView.vue'),
+      meta: {
+        requiresAuth: true
+      },
+    }, {
       path: "/admin",
       name: "admin",
-      component: AdminView,
+      component: () => import('../views/admin/AdminView.vue'),
       meta: {
         requiresAuth: true
       },
@@ -112,41 +88,30 @@ const router = createRouter({
         {
           path: 'users',
           name: 'users',
-          component: UserListView,
+          component: () => import('../views/admin/UserListView.vue'),
           meta: {
             requiresAuth: true
           }
-        },
-        {
+        }, {
           path: 'groups',
           name: 'groups',
-          component: UserListView,
+          component: () => import('../views/admin/UserListView.vue'),
           meta: {
             requiresAuth: true
           }
         }
       ]
-    },
-    // {
-    //   path: "/about",
-    //   name: "about",
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import("../views/AboutView.vue"),
-    // },
-    {
+    }, {
       path: '/initiatives',
       name: 'initiatives',
-      component: ProjectListViewVue,
+      component: () => import('../views/project/ProjectListView.vue'),
       meta: {
         requiresAuth: true
       },
-    },
-    {
+    }, {
       path: '/initiatives/:id',
       name: 'initiative',
-      component: ProjectView,
+      component: () => import('../views/project/ProjectView.vue'),
       meta: {
         requiresAuth: true
       },
@@ -154,7 +119,7 @@ const router = createRouter({
         {
           path: 'print',
           name: 'printProject',
-          component: ProjectPrintView,
+          component: () => import('../views/project/ProjectPrint.vue'),
           meta: {
             requiresAuth: true
           }
@@ -164,7 +129,7 @@ const router = createRouter({
     }, {
       path: '/initiatives/:id/edit',
       name: 'initiative-edit',
-      component: ProjectView,
+      component: () => import('../views/project/ProjectView.vue'),
       props: { edit: true },
       meta: {
         requiresAuth: true
@@ -172,17 +137,15 @@ const router = createRouter({
       children: [
         ...projectTabs
       ]
-    },
-    {
+    }, {
       path: '/good-practices',
-      component: BestPracticeListView,
+      component: () => import('../views/bestpractices/BestPracticeListView.vue'),
       meta: {
         requiresAuth: true
       }
-    },
-    {
+    }, {
       path: '/good-practices/:id',
-      component: BestPracticeView,
+      component: () => import('../views/bestpractices/BestPracticeView.vue'),
       name: 'bestPractice',
       meta: {
         requiresAuth: true
@@ -191,14 +154,14 @@ const router = createRouter({
         {
           path: 'print',
           name: 'printBestPractice',
-          component: BestPracticePrintView,
+          component: () => import('../views/bestpractices/BestPracticePrint.vue'),
           meta: {
             requiresAuth: true
           }
         }, {
           path: 'objectives',
           name: 'objectives',
-          component: ObjectivesView,
+          component: () => import('../views/bestpractices/ObjectivesView.vue'),
           meta: {
             requiresAuth: true,
             dataPath: 'objectives'
@@ -206,7 +169,7 @@ const router = createRouter({
         }, {
           path: 'methodology',
           name: 'methodology',
-          component: MethodologyView,
+          component: () => import('../views/bestpractices/MethodologyView.vue'),
           meta: {
             requiresAuth: true,
             dataPath: 'methodology'
@@ -214,7 +177,7 @@ const router = createRouter({
         }, {
           path: 'key-factors',
           name: 'key-factors',
-          component: KeyFactorsView,
+          component: () => import('../views/bestpractices/KeyFactorsView.vue'),
           meta: {
             requiresAuth: true,
             dataPath: 'keyFactors'
@@ -222,7 +185,7 @@ const router = createRouter({
         }, {
           path: 'benefits',
           name: 'benefits',
-          component: BenefitsView,
+          component: () => import('../views/bestpractices/BenefitsView.vue'),
           meta: {
             requiresAuth: true,
             dataPath: 'benefits'
@@ -230,30 +193,38 @@ const router = createRouter({
         }, {
           path: 'additional-resources',
           name: 'additional-resources',
-          component: AdditionalResourcesView,
+          component: () => import('../views/bestpractices/AdditionalResourcesView.vue'),
           meta: {
             requiresAuth: true,
             dataPath: 'additionalResources'
           }
         }
       ]
-    },
-
-    { path: '/:pathMatch(.*)', component: NotFoundView }
+    }, {
+      path: '/:pathMatch(.*)',
+      component: () => import('../views/NotFoundView.vue')
+    }
   ],
 });
 
 router.beforeEach(async (to, from, next) => {
+  console.log(JSON.stringify(to, null, 2));
   const authStore = useAuthStore();
+  const userPrefsStore = useUserPrefsStore();
 
-  if (to.path === "/login" && authStore.user) {
-    next("/");
+  if (authStore.user && to.name !== 'registration' && !userPrefsStore.userPrefs.registrationData) {
+    next({ name: 'registration' });
+    return
+  }
+
+  if (to.name === 'login' && authStore.user) {
+    next({ name: 'home' });
     return;
   }
 
-  if (to.matched.some(record => record.meta.requiresAuth) && !authStore.user) {
+  if (to.matched.some(record => record.meta.requiresAuth) && authStore.authLoaded && !authStore.user) {
     authStore.returnUrl = to.fullPath;
-    next("/login");
+    next({ name: 'login' });
     return;
   }
 

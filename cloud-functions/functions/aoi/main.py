@@ -14,7 +14,7 @@ from google.cloud import storage
 
 from werkzeug.utils import secure_filename
 import fiona
-from fiona.crs import to_string
+# from fiona.crs import to_string
 from shapely import wkt
 from shapely.geometry import shape
 from shapely.ops import transform
@@ -340,6 +340,6 @@ def get_area_json(request):
         return (area, 200, { 'Access-Control-Allow-Origin': '*' })
     except Exception as error:
         print(traceback.format_exc())
-        return (str(error), 400, { 'Access-Control-Allow-Origin': '*' } )
+        return (str(error), 400, { 'Access-Control-Allow-Origin': '*' })
     finally:
         cursor.close()

@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 
+import { functions } from '../firebase'
+
 // import { auth } from '../firebase'
 import {
     signOut,
@@ -8,7 +10,9 @@ import {
     isSignInWithEmailLink,
     signInWithEmailLink,
     type User,
-    getRedirectResult
+    // getRedirectResult,
+    // signInWithEmailAndPassword,
+    // signInWithCustomToken
 } from "firebase/auth";
 import { collection, query, getDocs, where, documentId } from "firebase/firestore";
 
@@ -18,10 +22,9 @@ import router from '@/router';
 import { db } from '../firebase';
 
 
-
-
 import { GoogleAuthProvider } from "firebase/auth";
 import { signInWithRedirect } from "firebase/auth";
+import { httpsCallable } from "firebase/functions";
 
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
@@ -99,46 +102,7 @@ export const useAuthStore = defineStore({
         returnUrl: '/'
     }),
     actions: {
-        // async register(email: string, password: string) {
-        //     try {
-        //         await createUserWithEmailAndPassword(auth, email, password);
-        //     } catch (error: any) {
-        //         switch (error.code) {
-        //             case "auth/email-already-in-use":
-        //                 alert("Email already in use");
-        //                 break;
-        //             case "auth/invalid-email":
-        //                 alert("Invalid email");
-        //                 break;
-        //             case "auth/operation-not-allowed":
-        //                 alert("Operation not allowed");
-        //                 break;
-        //             case "auth/weak-password":
-        //                 alert("Weak password");
-        //                 break;
-        //             default:
-        //                 alert(`Sorry, something went wrong. Error code: ${error.code}`);
-        //         }
-        //         return;
-        //     }
-
-        //     this.user = auth.currentUser;
-
-        //     router.push("/");
-
-        //     // await signInWithEmailAndPassword(auth, email, password);
-        //     // const privileges = await getUserAccessPrivileges();
-
-        //     // // update pinia state
-        //     // this.userId     = userId;
-        //     // this.isAdmin    = privileges.admin;
-        //     // this.privileges = privileges.privileges;
-
-        //     // // redirect to previous url or default to home page
-        //     // router.push(this.returnUrl);
-        // },
-
-        async login(email: string) {
+        async signInWithEmail(email: string) {
             const auth = getAuth();
             actionCodeSettings.url = baseUrl + this.returnUrl;
             sendSignInLinkToEmail(auth, email, actionCodeSettings)
@@ -148,13 +112,13 @@ export const useAuthStore = defineStore({
                     // if they open the link on the same device.
                     window.localStorage.setItem('emailForSignIn', email);
                     alert("An email was sent to you to complete the login, please click on the link provided.");
-                })
-                .catch((error) => {
+                }).catch((error) => {
                     // const errorCode = error.code;
                     const errorMessage = error.message;
                     alert(`Sorry, something went wrong: ${errorMessage}`);
                 });
             // try {
+            //     alert("email: " + email + " password: " + password);
             //     await signInWithEmailAndPassword(auth, email, password);
             // } catch (error: any) {
             //     switch(error.code) {
@@ -172,7 +136,7 @@ export const useAuthStore = defineStore({
 
             // this.user = auth.currentUser;
 
-            // const idToken = await this.user.getIdTokenResult();
+            // const idToken = await this.user!.getIdTokenResult();
             // if (idToken) {
             //     this.isAdmin = idToken.claims.admin,
             //     this.privileges = idToken.claims.privileges || {}
@@ -190,17 +154,6 @@ export const useAuthStore = defineStore({
             this.privileges = {};
 
             router.push('/login')
-
-            // try {
-            //     await logout();
-
-            //     // update pinia state
-            //     this.userId = null;
-            //     this.isAdmin = false;
-            //     this.privileges = {};
-            // } catch(error) {
-            //     alert("Error logging out"); // TODO: better message
-            // }
         },
         async setUserData(user: User | null) {
             if (user === null) {
@@ -214,8 +167,10 @@ export const useAuthStore = defineStore({
                     this.isAdmin = idToken.claims.admin as unknown as boolean,
                         this.privileges = idToken.claims.privileges || {};
                 }
+
                 await router.isReady();
                 if (router.currentRoute.value.path === "/login") {
+                    this.authLoaded = true;
                     router.push(this.returnUrl);
                 }
 
@@ -223,18 +178,16 @@ export const useAuthStore = defineStore({
                 const groupIds = Object.keys(this.privileges);
                 const groupsCollection = collection(db, 'groups');
 
+                // Set user groups
                 if (groupIds.length) {
-                    const setUserGroups = getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
+                    await getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
                         .then(groups => {
                             // this.userGroups = groups
                             this.userGroups = groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
                         });
 
                     // TODO fetch user preferences in parallel
-                    await setUserGroups;
                 }
-                // const userPrefsStore = useUserPrefsStore();
-                // await userPrefsStore.fetchUserPrefs();
             }
             this.authLoaded = true;
         },
@@ -276,8 +229,7 @@ export const useAuthStore = defineStore({
                         //     continueUrl = '/';
                         // }
                         await this.setUserData(result.user);
-                    })
-                    .catch(error => {
+                    }).catch(error => {
                         alert('Some error occurred: ' + error.code);
                         // Some error occurred, you can inspect the code: error.code
                         // Common errors could be invalid email and invalid or expired OTPs.
@@ -293,9 +245,19 @@ export const useAuthStore = defineStore({
             return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
         },
 
-        loginWithGoogle() {
+        signInWithGoogle() {
             signInWithRedirect(auth, provider);
-        }
+        },
+
+        async signUp(email: string, fullName: string) {
+            try {
+                const signUp = httpsCallable(functions, 'signUp');
+                await signUp({ email, fullName });
+            } catch (error: any) {
+                console.log(error.details?.code);
+                throw error.details?.code ? Error(error.details.code, { cause: error }) : error;
+            }
+        },
 
         // fetchUser_() {
         //     const auth = getAuth();

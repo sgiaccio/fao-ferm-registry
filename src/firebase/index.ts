@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, connectAuthEmulator, type Auth } from "firebase/auth";
 import { initializeFirestore, Firestore, connectFirestoreEmulator } from "firebase/firestore";
-import { getFunctions, connectFunctionsEmulator, httpsCallable } from "firebase/functions";
+import { getFunctions, connectFunctionsEmulator, httpsCallable, type Functions } from "firebase/functions";
 
 
 const firebaseConfig = {
@@ -14,7 +14,7 @@ const firebaseConfig = {
 };
 
 let auth: Auth, db: Firestore;
-let functions;
+let functions: Functions;
 
 // Initialize Firebase
 if (!getApps().length) {
@@ -45,4 +45,4 @@ async function fetchAllUsers() {
 //            (fn [query-snapshot]
 //              ^js/Array (.-docs query-snapshot))))
   
-export { auth, db, fetchAllUsers }
+export { auth, db, functions, fetchAllUsers }
