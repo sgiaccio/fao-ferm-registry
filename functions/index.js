@@ -4,7 +4,19 @@ const admin = require("firebase-admin");
 const firestore = require('@google-cloud/firestore');
 
 
+const firebase = require('firebase/app');
+const { getAuth, sendSignInLinkToEmail, signInWithCustomToken } = require('firebase/auth');
+
+
+// Initialize admin SDK
 admin.initializeApp();
+
+// Initialize client SDK - for sending emails
+// TODO set apiKey as a env variable when deploying
+firebase.initializeApp({
+    apiKey: 'AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M',
+    credential: admin.credential.applicationDefault()
+});
 
 const GROUP_ROLES = ['admin', 'editor', 'guest'];
 
@@ -36,7 +48,6 @@ function isAdmin(context) {
 // New user signup. Everyone can sign up.
 // TODO: deploy this function
 exports.signUp = functions.https.onCall(async (data, _context) => {
-    console.log(data)
     try {
         // Create the user - do not set the password as we will only allow login via email linkå
         const { uid } = await admin.auth().createUser({
@@ -47,128 +58,30 @@ exports.signUp = functions.https.onCall(async (data, _context) => {
         });
 
         console.log('Successfully created new user:', uid);
+
+        // Create custom token for the user
+        const customToken = await admin.auth().createCustomToken(uid);
+        // Login with the custom token
+        const auth = getAuth();
+        console.log(customToken);
+        await signInWithCustomToken(auth, customToken);
+
+        // Send email sign in link
+        const actionCodeSettings = {
+            url: 'https://ferm.fao.org/',
+            handleCodeInApp: true
+        };
+        await sendSignInLinkToEmail(auth, data.email, actionCodeSettings)
+        console.log('Sent sign in link to email ' + data.email);
+        
+        // const customToken = await admin.auth().createCustomToken(uid);
+        // return { customToken };
         return { message: 'Success! User created.' };
     } catch (err) {
         console.error('Error creating new user:', JSON.stringify(err, null, 2));
         throw new functions.https.HttpsError('aborted', err.message, err);
     }
 });
-
-// // New user signup. Everyone can sign up.
-// exports.signUp = functions.https.onCall(async (data, _context) => {
-//     try {
-//         const userRecord = await admin.auth().createUser({
-//             email: data.email,
-//             emailVerified: false,
-//             // password: 'secretPassword',
-//             displayName: data.fullName,
-//             disabled: false
-//         });
-
-//         // See the UserRecord reference doc for the contents of userRecord.
-//         const userId = userRecord.uid
-//         console.log('Successfully created new user:', userId);
-
-//         // Set the user's custom claims
-//         let privileges = {}
-//         // Assign the user to the sandbox group if it exists
-//         // Sandbox group is the only group with sandbox === true
-//         // const groupsRef = admin.firestore().collection("groups");
-//         // const q = groupsRef.where("sandbox", "==", true).limit(1);
-//         // const querySnapshot = await q.get();
-//         // if (querySnapshot.size > 0) {
-//         //     const sandboxGroupId = querySnapshot.docs[0].id;
-//         //     privileges[sandboxGroupId] = "editor";
-//         // }
-//         await admin.auth().setCustomUserClaims(userId, {
-//             privileges,
-//             admin: false
-//         });
-
-//         // Send verification email
-//         try {
-//             import('node-fetch').then(async ({default: fetch}) => {
-//                 console.log(fetch);
-//                 const customToken = await getAuth().createCustomToken(userId);
-
-//                 const { idToken } = await fetch(exchangeCustomTokenEndpoint, {
-//                     method: 'POST',
-//                     headers: { 'Content-Type': 'application/json' },
-//                     body: JSON.stringify({
-//                         token: customToken,
-//                         returnSecureToken: true,
-//                     }),
-//                 }).then((res) => res.json());
-
-//                 console.log("idToken = ", idToken)
-
-//                 const response = await fetch(sendEmailVerificationEndpoint, {
-//                     method: 'POST',
-//                     headers: { 'Content-Type': 'application/json' },
-//                     body: JSON.stringify({
-//                         requestType: 'VERIFY_EMAIL',
-//                         idToken: idToken,
-//                     }),
-//                 }).then((res) => res.json());
-
-//                 // eslint-disable-next-line no-console
-//                 console.log(`Sent email verification to ${response.email}`);
-//             })
-//         } catch (error) {
-//             // eslint-disable-next-line no-console
-//             console.log(error);
-//         }
-
-
-
-
-
-
-//         // // admin.initializeApp();
-//         // console.log("Creating custom token");
-//         // const customToken = await admin.auth().createCustomToken(userId);
-//         // console.log("Custom token created");
-//         // console.log(customToken);
-//         // // const auth = getAuth();
-//         // console.log("Signing in with custom token");
-//         // signInWithCustomToken(admin.auth(), customToken).then(userCredential => {
-//         //     // Signed in
-//         //     const user = userCredential.user;
-//         //     user.sendEmailVerification().then(() => {
-//         //         // Email verification sent!
-//         //     }).catch((error) => {
-//         //         // Error occurred. Inspect error.code.
-//         //     });
-//         // }).catch((error) => {
-//         //     const errorCode = error.code;
-//         //     const errorMessage = error.message;
-//         //     // ...
-//         // });
-
-
-
-
-//         // // Try to store institution and purpose, it's ok if it fails
-//         // try {
-//         //     const docRef = admin.firestore().collection('user-registration').doc(userId);
-
-//         //     await docRef.set({
-//         //         institution: institution || "",
-//         //         purpose: purpose || ""
-//         //     });
-//         // }
-//         // catch (err) {
-//         //     console.log(`Could't store organization and purpose for user ${userId}`, err)
-//         // }
-
-//         // // await admin.auth().setCustomUserClaims(userRecord.uid, { privileges: {}, admin: false });
-//         return { message: 'Success! User created' }
-
-//     } catch (err) {
-//         console.log('Error creating new user:', err);
-//         throw new functions.https.HttpsError('invalid-argument', err);
-//     }
-// });
 
 // Returns the list of all users (only admins can call this)
 exports.listAllUsers = functions.https.onCall(async (_data, context) => {
@@ -278,7 +191,7 @@ exports.createUserRecord = functions.auth.user().onCreate(async ({ uid }) => {
     // Try to create user record, just log error if it fails
     const newUserRecord = { bpConsentAccepted: false };
     try {
-        await admin.firestore().collection('userPreferences').doc(uid).set(newUserRecord);
+        await admin.firestore().collection('user').doc(uid).set(newUserRecord);
     } catch (err) {
         console.error('Error creating user record:', err);
     }

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
-import { useProjectStore } from '../../stores/project';
+import { useProjectStore } from '@/stores/project';
 
 import TabTemplate from "../TabTemplate.vue"
 
 import SelectFormGroup from "@/components/inputs/base/SelectFormGroup.vue";
 
-import { achieved, achievingTargets } from "../../components/project/menus";
+import { achieved, achievingTargets } from "@/components/project/menus";
 
 
 withDefaults(defineProps<{

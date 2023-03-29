@@ -41,7 +41,7 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
 </script>
 
 <template>
-    <FormGroup v-if="edit"
+    <FormGroup
                :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
@@ -62,6 +62,4 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
            class="mt-2 text-sm text-red-600"
            id="email-error">{{ message }}</p>
     </FormGroup>
-    <div v-else-if="modelValue">{{modelValue}}</div>
-    <div v-else class="italic text-gray-400">Not available</div>
 </template>

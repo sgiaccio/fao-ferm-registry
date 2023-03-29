@@ -46,7 +46,7 @@
               </div>
               <p class="mt-12 max-w-lg mx-auto text-center text-xl text-white sm:max-w-3xl">The <span class="font-semibold text-gray-200">FERM registry</span> supports the UN Decade on Ecosystem Restoration Worldwide Flagships, UN member countries and UN supported restoration initiatives to monitor the status of ecosystem restoration.</p>
               <img class="mx-auto h-24 w-auto mt-8 "
-                   src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
+                   src="/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
                    alt="UN Decade" />
             </div>
 

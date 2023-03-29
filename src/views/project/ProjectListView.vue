@@ -27,7 +27,7 @@ const groups = ref();
 
 onMounted(async () => {
     await projectStore.fetchGroupOwnedProjects(null);
-    groups.value = authStore.isAdmin ? await authStore.getAllGroups() : authStore.userGroups;
+    groups.value = authStore.isAdmin ? await authStore.fetchAllGroups() : authStore.userGroups;
     // bestPractices.value = projects.map(p => ({ id: p.id, data: p.data() }));
 });
 

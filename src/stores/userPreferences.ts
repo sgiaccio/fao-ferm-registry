@@ -1,5 +1,5 @@
 'firebase/firestore';
-import { updateDoc, getDoc, collection, doc, setDoc, addDoc, query, where, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { getDoc, collection, doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 import { ref } from 'vue';
@@ -9,24 +9,19 @@ import { defineStore } from 'pinia';
 import { useAuthStore } from './auth';
 
 
-const userCollection = collection(db, "users")
+const userCollection = collection(db, 'users')
 
-// institution: "",
-// ecosystem: false,
-// flagship: false,
-// partner: false,
-// other: false,
-// other_text: "",
-// purpose: "",
-
-interface RegistrationData {
+export interface RegistrationData {
     institution: string,
     ecosystem: boolean,
     flagship: boolean,
     partner: boolean,
-    other: boolean,
-    other_text: string,
+    otherAffiliation: boolean,
+    otherAffiliationText: string,
     purpose: string,
+    groups: { id: string, name: string }[],
+    otherGroup: boolean,
+    otherGroupText: string
 }
 
 interface UserPrefs {
@@ -48,12 +43,16 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
         }
 
         const docRef = doc(userCollection, authStore.user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            userPrefs.value = docSnap.data();
-        } else {
-            userPrefs.value = {}
+        try {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                userPrefs.value = docSnap.data();
+            } else {
+                userPrefs.value = {}
+            }
+        } catch (error) {
+            // Document does not exist - it will be created when the user completes the registration form
+            console.log(error.code);
         }
 
         // this.bpDisclaimerAccepted querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
@@ -81,16 +80,30 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
         const authStore = useAuthStore();
         const userRef = doc(userCollection, authStore.user!.uid);
 
-        return setDoc(userRef, { registrationData }, { merge: true }).then(() => {
-            // TODO this is not needed, we just need to know if the user has registered
+        try {
+            await setDoc(userRef, { registrationData }, { merge: true })
             userPrefs.value.registrationData = registrationData;
-        });
+        } catch (e) {
+            alert("Error writing registration data: " + e);
+        }
     }
-    
+
+    // TODO - this should be in a separate module as userPrefs only contains the active user data
+    async function getRegistrationData(userId: string) {
+        const userRef = doc(userCollection, userId);
+        const document = await getDoc(userRef);
+        if (document.exists()) {
+            return document.data()?.registrationData;
+        } else {
+            return null;
+        }
+    }
+
+
     function setDarkMode(mode: boolean) {
         darkMode.value = mode;
         window.localStorage.setItem('darkMode', '' + mode);
     }
 
-    return { userPrefs, fetchUserPrefs, acceptBpConsent, register, darkMode, setDarkMode };
+    return { userPrefs, fetchUserPrefs, acceptBpConsent, register, darkMode, setDarkMode, getRegistrationData };
 });

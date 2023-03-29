@@ -90,7 +90,8 @@ function enableSpecifyReplicability() {
             <template v-if="store.bestPractice">
                 <TextareaFormGroup v-model="store.bestPractice.description"
                                    label="2.1 Description"
-                                   description="Description of the practice." />
+                                   description="Description of the practice."
+                                   :edit=edit />
                 <div>
                     <p class="text-gray-600 dark:text-white mt-6 text-sm">Please provide for each step (if applicable): timing, equipment, labour, species used, and all other relevant information</p>
                     <p class="text-gray-600 dark:text-white mt-2 text-sm"><span class="font-bold">NOTE:</span> It is recommended that the steps for implementation are logical, detailed, well-described, and technically and socially feasible, allowing for replication or adaptation. </p>
@@ -135,10 +136,10 @@ function enableSpecifyReplicability() {
                                     :required="true"
                                     :edit=edit />
                     <!-- <TextareaFormGroup v-model="store.bestPractice.specifyReplicability"
-                                       label="2.9 Replicability additional information"
-                                       description="Please briefly explain where it was replicated and tested, how many times, with what results and the future opportunities for replication or adaptation."
-                                       :enabled="enableSpecifyReplicability"
-                                       :edit=edit /> -->
+                                           label="2.9 Replicability additional information"
+                                           description="Please briefly explain where it was replicated and tested, how many times, with what results and the future opportunities for replication or adaptation."
+                                           :enabled="enableSpecifyReplicability"
+                                           :edit=edit /> -->
                     <TextareaFormGroup v-model="store.bestPractice.specifyReplicability"
                                        label="2.9 Replicability additional information"
                                        description="Please briefly explain where it was replicated and tested, how many times, with what results and the future opportunities for replication or adaptation."

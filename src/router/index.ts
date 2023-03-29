@@ -3,7 +3,7 @@ import { useUserPrefsStore } from "../stores/userPreferences"
 
 import { createRouter, createWebHistory } from "vue-router";
 
-
+// Project tabs are used both for editing and viewing projects, so define them once here
 const projectTabs = [{
   path: 'info',
   component: () => import('../views/project/RegistrationView.vue'),
@@ -73,7 +73,7 @@ const router = createRouter({
     }, {
       path: "/registration",
       name: "registration",
-      component: () => import('../views/RegistrationView.vue'),
+      component: () => import('../views/UserRegistrationView.vue'),
       meta: {
         requiresAuth: true
       },
@@ -95,7 +95,7 @@ const router = createRouter({
         }, {
           path: 'groups',
           name: 'groups',
-          component: () => import('../views/admin/UserListView.vue'),
+          component: () => import('../views/admin/GroupListView.vue'),
           meta: {
             requiresAuth: true
           }
@@ -207,28 +207,35 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach(async (to, from, next) => {
-  console.log(JSON.stringify(to, null, 2));
+router.beforeEach(async (to) => {
   const authStore = useAuthStore();
   const userPrefsStore = useUserPrefsStore();
 
+  // Fetch the registration data if the user is logged in
+  if (authStore.user && !userPrefsStore.userPrefs.registrationData) {
+    await userPrefsStore.fetchUserPrefs();
+  }
+
+  // If the user is logged in and filled the registration form and tries to access the registration page, redirect to home
+  if (authStore.user && to.name === 'registration'  && userPrefsStore.userPrefs.registrationData) {
+    return { name: 'home' };
+  }
+
+  // If the user is logged in but didn't fill the registration form, redirect to registration
   if (authStore.user && to.name !== 'registration' && !userPrefsStore.userPrefs.registrationData) {
-    next({ name: 'registration' });
-    return
+    return { name: 'registration' };
   }
 
-  if (to.name === 'login' && authStore.user) {
-    next({ name: 'home' });
-    return;
+  // If the user is logged in and tries to access the login page, redirect to home
+  if (authStore.user && to.name === 'login') {
+    return { name: 'home' };
   }
 
+  // If the user is not logged in and tries to access a page that requires auth, redirect to login
   if (to.matched.some(record => record.meta.requiresAuth) && authStore.authLoaded && !authStore.user) {
     authStore.returnUrl = to.fullPath;
-    next({ name: 'login' });
-    return;
+    return { name: 'login' };
   }
-
-  next();
 });
 
 export default router;

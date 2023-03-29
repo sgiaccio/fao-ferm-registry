@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { reactive, computed } from "vue";
-import router from "../router";
+import { reactive, computed, ref } from "vue";
+import router from "@/router";
 
 import { storeToRefs } from 'pinia'
 
-import { useAuthStore } from "../stores/auth"
-import { useUserPrefsStore } from '../stores/userPreferences'
+import { useAuthStore } from "@/stores/auth"
+import { useUserPrefsStore } from '@/stores/userPreferences';
+
+import AlertModal from "@/views/AlertModal.vue";
 
 
 const { signUp } = useAuthStore();
@@ -19,15 +21,8 @@ const { darkMode } = storeToRefs(useUserPrefsStore())
 
 // The form data is stored in a reactive object.
 const formData = reactive({
-    name: "",
-    email: "",
-    // institution: "",
-    // ecosystem: false,
-    // flagship: false,
-    // partner: false,
-    // other: false,
-    // other_text: "",
-    // purpose: "",
+    name: '',
+    email: '',
 });
 
 // The form is submitted by calling the signUp function with the form data as a parameter.
@@ -36,12 +31,10 @@ const formData = reactive({
 const submitForm = async () => {
     try {
         const result = await signUp(formData.email, formData.name);
-        console.log(result); // DEBUG
+        signupSuccess.value = true;
     } catch (error: any) {
-        if (error.message === "auth/email-already-exists") {
-            alert("Email already in use");
-            formData.name = "";
-            formData.email = "";
+        if (error.message === 'auth/email-already-exists') {
+            signupError.value = true;
         } else {
             alert(`Error: ${error.message}`);
         }
@@ -50,7 +43,7 @@ const submitForm = async () => {
 
 // The form is validated by checking that the name and email fields are not empty.
 const validateForm = () => {
-    return formData.name !== "" && formData.email !== "";
+    return formData.name !== '' && formData.email !== '';
 };
 
 // The form is disabled if the form is not valid.
@@ -75,47 +68,55 @@ const onSubmit = (event: Event) => {
 // };
 
 const cancel = () => {
-    formData.name = "";
-    formData.email = "";
-    // formData.institution = "";
-    // formData.ecosystem = false;
-    // formData.flagship = false;
-    // formData.partner = false;
-    // formData.other = false;
-    // formData.other_text = "";
-    // formData.purpose = "";
+    formData.name = '';
+    formData.email = '';
 
     router.push({ name: 'login' });
 };
 
+const signupSuccess = ref(false);
+function onClose() {
+    signupSuccess.value = false;
+    router.push({ name: 'home' });
+}
+
+const signupError = ref(false);
+function onErrorClose() {
+    formData.name = '';
+    formData.email = '';
+    signupError.value = false;
+    
+    router.push({ name: 'login' });
+}
 </script>
 
-
-
-
-
-
-
 <template>
+    <AlertModal type="success"
+                :onClose="onClose"
+                :open="signupSuccess"
+                title="Please check your inbox"
+                buttonText="Ok">
+        <p class="text-sm text-gray-500">An email has been sent to you. Please check your inbox and click on the link to sign in.</p>
+    </AlertModal>
+    <AlertModal type="error"
+                :onClose="onErrorClose"
+                :open="signupError"
+                title="Email already in use"
+                buttonText="Ok">
+        <p class="text-sm text-gray-500">Please enter your email in the login form.</p>
+    </AlertModal>
+
     <div class="min-h-screen flex items-center justify-center --bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
             <div>
                 <img v-if="darkMode"
                      class="mx-auto h-28 w-auto"
-                     src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
+                     src="/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
                      alt="UN Decade">
                 <img v-else
                      class="mx-auto h-28 w-auto"
-                     src="@/assets/UNDecade_LOGO_MASTER_EN.svg"
+                     src="/UNDecade_LOGO_MASTER_EN.svg"
                      alt="UN Decade">
-
-                <!-- <div class="dark:text-gray-300 text-justify">
-                        Welcome to the
-                        <span class="font-bold dark:text-gray-200">FERM registry</span>!
-                        The Framework for Ecosystem Restoration Monitoring Registry aims to provide a register of ecosystem restoration initiatives and initiatives, in the context of the
-                        <span class="font-bold">United Nations Decade on Ecosystem Restoration</span>,
-                        whilst ensuring interoperability with other restoration monitoring platforms and initiatives.
-                    </div> -->
             </div>
             <div>
                 <div class="m-auto w-full max-w-sm mt-8 space-y-6 border-2 border-gray-400 dark:border-gray-600 shadow-md rounded-xl px-8 py-8 bg-gradient-to-br from-green-300 to-blue-400">
@@ -148,7 +149,7 @@ const cancel = () => {
                         <div class="mt-8">
                             <button type="submit"
                                     :disabled="isDisabled"
-                                    :class="[isDisabled ? 'bg-gray-300' : 'bg-gradient-to-r from-purple-500 to-red-500 hover:from-purple-600 hover:to-red-600' ,'group relative w-full flex justify-center py-3 px-6 text-lg font-medium rounded-full text-white focus:outline-none border-2 border-gray-500']">
+                                    :class="[isDisabled ? 'bg-gray-300' : 'bg-gradient-to-r from-purple-500 to-red-500 hover:from-purple-600 hover:to-red-600', 'group relative w-full flex justify-center py-3 px-6 text-lg font-medium rounded-full text-white focus:outline-none border-2 border-gray-500']">
                                 Sign up
                             </button>
                             <button @click="cancel()"

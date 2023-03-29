@@ -50,3 +50,13 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+
+
+# Firebase
+To setup CORS for cloud storage run this:
+
+```sh
+gcloud storage buckets update gs://fao-ferm-goodpractices --cors-file=cors-config.json
+```
+

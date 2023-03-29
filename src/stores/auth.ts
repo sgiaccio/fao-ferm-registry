@@ -2,10 +2,9 @@ import { defineStore } from "pinia";
 
 import { functions } from '../firebase'
 
-// import { auth } from '../firebase'
 import {
     signOut,
-    getAuth,
+    // getAuth,
     sendSignInLinkToEmail,
     isSignInWithEmailLink,
     signInWithEmailLink,
@@ -19,7 +18,7 @@ import { collection, query, getDocs, where, documentId } from "firebase/firestor
 
 import router from '@/router';
 
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 
 
 import { GoogleAuthProvider } from "firebase/auth";
@@ -27,7 +26,7 @@ import { signInWithRedirect } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 
 const provider = new GoogleAuthProvider();
-const auth = getAuth();
+
 
 
 
@@ -103,50 +102,14 @@ export const useAuthStore = defineStore({
     }),
     actions: {
         async signInWithEmail(email: string) {
-            const auth = getAuth();
+            // const auth = getAuth();
+
             actionCodeSettings.url = baseUrl + this.returnUrl;
-            sendSignInLinkToEmail(auth, email, actionCodeSettings)
-                .then(() => {
-                    // The link was successfully sent. Inform the user.
-                    // Save the email locally so you don't need to ask the user for it again
-                    // if they open the link on the same device.
-                    window.localStorage.setItem('emailForSignIn', email);
-                    alert("An email was sent to you to complete the login, please click on the link provided.");
-                }).catch((error) => {
-                    // const errorCode = error.code;
-                    const errorMessage = error.message;
-                    alert(`Sorry, something went wrong: ${errorMessage}`);
-                });
-            // try {
-            //     alert("email: " + email + " password: " + password);
-            //     await signInWithEmailAndPassword(auth, email, password);
-            // } catch (error: any) {
-            //     switch(error.code) {
-            //         case "auth/user-not-found":
-            //             alert("User not found");
-            //             break;
-            //         case "auth/wrong-password":
-            //             alert("Wrong password");
-            //             break;
-            //         default:
-            //             alert(`Sorry, something went wrong. Error code: ${error.code}`);
-            //     }
-            //     return;
-            // }
-
-            // this.user = auth.currentUser;
-
-            // const idToken = await this.user!.getIdTokenResult();
-            // if (idToken) {
-            //     this.isAdmin = idToken.claims.admin,
-            //     this.privileges = idToken.claims.privileges || {}
-            // }
-
-            // router.push(this.returnUrl);
+            await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+            window.localStorage.setItem('emailForSignIn', email);
         },
-
         async logout() {
-            const auth = getAuth();
+            // const auth = getAuth();
             await signOut(auth);
 
             this.user = null;
@@ -157,7 +120,7 @@ export const useAuthStore = defineStore({
         },
         async setUserData(user: User | null) {
             if (user === null) {
-                console.log('user is null');
+                console.log('User is null');
             } else {
                 this.user = user;
 
@@ -192,7 +155,8 @@ export const useAuthStore = defineStore({
             this.authLoaded = true;
         },
         async fetchUser() {
-            const auth = getAuth();
+            // const auth = getAuth();
+            // auth.onAuthStateChanged(async user => { this.setUserData(user); });
 
             if (isSignInWithEmailLink(auth, window.location.href)) {
                 // Additional state parameters can also be passed via URL.
@@ -207,7 +171,7 @@ export const useAuthStore = defineStore({
                     email = window.prompt('Please provide your email for confirmation');
                 }
                 // The client SDK will parse the code from the link for you.
-                return signInWithEmailLink(auth, email!, window.location.href)
+                await signInWithEmailLink(auth, email!, window.location.href)
                     .then(async (result) => {
                         // Clear email from storage.
                         window.localStorage.removeItem('emailForSignIn');
@@ -228,7 +192,7 @@ export const useAuthStore = defineStore({
                         // if (!continueUrl || continueUrl.includes('login')) {
                         //     continueUrl = '/';
                         // }
-                        await this.setUserData(result.user);
+                        // await this.setUserData(result.user);
                     }).catch(error => {
                         alert('Some error occurred: ' + error.code);
                         // Some error occurred, you can inspect the code: error.code
@@ -236,10 +200,16 @@ export const useAuthStore = defineStore({
                     });
             }
 
-            auth.onAuthStateChanged(async user => { this.setUserData(user); });
+            return new Promise((resolve, reject) => {
+                // const auth = getAuth();
+                auth.onAuthStateChanged(async user => {
+                    this.setUserData(user)
+                    resolve(user);
+                }, () => reject(''))
+            });
         },
 
-        async getAllGroups() {
+        async fetchAllGroups() {
             const groupsCollection = collection(db, 'groups');
             const groups = await getDocs(query(groupsCollection));
             return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
@@ -253,63 +223,11 @@ export const useAuthStore = defineStore({
             try {
                 const signUp = httpsCallable(functions, 'signUp');
                 await signUp({ email, fullName });
+                window.localStorage.setItem('emailForSignIn', email);
             } catch (error: any) {
                 console.log(error.details?.code);
                 throw error.details?.code ? Error(error.details.code, { cause: error }) : error;
             }
-        },
-
-        // fetchUser_() {
-        //     const auth = getAuth();
-        //     auth.onAuthStateChanged(async user => {
-        //         if (user === null) {
-        //             //
-        //         } else {
-        //             this.user = user;
-        //             // TODO repetition
-        //             const idToken = await user.getIdTokenResult();
-        //             if (idToken) {
-        //                 this.isAdmin = idToken.claims.admin as unknown as boolean,
-        //                     this.privileges = idToken.claims.privileges || {}
-        //             }
-
-        //             await router.isReady();
-        //             if (router.currentRoute.value.path === "/login") {
-        //                 router.push(this.returnUrl); // TODO
-        //             }
-
-        //             // get user groups
-        //             const groupIds = Object.keys(this.privileges);
-
-        //             const groupsCollection = collection(db, 'groups');
-        //             const setUserGroups = getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
-        //                 .then(groups => {
-        //                     // this.userGroups = groups
-        //                     this.userGroups = groups.docs.reduce((prev, current) =>
-        //                         ({ ...prev, [current.id]: current.data().name }), {});
-        //                 });
-
-        //             // TODO fetch user preferences in parallel
-
-        //             await setUserGroups
-        //             // TODO await for user pref
-        //         }
-        //         this.authLoaded = true;
-        //     });
-        // },
-
-        // (defn get-groups []
-        //     (.then (getDocs (query groups-collection))
-        //            (fn [query-snapshot]
-        //              ^js/Array (.-docs query-snapshot))))
-
-
-        // getAccessToken() {
-        //     return this.user.accessToken;
-        // }
+        }
     }
 });
-
-
-// (defn get-access-token []
-//     (.. auth -currentUser -accessToken))

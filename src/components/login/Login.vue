@@ -8,6 +8,8 @@ import { useUserPrefsStore } from '../../stores/userPreferences'
 import { UserPlusIcon } from '@heroicons/vue/20/solid'
 import router from '../../router'
 
+import AlertModal from "@/views/AlertModal.vue";
+
 
 const { signInWithEmail, signInWithGoogle } = useAuthStore();
 const { darkMode } = storeToRefs(useUserPrefsStore())
@@ -16,33 +18,69 @@ const loginForm = ref({
     email: null,
 });
 
-function authenticateWithEmail() {
+async function authenticateWithEmail() {
     const { email } = loginForm.value;
     if (email !== null) {
-        signInWithEmail(email);
+        try {
+            await signInWithEmail(email);
+            loginSuccess.value = true;
+        } catch (error) {
+            // Account creation is disabled on the server.
+            // Firebase throws Firebase throws  Error (auth/admin-restricted-operation) if the email doesn't exist
+            // Since it's the only error we're expecting, we assume that the account doesn't exist.
+            loginError.value = true;
+        }
     }
 }
 
 function openSignUpDialog() {
     router.push({ name: 'signup' });
 }
+
+const loginSuccess = ref(false);
+function onClose() {
+    loginSuccess.value = false;
+    router.push({ name: 'home' });
+}
+
+
+const loginError = ref(false);
+function onCloseLoginError() {
+    loginError.value = false;
+}
 </script>
 
 <template>
+    <AlertModal type="success"
+                :onClose="onClose"
+                :open="loginSuccess"
+                title="Please check your inbox"
+                buttonText="Ok">
+        <p class="text-sm text-gray-500">We've sent you an email with instructions to complete your sign-in process. <br>Kindly check your inbox and click on the link provided.</p>
+    </AlertModal>
+
+    <AlertModal type="info"
+                :onClose="onCloseLoginError"
+                :open="loginError"
+                title="Account does not exist"
+                buttonText="Ok">
+        <p class="text-sm text-gray-500">We're sorry, but the account you are trying to access does not exist. To create a new account, please click on the "Sign Up" button.</p>
+    </AlertModal>
+
     <div class="min-h-screen flex items-center justify-center --bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
             <div>
                 <img v-if="darkMode"
                      class="mx-auto h-28 w-auto"
-                     src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
+                     src="/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
                      alt="UN Decade">
                 <img v-else
                      class="mx-auto h-28 w-auto"
-                     src="@/assets/UNDecade_LOGO_MASTER_EN.svg"
-                 alt="UN Decade">
+                     src="/UNDecade_LOGO_MASTER_EN.svg"
+                     alt="UN Decade">
 
-            <div class="dark:text-gray-300 text-justify">
-                Welcome to the
+                <div class="dark:text-gray-300 text-justify">
+                    Welcome to the
                     <span class="font-bold dark:text-gray-200">FERM registry</span>!
                     The Framework for Ecosystem Restoration Monitoring Registry aims to provide a register of ecosystem restoration initiatives and initiatives, in the context of the
                     <span class="font-bold">United Nations Decade on Ecosystem Restoration</span>,
@@ -54,10 +92,10 @@ function openSignUpDialog() {
                 <div class="m-auto w-full max-w-sm mt-8 space-y-6 border-2 border-gray-300 dark:border-gray-600 shadow-md rounded-xl px-8 py-8">
                     <h2 class="text-center text-2xl font-extrabold text-gray-700 dark:text-gray-200">Sign in</h2>
                     <div>
-                        <div>
-                            <label for="email-address"
-                                   class="sr-only">Email address</label>
-                            <input id="email-address"
+                    <div>
+                        <label for="email-address"
+                               class="sr-only">Email address</label>
+                        <input id="email-address"
                                    name="email"
                                    type="email"
                                    autoComplete="email"
@@ -75,20 +113,20 @@ function openSignUpDialog() {
                         </div>
 
                         <div class="mx-auto font-semibold mt-6 dark:text-gray-200 flex items-center gap-4 justify-center">
-                            <div>No account?</div>
+                            <div class="whitespace-nowrap">No account?</div>
                             <button @click="openSignUpDialog"
                                     type="button"
-                                    class="inline-flex items-center gap-x-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 py-3 px-6 text-base font-medium text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                    class="justify-center w-full inline-flex items-center gap-x-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 py-3 px-6 text-base font-medium text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                                 <UserPlusIcon class="-ml-0.5 h-5 w-5"
                                               aria-hidden="true" />
                                 Sign up
                             </button>
 
                             <!-- <a class="text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400 cursor-pointer"
-                                                            href="https://forms.gle/BKDQzgtnfHEdvnHM8"
-                                                            target="_blank">
-                                                                Ask for one, you will be contacted soon.
-                                                            </a> -->
+                                                                href="https://forms.gle/BKDQzgtnfHEdvnHM8"
+                                                                target="_blank">
+                                                                    Ask for one, you will be contacted soon.
+                                                                </a> -->
                         </div>
                     </div>
 
