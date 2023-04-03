@@ -31,7 +31,17 @@ const users = ref();
 const allGroups = ref();
 
 async function refreshUsers() {
-    users.value = ((await fetchAllUsers()) as any).users;
+    // Sort users by creation date
+    users.value = ((await fetchAllUsers()) as any).users.sort((a: User, b: User) => {
+        try {
+            const d1 = new Date(a.metadata.creationTime);
+            const d2 = new Date(b.metadata.creationTime);
+
+            return d1 > d2 ? -1 : d1 < d2 ? 1 : 0;
+        } catch (e) {
+            return 0;
+        }
+    });
 }
 
 onMounted(async () => {
@@ -119,7 +129,6 @@ async function toggleRegistrationData(userId: string) {
     alert(JSON.stringify(userPrefs, null, 2));
     registrationData.value = userPrefs;
 }
-
 </script>
 
 <template>

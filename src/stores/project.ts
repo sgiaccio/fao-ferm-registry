@@ -7,6 +7,7 @@ import { snakeToCamel } from '../lib/util'
 
 import { useAuthStore } from './auth';
 
+
 const projectsCollection = collection(db, 'registry')
 const areaCollection = collection(db, 'areas')
 const bestPracticesCollection = collection(db, 'bestPractices');
@@ -16,16 +17,19 @@ export const useProjectStore = defineStore({
     state: () => ({
         projects: [] as any[],
         id: null as string | null,
-        project: null as any, // TODO
-        projectAreas: [] as any[] // TODO
+        project: null as any, // TODO type
+        projectAreas: [] as any[], // TODO type
+        loaded: false
     }),
     actions: {
         resetProjectState() {
             this.id = null;
             this.project = null;
             this.projectAreas = [];
+            this.loaded = false;
         },
         async fetchProject(projectId: string) {
+            this.loaded = false
             const docRef = doc(db, 'registry', projectId);
             this.project = {
                 project: {},
@@ -47,6 +51,10 @@ export const useProjectStore = defineStore({
             }
 
             this.id = projectId;
+
+            // Use a separate flag to indicate that the project is loaded,
+            // because projectAreas is never null so it cannot be used to check if all the data is loaded
+            this.loaded = true
         },
         async fetchGroupOwnedProjects(groupId: string | null) {
             const authStore = useAuthStore();
@@ -84,6 +92,8 @@ export const useProjectStore = defineStore({
                 results: {}
             }
             this.projectAreas = [];
+            
+            this.loaded = true;
         },
         canEdit() {
             const authStore = useAuthStore();
@@ -153,7 +163,7 @@ export const useProjectStore = defineStore({
             querySnapshot.forEach(doc => { batch.delete(doc.ref) });
 
             await batch.commit();
-            return this.fetchGroupOwnedProjects();
+            // return this.fetchGroupOwnedProjects();
         }
     }
 });

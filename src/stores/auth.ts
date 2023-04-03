@@ -4,14 +4,10 @@ import { functions } from '../firebase'
 
 import {
     signOut,
-    // getAuth,
     sendSignInLinkToEmail,
     isSignInWithEmailLink,
     signInWithEmailLink,
     type User,
-    // getRedirectResult,
-    // signInWithEmailAndPassword,
-    // signInWithCustomToken
 } from "firebase/auth";
 import { collection, query, getDocs, where, documentId } from "firebase/firestore";
 
@@ -21,8 +17,7 @@ import router from '@/router';
 import { db, auth } from '../firebase';
 
 
-import { GoogleAuthProvider } from "firebase/auth";
-import { signInWithRedirect } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 
 const provider = new GoogleAuthProvider();
@@ -38,8 +33,6 @@ const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this
     // URL must be in the authorized domains list in the Firebase Console.
     url: baseUrl,
-    // url: 'http://ferm.fao.org',
-    // url: 'http://127.0.0.1:5173',
     // This must be true.
     handleCodeInApp: true,
     // iOS: {
@@ -216,7 +209,7 @@ export const useAuthStore = defineStore({
         },
 
         signInWithGoogle() {
-            signInWithRedirect(auth, provider);
+            signInWithPopup(auth, provider);
         },
 
         async signUp(email: string, fullName: string) {

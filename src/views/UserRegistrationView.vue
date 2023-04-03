@@ -15,57 +15,62 @@ const userPrefsStore = useUserPrefsStore();
 const { register } = userPrefsStore;
 const { darkMode } = storeToRefs(useUserPrefsStore())
 
+// Stores all groups in a reactive object.
 const groups = reactive<{ [key: string]: string }>({});
 
+
 // Fetches all groups from the auth store
-onBeforeMount(async () => Object.assign(groups, await authStore.fetchAllGroups()));
+onBeforeMount(async () => {
+    Object.assign(groups, await authStore.fetchAllGroups())
+});
 
 // The form data is stored in a reactive object.
 const formData = reactive<RegistrationData>({
-    institution: '',
-    ecosystem: false,
-    flagship: false,
-    partner: false,
-    otherAffiliation: false,
-    otherAffiliationText: '',
+    name: '',
+    affiliation: {
+        ecosystem: false,
+        flagship: false,
+        partner: false,
+        otherAffiliationText: ''
+    },
     purpose: '',
-    groups: [],
-    otherGroup: false,
-    otherGroupText: '',
+    group: null,
+    otherGroupText: ''
 });
 
-// The groups array in formData is updated when a group checkbox is checked or unchecked
-function handleGroupClick(event: Event, groupId: string) {
-    if ((event.target as HTMLInputElement).checked && !formData.groups.map(g => g.id).includes(groupId)) {
-        formData.groups.push({ id: groupId, name: groups[groupId] });
-    } else {
-        formData.groups = formData.groups.filter(g => g.id !== groupId);
-    }
-}
+// Stores the selected group in a reactive object.
+// We are storing it here so that we can watch it and save both group id and name in the form data.
+const selectedGroup = ref<string>('');
+
+// Stores the value of the other affiliation checkbox in a reactive object. We don't need to save this value in the form data.
+const otherAffiliation = ref<boolean>(false);
 
 const otherInstitutionTextRef = ref<HTMLInputElement>();
 const otherGroupTextRef = ref<HTMLInputElement>();
 
-// Handles focus and clearing of the other text input fields
-watch(() => ({ ...formData }), ({ otherAffiliation, otherGroup }, { otherAffiliation: oldOtherAffiliation, otherGroup: oldOtherGroup }) => {
-    if (otherAffiliation !== oldOtherAffiliation) {
-        // Focus on otherText input when otherAffiliation is checked
-        if (otherAffiliation) {
-            nextTick(() => otherInstitutionTextRef.value?.focus());
-        } else {
-            // Clear other text input when otherAffiliation is unchecked
-            formData.otherAffiliationText = '';
-        }
+// Focuses the other institution text input field when the other affiliation checkbox is checked.
+watch(() => otherAffiliation.value, newVal => {
+    if (newVal) {
+        nextTick(() => otherInstitutionTextRef.value?.focus());
+    } else {
+        formData.affiliation.otherAffiliationText = '';
+    }
+});
+
+// Handles change in the selected group.
+watch(selectedGroup, newGroup => {
+    // Sets the group id and name in the form data.
+    if (newGroup === '' || newGroup === 'other') {
+        formData.group = null;
+    } else {
+        formData.group = { id: newGroup, name: groups[newGroup] };
     }
 
-    if (otherGroup !== oldOtherGroup) {
-        // Focus on otherGroupTextRef input when other is checked
-        if (otherGroup) {
-            nextTick(() => otherGroupTextRef.value?.focus());
-        } else {
-            // Clear other text input when other is unchecked
-            formData.otherGroupText = '';
-        }
+    // Focuses the other group text input field when the other group is selected.
+    if (newGroup === 'other') {
+        nextTick(() => otherGroupTextRef.value?.focus());
+    } else {
+        formData.otherGroupText = '';
     }
 });
 
@@ -77,7 +82,7 @@ watch(() => ({ ...formData }), ({ otherAffiliation, otherGroup }, { otherAffilia
 async function submitForm() {
     try {
         await register(formData);
-        dialogOpen.value = true;
+        showTanksDialog.value = true;
     } catch (error: any) {
         alert(`Error: ${error.message}`);
     }
@@ -85,14 +90,13 @@ async function submitForm() {
 
 // The form is validated by checking that the name and email fields are not empty.
 function validateForm() {
-    return formData.institution !== ''
-        && (formData.ecosystem ||
-            formData.flagship ||
-            formData.partner ||
-            formData.otherAffiliation && formData.otherAffiliationText !== '')
-        && !(formData.otherAffiliation && formData.otherAffiliationText === '')
-        && (formData.groups.length > 0 || formData.otherGroup && formData.otherGroupText !== '')
-        && !(formData.otherGroup && formData.otherGroupText === '')
+    return formData.name !== '' &&
+        (formData.affiliation.ecosystem ||
+            formData.affiliation.flagship ||
+            formData.affiliation.partner ||
+            otherAffiliation.value && formData.affiliation.otherAffiliationText !== '')
+        && !(otherAffiliation.value && formData.affiliation.otherAffiliationText === '')
+        && (formData.group || !formData.group && formData.otherGroupText !== '')
         && formData.purpose !== '';
 };
 
@@ -121,19 +125,19 @@ function onKeydown(event: KeyboardEvent) {
     }
 };
 
+const showTanksDialog = ref(false);
 
-const dialogOpen = ref(false);
-
+// Close the dialog and redirect to the home page.
 function onClose() {
-    dialogOpen.value = false;
-    nextTick(() => router.push({ name: 'initiatives' }));
+    showTanksDialog.value = false;
+    router.push({ name: 'initiatives' });
 }
 </script>
 
 <template>
     <AlertModal type="success"
                 :onClose="onClose"
-                :open="dialogOpen"
+                :open="showTanksDialog"
                 title="Thank you for registering"
                 buttonText="Go to home page">
         <p class="text-sm text-gray-500">We will assign you to the appropriate groups shortly.</p>
@@ -149,7 +153,7 @@ function onClose() {
                  class="mx-auto h-28 w-auto"
                  src="/UNDecade_LOGO_MASTER_EN.svg"
                  alt="UN Decade">
-            <h2 class="mt-6 text-center text-2xl font-bold tracking-tight text-gray-800 dark:text-gray-200">Welcome to the registry</h2>
+            <h2 class="mt-6 text-center text-2xl font-bold tracking-tight text-gray-800 dark:text-gray-200">Welcome to the FERM registry!</h2>
             <h2 class="mt-2 text-center text-2xl font-bold tracking-tight text-sky-gray-800 dark:text-gray-200">Please introduce yourself</h2>
         </div>
 
@@ -161,17 +165,44 @@ function onClose() {
                       action="#"
                       method="POST">
                     <div>
-                        <label for="Institution"
-                               class="block text-base font-medium leading-6 text-gray-900 dark:text-gray-100">Institution <span class="text-red-600">*</span></label>
+                        <label for="name"
+                               class="block text-base font-medium leading-6 text-gray-900 dark:text-gray-100">Name <span class="text-red-600">*</span></label>
                         <div class="mt-2">
-                            <input v-model="formData.institution"
-                                   id="institution"
-                                   name="institution"
+                            <input v-model="formData.name"
+                                   id="full"
+                                   name="full"
                                    type="text"
                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                     </div>
 
+                    <div>
+                        <label for="institution"
+                               class="block text-base font-medium leading-6 text-gray-900">Institution <span class="text-red-600">*</span></label>
+                        <select v-model="selectedGroup"
+                                id="institution"
+                                name="institution"
+                                class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <option value=""
+                                    disabled>Select an institution</option>
+                            <option v-for="[id, label] in Object.entries(groups).sort((a, b) => a[1].localeCompare(b[1]))"
+                                    :value="id">{{ label }}</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div v-if="selectedGroup === 'other'">
+                        <label for="other-group"
+                               class="block text-base font-medium leading-6 text-gray-900">Please specify your institution <span class="text-red-600">*</span></label>
+                        <div class="mt-2">
+                            <input v-model="formData.otherGroupText"
+                                   ref="otherGroupTextRef"
+                                   type="text"
+                                   name="other institution"
+                                   id="other-group"
+                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                   placeholder="Your institution" />
+                        </div>
+                    </div>
                     <div>
                         <fieldset>
                             <legend class="sr-only">Institution affiliation</legend>
@@ -180,7 +211,7 @@ function onClose() {
                             <div class="mt-2 space-y-2">
                                 <div class="relative flex items-start">
                                     <div class="flex h-6 items-center">
-                                        <input v-model="formData.ecosystem"
+                                        <input v-model="formData.affiliation.ecosystem"
                                                id="ecosystem"
                                                name="ecosystem"
                                                type="checkbox"
@@ -193,7 +224,7 @@ function onClose() {
                                 </div>
                                 <div class="relative flex items-start">
                                     <div class="flex h-6 items-center">
-                                        <input v-model="formData.flagship"
+                                        <input v-model="formData.affiliation.flagship"
                                                id="flagship"
                                                name="flagship"
                                                type="checkbox"
@@ -206,7 +237,7 @@ function onClose() {
                                 </div>
                                 <div class="relative flex items-start">
                                     <div class="flex h-6 items-center">
-                                        <input v-model="formData.partner"
+                                        <input v-model="formData.affiliation.partner"
                                                id="partner"
                                                name="partner"
                                                type="checkbox"
@@ -219,7 +250,7 @@ function onClose() {
                                 </div>
                                 <div class="relative flex items-start">
                                     <div class="flex h-6 items-center">
-                                        <input v-model="formData.otherAffiliation"
+                                        <input v-model="otherAffiliation"
                                                id="other"
                                                name="other"
                                                type="checkbox"
@@ -227,21 +258,21 @@ function onClose() {
                                     </div>
                                     <div class="ml-3 text-sm leading-6">
                                         <label for="other"
-                                               class="font-normal text-gray-900 dark:text-gray-100">Other <span v-if="formData.otherAffiliation"
+                                               class="font-normal text-gray-900 dark:text-gray-100">Other <span v-if="otherAffiliation"
                                                   class="text-red-600">*</span></label>
                                     </div>
 
                                     <div>
                                         <div class="relative ml-2">
-                                            <input v-model="formData.otherAffiliationText"
+                                            <input v-model="formData.affiliation.otherAffiliationText"
                                                    ref="otherInstitutionTextRef"
-                                                   :disabled="!formData.otherAffiliation"
-                                                   :placeholder="formData.otherAffiliation ? 'Please specify' : ''"
+                                                   :disabled="!otherAffiliation"
+                                                   :placeholder="otherAffiliation ? 'Please specify' : ''"
                                                    type="text"
                                                    name="otherText"
                                                    id="otherText"
                                                    class="bg-transparent peer block w-full border-0 py-0 text-gray-900 dark:text-gray-100 focus:ring-0 sm:text-sm sm:leading-6" />
-                                            <div :class="[formData.otherAffiliation ? 'border-t border-gray-300' : '', 'absolute inset-x-0 bottom-0 peer-focus:border-t-2 peer-focus:border-indigo-600']"
+                                            <div :class="[otherAffiliation ? 'border-t border-gray-300' : '', 'absolute inset-x-0 bottom-0 peer-focus:border-t-2 peer-focus:border-indigo-600']"
                                                  aria-hidden="true" />
                                         </div>
                                     </div>
@@ -263,63 +294,6 @@ function onClose() {
                         </div>
 
                     </div>
-
-                    <div>
-                        <fieldset>
-                            <legend class="sr-only">Institutions</legend>
-                            <div class="block text-base font-medium leading-6 text-gray-900 dark:text-gray-100"
-                                 aria-hidden="true">Which institution do you belong to? If none, please suggest a new one<span class="text-red-600">*</span>
-                            </div>
-                            <div class="h-48 border p-3 border-gray-300 rounded-md overflow-y-scroll bg-white">
-                                <div class="space-y-2">
-                                    <div v-for="[id, label] in Object.entries(groups).sort((a, b) => a[1].localeCompare(b[1]))"
-                                         :key="id"
-                                         class="relative flex items-start">
-                                        <div class="flex h-6 items-center">
-                                            <input @change="handleGroupClick($event, id)"
-                                                   :id="id"
-                                                   :name="id"
-                                                   type="checkbox"
-                                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                        </div>
-                                        <div class="ml-3 text-sm leading-6">
-                                            <label :for="id"
-                                                   class="font-normal text-gray-900">{{ label }}</label>
-                                        </div>
-                                    </div>
-                                    <div class="relative flex items-start">
-                                        <div class="flex h-6 items-center">
-                                            <input v-model="formData.otherGroup"
-                                                   id="other_group"
-                                                   name="other_group"
-                                                   type="checkbox"
-                                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                        </div>
-                                        <div class="ml-3 text-sm leading-6">
-                                            <label for="other_group"
-                                                   class="font-medium text-gray-900">Suggest a new institution</label>
-                                        </div>
-                                        <div>
-                                            <div class="relative ml-2">
-                                                <input v-model="formData.otherGroupText"
-                                                       ref="otherGroupTextRef"
-                                                       :disabled="!formData.otherGroup"
-                                                       :placeholder="formData.otherGroup ? 'Please specify' : ''"
-                                                       type="text"
-                                                       name="other_group_text"
-                                                       id="other_group_text"
-                                                       class="bg-transparent peer block w-full border-0 py-0 text-gray-900 dark:text-gray-100 focus:ring-0 sm:text-sm sm:leading-6" />
-                                                <div :class="[formData.otherGroup ? 'border-t border-gray-300' : '', 'absolute inset-x-0 bottom-0 peer-focus:border-t-2 peer-focus:border-indigo-600']"
-                                                     aria-hidden="true" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-
-                    </div>
-
                     <div>
                         <button :disabled="isDisabled"
                                 type="submit"

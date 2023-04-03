@@ -12,16 +12,17 @@ import { useAuthStore } from './auth';
 const userCollection = collection(db, 'users')
 
 export interface RegistrationData {
-    institution: string,
-    ecosystem: boolean,
-    flagship: boolean,
-    partner: boolean,
-    otherAffiliation: boolean,
-    otherAffiliationText: string,
+    name: string,
+    affiliation: {
+        ecosystem: boolean,
+        flagship: boolean,
+        partner: boolean,
+        otherAffiliationText: string,
+    }
     purpose: string,
-    groups: { id: string, name: string }[],
-    otherGroup: boolean,
-    otherGroupText: string
+    group: { id: string, name: string } | null,
+    otherGroupText: string,
+    // otherGroupText: string
 }
 
 interface UserPrefs {
@@ -81,7 +82,7 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
         const userRef = doc(userCollection, authStore.user!.uid);
 
         try {
-            await setDoc(userRef, { registrationData }, { merge: true })
+            await setDoc(userRef, { registrationData }, { merge: true });
             userPrefs.value.registrationData = registrationData;
         } catch (e) {
             alert("Error writing registration data: " + e);

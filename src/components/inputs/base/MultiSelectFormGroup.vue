@@ -116,7 +116,11 @@ const id_ = Math.ceil(Math.random() * 1e9) // TODO
         <template v-else-if="modelValue?.length">
             <ul class="list-disc list-inside"
                 v-for="option in options">
-                <li v-if="isChecked(option.value)">{{ option.label }}</li>
+                <li v-if="isChecked(option.value)">
+                    <span v-if="option.dangerousHtmlLabel"
+                          v-html="option.dangerousHtmlLabel"></span>
+                    <template v-else>{{ option.label }}</template>
+                </li>
             </ul>
         </template>
         <div class="italic text-gray-400"
