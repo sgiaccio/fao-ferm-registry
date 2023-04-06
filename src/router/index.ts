@@ -111,7 +111,7 @@ const router = createRouter({
     }, {
       path: '/initiatives/:id',
       name: 'initiative',
-      component: () => import('../views/project/ProjectView.vue'),
+      component: () => import('../views/project/ProjectViewView.vue'),
       meta: {
         requiresAuth: true
       },
@@ -119,7 +119,7 @@ const router = createRouter({
         {
           path: 'print',
           name: 'printProject',
-          component: () => import('../views/project/ProjectPrint.vue'),
+          component: () => import('../views/project/ProjectPrintView.vue'),
           meta: {
             requiresAuth: true
           }
@@ -129,8 +129,8 @@ const router = createRouter({
     }, {
       path: '/initiatives/:id/edit',
       name: 'initiative-edit',
-      component: () => import('../views/project/ProjectView.vue'),
-      props: { edit: true },
+      component: () => import('../views/project/ProjectEditView.vue'),
+      // props: { edit: true },
       meta: {
         requiresAuth: true
       },

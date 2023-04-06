@@ -53,7 +53,6 @@ const pointsOfContact = {
 
 const store = useProjectStore();
 
-
 const selectedFile = vue.ref<File | null>(null);
 const uploadStatus = vue.ref<'idle' | 'uploading' | 'uploaded'>('idle');
 function setSelectedFile(event: Event) {

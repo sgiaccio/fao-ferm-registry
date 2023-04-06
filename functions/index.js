@@ -4,10 +4,6 @@ const admin = require("firebase-admin");
 const firestore = require('@google-cloud/firestore');
 
 
-const firebase = require('firebase/app');
-const { getAuth, sendSignInLinkToEmail, signInWithCustomToken } = require('firebase/auth');
-
-
 // Initialize admin SDK
 admin.initializeApp();
 
@@ -20,13 +16,13 @@ const groupsCollection = 'groups';
 
 // TODO: move these to env variables
 const backupBucket = 'gs://fao-ferm-firebase-backup';
-const apiKey = 'AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M';
+// const apiKey = 'AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M';
 
 // Initialize client SDK - for sending emails
-firebase.initializeApp({
-    apiKey,
-    credential: admin.credential.applicationDefault()
-});
+// firebase.initializeApp({
+//     apiKey,
+//     credential: admin.credential.applicationDefault()
+// });
 
 
 // Finds the first element in the array for which the async predicate returns true
@@ -46,8 +42,27 @@ async function isValidGroup(groupId) {
     return snapshot.exists;
 }
 
+// Checks if the groups are valid, returns the first invalid group or null if all are valid
+async function checkValidGroups(privileges) {
+    const groupIds = Object.keys(privileges);
+    const groupsCollection = admin.firestore().collection('groups');
+    const groupsSnapshot = await groupsCollection.where(firestore.FieldPath.documentId(), 'in', groupIds).get();
+    const groupIdsFromFirestore = groupsSnapshot.docs.map(d => d.id);
+    const invalidGroup = groupIds.find(g => !groupIdsFromFirestore.includes(g));
+    return invalidGroup || null;
+}
+
+// Checks if the privilege levels are valid, returns teh first group with an invalid privilege level or null if all are valid
+async function checkValidLevels(privileges) {
+    const groupIds = Object.keys(privileges);
+    const invalidGroup = await findAsync(groupIds, async (g) => !GROUP_ROLES.includes(privileges[g]));
+    return invalidGroup || null;
+}
+
+
 // Checks if the user is an admin
 function isAdmin(context) {
+    console.log(JSON.stringify(context.auth.token));
     return !!context.auth.token.admin;
 }
 
@@ -55,6 +70,44 @@ function isAdmin(context) {
 //     const group = privileges.find((p => p.group === groupName));
 //     return group.role;
 // }
+
+exports.createUser = functions.https.onCall(async ({ email, displayName, privileges, admin: admin_ }) => {
+    // Validate the input
+    if (!email) {
+        throw new functions.https.HttpsError('invalid-argument', 'The function must be called with one argument "email" containing the email for the user.');
+    }
+
+    const invalidGroup = await checkValidGroups(privileges);
+    if (invalidGroup) {
+        throw new functions.https.HttpsError('invalid-argument', `Invalid group id ${invalidGroup}`);
+    }
+
+    const invalidLevelGroup = await checkValidLevels(privileges);
+    if (invalidLevelGroup) {
+        throw new functions.https.HttpsError('invalid-argument', `Invalid privilege ${privileges[invalidLevelGroup]} level for group ${invalidLevelGroup}`);
+    }
+
+    try {
+        const { uid } = await admin.auth().createUser({
+            email,
+            displayName,
+            disabled: false,
+            emailVerified: false,
+        });
+
+        // Set the custom claims on the newly created user. Just print the error to the console for now.
+        try {
+            await admin.auth().setCustomUserClaims(uid, { privileges, admin: admin_ });
+        } catch (err) {
+            console.error('Error setting custom claims:', JSON.stringify(err, null, 2));
+        }
+
+        return { message: 'Successfully created new user', uid };
+    } catch (err) {
+        console.error('Error creating new user:', JSON.stringify(err, null, 2));
+        throw new functions.https.HttpsError('aborted', err.message, err);
+    }
+});
 
 // New user signup. Everyone can sign up.
 // This function is not used anymore. We now use the client SDK to send the email sign in link.
@@ -83,7 +136,7 @@ function isAdmin(context) {
 //         };
 //         await sendSignInLinkToEmail(auth, data.email, actionCodeSettings)
 //         console.log('Sent sign in link to email ' + data.email);
-        
+
 //         // const customToken = await admin.auth().createCustomToken(uid);
 //         // return { customToken };
 //         return { message: 'Success! User created.' };
@@ -119,7 +172,7 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
     }
 
     if (!isAdmin(context)) {
-        throw new functions.https.HttpsError('permission-denied', 'Only admins can add assign users to groups (for now)');
+        throw new functions.https.HttpsError('permission-denied', 'Only admins can change user privileges (for now)');
     }
 
     // Check if the roles are valid
@@ -172,14 +225,18 @@ exports.scheduledFirestoreExport = functions.pubsub
         });
     });
 
-// TODO: deploy this function
 // Set default custom claims and create a user record in Firestore when a user is created
 exports.createUserRecord = functions.auth.user().onCreate(async ({ uid }) => {
-    // Try to set default custom claims, just log error if it fails
+    // get user's custom claims
+    const user = await admin.auth().getUser(uid);
+    const currentCustomClaims = user.customClaims || {};
+
+    // Try to set default custom claims if not set, just log error if it fails
     try {
         await admin.auth().setCustomUserClaims(uid, {
             admin: false,
-            privileges: {}
+            privileges: {},
+            ...currentCustomClaims
         });
     } catch (err) {
         console.error('Error setting custom claims:', err);
@@ -194,7 +251,6 @@ exports.createUserRecord = functions.auth.user().onCreate(async ({ uid }) => {
     }
 });
 
-// TODO: deploy this function
 // Delete a user record in Firestore when a user is deleted
 exports.deleteUserRecord = functions.auth.user().onDelete(async ({ uid }) => {
     await admin.firestore().collection(usersCollection).doc(uid).delete();

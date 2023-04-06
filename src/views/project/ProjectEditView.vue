@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import { onBeforeMount, computed, onUnmounted } from 'vue'
+import { onBeforeMount, computed } from 'vue'
 import { useRoute, onBeforeRouteLeave } from 'vue-router'
 
 import router from '@/router';
 
 import { useProjectStore } from '../../stores/project';
 
-
-const props = withDefaults(defineProps<{
-    edit?: boolean
-}>(), {
-    edit: false
-});
 
 const store = useProjectStore();
 
@@ -33,7 +27,7 @@ onBeforeMount(async () => {
     }
 });
 
-onBeforeRouteLeave((to, from) => {
+onBeforeRouteLeave((_to, _from) => {
     store.resetProjectState();
 });
 
@@ -76,7 +70,7 @@ async function saveAndNext() {
 }
 
 async function cancel() {
-    if (!props.edit || confirm("Are you sure you want to cancel? You will loose the changes you made.")) {
+    if (confirm("Are you sure you want to cancel? You will loose the changes you made.")) {
         store.resetProjectState();
         router.push({ name: 'initiatives' });
     }
@@ -92,30 +86,6 @@ async function print() {
     <div v-if="store.project"
          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
-
-            <!-- <div>
-                    <div class="sm:hidden">
-                    <label for="tabs" class="sr-only">Select a tab</label>
-                    <!- - Use an "onChange" listener to redirect the user to the selected tab URL. - ->
-                    <select id="tabs" name="tabs"
-                            class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option v-for="tab in tabs" :key="tab.name" :selected="tab.current">{{ tab.name }}</option>
-                        </select>
-                    </div>
-                    <div class="hidden sm:block">
-                        <div class="border-b border-gray-200">
-                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                                <router-link v-for="tab in tabs" :key="tab.name" :href="tab.href"
-                                    :class="[tab.current ? 'border-indigo-500 text-indigo-600 dark:text-indigo-100' : 'border-transparent text-gray-500 dark:text-indigo-300 hover:text-gray-700 dark:hover:text-indigo-200 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']"
-                                    :aria-current="tab.current ? 'page' : undefined" :to="tab.href">{{
-                                        tab.name
-                                    }}</router-link>
-                            </nav>
-                        </div>
-                    </div>
-                </div> -->
-
-
             <nav aria-label="Section">
                 <ol role="list"
                     class="mt-4 md:mt-6 divide-y divide-gray-300 rounded-md border border-gray-300 md:flex md:divide-y-0">
@@ -157,18 +127,17 @@ async function print() {
             </nav>
 
             <router-view v-if="store.loaded"
-                         :edit="edit" />
+                         :edit="true" />
 
             <div class="w-full mb-8 flex gap-x-6">
-                <div v-if="edit"
-                     class="shrink">
+                <div class="shrink">
                     <button @click="saveAndExit"
                             type="button"
                             class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         Save and exit
                     </button>
                 </div>
-                <div v-if="edit && !lastTab"
+                <div v-if="!lastTab"
                      class="shrink">
                     <button @click="saveAndNext"
                             type="button"
@@ -183,31 +152,11 @@ async function print() {
                         Cancel
                     </button>
                 </div>
-                <div v-if="store.canEdit() && !edit"
-                     class="shrink">
-                    <button @click="startEdit()"
-                            type="button"
-                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                        Edit
-                    </button>
-                </div>
-
-                <div class="grow relative flex flex-row">
-                    <div class="grow"></div>
-                    <button @click="print"
-                            type="button"
-                            class="ml-6 shrink inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                        Print
-                    </button>
-                </div>
                 <!-- <button 
-                    class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
-                    @click="toggleJson">JSON</button>
-                    <pre v-if="showJson" class="text-xs font-medium absolute text-amber-700 dark:text-amber-600 top-20">{{JSON.stringify(store.project, null, 2)}}</pre> -->
+                        class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
+                        @click="toggleJson">JSON</button>
+                        <pre v-if="showJson" class="text-xs font-medium absolute text-amber-700 dark:text-amber-600 top-20">{{JSON.stringify(store.project, null, 2)}}</pre> -->
             </div>
-            <pre class="text-xs font-medium text-amber-700 dark:text-amber-600 top-20 mb-80">{{ JSON.stringify(store.project, null, 2) }}</pre>
-
-
         </div>
     </div>
 </template>

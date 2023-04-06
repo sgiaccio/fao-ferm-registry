@@ -229,7 +229,7 @@ async function addGroup() {
                                 <!-- empty state -->
                                 <div class="mt-2"
                                      v-if="!showGroup.users.length">
-                                    This group has no users - id = {{ showGroup.id }}
+                                    This group has no users - group id: {{ showGroup.id }}
                                 </div>
 
                                 <template v-else>
@@ -240,7 +240,7 @@ async function addGroup() {
                                     </div>
                                     <ul>
                                         <li v-for="user in showGroup.users">
-                                            {{ user.displayName || user.email }}
+                                            {{ user.displayName}} - {{ user.email }}
                                         </li>
                                     </ul>
                                 </template>
