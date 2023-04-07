@@ -124,11 +124,11 @@ export const useAuthStore = defineStore({
                         this.privileges = idToken.claims.privileges || {};
                 }
 
-                await router.isReady();
-                if (router.currentRoute.value.path === "/login") {
-                    this.authLoaded = true;
-                    router.push(this.returnUrl);
-                }
+                // await router.isReady();
+                // if (router.currentRoute.value.path === "/login") {
+                //     this.authLoaded = true;
+                //     router.push(this.returnUrl);
+                // }
 
                 // Get user group names
                 const groupIds = Object.keys(this.privileges);
@@ -196,7 +196,7 @@ export const useAuthStore = defineStore({
             return new Promise((resolve, reject) => {
                 // const auth = getAuth();
                 auth.onAuthStateChanged(async user => {
-                    this.setUserData(user)
+                    await this.setUserData(user)
                     resolve(user);
                 }, () => reject(''))
             });
@@ -208,8 +208,18 @@ export const useAuthStore = defineStore({
             return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
         },
 
-        signInWithGoogle() {
-            signInWithPopup(auth, provider);
+        async signInWithGoogle() {
+            await signInWithPopup(auth, provider);
+
+            // This is a repetition from main.ts
+            // It is needed because we are using a popup so the page is not laaded again
+            // Will find a better way to do this
+            await this.fetchUser()
+            await router.isReady();
+            if (router.currentRoute.value.path === "/login") {
+                this.authLoaded = true;
+                router.push(this.returnUrl);
+            }
         },
 
         async signUp(email: string, fullName: string) {

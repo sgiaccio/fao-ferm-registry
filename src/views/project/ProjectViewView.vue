@@ -11,14 +11,6 @@ const store = useProjectStore();
 
 const route = useRoute();
 
-// async function fetchData() {
-//     if (route.params.id === 'new') {
-//         store.createEmptyProject(route.query.groupId as string);
-//     } else {
-//         await store.fetchProject(route.params.id as string);
-//     }
-// }
-
 onBeforeMount(async () => {
     if (route.params.id === 'new') {
         store.createEmptyProject(route.query.groupId as string)
@@ -47,9 +39,6 @@ const lastTab = computed(() => {
     return (currentRouteIdx.value === tabs.length - 1);
 });
 
-// const showJson = ref(false);
-// function toggleJson() { showJson.value = !showJson.value }
-
 function startEdit() {
     router.push({ path: `/initiatives/${route.params.id}/edit/info` });
 }
@@ -58,6 +47,9 @@ async function print() {
     const routeData = router.resolve({ name: 'printProject' });
     window.open(routeData.href, '_blank');
 }
+
+// const showJson = ref(false);
+// function toggleJson() { showJson.value = !showJson.value }
 </script>
 
 <template>
@@ -85,6 +77,7 @@ async function print() {
                                 <span class="justify-self-start ml-1 text-sm font-medium text-gray-500 group-hover:text-gray-900">{{ step.name }}</span>
                             </span>
                         </router-link>
+                        
                         <template v-if="stepIdx !== tabs.length - 1">
                             <!-- Arrow separator for lg screens and up -->
                             <div class="absolute top-0 right-0 hidden h-full w-5 md:block"
