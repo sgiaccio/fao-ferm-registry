@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { onBeforeMount } from 'vue'
-import { useRoute } from 'vue-router'
-
-import { PencilSquareIcon, PrinterIcon, ArrowSmallLeftIcon, ArrowSmallRightIcon } from '@heroicons/vue/20/solid';
+import { ref, onBeforeMount } from 'vue';
+import { useRoute } from 'vue-router';
 
 import router from '@/router';
 
-import { useProjectStore } from '@/stores/project';
+import { useBestPracticesStore } from '@/stores/bestpractices';
 
+import { PencilSquareIcon, PaperAirplaneIcon, PrinterIcon, ArrowSmallLeftIcon, ArrowSmallRightIcon } from '@heroicons/vue/20/solid';
+
+const store = useBestPracticesStore();
+
+const canSubmit = ref<boolean>()
+const route = useRoute();
 
 const props = defineProps<{
     previous: () => void,
@@ -16,32 +20,34 @@ const props = defineProps<{
     last: boolean
 }>();
 
-const store = useProjectStore();
-
-const route = useRoute();
-
 onBeforeMount(async () => {
-    await store.fetchProject(route.params.id as string);
+    await store.fetch(route.params.id as string);
 });
 
-// This is a hack to reset the project state when the user navigates away from the project view
-// TODO: Find a better way to do this
-// TODO: move to the parent route?
-// onBeforeRouteLeave(() => {
-//     store.resetProjectState();
-// });
-
 function edit() {
-    router.push({ path: `/initiatives/${route.params.id}/edit/info` });
+    router.push({ path: `/good-practices/${route.params.id}/edit/objectives` });
 }
 
-async function print() {
-    const routeData = router.resolve({ name: 'printProject' });
+async function submit() {
+    if (confirm("Are you sure you want submit this Good Practice for review?")) {
+        try {
+            await store.submit(store.id!);
+            alert('The Good Practice was submitted for review.');
+        } catch (e) {
+            alert(`Error updating status: ${e}.`)
+        }
+        router.push({ name: 'initiatives' });
+    }
+}
+
+function print() {
+    const routeData = router.resolve({ name: 'printBestPractice' });
     window.open(routeData.href, '_blank');
 }
 </script>
 
 <template>
+    <!-- Buttons -->
     <div class="w-full pb-8 flex gap-x-6">
         <div class="shrink">
             <button @click="edit"
@@ -74,14 +80,14 @@ async function print() {
         </div>
         <div class="grow relative flex flex-row">
             <div class="grow" />
-            <!-- <button v-if="canSubmit"
+            <button v-if="canSubmit"
                     @click="submit"
                     type="button"
                     class="inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:ring-orange-500">
                 <PaperAirplaneIcon class="-ml-0.5 h-5 w-5"
                                    aria-hidden="true" />
                 Submit for review
-            </button> -->
+            </button>
             <button @click="print"
                     type="button"
                     class="ml-6 inline-flex items-center gap-x-1.5 rounded-md bg-indigo-100 py-2 px-3 text-sm font-semibold text-indigo-700 shadow-sm hover:bg-indigo-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500">
@@ -92,7 +98,15 @@ async function print() {
         </div>
     </div>
 
-    <router-view v-if="store.loaded"
+    <router-view v-if="store.bestPractice"
                  :edit="false" />
 
+    <!-- TODO, important - but what? -->
+    <!-- <router-view v-slot="{ Component, route }"
+                             v-if="store.bestPractice">
+                    <keep-alive include="BestPracticeObjectivesView">
+                        <component :is="Component"
+                                   :key="route.path" />
+                    </keep-alive>
+                </router-view> -->
 </template>
