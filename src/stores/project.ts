@@ -58,7 +58,7 @@ export const useProjectStore = defineStore({
         },
         async fetchGroupOwnedProjects(groupId: string | null) {
             const authStore = useAuthStore();
-            let userGroups = null;
+            let userGroups: string[] = [];
             if (groupId) {
                 userGroups = [groupId]
             } else {
@@ -67,20 +67,28 @@ export const useProjectStore = defineStore({
                 }
             }
 
-            const q = userGroups
-                ? query(projectsCollection, where('group', 'in', userGroups))
-                : query(projectsCollection)
-            // const q = query(projectsCollection, where('group', 'in', userGroups));
-            const querySnapshot = await getDocs(q);
-            this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
+            if (authStore.isAdmin) {
+                const q = query(projectsCollection);
+                const querySnapshot = await getDocs(q);
+                this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
+            } else if (userGroups && userGroups.length > 0) {
+                const q = query(projectsCollection, where('group', 'in', userGroups))
+                // const q = query(projectsCollection, where('group', 'in', userGroups));
+                const querySnapshot = await getDocs(q);
+                this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
 
-            // Get related good practices
-            this.projects.forEach(async (p: any) => {
-                const projectId = p.id;
-                const q2 = query(bestPracticesCollection, where('projectId', '==', projectId));
-                const querySnapshot2 = await getDocs(q2);
-                p.nBestPractices = querySnapshot2.size;
-            });
+                console.log(this.projects);
+                // Get related good practices
+                this.projects.forEach(async (p: any) => {
+                    const projectId = p.id;
+                    const q2 = query(bestPracticesCollection, where('projectId', '==', projectId));
+                    const querySnapshot2 = await getDocs(q2);
+                    p.nBestPractices = querySnapshot2.size;
+                });
+            } else {
+               this.projects = [];
+            }
+
         },
         createEmptyProject(groupId: string) {
             const projectRef = doc(projectsCollection);
@@ -92,7 +100,7 @@ export const useProjectStore = defineStore({
                 results: {}
             }
             this.projectAreas = [];
-            
+
             this.loaded = true;
         },
         canEdit() {

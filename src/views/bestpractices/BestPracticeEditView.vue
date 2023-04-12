@@ -23,7 +23,9 @@ const route = useRoute();
 
 onBeforeMount(async () => {
     if (route.params.id === 'new') {
-        if (!route.query.projectId) throw Error('Didn\'t get project id in request query');
+        if (!route.query.projectId) {
+            throw Error('Didn\'t get project id in request query');
+        }
         store.createEmpty(route.query.projectId as string);
     } else {
         await store.fetch(route.params.id as string);
@@ -89,13 +91,14 @@ function cancel() {
 
     <!-- TODO, important - but what? -->
     <!-- <router-view v-slot="{ Component, route }"
-                                                         v-if="store.bestPractice">
-                                                <keep-alive include="BestPracticeObjectivesView">
-                                                    <component :is="Component"
-                                                               :key="route.path" />
-                                                </keep-alive>
-                                            </router-view> -->
+                                                             v-if="store.bestPractice">
+                                                    <keep-alive include="BestPracticeObjectivesView">
+                                                        <component :is="Component"
+                                                                   :key="route.path" />
+                                                    </keep-alive>
+                                                </router-view> -->
     <!-- buttons -->
+
     <div class="w-full pb-8 flex gap-x-6">
         <div class="shrink">
             <button @click="saveAndExit"
@@ -126,6 +129,3 @@ function cancel() {
         </div>
     </div>
 </template>
-
-
-<!-- ml-6 shrink inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 -->

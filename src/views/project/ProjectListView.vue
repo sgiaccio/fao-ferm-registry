@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 
 import { fbTimestampToString } from '../../lib/util'
 
@@ -23,11 +23,14 @@ const projectStore = useProjectStore();
 const authStore = useAuthStore();
 const bestPracticesStore = useBestPracticesStore();
 
-const groups = ref();
+const allGroups = reactive<{ [key: string]: string }>({});
+const userGroups = ref(); // TODO make it reactive
 
 onMounted(async () => {
     await projectStore.fetchGroupOwnedProjects(null);
-    groups.value = authStore.isAdmin ? await authStore.fetchAllGroups() : authStore.userGroups;
+    userGroups.value = authStore.isAdmin ? await authStore.fetchAllGroups() : authStore.userGroups;
+    console.log(userGroups.value)
+    // Object.assign(allGroups, await authStore.fetchAllGroups())
     // bestPractices.value = projects.map(p => ({ id: p.id, data: p.data() }));
 });
 
@@ -89,7 +92,11 @@ async function filterByGroup(groupId: string | null) {
                 Restoration and for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework Target 2.</p>
             <!-- If the user is not an admin and not part of any group, show a message -->
             <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
-                 class="mt-6 font-semibold dark:text-gray-100">Once an administrator assigns you to an organization, you will be able to add new initiatives and edit existing ones.</div>
+                 class="mt-6 font-semibold dark:text-gray-100">
+                Once an administrator assigns you to an institution, you will be able to add new initiatives and edit existing ones.
+
+                {{ userGroups }}
+            </div>
             <template v-else>
                 <div class="flex mt-6">
                     <Menu as="div"
@@ -101,7 +108,7 @@ async function filterByGroup(groupId: string | null) {
                                                  aria-hidden="true" />
                             </MenuButton>
                         </div>
-                        <transition v-if="groups"
+                        <transition v-if="userGroups"
                                     enter-active-class="transition ease-out duration-100"
                                     enter-from-class="transform opacity-0 scale-95"
                                     enter-to-class="transform opacity-100 scale-100"
@@ -117,7 +124,7 @@ async function filterByGroup(groupId: string | null) {
                                         All
                                     </span>
                                     </MenuItem>
-                                    <MenuItem v-for="[id, name] in Object.entries(groups)"
+                                    <MenuItem v-for="[id, name] in Object.entries(userGroups)"
                                               v-slot="{ active }">
                                     <span @click="() => filterByGroup(id)"
                                           href="#"

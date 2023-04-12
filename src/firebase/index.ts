@@ -39,10 +39,5 @@ async function fetchAllUsers() {
     const result = await listAllUsers();
     return result.data;
 }
-
-// (defn get-groups []
-//     (.then (getDocs (query groups-collection))
-//            (fn [query-snapshot]
-//              ^js/Array (.-docs query-snapshot))))
   
 export { auth, db, functions, fetchAllUsers }
