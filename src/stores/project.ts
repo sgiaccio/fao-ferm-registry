@@ -29,7 +29,7 @@ export const useProjectStore = defineStore({
             this.loaded = false;
         },
         async fetchProject(projectId: string) {
-            this.loaded = false
+            this.loaded = false;
             const docRef = doc(db, 'registry', projectId);
             this.project = {
                 project: {},

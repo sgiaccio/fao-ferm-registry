@@ -9,7 +9,7 @@ service cloud.firestore {
 
     function isAdmin() {
       // Determine if the user is an admin
-      return isSignedIn() && request.auth.token && request.auth.token.admin == true;
+      return isSignedIn() && ("token" in request.auth) && ("admin" in request.auth.token) && request.auth.token.admin == true;
     }
 
     function getRole(rsc) {
@@ -19,9 +19,18 @@ service cloud.firestore {
 
     function isOneOfRoles(rsc, array) {
       // Determine if the user has one of an array of roles in the resource group
-      return isSignedIn() && debug(getRole(rsc)) in array;
+      return isSignedIn() && (getRole(rsc) in array)
     }
 
+    function getStatus(rsc) {
+      // Determine the status of the resource
+      return ("status" in rsc.data) ? rsc.data.status : null;
+    }
+
+    function isOneOfStatuses(rsc, array) {
+      // Determine if the resource has one of an array of statuses
+      return getStatus(rsc) in array;
+    }
 
     // Project registry documents
     match /registry/{document=**} {
@@ -35,6 +44,9 @@ service cloud.firestore {
                           // The user is a superadmin
                           isAdmin()
 
+                          // The group exists
+                          && ('group' in request.resource.data) && exists(/databases/$(database)/documents/groups/$(request.resource.data.group))
+
                           // User is admin or editor in the project group
                           || isOneOfRoles(request.resource, ["admin", "editor"])
                           
@@ -42,7 +54,8 @@ service cloud.firestore {
                         )
 
       allow read: if "public" in resource.data && resource.data.public == true
-                      || (isAdmin()
+                      || (
+                        isAdmin()
                         // user is the creator of the resource
                         // commented ouy because he shouldnt be able to read it if he is not in the group
                         // || request.auth.uid == resource.data.created_by
@@ -59,7 +72,7 @@ service cloud.firestore {
               
       allow update: if (isAdmin()
                         // User is group editor and the user is the creator of the resource
-                        || isOneOfRoles(resource, ["editor"])  && request.auth.uid == resource.data.created_by
+                        || isOneOfRoles(resource, ["editor"]) && request.auth.uid == resource.data.created_by
                         // TODO re enable this condition and test
                         // && (!resource.data.status || resource.data.status == 'draft')
 
