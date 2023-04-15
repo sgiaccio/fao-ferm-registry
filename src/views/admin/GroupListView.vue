@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { User } from 'firebase/auth';
-import { getFunctions, httpsCallable } from "firebase/functions";
+// import type { User } from 'firebase/auth';
+// import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { ref, onMounted } from 'vue';
 

@@ -12,14 +12,18 @@ service cloud.firestore {
       return isSignedIn() && ("token" in request.auth) && ("admin" in request.auth.token) && request.auth.token.admin == true;
     }
 
-    function getRole(rsc) {
+    function getRole(group) {
       // Determine the role of the user in the group - returns null if privileges not defined
-      return ("privileges" in request.auth.token) ? request.auth.token.privileges[rsc.data.group] : null;
+      return isSignedIn()
+        ? (("privileges" in request.auth.token)
+          ? request.auth.token.privileges[group]
+          : null)
+        : null;
     }
 
     function isOneOfRoles(rsc, array) {
       // Determine if the user has one of an array of roles in the resource group
-      return isSignedIn() && (getRole(rsc) in array)
+      return getRole(rsc.data.group) in array
     }
 
     function getStatus(rsc) {
@@ -49,8 +53,6 @@ service cloud.firestore {
 
                           // User is admin or editor in the project group
                           || isOneOfRoles(request.resource, ["admin", "editor"])
-                          
-                          // ("privileges" in request.auth.token && request.auth.token.privileges[request.resource.data.group] in ["admin", "editor"])
                         )
 
       allow read: if "public" in resource.data && resource.data.public == true
@@ -65,9 +67,6 @@ service cloud.firestore {
 
                         // has any group privileges (admin, editor or guest)
                         || isOneOfRoles(resource, ["admin", "editor", "guest"])
-                          // "privileges" in request.auth.token
-                          // && resource.data.group in request.auth.token.privileges.keys()
-                          // && request.auth.token.privileges.get(resource.data.group, null) in ["admin", "editor", "guest"]
                       )
               
       allow update: if (isAdmin()
@@ -90,8 +89,6 @@ service cloud.firestore {
 
         // User is group admin
         || isOneOfRoles(resource, ["admin"])
-
-        // && request.auth.token.privileges[resource.data.group] in ["admin", "editor"]))
     }
 
     // Best practice documents
@@ -107,12 +104,6 @@ service cloud.firestore {
 
                       // User is admin or editor in the related project group
                       || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin", "editor"])
-
-                      // ("privileges" in request.auth.token
-                      //  && request.auth.token.privileges[
-                      //       get(/databases/$(database)/documents/registry/$(request.resource.data.projectId))
-                      //     .data.group] in ["admin", "editor"]
-                      // )
                     )
       allow update: if isSignedIn()
                     && request.auth.token != null
@@ -126,12 +117,6 @@ service cloud.firestore {
                       // User is admin in the related project group
                       || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin"])
 
-                      // ("privileges" in request.auth.token
-                      //  && request.auth.token.privileges[
-                      //       get(/databases/$(database)/documents/registry/$(request.resource.data.projectId))
-                      //     .data.group] in ["admin"]
-                      // )
-
                       // User is editor of the related project group
                       || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["editor"]) 
 
@@ -140,14 +125,6 @@ service cloud.firestore {
 
                         // and the best practice new status is draft or submitted
                         && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'submitted'])
-
-                      // ("privileges" in request.auth.token
-                      //  && request.auth.token.privileges[
-                      //       get(/databases/$(database)/documents/registry/$(resource.data.projectId))
-                      //     .data.group] in ["editor"]
-                      //  && (!('status' in resource.data) || resource.data.status == 'draft')
-                      //  && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'submitted'])
-                      // )
                     )
       // allow delete: if isSignedIn()
     }
@@ -174,6 +151,13 @@ service cloud.firestore {
     match /groups/{document=**} {
       allow read: if isSignedIn()
       allow create, update, delete: if isAdmin()
+    }
+
+    match /assignementRequests/{document=**} {
+      allow read: if isAdmin() || getRole(request.resource.data.group) == 'admin' || (isSignedIn() && request.auth.uid == resource.data.user)
+      allow create: if request.resource.data.user == request.auth.uid
+      allow update: if false
+      allow delete: if false
     }
   }  
 }

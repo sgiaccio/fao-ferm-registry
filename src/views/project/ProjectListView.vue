@@ -18,6 +18,12 @@ import { useAuthStore } from '../../stores/auth';
 import { useProjectStore } from '../../stores/project';
 import { useBestPracticesStore } from '../../stores/bestpractices';
 
+import { requestGroupAssignment } from '../../firebase/firestore';
+
+import ConfirmModal from '../ConfirmModal.vue';
+import AlertModal from '../AlertModal.vue';
+import GroupAssignmentRequests from '../GroupAssigmentRequests.vue';
+
 
 const projectStore = useProjectStore();
 const authStore = useAuthStore();
@@ -26,11 +32,12 @@ const bestPracticesStore = useBestPracticesStore();
 const allGroups = reactive<{ [key: string]: string }>({});
 const userGroups = ref(); // TODO make it reactive
 
+
 onMounted(async () => {
     await projectStore.fetchGroupOwnedProjects(null);
     userGroups.value = authStore.isAdmin ? await authStore.fetchAllGroups() : authStore.userGroups;
-    console.log(userGroups.value)
-    // Object.assign(allGroups, await authStore.fetchAllGroups())
+    Object.assign(allGroups, await authStore.fetchAllGroups());
+
     // bestPractices.value = projects.map(p => ({ id: p.id, data: p.data() }));
 });
 
@@ -70,16 +77,58 @@ async function deleteProject(projectId: string) {
         return projectStore.deleteProject(projectId)
 }
 
-
 // const filterGroup = ref<string | null>(null);
 async function filterByGroup(groupId: string | null) {
     await projectStore.fetchGroupOwnedProjects(groupId);
 }
 
-
+const showAssignmentRequests = ref(true);
+const showAssignmentConfirm = ref(false);
+const showAssignmentSuccess = ref(false);
+const assignmentRequestGroupId = ref('');
+function assignmentRequested(groupId: string) {
+    showAssignmentRequests.value = false;
+    showAssignmentConfirm.value = true;
+    assignmentRequestGroupId.value = groupId;
+}
+async function assignmentConfirmed() {
+    if (assignmentRequestGroupId.value === '') return;
+    showAssignmentConfirm.value = false;
+    await requestGroupAssignment(authStore.user!.uid, assignmentRequestGroupId.value);
+    assignmentRequestGroupId.value = '';
+    showAssignmentSuccess.value = true;
+}
 </script>
 
 <template>
+    <!-- Group assignment request modal -->
+    <ConfirmModal :onClose="() => { showAssignmentRequests = false }"
+                  :open="showAssignmentRequests"
+                  buttonText="Cancel">
+        <GroupAssignmentRequests :onRequest="assignmentRequested" />
+    </ConfirmModal>
+    <!-- Group assignment confirmation modal -->
+    <AlertModal type="warning"
+                title="Please confirm"
+                :onClose="() => { assignmentConfirmed() }"
+                :open="showAssignmentConfirm"
+                buttonText="Ok">
+        <p class="text-sm text-gray-500">Are you sure you want to join the institution <span class="font-bold">{{allGroups[assignmentRequestGroupId]}}</span>?</p>
+    </AlertModal>
+    <!-- Group assignment success modal -->
+    <AlertModal type="success"
+                title="Request sent"
+                :onClose="() => { showAssignmentSuccess = false }"
+                :open="showAssignmentSuccess"
+                buttonText="Ok">
+        <p class="text-sm text-gray-500">Your request has been sent to the administrator. You will be notified by email once it is processed.</p>
+    </AlertModal>
+
+    <!-- <AlertModal :onClose="() => { showAssignmentSuccess = false}"
+                        :open="showAssignmentSuccess"
+                        buttonText="Ok">
+                        </AlertModal> -->
+    <!-- <p class="text-sm text-gray-500">Are you sure you want to delete this initiative? You will releted the related areas and best practices</p> -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
             <h1 class="mt-12 font-roboto-slab text-4xl text-gray-800 dark:text-white mb-8">Initiatives</h1>
@@ -93,10 +142,33 @@ async function filterByGroup(groupId: string | null) {
             <!-- If the user is not an admin and not part of any group, show a message -->
             <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
                  class="mt-6 font-semibold dark:text-gray-100">
-                Once an administrator assigns you to an institution, you will be able to add new initiatives and edit existing ones.
+                <!-- Once an administrator assigns you to an institution, you will be able to add new initiatives and edit existing ones. -->
+                <p>
+                    After an admin connects you with an institution, you'll gain the ability to create new initiatives and modify existing ones.
+                </p>
+                <p class="mt-4">
+                    To request an institution assignment, simply select one from the list provided. Admins will receive a notification about your request and can choose to approve or deny it. You'll be informed of their decision in both scenarios.
+                </p>
 
-                {{ userGroups }}
+                <!-- <div class="border rounded-lg w-full sm:max-w-md mx-auto">
+                                                                                                        <ul role="list"
+                                                                                                            class="divide-y divide-gray-200">
+                                                                                                            <li v-for="[groupId, groupName] in Object.entries(allGroups).sort((a, b) => a[1].localeCompare(b[1]))"
+                                                                                                                :key="groupId"
+                                                                                                                class="flex py-4 cursor-pointer hover:bg-blue-100">
+                                                                                                                <img class="h-10 w-10 rounded-full"
+                                                                                                                     src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                                                                     alt="" />
+                                                                                                                <div class="ml-3">
+                                                                                                                    <p class="text-sm font-medium text-gray-900">{{ groupName }}</p>
+                                                                                                                    <!- - <p class="text-sm text-gray-500">{{ groupName }}</p> - ->
+                                                                                                                </div>
+                                                                                                            </li>
+                                                                                                        </ul>
+                                                                                                    </div> -->
             </div>
+
+
             <template v-else>
                 <div class="flex mt-6">
                     <Menu as="div"
