@@ -153,8 +153,20 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin()
     }
 
+    // TODO tests
     match /assignementRequests/{document=**} {
       allow read: if isAdmin() || getRole(request.resource.data.group) == 'admin' || (isSignedIn() && request.auth.uid == resource.data.user)
+      allow create: if request.resource.data.user == request.auth.uid 
+        && request.resource.data.status == 'pending'
+        && request.resource.data.group != null
+        && exists(/databases/$(database)/documents/groups/$(request.resource.data.group))
+      allow update: if false
+      allow delete: if false
+    }
+
+    // TODO tests
+    match /proposedInstitutions/{document=**} {
+      allow read: if isAdmin()
       allow create: if request.resource.data.user == request.auth.uid
       allow update: if false
       allow delete: if false

@@ -5,14 +5,15 @@ import { getFunctions, connectFunctionsEmulator, httpsCallable, type Functions }
 
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M",
-    authDomain: "fao-ferm.firebaseapp.com",
-    projectId: "fao-ferm",
-    storageBucket: "fao-ferm.appspot.com",
-    messagingSenderId: "1081330009070",
-    appId: "1:1081330009070:web:bdfbf7c72821c9be1784ff"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+console.log(firebaseConfig);
 let auth: Auth, db: Firestore;
 let functions: Functions;
 

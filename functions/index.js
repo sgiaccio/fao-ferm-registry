@@ -7,22 +7,17 @@ const firestore = require('@google-cloud/firestore');
 // Initialize admin SDK
 admin.initializeApp();
 
-
-// These are the roles that can be assigned to users in a group. Possibly add 'restricted'? Restricted users could only edit and view their own data
+// These are the roles that can be assigned to users in a group.
+// Possibly add 'restricted'? Restricted users could only edit and view their own data
 const GROUP_ROLES = ['admin', 'editor', 'guest'];
 
 const usersCollection = 'users';
 const groupsCollection = 'groups';
 
-// TODO: move these to env variables
+// This is used to export the data from the firestore database
+const client = new firestore.v1.FirestoreAdminClient();
+// TODO: move this to env variables
 const backupBucket = 'gs://fao-ferm-firebase-backup';
-// const apiKey = 'AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M';
-
-// Initialize client SDK - for sending emails
-// firebase.initializeApp({
-//     apiKey,
-//     credential: admin.credential.applicationDefault()
-// });
 
 
 // Finds the first element in the array for which the async predicate returns true
@@ -45,7 +40,7 @@ async function isValidGroup(groupId) {
 // Checks if the groups are valid, returns the first invalid group or null if all are valid
 async function checkValidGroups(privileges) {
     const groupIds = Object.keys(privileges);
-    const groupsCollection = admin.firestore().collection('groups');
+    const groupsCollection = admin.firestore().collection(groupsCollection);
     const groupsSnapshot = await groupsCollection.where(firestore.FieldPath.documentId(), 'in', groupIds).get();
     const groupIdsFromFirestore = groupsSnapshot.docs.map(d => d.id);
     const invalidGroup = groupIds.find(g => !groupIdsFromFirestore.includes(g));
@@ -62,8 +57,29 @@ async function checkValidLevels(privileges) {
 
 // Checks if the user is an admin
 function isAdmin(context) {
-    console.log(JSON.stringify(context.auth.token));
+    // console.log(JSON.stringify(context.auth.token));
     return !!context.auth.token.admin;
+}
+
+// Check if the user is an admin of the group
+function hasGroupRole(context, groupId, role) {
+    // check if the role is valid
+    if (!GROUP_ROLES.includes(role)) {
+        throw new functions.https.HttpsError('invalid-argument', `Invalid role ${role}`);
+    }
+
+    return !!context.auth.token.privileges[groupId] && context.auth.token.privileges[groupId] === role;
+}
+
+// Find the administrators of a group
+async function getGroupAdmins(groupId) {
+    // get all users
+    const users = await admin.auth().listUsers();
+    // filter out the admins
+    const admins = users.users.filter(u => u.customClaims && u.customClaims.privileges && u.customClaims.privileges[groupId] === 'admin');
+    // return the uids
+    // return admins.map(a => a.uid);
+    return admins;
 }
 
 // function getGroupRole(privileges, groupName) {
@@ -71,8 +87,20 @@ function isAdmin(context) {
 //     return group.role;
 // }
 
+// Creates a new user. Only admins can call this function for now.
+// Group admins should be able to create new users in their group.
 exports.createUser = functions.https.onCall(async ({ email, displayName, privileges, admin: admin_ }) => {
+    // check if the user is an admin
+    if (!isAdmin(context)) {
+        throw new functions.https.HttpsError('permission-denied', 'Only admins can create new users');
+    }
+
+
     // Validate the input
+    if (typeof admin_ === 'undefined') {
+        throw new functions.https.HttpsError('invalid-argument', 'admin is undefined');
+    }
+
     if (!email) {
         throw new functions.https.HttpsError('invalid-argument', 'The function must be called with one argument "email" containing the email for the user.');
     }
@@ -88,6 +116,7 @@ exports.createUser = functions.https.onCall(async ({ email, displayName, privile
     }
 
     try {
+        // Create the user
         const { uid } = await admin.auth().createUser({
             email,
             displayName,
@@ -109,44 +138,8 @@ exports.createUser = functions.https.onCall(async ({ email, displayName, privile
     }
 });
 
-// New user signup. Everyone can sign up.
-// This function is not used anymore. We now use the client SDK to send the email sign in link.
-// exports.signUp = functions.https.onCall(async (data, _context) => {
-//     try {
-//         // Create the user - do not set the password as we will only allow login via email linkå
-//         const { uid } = await admin.auth().createUser({
-//             email: data.email,
-//             emailVerified: false,
-//             displayName: data.fullName,
-//             disabled: false
-//         });
-
-//         console.log('Successfully created new user:', uid);
-
-//         // Create custom token for the user
-//         const customToken = await admin.auth().createCustomToken(uid);
-//         // Login with the custom token
-//         const auth = getAuth();
-//         await signInWithCustomToken(auth, customToken);
-
-//         // Send email sign in link
-//         const actionCodeSettings = {
-//             url: redirectUrl,
-//             handleCodeInApp: true
-//         };
-//         await sendSignInLinkToEmail(auth, data.email, actionCodeSettings)
-//         console.log('Sent sign in link to email ' + data.email);
-
-//         // const customToken = await admin.auth().createCustomToken(uid);
-//         // return { customToken };
-//         return { message: 'Success! User created.' };
-//     } catch (err) {
-//         console.error('Error creating new user:', JSON.stringify(err, null, 2));
-//         throw new functions.https.HttpsError('aborted', err.message, err);
-//     }
-// });
-
-// Returns the list of all users. Only admins can call this function
+// Returns the list of all users. Only admins can call this function for now.
+// Group admins should be able to list all users in their group.
 exports.listAllUsers = functions.https.onCall(async (_data, context) => {
     if (!isAdmin(context)) {
         throw new functions.https.HttpsError('permission-denied', 'Only admins can list all users');
@@ -159,20 +152,22 @@ exports.listAllUsers = functions.https.onCall(async (_data, context) => {
     }
 })
 
-// Set a user's privileges by updating their custom claims. Also sets the admin claim
+// Set a user's privileges by updating their custom claims. Also sets the admin claim.
+// Only admins can call this function for now.
+// Group admins should be able to set the privileges of users in their group.
 exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, admin: _admin }, context) => {
     // if (!GROUP_ROLES.includes(role)) {
     //     throw new functions.https.HttpsError('invalid-argument', `Invalid role: ${role}`);
     // }
 
+    if (!isAdmin(context)) {
+        throw new functions.https.HttpsError('permission-denied', 'Only admins can change user privileges (for now)');
+    }
+
     if (!privileges) privileges = {}
 
     if (typeof _admin === 'undefined') {
         throw new functions.https.HttpsError('invalid-argument', 'admin is undefined');
-    }
-
-    if (!isAdmin(context)) {
-        throw new functions.https.HttpsError('permission-denied', 'Only admins can change user privileges (for now)');
     }
 
     // Check if the roles are valid
@@ -200,10 +195,6 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
     return { message: 'Success! Privileges assigned' }
 });
 
-
-
-const client = new firestore.v1.FirestoreAdminClient();
-
 // Scheduled Firestore Export every 24 hours
 exports.scheduledFirestoreExport = functions.pubsub
     .schedule('every 24 hours')
@@ -224,6 +215,128 @@ exports.scheduledFirestoreExport = functions.pubsub
             throw new Error('Export operation failed');
         });
     });
+
+// Update the user's name in the auth system when the user's name is updated in the database
+exports.updateAuthDisplayName = functions.firestore.document('users/{userId}').onUpdate(async (change, context) => {
+    const { userId } = context.params;
+    const { registrationData: { name }  } = change.after.data();
+
+
+    // Check if the user already has a displayName
+    const user = await admin.auth().getUser(userId);
+    if (user.displayName) {
+        console.log('User already has a displayName, not updating');
+        return;
+    }
+
+    try {
+        await admin.auth().updateUser(userId, { displayName: name });
+    } catch (err) {
+        console.error('Error updating user:', err);
+    }
+});
+
+// Create documents in the mail collection when a user requests to be assigned to a group
+exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRequests/{requestId}').onCreate(async (snap, context) => {
+    const data = snap.data();
+    const { user, group, status, reasons } = data;
+
+    // check if status is 'pending'
+    if (status !== 'pending') {
+        throw new functions.https.HttpsError('invalid-argument', 'Status must be "pending"');
+    }
+
+    // TODO check if group exists - already checked in rules
+
+    // Get group admins
+    const admins = await getGroupAdmins(group);
+    const adminEmails = admins.map(a => a.email);
+
+    // Get user's name from the auth system
+    const { displayName } = await admin.auth().getUser(user);
+    
+    // Get group name from the database
+    const groupDoc = await admin.firestore().collection('groups').doc(group).get();
+    const groupName = groupDoc.data().name;
+
+    // create mail document
+    const mailDoc = {
+        to: adminEmails,
+        message: {
+            subject: `New assignement request for group ${groupName}`,
+            html: `
+                <p>Hi,</p>
+                <p>User ${displayName} has requested to be assigned to group ${groupName}:</p>
+                
+                <p style="font-style: italic;">${reasons}</p>
+
+                <p>Go to the <a href="https://ferm.fao.org">FERM group administration page</a> to accept or reject the request</p>
+
+                <p>Best regards,</p>
+                <p>the FERM team</p>
+
+            `
+        }
+    };
+
+    // add mail document to mail collection
+    await admin.firestore().collection('mail').add(mailDoc);
+});
+
+// Accept or reject an assignment request
+exports.acceptOrRejectAssignmentRequest = functions.https.onCall(async ({ requestId, status }, context) => {
+    // Check if the user is an admin or a group admin
+    if (!isAdmin(context) && !isGroupAdmin(context)) {
+        throw new functions.https.HttpsError('permission-denied', 'Only admins can accept or reject assignment requests');
+    }
+
+    // Check if the status is valid
+    if (!['accepted', 'rejected'].includes(status)) {
+        throw new functions.https.HttpsError('invalid-argument', 'Status must be "accepted" or "rejected"');
+    }
+
+    // Get the request
+    const requestDoc = await admin.firestore().collection('assignementRequests').doc(requestId).get();
+    const request = requestDoc.data();
+
+    // Check if the request exists
+    if (!request) {
+        throw new functions.https.HttpsError('not-found', 'Request not found');
+    }
+
+    // Check if the request is pending
+    if (request.status !== 'pending') {
+        throw new functions.https.HttpsError('invalid-argument', 'Request is not pending');
+    }
+
+    // Get the user's email
+    const { email } = await admin.auth().getUser(request.user);
+
+    // Get the group name
+    const groupDoc = await admin.firestore().collection('groups').doc(request.group).get();
+    const groupName = groupDoc.data().name;
+
+    // Update the request
+    await admin.firestore().collection('assignementRequests').doc(requestId).update({ status });
+
+    // Send email to user
+    const mailDoc = {
+        to: [email],
+        message: {
+            subject: `Your request to join group ${groupName} has been ${status}`,
+            html: `
+                <p>Hi,</p>
+                <p>Your request to join group ${groupName} has been ${status}.</p>
+                <p>Best regards,</p>
+                <p>the FERM team</p>
+            `
+        }
+    };
+
+    // add mail document to mail collection
+    await admin.firestore().collection('mail').add(mailDoc);
+});
+
 
 // Set default custom claims and create a user record in Firestore when a user is created
 exports.createUserRecord = functions.auth.user().onCreate(async ({ uid }) => {
@@ -263,3 +376,49 @@ exports.beforeSignIn = functions.auth.user().beforeSignIn((_user, context) => {
         throw new functions.auth.HttpsError('permission-denied');
     }
 });
+
+
+// New user signup. Everyone can sign up.
+// This function is not used anymore. We now use the client SDK to send the email sign in link.
+// It might be useful in the future if we want to allow users to sign up with a password and send them an email verification link.
+// Initialize client SDK - for sending emails
+// const apiKey = 'AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M';
+// firebase.initializeApp({
+//     apiKey,
+//     credential: admin.credential.applicationDefault()
+// });
+// exports.signUp = functions.https.onCall(async (data, _context) => {
+//     try {
+//         // Create the user - do not set the password as we will only allow login via email linkå
+//         const { uid } = await admin.auth().createUser({
+//             email: data.email,
+//             emailVerified: false,
+//             displayName: data.fullName,
+//             disabled: false
+//         });
+
+//         console.log('Successfully created new user:', uid);
+
+//         // Create custom token for the user
+//         const customToken = await admin.auth().createCustomToken(uid);
+//         // Login with the custom token
+//         const auth = getAuth();
+//         await signInWithCustomToken(auth, customToken);
+
+//         // Send email sign in link
+//         const actionCodeSettings = {
+//             url: redirectUrl,
+//             handleCodeInApp: true
+//         };
+//         await sendSignInLinkToEmail(auth, data.email, actionCodeSettings)
+//         console.log('Sent sign in link to email ' + data.email);
+
+//         // const customToken = await admin.auth().createCustomToken(uid);
+//         // return { customToken };
+//         return { message: 'Success! User created.' };
+//     } catch (err) {
+//         console.error('Error creating new user:', JSON.stringify(err, null, 2));
+//         throw new functions.https.HttpsError('aborted', err.message, err);
+//     }
+// });
+

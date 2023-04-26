@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive } from 'vue';
 
-import { fbTimestampToString } from '../../lib/util'
+import { fbTimestampToString } from '@/lib/util';
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import {
@@ -20,9 +20,9 @@ import { useBestPracticesStore } from '../../stores/bestpractices';
 
 import { requestGroupAssignment } from '../../firebase/firestore';
 
-import ConfirmModal from '../ConfirmModal.vue';
+import InstitutionsAssignment from '../InstitutionsAssignment.vue';
 import AlertModal from '../AlertModal.vue';
-import GroupAssignmentRequests from '../GroupAssigmentRequests.vue';
+// import GroupAssignmentRequests from '../GroupAssigmentRequests.vue';
 
 
 const projectStore = useProjectStore();
@@ -102,18 +102,18 @@ async function assignmentConfirmed() {
 
 <template>
     <!-- Group assignment request modal -->
-    <ConfirmModal :onClose="() => { showAssignmentRequests = false }"
-                  :open="showAssignmentRequests"
-                  buttonText="Cancel">
-        <GroupAssignmentRequests :onRequest="assignmentRequested" />
-    </ConfirmModal>
+    <!-- <InstitutionsModal :onClose="() => { showAssignmentRequests = false }"
+                      :open="showAssignmentRequests"
+                      buttonText="Cancel">
+            <GroupAssignmentRequests :onRequest="assignmentRequested" />
+        </InstitutionsModal> -->
     <!-- Group assignment confirmation modal -->
     <AlertModal type="warning"
                 title="Please confirm"
                 :onClose="() => { assignmentConfirmed() }"
                 :open="showAssignmentConfirm"
                 buttonText="Ok">
-        <p class="text-sm text-gray-500">Are you sure you want to join the institution <span class="font-bold">{{allGroups[assignmentRequestGroupId]}}</span>?</p>
+        <p class="text-sm text-gray-500">Are you sure you want to join the institution <span class="font-bold">{{ allGroups[assignmentRequestGroupId] }}</span>?</p>
     </AlertModal>
     <!-- Group assignment success modal -->
     <AlertModal type="success"
@@ -121,13 +121,13 @@ async function assignmentConfirmed() {
                 :onClose="() => { showAssignmentSuccess = false }"
                 :open="showAssignmentSuccess"
                 buttonText="Ok">
-        <p class="text-sm text-gray-500">Your request has been sent to the administrator. You will be notified by email once it is processed.</p>
+        <p class="text-sm text-gray-500">Your request will be sent to the administrator. You will be notified by email once it is processed.</p>
     </AlertModal>
 
     <!-- <AlertModal :onClose="() => { showAssignmentSuccess = false}"
-                        :open="showAssignmentSuccess"
-                        buttonText="Ok">
-                        </AlertModal> -->
+                            :open="showAssignmentSuccess"
+                            buttonText="Ok">
+                            </AlertModal> -->
     <!-- <p class="text-sm text-gray-500">Are you sure you want to delete this initiative? You will releted the related areas and best practices</p> -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
@@ -140,32 +140,30 @@ async function assignmentConfirmed() {
                 Registry will be used to officially report on hectares under restoration during the United Nations Decade on Ecosystem
                 Restoration and for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework Target 2.</p>
             <!-- If the user is not an admin and not part of any group, show a message -->
-            <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
+            <!-- <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)" -->
+            <div v-if="true"
                  class="mt-6 font-semibold dark:text-gray-100">
+
+                <InstitutionsAssignment />
+
                 <!-- Once an administrator assigns you to an institution, you will be able to add new initiatives and edit existing ones. -->
-                <p>
-                    After an admin connects you with an institution, you'll gain the ability to create new initiatives and modify existing ones.
-                </p>
-                <p class="mt-4">
-                    To request an institution assignment, simply select one from the list provided. Admins will receive a notification about your request and can choose to approve or deny it. You'll be informed of their decision in both scenarios.
-                </p>
 
                 <!-- <div class="border rounded-lg w-full sm:max-w-md mx-auto">
-                                                                                                        <ul role="list"
-                                                                                                            class="divide-y divide-gray-200">
-                                                                                                            <li v-for="[groupId, groupName] in Object.entries(allGroups).sort((a, b) => a[1].localeCompare(b[1]))"
-                                                                                                                :key="groupId"
-                                                                                                                class="flex py-4 cursor-pointer hover:bg-blue-100">
-                                                                                                                <img class="h-10 w-10 rounded-full"
-                                                                                                                     src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                                                                                     alt="" />
-                                                                                                                <div class="ml-3">
-                                                                                                                    <p class="text-sm font-medium text-gray-900">{{ groupName }}</p>
-                                                                                                                    <!- - <p class="text-sm text-gray-500">{{ groupName }}</p> - ->
-                                                                                                                </div>
-                                                                                                            </li>
-                                                                                                        </ul>
-                                                                                                    </div> -->
+                                                                                                            <ul role="list"
+                                                                                                                class="divide-y divide-gray-200">
+                                                                                                                <li v-for="[groupId, groupName] in Object.entries(allGroups).sort((a, b) => a[1].localeCompare(b[1]))"
+                                                                                                                    :key="groupId"
+                                                                                                                    class="flex py-4 cursor-pointer hover:bg-blue-100">
+                                                                                                                    <img class="h-10 w-10 rounded-full"
+                                                                                                                         src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                                                                         alt="" />
+                                                                                                                    <div class="ml-3">
+                                                                                                                        <p class="text-sm font-medium text-gray-900">{{ groupName }}</p>
+                                                                                                                        <!- - <p class="text-sm text-gray-500">{{ groupName }}</p> - ->
+                                                                                                                    </div>
+                                                                                                                </li>
+                                                                                                            </ul>
+                                                                                                        </div> -->
             </div>
 
 
