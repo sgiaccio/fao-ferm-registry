@@ -77,18 +77,17 @@ export const useProjectStore = defineStore({
                 const querySnapshot = await getDocs(q);
                 this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
 
-                console.log(this.projects);
-                // Get related good practices
-                this.projects.forEach(async (p: any) => {
-                    const projectId = p.id;
-                    const q2 = query(bestPracticesCollection, where('projectId', '==', projectId));
-                    const querySnapshot2 = await getDocs(q2);
-                    p.nBestPractices = querySnapshot2.size;
-                });
             } else {
-               this.projects = [];
+                this.projects = [];
             }
 
+            // Get related good practices
+            this.projects.forEach(async (p: any) => {
+                const projectId = p.id;
+                const q2 = query(bestPracticesCollection, where('projectId', '==', projectId));
+                const querySnapshot2 = await getDocs(q2);
+                p.nBestPractices = querySnapshot2.size;
+            });
         },
         createEmptyProject(groupId: string) {
             const projectRef = doc(projectsCollection);

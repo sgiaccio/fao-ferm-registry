@@ -36,7 +36,7 @@ function edit() {
 }
 
 async function print() {
-    const routeData = router.resolve({ name: 'printProject' });
+    const routeData = router.resolve({ name: 'printInitiative' });
     window.open(routeData.href, '_blank');
 }
 </script>

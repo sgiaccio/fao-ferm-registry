@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onBeforeMount, watch, nextTick } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router'
 
 import RegistrationView from './RegistrationView.vue';
 import AoiView from './AoiView.vue';
@@ -9,17 +11,37 @@ import EcosystemsView from './EcosystemsView.vue';
 import IndicatorsView from './IndicatorsView.vue';
 import ResultsView from './ResultsView.vue';
 
-onMounted(async () => {
-    window.print();
+
+import { useProjectStore } from '@/stores/project';
+
+
+const store = useProjectStore();
+const route = useRoute();
+
+const { loaded } = storeToRefs(store);
+
+onBeforeMount(async () => {
+    store.fetchProject(route.params.id as string);
+});
+
+watch(loaded, l => {
+    if (l) {
+        // Use nextTick to wait for the DOM to be updated
+        nextTick(() => {
+            window.print();
+        });
+    }
 });
 </script>
 
 <template>
-    <RegistrationView :edit="false" />
-    <AoiView :edit="false" />
-    <CharacteristicsView :edit="false" />
-    <ActivitiesView :edit="false" />
-    <EcosystemsView :edit="false" />
-    <IndicatorsView :edit="false" />
-    <ResultsView :edit="false" />
+    <template v-if="store.loaded">
+        <RegistrationView :edit="false" />
+        <AoiView :edit="false" />
+        <CharacteristicsView :edit="false" />
+        <ActivitiesView :edit="false" />
+        <EcosystemsView :edit="false" />
+        <IndicatorsView :edit="false" />
+        <ResultsView :edit="false" />
+    </template>
 </template>

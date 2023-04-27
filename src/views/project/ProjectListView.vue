@@ -140,8 +140,8 @@ async function assignmentConfirmed() {
                 Registry will be used to officially report on hectares under restoration during the United Nations Decade on Ecosystem
                 Restoration and for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework Target 2.</p>
             <!-- If the user is not an admin and not part of any group, show a message -->
-            <!-- <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)" -->
-            <div v-if="true"
+            <!-- <div v-if="true" -->
+                <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
                  class="mt-6 font-semibold dark:text-gray-100">
 
                 <InstitutionsAssignment />

@@ -3,13 +3,13 @@ import { onBeforeMount, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router';
 
-import { useBestPracticesStore } from '../../stores/bestpractices';
-
 import ObjectivesView from '../../views/bestpractices/ObjectivesView.vue';
 import MethodologyView from '../../views/bestpractices/MethodologyView.vue';
 import KeyFactorsView from '../../views/bestpractices/KeyFactorsView.vue';
 import BenefitsView from '../../views/bestpractices/BenefitsView.vue';
 import AdditionalResourcesView from '../../views/bestpractices/AdditionalResourcesView.vue';
+
+import { useBestPracticesStore } from '../../stores/bestpractices';
 
 
 const store = useBestPracticesStore();
@@ -18,6 +18,7 @@ const route = useRoute();
 const { bestPractice } = storeToRefs(store);
 
 onBeforeMount(async () => {
+    alert(route.params.id);
     store.fetch(route.params.id as string);
 });
 
