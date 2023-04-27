@@ -6,30 +6,28 @@ import {
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-6 lg:py-8 font-roboto">
-    <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
-    <div class="mx-auto max-w-5xl">
+  <div class="bg-white">
+    <header class="inset-x-0 top-0">
+      <div class="overflow-hidden shadow bg-blue-50 bg-[url('/public/seashore.jpg')] bg-cover bg-center">
 
-      <div class="-ml-2 mb-2 sm:mb-5 mt-2 sm:mt-0 flex">
-        <div class="flex flex-row gap-x-6 flex-shrink lg:mx-0 mx-auto">
-          <div>
-            <img src="@/assets/FERM_LOGO_MASTER_colour_EN.svg"
-                 alt="FERM logo"
-                 class="mx-auto h-16 w-auto" />
+        <div class="px-4 sm:px-12 py-12">
+
+          <!-- Logos -->
+          <div class="w-full pl-10 flex mb-10">
+            <div class="mb-2 sm:mb-5 mt-2 grid grid-flow-col gap-x-6 mx-auto md:mx-0 divide-x divide-gray-300">
+              <div class="-ml-10 mr-3">
+                <img src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg"
+                     alt="FERM logo"
+                     class="h-16 w-auto scale-125" />
+              </div>
+              <div>
+                <img src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
+                     alt="FERM logo"
+                     class="h-16 w-auto scale-150 ml-10" />
+              </div>
+            </div>
           </div>
-          <div>
-            <img src="@/assets/UNDecade_LOGO_MASTER_EN.svg"
-                 alt="FERM logo"
-                 class="mx-auto h-16 w-auto scale-125" />
-          </div>
-        </div>
-      </div>
-
-      <div class="overflow-hidden rounded-none sm:rounded-2xl shadow bg-blue-50 bg-[url('/public/seashore.jpg')] bg-cover bg-center">
-
-        <div class="px-4 sm:px-6 py-12">
-
-          <div class="w-full text-center font-akrobat font-extrabold text-white text-4xl sm:text-5xl">Framework for Ecosystem<br>Restoration Monitoring</div>
+          <div class="w-full text-center font-akrobat font-extrabold text-white text-5xl sm:text-6xl">Framework for Ecosystem<br>Restoration Monitoring</div>
 
           <div class="text-white mt-20 max-w-sm md:max-w-3xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-0 md:grid-rows-none md:grid-cols-3 md:gap-x-5">
             <router-link :to="{ name: 'initiatives' }"
@@ -101,6 +99,17 @@ import {
         </div>
 
       </div>
+
+
+
+
+
+
+    </header>
+  </div>
+  <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-6 lg:py-8 font-roboto">
+    <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
+    <div class="mx-auto max-w-5xl">
 
       <div class="px-4 lg:px-0 mt-10 text-lg leading-snug font-akrobat font-semibold text-center max-w-xl mx-auto text-gray-700 dark:text-gray-400">The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.</div>
 
