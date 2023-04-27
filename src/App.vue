@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, watch } from "vue";
+import { onBeforeMount, watch, computed } from "vue";
 import { RouterView } from "vue-router";
 import { storeToRefs } from 'pinia'
 
@@ -7,6 +7,10 @@ import Navbar from "./components/Navbar.vue";
 
 import { useAuthStore } from "./stores/auth"
 import { useUserPrefsStore } from "./stores/userPreferences"
+
+import {useRoute} from 'vue-router'
+
+const route = useRoute();
 
 // import HelloWorld from "./components/HelloWorld.vue";
 
@@ -29,7 +33,7 @@ watch(user, async () => {
 
 <template>
   <template v-if="authStore.authLoaded">
-    <div class="dark:bg-slate-900">
+    <div v-if="route.name !== 'home'" class="dark:bg-slate-900">
       <Navbar></Navbar>
     </div>
     <!-- <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

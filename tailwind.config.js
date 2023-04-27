@@ -12,6 +12,8 @@ module.exports = {
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
         'roboto-slab': ['"Roboto Slab"'],
+        'roboto-condensed': ['"Roboto Condensed"'],
+        'roboto-flex': ['"Roboto Flex"'],
       },
     },
   },
