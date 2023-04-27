@@ -6,7 +6,7 @@ import {
 </script>
 
 <template>
-  <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-6 lg:py-8">
+  <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-6 lg:py-8 font-roboto">
     <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
     <div class="mx-auto max-w-5xl">
 
@@ -27,15 +27,15 @@ import {
 
       <div class="overflow-hidden rounded-none sm:rounded-2xl shadow bg-blue-50 bg-[url('/public/seashore.jpg')] bg-cover bg-center">
 
-        <div class="px-4 py-5 sm:px-6 sm:py-8">
+        <div class="px-4 sm:px-6 py-12">
 
-          <div class="w-96 text-center font-roboto-flex font-bold text-white text-3xl">Framework for Ecosystem<br>Restoration Monitoring</div>
+          <div class="w-full text-center font-akrobat font-extrabold text-white text-4xl sm:text-5xl">Framework for Ecosystem<br>Restoration Monitoring</div>
 
-          <div class="text-white mt-24 max-w-sm md:max-w-3xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-0 md:grid-rows-none md:grid-cols-3 md:gap-x-5">
+          <div class="text-white mt-20 max-w-sm md:max-w-3xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-0 md:grid-rows-none md:grid-cols-3 md:gap-x-5">
             <router-link :to="{ name: 'initiatives' }"
-                         class="bg-green-700 rounded-xl px-4 py-3 text-left transition-colors hover:bg-green-500 shadow">
+                         class="bg-ferm-green-dark rounded-xl px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow">
               <div class="flex flex-row gap-x-2">
-                <div>
+                <div class="mt-0.5">
                   <svg xmlns="http://www.w3.org/2000/svg"
                        viewBox="0 0 24 24"
                        fill="currentColor"
@@ -46,15 +46,15 @@ import {
                   </svg>
                 </div>
                 <div>
-                  <div class="text-sm font-medium">Register</div>
-                  <div class="text-xs font-light mt-3">Your restoration initiative and good practices</div>
+                  <div class="text-lg font-semibold">Register</div>
+                  <div class="text-sm mt-3">Your restoration initiative and good practices</div>
                 </div>
               </div>
             </router-link>
 
             <a href="https://data.apps.fao.org/ferm/"
                target="_blank"
-               class="bg-cyan-600 rounded-xl px-4 py-3 text-left transition-colors hover:bg-cyan-400 shadow">
+               class="bg-ferm-blue-dark rounded-xl px-4 py-4 text-left transition-colors hover:bg-ferm-blue-light">
               <div class="flex flex-row gap-x-2">
                 <div>
                   <svg xmlns="http://www.w3.org/2000/svg"
@@ -70,13 +70,13 @@ import {
 
                 </div>
                 <div>
-                  <div class="text-sm font-medium">Visualize</div>
-                  <div class="text-xs font-light mt-3">The latest geospatial data on restoration</div>
+                  <div class="text-lg font-semibold">Visualize</div>
+                  <div class="text-sm mt-3">The latest geospatial data on restoration</div>
                 </div>
               </div>
             </a>
 
-            <button class="bg-yellow-600 rounded-xl px-4 py-3 text-left transition-colors hover:bg-yellow-500 shadow">
+            <button class="bg-ferm-mustard-dark rounded-xl px-4 py-4 text-left transition-colors shadow cursor-default">
               <div class="flex flex-row gap-x-2">
                 <div>
                   <svg xmlns="http://www.w3.org/2000/svg"
@@ -92,8 +92,8 @@ import {
 
                 </div>
                 <div>
-                  <div class="text-sm font-medium">Search</div>
-                  <div class="text-xs font-light mt-3">For good practices on ecosystem restoration</div>
+                  <div class="text-lg font-semibold">Search</div>
+                  <div class="text-sm mt-3">For good practices on ecosystem restoration</div>
                 </div>
               </div>
             </button>
@@ -102,11 +102,11 @@ import {
 
       </div>
 
-      <div class="px-4 lg:px-0 mt-10 font-roboto-condensed text-center max-w-xl mx-auto text-gray-700 dark:text-gray-400">The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.</div>
+      <div class="px-4 lg:px-0 mt-10 text-lg leading-snug font-akrobat font-semibold text-center max-w-xl mx-auto text-gray-700 dark:text-gray-400">The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.</div>
 
       <div class="px-4 sm:px-0 mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
 
-        <div class="bg-cyan-400 p-4 rounded-xl text-sm font-light flex flex-col shadow">
+        <div class="bg-ferm-blue-light p-4 rounded-xl text-base font-light flex flex-col shadow">
           <div>
             The <span class="font-semibold">FERM Registry</span> provides a harmodized data collection mechanism to aggregate data from restoration platforms.
           </div>
@@ -115,9 +115,9 @@ import {
           </div>
         </div>
 
-        <div class="bg-green-500 p-4 rounded-xl text-sm font-light flex flex-col shadow">
+        <div class="bg-ferm-green-light p-4 rounded-xl text-base font-light flex flex-col shadow">
           <div>
-            The FERM platform is built on FAO's corporate <span class="whitespace-nowrap">Hand-In-Hand</span> geospatial architecture and provides accessible and transparent information for restoration practitioners.
+            The <span class="font-semibold">FERM platform</span> is built on FAO's corporate <span class="whitespace-nowrap">Hand-In-Hand</span> geospatial architecture and provides accessible and transparent information for restoration practitioners.
           </div>
           <div class="flex-grow flex h-full justify-end items-end">
             <GlobeEuropeAfricaIcon class="text-gray-100 h-12 w-12" />
@@ -125,7 +125,7 @@ import {
         </div>
 
 
-        <div class="p-4 font-roboto-flex text-white col-span-2 rounded-xl text-sm font-light bg-[url('/public/soil.jpg')] bg-cover bg-center flex lg:h-full justify-end items-end h-48 shadow">
+        <div class="p-4 font-akrobat font-semibold text-white col-span-2 rounded-xl text-sm bg-[url('/public/soil.jpg')] bg-cover bg-center flex lg:h-full justify-end items-end h-48 shadow">
           <div class="px-16 aligh-bottom text-center bottom-3 text-lg brightness-100 z-50 leading-tight">
             Join #GenerationRestoration and share your restoration initiative and good practices with the world.
           </div>
