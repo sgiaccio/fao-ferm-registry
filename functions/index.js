@@ -12,7 +12,7 @@ admin.initializeApp();
 const GROUP_ROLES = ['admin', 'editor', 'guest'];
 
 const usersCollection = 'users';
-const groupsCollection = 'groups';
+const _groupsCollection = 'groups';
 
 // This is used to export the data from the firestore database
 const client = new firestore.v1.FirestoreAdminClient();
@@ -39,8 +39,13 @@ async function isValidGroup(groupId) {
 
 // Checks if the groups are valid, returns the first invalid group or null if all are valid
 async function checkValidGroups(privileges) {
+    // TODO handle the case where privileges is empty!!!
+
+    console.log('privileges', privileges);
     const groupIds = Object.keys(privileges);
-    const groupsCollection = admin.firestore().collection(groupsCollection);
+    console.log('groupIds', groupIds);
+    const groupsCollection = admin.firestore().collection(_groupsCollection);
+    console.log('groupsCollection', groupsCollection);
     const groupsSnapshot = await groupsCollection.where(firestore.FieldPath.documentId(), 'in', groupIds).get();
     const groupIdsFromFirestore = groupsSnapshot.docs.map(d => d.id);
     const invalidGroup = groupIds.find(g => !groupIdsFromFirestore.includes(g));
@@ -89,7 +94,7 @@ async function getGroupAdmins(groupId) {
 
 // Creates a new user. Only admins can call this function for now.
 // Group admins should be able to create new users in their group.
-exports.createUser = functions.https.onCall(async ({ email, displayName, privileges, admin: admin_ }) => {
+exports.createUser = functions.https.onCall(async ({ email, displayName, privileges, admin: admin_ }, context ) => {
     // check if the user is an admin
     if (!isAdmin(context)) {
         throw new functions.https.HttpsError('permission-denied', 'Only admins can create new users');
@@ -130,6 +135,8 @@ exports.createUser = functions.https.onCall(async ({ email, displayName, privile
         } catch (err) {
             console.error('Error setting custom claims:', JSON.stringify(err, null, 2));
         }
+
+        sendWelcomeEmail(email, displayName);
 
         return { message: 'Successfully created new user', uid };
     } catch (err) {
@@ -363,6 +370,37 @@ exports.createUserRecord = functions.auth.user().onCreate(async ({ uid }) => {
         console.error('Error creating user record:', err);
     }
 });
+
+// Send a welcome email when a user is created manually by an admin
+async function sendWelcomeEmail(email, displayName) {
+    // create mail document
+    const mailDoc = {
+        to: [email],
+        message: {
+            subject: 'Welcome to FERM',
+            html: `
+                <p>Dear ${displayName},</p>
+                <p>Congratulations and welcome to the FERM Registry community! We are pleased to inform you that your request for a new account has been processed, and your user account is now active.</p>
+                <p>Username: ${email}</p>
+                <p>To access your account, simply visit the FERM Registry homepage at <a href="https://ferm.fao.org/initiatives">https://ferm.fao.org/initiatives</a> and log in. Check <a href="https://www.fao.org/3/cb5046en/cb5046en.pdf">here</a> for guidance on how to use the registry.</p>
+                <p>The FERM Registry aims to provide a comprehensive register of ecosystem restoration projects and initiatives in the context of the United Nations Decade on Ecosystem Restoration. By registering your initiatives in the FERM registry, joining our platform, you are contributing to the global restoration movement and helping ensure interoperability with other restoration monitoring platforms and initiatives.</p>
+                
+                <p>We look forward to supporting you in your ecosystem restoration efforts and are excited to see the positive impact you'll make through your work with the FERM Registry.</p>
+                <p>Once again, welcome to the FERM Registry community!</p>
+                <p>Best regards,
+                <br>
+                The FERM Registry team
+                </p>
+            `
+        }
+    };
+
+    // <p>If you have any questions or need assistance, we will be launching a dedicated support email and an FAQ section soon. In the meantime, please feel free to reply to this email if you need any help.</p>
+
+    // add mail document to mail collection
+    await admin.firestore().collection('mail').add(mailDoc);
+}
+
 
 // Delete a user record in Firestore when a user is deleted
 exports.deleteUserRecord = functions.auth.user().onDelete(async ({ uid }) => {

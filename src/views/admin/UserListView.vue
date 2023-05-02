@@ -45,8 +45,13 @@ async function refreshUsers() {
 }
 
 onMounted(async () => {
-    refreshUsers();
-    allGroups.value = await authStore.fetchAllGroups();
+    try {
+        await refreshUsers();
+        allGroups.value = await authStore.fetchAllGroups();
+    } catch (e) {
+        console.log(e);
+        alert("Error getting users and groups");
+    }
 });
 
 
@@ -146,7 +151,7 @@ function deleteUser() {
 const registrationData = ref();
 async function toggleRegistrationData(userId: string) {
     const userPrefs = await userPrefsStore.getRegistrationData(userId)
-    alert(JSON.stringify(userPrefs, null, 2));
+    // alert(JSON.stringify(userPrefs, null, 2));
     registrationData.value = userPrefs;
 }
 
@@ -411,7 +416,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
             </TransitionChild>
 
             <div class="fixed inset-0 z-10 overflow-y-auto">
-                <pre>{{JSON.stringify(userToAdd, null, 2)}}</pre>
+                <!-- <pre>{{ JSON.stringify(userToAdd, null, 2) }}</pre> -->
                 <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <TransitionChild as="template"
                                      enter="ease-out duration-300"

@@ -2,7 +2,7 @@
   "name": "ferm-ts",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode production",
     "build_": "run-p type-check build-only",
     "build": "run-p build-only",
     "build-staging": "vite build --mode staging",
