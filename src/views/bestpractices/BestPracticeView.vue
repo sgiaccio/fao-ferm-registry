@@ -49,8 +49,7 @@ onMounted(() => {
     const id = route.params.id;
     if (id === 'new') {
         let nextRoute = {
-            name: 'objectives',
-            params: { id },
+            path: '/registry/good-practices/new/edit/objectives',
             query: { projectId: route.query.projectId }
         }
         router.push(nextRoute);

@@ -32,7 +32,7 @@ onBeforeMount(async () => {
 // });
 
 function edit() {
-    router.push({ path: `/initiatives/${route.params.id}/edit/info` });
+    router.push({ path: `/registry/initiatives/${route.params.id}/edit/info` });
 }
 
 async function print() {

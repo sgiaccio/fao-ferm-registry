@@ -31,7 +31,7 @@ async function findAsync(array, predicate) {
 
 // Checks if a group exists
 async function isValidGroup(groupId) {
-    const groupsRef = admin.firestore().collection(groupsCollection);
+    const groupsRef = admin.firestore().collection(_groupsCollection);
     const snapshot = await groupsRef.doc(groupId).get();
 
     return snapshot.exists;
@@ -41,11 +41,8 @@ async function isValidGroup(groupId) {
 async function checkValidGroups(privileges) {
     // TODO handle the case where privileges is empty!!!
 
-    console.log('privileges', privileges);
     const groupIds = Object.keys(privileges);
-    console.log('groupIds', groupIds);
     const groupsCollection = admin.firestore().collection(_groupsCollection);
-    console.log('groupsCollection', groupsCollection);
     const groupsSnapshot = await groupsCollection.where(firestore.FieldPath.documentId(), 'in', groupIds).get();
     const groupIdsFromFirestore = groupsSnapshot.docs.map(d => d.id);
     const invalidGroup = groupIds.find(g => !groupIdsFromFirestore.includes(g));

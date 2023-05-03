@@ -105,7 +105,7 @@ const router = createRouter({
     
     // Initiatives
     {
-      path: '/initiatives',
+      path: '/registry/initiatives',
       name: 'initiatives',
       component: () => import('../views/project/ProjectListView.vue')
     },
@@ -131,7 +131,7 @@ const router = createRouter({
     // },
     
     {
-      path: '/initiatives/:id',
+      path: '/registry/initiatives/:id',
       component: () => import('../views/project/ProjectView.vue'),
       children: [
         {
@@ -154,10 +154,10 @@ const router = createRouter({
 
     // Good Practices
     {
-      path: '/good-practices',
+      path: '/registry/good-practices',
       component: () => import('../views/bestpractices/BestPracticeListView.vue')
     }, {
-      path: '/good-practices/:id',
+      path: '/registry/good-practices/:id',
       component: () => import('../views/bestpractices/BestPracticeView.vue'),
       children: [
         {
@@ -194,9 +194,9 @@ router.beforeEach(async (to) => {
     await userPrefsStore.fetchUserPrefs();
   }
 
-  // If the user is logged in and filled the registration form and tries to access the registration page, redirect to home
+  // If the user is logged in and filled the registration form and tries to access the registration page, redirect to the registry
   if (authStore.user && to.name === 'registration' && userPrefsStore.userPrefs.registrationData) {
-    return { name: 'home' };
+    return { name: 'initiatives' };
   }
 
   // If the user is logged in but didn't fill the registration form, redirect to registration
@@ -204,9 +204,9 @@ router.beforeEach(async (to) => {
     return { name: 'registration' };
   }
 
-  // If the user is logged in and tries to access the login page, redirect to home
+  // If the user is logged in and tries to access the login page, redirect to the registry
   if (authStore.user && to.name === 'login') {
-    return { name: 'home' };
+    return { name: 'initiatives' };
   }
 
   // If the user is not logged in and tries to access a page that requires auth, redirect to login

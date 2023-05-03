@@ -26,7 +26,7 @@ withDefaults(defineProps<{
         </template>
         <template #default>
             <div>
-                <h1 class="font-roboto-slab text-2xl dark:text-zinc-300">SDG indicators</h1>
+                <h1 class="font-akrobat text-2xl dark:text-zinc-300">SDG indicators</h1>
                 <TreeItem :edit="edit"
                           v-model="store.project.indicators"
                           :treeData="indicators"
@@ -35,7 +35,7 @@ withDefaults(defineProps<{
             </div>
 
             <div class="pt-4">
-                <h1 class="font-roboto-slab text-2xl dark:text-zinc-300">GEF indicators</h1>
+                <h1 class="font-akrobat text-2xl dark:text-zinc-300">GEF indicators</h1>
                 <div v-if="store.projectAreas?.length"
                      class="flex flex-col gap-y-4">
                     <div v-for="area, i in store.projectAreas"

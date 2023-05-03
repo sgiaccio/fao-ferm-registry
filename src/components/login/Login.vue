@@ -36,7 +36,7 @@ async function authenticateWithEmail() {
 const loginSuccess = ref(false);
 function onClose() {
     loginSuccess.value = false;
-    router.push({ name: 'home' });
+    router.push({ name: 'initiatives' });
 }
 
 
@@ -62,7 +62,7 @@ function onCloseLoginError() {
                 buttonText="Ok">
         <p class="text-sm text-gray-500">Sign in error, please try again</p>
     </AlertModal>
-    
+
     <div>
         <div class="relative isolate overflow-hidden">
             <div class="mx-auto max-w-6xl pt-10 pb-24 sm:pb-32 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:py-20 lg:px-8">
@@ -71,13 +71,13 @@ function onCloseLoginError() {
                         <div class="max-w-lg">
                             <img v-if="darkMode"
                                  class="h-28 w-auto"
-                                 src="/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
+                                 src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
                                  alt="UN Decade">
                             <img v-else
                                  class="h-28 w-auto"
-                                 src="/UNDecade_LOGO_MASTER_EN.svg"
+                                 src="@/assets/UNDecade_LOGO_MASTER_EN.svg"
                                  alt="UN Decade">
-                            <h1 class="mt-10 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-gray-200">Welcome to the FERM Registry</h1>
+                            <h1 class="mt-10 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-gray-200 font-akrobat uppercase">Welcome to the<br>FERM Registry</h1>
                             <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-200">The Framework for Ecosystem Restoration Monitoring Registry aims to provide a register of ecosystem restoration initiatives and initiatives, in the context of the
                                 <span class="font-bold">United Nations Decade on Ecosystem Restoration</span>,
                                 whilst ensuring interoperability with other restoration monitoring platforms and initiatives.

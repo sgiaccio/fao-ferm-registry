@@ -8,6 +8,10 @@ import Navbar from './components/Navbar.vue';
 import { useAuthStore } from './stores/auth';
 import { useUserPrefsStore } from './stores/userPreferences';
 
+import {useRoute} from 'vue-router'
+
+
+const route = useRoute();
 
 const authStore = useAuthStore();
 const userPrefsStore = useUserPrefsStore();
@@ -25,7 +29,7 @@ watch(user, async () => {
 
 <template>
     <div id="modal" />
-    <div class="dark:bg-slate-900">
+    <div v-if="route.name !== 'home'" class="dark:bg-slate-900">
         <Navbar />
     </div>
     <RouterView />

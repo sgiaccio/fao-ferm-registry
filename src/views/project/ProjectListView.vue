@@ -131,9 +131,9 @@ async function assignmentConfirmed() {
     <!-- <p class="text-sm text-gray-500">Are you sure you want to delete this initiative? You will releted the related areas and best practices</p> -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
-            <h1 class="mt-12 font-roboto-slab text-4xl text-gray-800 dark:text-white mb-8">Initiatives</h1>
+            <h1 class="mt-12 font-akrobat text-4xl text-gray-800 dark:text-white mb-8 font-extrabold uppercase">Initiatives</h1>
 
-            <p class="font-roboto-slab font-light dark:text-white">Restoration projects, programs and initiatives at all spatial scales, from
+            <p class="font-light dark:text-white">Restoration projects, programs and initiatives at all spatial scales, from
                 individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for
                 sustaining life on Earth. The FERM registry allows you to consistently and transparently monitor, report, and share
                 information on restoration initiatives good practices. The information published in the FERM
@@ -141,7 +141,7 @@ async function assignmentConfirmed() {
                 Restoration and for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework Target 2.</p>
             <!-- If the user is not an admin and not part of any group, show a message -->
             <!-- <div v-if="true" -->
-                <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
+            <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
                  class="mt-6 font-semibold dark:text-gray-100">
 
                 <InstitutionsAssignment />
@@ -149,21 +149,21 @@ async function assignmentConfirmed() {
                 <!-- Once an administrator assigns you to an institution, you will be able to add new initiatives and edit existing ones. -->
 
                 <!-- <div class="border rounded-lg w-full sm:max-w-md mx-auto">
-                                                                                                            <ul role="list"
-                                                                                                                class="divide-y divide-gray-200">
-                                                                                                                <li v-for="[groupId, groupName] in Object.entries(allGroups).sort((a, b) => a[1].localeCompare(b[1]))"
-                                                                                                                    :key="groupId"
-                                                                                                                    class="flex py-4 cursor-pointer hover:bg-blue-100">
-                                                                                                                    <img class="h-10 w-10 rounded-full"
-                                                                                                                         src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                                                                                                         alt="" />
-                                                                                                                    <div class="ml-3">
-                                                                                                                        <p class="text-sm font-medium text-gray-900">{{ groupName }}</p>
-                                                                                                                        <!- - <p class="text-sm text-gray-500">{{ groupName }}</p> - ->
-                                                                                                                    </div>
-                                                                                                                </li>
-                                                                                                            </ul>
-                                                                                                        </div> -->
+                    <ul role="list"
+                        class="divide-y divide-gray-200">
+                        <li v-for="[groupId, groupName] in Object.entries(allGroups).sort((a, b) => a[1].localeCompare(b[1]))"
+                            :key="groupId"
+                            class="flex py-4 cursor-pointer hover:bg-blue-100">
+                            <img class="h-10 w-10 rounded-full"
+                                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                    alt="" />
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-900">{{ groupName }}</p>
+                                <!- - <p class="text-sm text-gray-500">{{ groupName }}</p> - ->
+                            </div>
+                        </li>
+                    </ul>
+                </div> -->
             </div>
 
 
@@ -185,29 +185,30 @@ async function assignmentConfirmed() {
                                     leave-active-class="transition ease-in duration-75"
                                     leave-from-class="transform opacity-100 scale-100"
                                     leave-to-class="transform opacity-0 scale-95">
-                            <MenuItems class="absolute left-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            <menu-items class="absolute left-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div class="py-1">
-                                    <MenuItem v-slot="{ active }">
-                                    <span :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-12 py-2 text-sm', 'cursor-default']"
-                                          @click="() => filterByGroup(null)"
-                                          href="#">
-                                        All
-                                    </span>
-                                    </MenuItem>
-                                    <MenuItem v-for="[id, name] in Object.entries(userGroups)"
-                                              v-slot="{ active }">
-                                    <span @click="() => filterByGroup(id)"
-                                          href="#"
-                                          :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm', 'cursor-default']">
-                                        <PencilSquareIcon v-if="['admin', 'editor'].includes(getAccessLevel(id))"
-                                                          class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                          aria-hidden="true" />
-                                        <!-- <EyeIcon v-else class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> -->
-                                        {{ name }}
-                                    </span>
-                                    </MenuItem>
+                                    <menu-item v-slot="{ active }">
+                                        <span :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-12 py-2 text-sm', 'cursor-default']"
+                                              @click="() => filterByGroup(null)"
+                                              href="#">
+                                            All
+                                        </span>
+                                    </menu-item>
+                                    <menu-item v-for="[id, name] in Object.entries(userGroups).sort((a, b) => a[1].localeCompare(b[1]))"
+                                               v-slot="{ active }">
+                                        <div @click="() => filterByGroup(id)"
+                                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm', 'cursor-default flex flex-row']">
+                                            <div class="w-5 mr-3">
+                                                <PencilSquareIcon v-if="['admin', 'editor'].includes(getAccessLevel(id))"
+                                                                  class="h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                  aria-hidden="true" />
+                                            </div>
+                                            <!-- <EyeIcon v-else class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> -->
+                                            <div>{{ name }}</div>
+                                        </div>
+                                    </menu-item>
                                 </div>
-                            </MenuItems>
+                            </menu-items>
                         </transition>
                     </Menu>
                     <Menu as="div"
@@ -226,20 +227,20 @@ async function assignmentConfirmed() {
                                     leave-active-class="transition ease-in duration-75"
                                     leave-from-class="transform opacity-100 scale-100"
                                     leave-to-class="transform opacity-0 scale-95">
-                            <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            <menu-items class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div class="px-4 py-3">
                                     <p class="text-sm font-medium text-gray-900">Your organizations:</p>
                                 </div>
                                 <div class="py-1">
-                                    <MenuItem v-for="[id, name] in Object.entries(authStore.userGroups)"
-                                              v-slot="{ active }">
-                                    <router-link :to="{ path: '/initiatives/new/edit/info', query: { groupId: id } }"
-                                                 :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
-                                        {{ name }}
-                                    </router-link>
-                                    </MenuItem>
+                                    <menu-item v-for="[id, name] in Object.entries(authStore.userGroups)"
+                                               v-slot="{ active }">
+                                        <router-link :to="{ path: '/registry/initiatives/new/edit/info', query: { groupId: id } }"
+                                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                                            {{ name }}
+                                        </router-link>
+                                    </menu-item>
                                 </div>
-                            </MenuItems>
+                            </menu-items>
                         </transition>
                     </Menu>
                 </div>
@@ -255,7 +256,7 @@ async function assignmentConfirmed() {
                                 <div class="px-4 py-4 sm:px-6 sm:grow">
                                     <span class="block hover:bg-gray-50_">
                                         <div class="flex items-center justify-between">
-                                            <router-link :to="{ path: `/initiatives/${project.id}/info` }"
+                                            <router-link :to="{ path: `/registry/initiatives/${project.id}/info` }"
                                                          :class="[project.data.project?.title ? 'text-indigo-600' : 'italic text-gray-400', 'truncate_ text-sm font-medium hover:text-indigo-500']">
                                                 {{ project.data.project?.title || 'No title' }}
                                             </router-link>
@@ -286,45 +287,44 @@ async function assignmentConfirmed() {
                                                                 leave-active-class="transition ease-in duration-75"
                                                                 leave-from-class="transform opacity-100 scale-100"
                                                                 leave-to-class="transform opacity-0 scale-95">
-                                                        <MenuItems class="absolute left-0 z-10 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                        <menu-items class="absolute left-0 z-10 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                             <div v-if="bestPractices.length"
                                                                  class="py-1">
-                                                                <MenuItem v-slot="{ active }"
-                                                                          v-for="bp in bestPractices">
-                                                                <router-link :to="`/good-practices/${bp.id}/objectives`"
-                                                                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'px-4 py-2 text-sm block']">
-                                                                    <div class="flex flex-row">
-                                                                        <div>
-                                                                            <PencilSquareIcon v-if="!bp.data.status || bp.data.status === 'draft'"
-                                                                                              class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                              aria-hidden="true" />
-                                                                            <PaperAirplaneIcon v-else-if="bp.data.status === 'submitted'"
+                                                                <menu-item v-slot="{ active }"
+                                                                           v-for="bp in bestPractices">
+                                                                    <router-link :to="`/registry/good-practices/${bp.id}/objectives`"
+                                                                                 :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'px-4 py-2 text-sm block']">
+                                                                        <div class="flex flex-row">
+                                                                            <div>
+                                                                                <PencilSquareIcon v-if="!bp.data.status || bp.data.status === 'draft'"
+                                                                                                  class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                                  aria-hidden="true" />
+                                                                                <PaperAirplaneIcon v-else-if="bp.data.status === 'submitted'"
+                                                                                                   class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                                   aria-hidden="true" />
+                                                                                <MegaphoneIcon v-else-if="bp.data.status === 'published'"
                                                                                                class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                                                                                aria-hidden="true" />
-                                                                            <MegaphoneIcon v-else-if="bp.data.status === 'published'"
-                                                                                           class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                           aria-hidden="true" />
+                                                                            </div>
+                                                                            <div class="truncate">{{ bp.data.title || "No title" }}</div>
                                                                         </div>
-                                                                        <div class="truncate">{{ bp.data.title || "No title" }}</div>
-                                                                    </div>
-                                                                </router-link>
-                                                                </MenuItem>
+                                                                    </router-link>
+                                                                </menu-item>
                                                             </div>
                                                             <div class="py-1">
-                                                                <MenuItem v-slot="{ active }">
-                                                                <router-link :to="{ path: 'good-practices/new/objectives', query: { projectId: project.id } }"
-                                                                             href="#"
-                                                                             :class="[active ? 'bg-gray-100 text-blue-900' : 'text-blue-700', 'block px-4 py-2 text-sm font-bold']">Add new good practice</router-link>
-                                                                </MenuItem>
+                                                                <menu-item v-slot="{ active }">
+                                                                    <router-link :to="{ path: '/registry/good-practices/new/edit/objectives', query: { projectId: project.id } }"
+                                                                                 :class="[active ? 'bg-gray-100 text-blue-900' : 'text-blue-700', 'block px-4 py-2 text-sm font-medium']">Add new good practice</router-link>
+                                                                </menu-item>
                                                             </div>
-                                                        </MenuItems>
+                                                        </menu-items>
                                                     </transition>
                                                 </Menu>
                                                 <div v-else
-                                                     class="sm:ml-6">
-                                                    <router-link :to="{ path: 'good-practices/new/objectives', query: { projectId: project.id } }"
+                                                     class="sm:mt-0 sm:ml-6 text-sm">
+                                                    <router-link :to="{ path: '/registry/good-practices/new/edit/objectives', query: { projectId: project.id } }"
                                                                  type="button"
-                                                                 class="inline-flex items-center rounded border border-transparent py-1.5 text-sm font-medium text-indigo-700">
+                                                                 class="inline-flex items-center text-sm font-medium text-indigo-700">
                                                         Add good practice
                                                     </router-link>
                                                 </div>
@@ -361,26 +361,26 @@ async function assignmentConfirmed() {
                                                     leave-active-class="transition ease-in duration-75"
                                                     leave-from-class="transform opacity-100 scale-100"
                                                     leave-to-class="transform opacity-0 scale-95">
-                                            <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                            <menu-items class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <div class="py-1">
-                                                    <MenuItem v-slot="{ active }">
-                                                    <router-link :to="{ path: `/initiatives/${project.id}/edit/info` }"
-                                                                 :class="[projectStore.canEdit() ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
-                                                        Edit</router-link>
-                                                    </MenuItem>
-                                                    <MenuItem v-slot="{ active }">
-                                                    <div @click="deleteProject(project.id)"
-                                                         :class="[projectStore.canEdit() ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
-                                                        Delete</div>
-                                                    </MenuItem>
-                                                    <MenuItem v-slot="{ active }">
-                                                    <router-link :to="{ name: 'objectives', params: { id: 'new' }, query: { projectId: project.id } }"
-                                                                 :class="[canAddBestPractice(project) ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
-                                                        Add good practice
-                                                    </router-link>
-                                                    </MenuItem>
+                                                    <menu-item v-slot="{ active }">
+                                                        <router-link :to="{ path: `/registry/initiatives/${project.id}/edit/info` }"
+                                                                     :class="[projectStore.canEdit() ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
+                                                            Edit</router-link>
+                                                    </menu-item>
+                                                    <menu-item v-slot="{ active }">
+                                                        <div @click="deleteProject(project.id)"
+                                                             :class="[projectStore.canEdit() ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
+                                                            Delete</div>
+                                                    </menu-item>
+                                                    <menu-item v-slot="{ active }">
+                                                        <router-link :to="{ path: `/registry/good-practices/new/edit/objectives`, query: { projectId: project.id } }"
+                                                                     :class="[canAddBestPractice(project) ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
+                                                            Add good practice
+                                                        </router-link>
+                                                    </menu-item>
                                                 </div>
-                                            </MenuItems>
+                                            </menu-items>
                                         </transition>
                                     </Menu>
                                 </div>

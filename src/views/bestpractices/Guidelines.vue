@@ -45,7 +45,7 @@ function close() {
                             <div>
                                 <div>
                                     <DialogTitle as="h3"
-                                                 class="mt-4 mb-6 tracking-wide font-roboto-slab text-center text-2xl font-semibold leading-6 text-gray-900">
+                                                 class="mt-4 mb-6 tracking-wide font-akrobat text-center text-2xl font-semibold leading-6 text-gray-900">
                                         Guidelines
                                     </DialogTitle>
                                     <div class="text-sm text-gray-600">
@@ -79,12 +79,12 @@ function close() {
                                             </p>
                                         </template>
 
-                                        <h4 class="font-roboto-slab mt-3 mb-1 text-lg font-semibold leading-6 text-gray-900">What is a good practice for ecosystem restoration?</h4>
+                                        <h4 class="font-akrobat mt-3 mb-1 text-lg font-semibold leading-6 text-gray-900">What is a good practice for ecosystem restoration?</h4>
                                         <p class="text-gray-600">
                                             A good practice for ecosystem restoration is an <span class="font-semibold">evidence-based approach, technique, or technology</span> that contributes to achieve one or more objectives of a restoration initiative, maximizing benefits for nature and people across different contexts. <span class="font-semibold">It is usually a component of a restoration initiative that has been applied, tested and replicated in different contexts and, therefore, can be easily transferred and/or adapted to other initiatives with similar goals</span>. If a practice has been tested <span class="font-semibold">solely in a specific context</span>, it is considered a <span class="font-semibold">promising practice</span>, then results need to be proven outside the current situation for replicability and adaptability to different contexts.
                                         </p>
 
-                                        <h4 class="font-roboto-slab mt-3 mb-1 text-lg font-semibold leading-6 text-gray-900">Guidelines for submission</h4>
+                                        <h4 class="font-akrobat mt-3 mb-1 text-lg font-semibold leading-6 text-gray-900">Guidelines for submission</h4>
                                         <p>When preparing your submission, please consider the following recommendations and information:</p>
                                         <ol class="ml-4 list-decimal list-outside mt-2">
 
@@ -95,7 +95,7 @@ function close() {
                                             <li><span class="font-semibold">What will happen if your good practice submission is not accepted?</span> Your submission will not be accepted if: i) it does not meet the minimum score for any of the criteria below, or ii) the information is inconsistent or incomplete. For both cases, you will be notified accordingly and receive feedback from the review panel so that you can refine and re-submit.</li>
                                         </ol>
 
-                                        <h4 class="font-roboto-slab mt-3 mb-1 text-lg font-semibold leading-6 text-gray-900">Assessment criteria for a good restoration practice</h4>
+                                        <h4 class="font-akrobat mt-3 mb-1 text-lg font-semibold leading-6 text-gray-900">Assessment criteria for a good restoration practice</h4>
                                         <ol class="ml-4 list-decimal list-outside mt-2">
                                             <!-- 1 -->
                                             <li><span class="font-semibold">Contributes to the achievement of the Sustainable Development Goals (SDGs).</span> The practice contributes to the achievement of at least one of the 17 Sustainable Development Goals (SDGs), especially SDGs 3, 13, 14 and 15.</li>
