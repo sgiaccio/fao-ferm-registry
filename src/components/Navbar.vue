@@ -78,6 +78,11 @@ watch(darkMode, (mode) => {
                                          :class="[route.matched.some(({ name }) => name === 'admin') ? 'bg-gray-900 dark:bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white', 'px-3 py-2 rounded-md text-sm font-medium']"
                                          :aria-current="route.matched.some(({ name }) => name === 'users') ? 'page' : undefined">Admin
                             </router-link>
+                            <router-link v-else-if="authStore.isGroupAdmin"
+                                         :to="{ name: 'groupAssignments' }"
+                                         :class="[route.matched.some(({ name }) => name === 'admin') ? 'bg-gray-900 dark:bg-gray-700 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white', 'px-3 py-2 rounded-md text-sm font-medium']"
+                                         :aria-current="route.matched.some(({ name }) => name === 'users') ? 'page' : undefined">Admin
+                            </router-link>
                             <!-- <router-link v-for="item in navigation"
                                          :key="item.name"
                                          :to="{ name: item.routeName }"

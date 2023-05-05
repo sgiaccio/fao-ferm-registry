@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, reactive } from 'vue';
+import { onMounted, ref, reactive, onUpdated } from 'vue';
 
 import { fbTimestampToString } from '@/lib/util';
 
@@ -18,7 +18,7 @@ import { useAuthStore } from '../../stores/auth';
 import { useProjectStore } from '../../stores/project';
 import { useBestPracticesStore } from '../../stores/bestpractices';
 
-import { requestGroupAssignment } from '../../firebase/firestore';
+// import { requestGroupAssignment } from '../../firebase/firestore';
 
 import InstitutionsAssignment from '../InstitutionsAssignment.vue';
 import AlertModal from '../AlertModal.vue';
@@ -37,7 +37,6 @@ onMounted(async () => {
     await projectStore.fetchGroupOwnedProjects(null);
     userGroups.value = authStore.isAdmin ? await authStore.fetchAllGroups() : authStore.userGroups;
     Object.assign(allGroups, await authStore.fetchAllGroups());
-
     // bestPractices.value = projects.map(p => ({ id: p.id, data: p.data() }));
 });
 
@@ -82,22 +81,24 @@ async function filterByGroup(groupId: string | null) {
     await projectStore.fetchGroupOwnedProjects(groupId);
 }
 
-const showAssignmentRequests = ref(true);
-const showAssignmentConfirm = ref(false);
-const showAssignmentSuccess = ref(false);
-const assignmentRequestGroupId = ref('');
-function assignmentRequested(groupId: string) {
-    showAssignmentRequests.value = false;
-    showAssignmentConfirm.value = true;
-    assignmentRequestGroupId.value = groupId;
-}
-async function assignmentConfirmed() {
-    if (assignmentRequestGroupId.value === '') return;
-    showAssignmentConfirm.value = false;
-    await requestGroupAssignment(authStore.user!.uid, assignmentRequestGroupId.value);
-    assignmentRequestGroupId.value = '';
-    showAssignmentSuccess.value = true;
-}
+// const showAssignmentRequests = ref(true);
+// const showAssignmentConfirm = ref(false);
+// const showAssignmentSuccess = ref(false);
+// const assignmentRequestGroupId = ref('');
+
+
+// function assignmentRequested(groupId: string) {
+//     showAssignmentRequests.value = false;
+//     showAssignmentConfirm.value = true;
+//     assignmentRequestGroupId.value = groupId;
+// }
+// async function assignmentConfirmed() {
+//     if (assignmentRequestGroupId.value === '') return;
+//     showAssignmentConfirm.value = false;
+//     await requestGroupAssignment(authStore.user!.uid, assignmentRequestGroupId.value);
+//     assignmentRequestGroupId.value = '';
+//     showAssignmentSuccess.value = true;
+// }
 </script>
 
 <template>
@@ -108,21 +109,21 @@ async function assignmentConfirmed() {
             <GroupAssignmentRequests :onRequest="assignmentRequested" />
         </InstitutionsModal> -->
     <!-- Group assignment confirmation modal -->
-    <AlertModal type="warning"
+    <!-- <AlertModal type="warning"
                 title="Please confirm"
                 :onClose="() => { assignmentConfirmed() }"
                 :open="showAssignmentConfirm"
                 buttonText="Ok">
         <p class="text-sm text-gray-500">Are you sure you want to join the institution <span class="font-bold">{{ allGroups[assignmentRequestGroupId] }}</span>?</p>
-    </AlertModal>
+    </AlertModal> -->
     <!-- Group assignment success modal -->
-    <AlertModal type="success"
+    <!-- <AlertModal type="success"
                 title="Request sent"
                 :onClose="() => { showAssignmentSuccess = false }"
                 :open="showAssignmentSuccess"
                 buttonText="Ok">
         <p class="text-sm text-gray-500">Your request will be sent to the administrator. You will be notified by email once it is processed.</p>
-    </AlertModal>
+    </AlertModal> -->
 
     <!-- <AlertModal :onClose="() => { showAssignmentSuccess = false}"
                             :open="showAssignmentSuccess"
@@ -142,7 +143,7 @@ async function assignmentConfirmed() {
             <!-- If the user is not an admin and not part of any group, show a message -->
             <!-- <div v-if="true" -->
             <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
-                 class="mt-6 font-semibold dark:text-gray-100">
+                 class="mt-6 dark:text-gray-100">
 
                 <InstitutionsAssignment />
 
@@ -344,6 +345,9 @@ async function assignmentConfirmed() {
                                         </div>
                                     </span>
                                 </div>
+
+
+                                
                                 <div class="self-center pr-4">
                                     <Menu as="div"
                                           class="relative inline-block text-left">

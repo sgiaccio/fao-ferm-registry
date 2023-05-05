@@ -109,12 +109,12 @@ export const useProjectStore = defineStore({
             // }
 
             // Get related good practices
-            this.projects.forEach(async (p: any) => {
+            await Promise.all(this.projects.map(async (p: any) => {
                 const projectId = p.id;
                 const q2 = query(bestPracticesCollection, where('projectId', '==', projectId));
                 const querySnapshot2 = await getDocs(q2);
                 p.nBestPractices = querySnapshot2.size;
-            });
+            }));
         },
         createEmptyProject(groupId: string) {
             const projectRef = doc(projectsCollection);

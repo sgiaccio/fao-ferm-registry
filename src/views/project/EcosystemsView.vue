@@ -30,7 +30,7 @@ withDefaults(defineProps<{
         </template>
         <template #default>
             <div v-if="store.projectAreas?.length"
-                 class="flex flex-col gap-y-4">
+                 class="flex flex-col gap-y-4 pt-6">
                 <div v-for="area, i in store.projectAreas"
                      class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
                     <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2">

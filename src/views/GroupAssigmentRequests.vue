@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue';
 
-import { getAssignmentRequests } from '@/firebase/firestore';
+import { getUserAssignmentRequests } from '@/firebase/firestore';
 
 import { useAuthStore } from '@/stores/auth';
 // import { useProjectStore } from '@/stores/project';
@@ -23,7 +23,7 @@ const assignmentRequests = ref<{ pending?: string[], approved?: string[], denied
 });
 
 async function refreshAssignments() {
-    const requests = await getAssignmentRequests(authStore.user!.uid);
+    const requests = await getUserAssignmentRequests(authStore.user!.uid);
     assignmentRequests.value = {
         pending: requests.filter(r => r.status === 'pending').map(r => r.group),
         approved: requests.filter(r => r.status === 'approved').map(r => r.group),

@@ -15,7 +15,7 @@ import {
     SwitchLabel,
 } from '@headlessui/vue'
 
-import { fetchAllUsers, functions } from '../../firebase';
+import { fetchAllUsers, fetchMyGroupsUsers, functions } from '../../firebase';
 
 import TabTemplate from '../TabTemplate.vue'
 
@@ -31,8 +31,10 @@ const users = ref();
 const allGroups = ref();
 
 async function refreshUsers() {
+    const f = authStore.isAdmin ? fetchAllUsers : fetchMyGroupsUsers;
+    console.log(await f())
     // Sort users by creation date
-    users.value = ((await fetchAllUsers()) as any).users.sort((a: User, b: User) => {
+    users.value = ((await f()) as any).users.sort((a: User, b: User) => {
         try {
             const d1 = new Date(a.metadata.creationTime);
             const d2 = new Date(b.metadata.creationTime);
@@ -47,7 +49,15 @@ async function refreshUsers() {
 onMounted(async () => {
     try {
         await refreshUsers();
-        allGroups.value = await authStore.fetchAllGroups();
+        const groups = await authStore.fetchAllGroups();
+
+        if (authStore.isAdmin) {
+            allGroups.value = groups;
+        } else {
+            // Get from groups the ones where I am group admin
+            const groupsWhereAdmin = Object.keys(authStore.privileges).filter(k => authStore.privileges[k] === 'admin');
+            allGroups.value = Object.fromEntries(Object.entries(groups).filter(([gid]) => groupsWhereAdmin.includes(gid)));
+        }
     } catch (e) {
         console.log(e);
         alert("Error getting users and groups");
@@ -115,17 +125,30 @@ function onAfterLeave() {
 }
 
 function save() {
-    const addMessage = httpsCallable(functions, 'setUserPrivileges');
-    addMessage({
-        admin: userToEdit.value.admin,
-        email: userToEdit.value.email,
-        privileges: userToEdit.value.privileges
-    }).then(_result => {
-        alert("User privileges saved");
-    }).catch(e => {
-        alert('Error saving user privileges: ' + e.message);
-        console.log(e);
-    }).finally(() => showEditDialog.value = false);
+    if (authStore.isAdmin) {
+        const addMessage = httpsCallable(functions, 'setUserPrivileges');
+        addMessage({
+            admin: userToEdit.value.admin,
+            email: userToEdit.value.email,
+            privileges: userToEdit.value.privileges
+        }).then(_result => {
+            alert("User privileges saved");
+        }).catch(e => {
+            alert('Error saving user privileges: ' + e.message);
+            console.log(e);
+        }).finally(() => showEditDialog.value = false);
+    } else {
+        const addMessage = httpsCallable(functions, 'setUserPrivilegesGroupAdmin');
+        addMessage({
+            uid: userToEdit.value.uid,
+            privileges: userToEdit.value.privileges
+        }).then(_result => {
+            alert("User privileges saved");
+        }).catch(e => {
+            alert('Error saving user privileges: ' + e.message);
+            console.log(e);
+        }).finally(() => showEditDialog.value = false);
+    }
 }
 
 function createUser() {
@@ -183,7 +206,8 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
         <div class="mt-8 flex flex-col">
             <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                    <div class="pb-6">
+                    <div v-if="authStore.isAdmin"
+                         class="pb-6">
                         <button @click="addUser()"
                                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ">Add user</button>
                     </div>
@@ -211,7 +235,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
                                 <tr v-for="user in users"
-                                    :key="user.email"
+                                    :key="user.uid"
                                     :class="[hasNoGroup(user) ? 'bg-red-100' : '']">
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                                         <div class="flex items-center">

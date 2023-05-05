@@ -27,52 +27,52 @@ onBeforeMount(async () => {
 // The form data is stored in a reactive object.
 const formData = reactive<RegistrationData>({
     name: '',
-    affiliation: {
-        ecosystem: false,
-        flagship: false,
-        partner: false,
-        otherAffiliationText: ''
-    },
+    // affiliation: {
+    //     ecosystem: false,
+    //     flagship: false,
+    //     partner: false,
+    //     otherAffiliationText: ''
+    // },
     purpose: '',
-    group: null,
-    otherGroupText: ''
+    // group: null,
+    // otherGroupText: ''
 });
 
 // Stores the selected group in a reactive object.
 // We are storing it here so that we can watch it and save both group id and name in the form data.
-const selectedGroup = ref<string>('');
+// const selectedGroup = ref<string>('');
 
 // Stores the value of the other affiliation checkbox in a reactive object. We don't need to save this value in the form data.
-const otherAffiliation = ref<boolean>(false);
+// const otherAffiliation = ref<boolean>(false);
 
-const otherInstitutionTextRef = ref<HTMLInputElement>();
-const otherGroupTextRef = ref<HTMLInputElement>();
+// const otherInstitutionTextRef = ref<HTMLInputElement>();
+// const otherGroupTextRef = ref<HTMLInputElement>();
 
 // Focuses the other institution text input field when the other affiliation checkbox is checked.
-watch(() => otherAffiliation.value, newVal => {
-    if (newVal) {
-        nextTick(() => otherInstitutionTextRef.value?.focus());
-    } else {
-        formData.affiliation.otherAffiliationText = '';
-    }
-});
+// watch(() => otherAffiliation.value, newVal => {
+//     if (newVal) {
+//         nextTick(() => otherInstitutionTextRef.value?.focus());
+//     } else {
+//         formData.affiliation.otherAffiliationText = '';
+//     }
+// });
 
 // Handles change in the selected group.
-watch(selectedGroup, newGroup => {
-    // Sets the group id and name in the form data.
-    if (newGroup === '' || newGroup === 'other') {
-        formData.group = null;
-    } else {
-        formData.group = { id: newGroup, name: groups[newGroup] };
-    }
+// watch(selectedGroup, newGroup => {
+//     // Sets the group id and name in the form data.
+//     if (newGroup === '' || newGroup === 'other') {
+//         formData.group = null;
+//     } else {
+//         formData.group = { id: newGroup, name: groups[newGroup] };
+//     }
 
-    // Focuses the other group text input field when the other group is selected.
-    if (newGroup === 'other') {
-        nextTick(() => otherGroupTextRef.value?.focus());
-    } else {
-        formData.otherGroupText = '';
-    }
-});
+//     // Focuses the other group text input field when the other group is selected.
+//     if (newGroup === 'other') {
+//         nextTick(() => otherGroupTextRef.value?.focus());
+//     } else {
+//         formData.otherGroupText = '';
+//     }
+// });
 
 // The form is submitted when the submit button is clicked or the enter key is pressed.
 // The form is validated before submission.
@@ -90,13 +90,13 @@ async function submitForm() {
 
 // The form is validated by checking that the name and email fields are not empty.
 function validateForm() {
-    return formData.name !== '' &&
-        (formData.affiliation.ecosystem ||
-            formData.affiliation.flagship ||
-            formData.affiliation.partner ||
-            otherAffiliation.value && formData.affiliation.otherAffiliationText !== '')
-        && !(otherAffiliation.value && formData.affiliation.otherAffiliationText === '')
-        && (formData.group || !formData.group && formData.otherGroupText !== '')
+    return formData.name !== ''
+        // (formData.affiliation.ecosystem ||
+        //     formData.affiliation.flagship ||
+        //     formData.affiliation.partner ||
+        //     otherAffiliation.value && formData.affiliation.otherAffiliationText !== '')
+        // && !(otherAffiliation.value && formData.affiliation.otherAffiliationText === '')
+        // && (formData.group || !formData.group && formData.otherGroupText !== '')
         && formData.purpose !== '';
 };
 
@@ -153,8 +153,8 @@ function onClose() {
                  class="mx-auto h-28 w-auto"
                  src="/UNDecade_LOGO_MASTER_EN.svg"
                  alt="UN Decade">
-            <h2 class="mt-6 text-center text-2xl font-bold tracking-tight text-gray-800 dark:text-gray-200">Welcome to the FERM registry!</h2>
-            <h2 class="mt-2 text-center text-2xl font-bold tracking-tight text-sky-gray-800 dark:text-gray-200">Please introduce yourself</h2>
+            <h2 class="mt-6 text-center text-3xl font-akrobat font-bold tracking-tight text-gray-800 dark:text-gray-200">Welcome to the FERM Registry!</h2>
+            <h2 class="mt-2 text-center text-3xl font-akrobat font-bold tracking-tight text-sky-gray-800 dark:text-gray-200">Please introduce yourself.</h2>
         </div>
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -176,7 +176,7 @@ function onClose() {
                         </div>
                     </div>
 
-                    <div>
+                    <!-- <div>
                         <label for="institution"
                                class="block text-base font-medium leading-6 text-gray-900">Institution <span class="text-red-600">*</span></label>
                         <select v-model="selectedGroup"
@@ -189,8 +189,8 @@ function onClose() {
                                     :value="id">{{ label }}</option>
                             <option value="other">Other</option>
                         </select>
-                    </div>
-                    <div v-if="selectedGroup === 'other'">
+                    </div> -->
+                    <!-- <div v-if="selectedGroup === 'other'">
                         <label for="other-group"
                                class="block text-base font-medium leading-6 text-gray-900">Please specify your institution <span class="text-red-600">*</span></label>
                         <div class="mt-2">
@@ -202,8 +202,8 @@ function onClose() {
                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                    placeholder="Your institution" />
                         </div>
-                    </div>
-                    <div>
+                    </div> -->
+                    <!-- <div>
                         <fieldset>
                             <legend class="sr-only">Institution affiliation</legend>
                             <div class="block text-base font-medium leading-6 text-gray-900 dark:text-gray-100"
@@ -280,7 +280,7 @@ function onClose() {
                                 </div>
                             </div>
                         </fieldset>
-                    </div>
+                    </div> -->
 
                     <div>
                         <label for="purpose"

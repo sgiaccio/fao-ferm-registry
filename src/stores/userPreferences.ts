@@ -13,15 +13,15 @@ const userCollection = collection(db, 'users')
 
 export interface RegistrationData {
     name: string,
-    affiliation: {
-        ecosystem: boolean,
-        flagship: boolean,
-        partner: boolean,
-        otherAffiliationText: string,
-    }
+    // affiliation: {
+    //     ecosystem: boolean,
+    //     flagship: boolean,
+    //     partner: boolean,
+    //     otherAffiliationText: string,
+    // }
     purpose: string,
-    group: { id: string, name: string } | null,
-    otherGroupText: string,
+    // group: { id: string, name: string } | null,
+    // otherGroupText: string,
     // otherGroupText: string
 }
 

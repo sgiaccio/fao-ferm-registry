@@ -17,13 +17,13 @@ onBeforeRouteLeave((_to, _from) => {
 });
 
 const tabs = [
-    { name: 'Initiative', path: 'info' },
+    { name: 'General', path: 'info' },
     { name: 'Area', path: 'aoi' },
-    { name: 'Characteristics', path: 'characteristics' },
-    { name: 'Activities', path: 'activities' },
     { name: 'Ecosystems', path: 'ecosystems' },
+    // { name: 'Characteristics', path: 'characteristics' },
+    { name: 'Activities', path: 'activities' },
     { name: 'Indicators', path: 'indicators' },
-    { name: 'Results', path: 'results' }
+    { name: 'Monitoring & Results', path: 'results' }
 ];
 
 const currentRouteIdx = computed(() => tabs.findIndex(tab => route.path.endsWith(tab.path)));

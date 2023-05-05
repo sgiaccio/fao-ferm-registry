@@ -13,7 +13,6 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-console.log(firebaseConfig);
 let auth: Auth, db: Firestore;
 let functions: Functions;
 
@@ -41,4 +40,24 @@ async function fetchAllUsers() {
     return result.data;
 }
   
-export { auth, db, functions, fetchAllUsers }
+async function fetchMyGroupsUsers() {
+    const functions = getFunctions();
+    const listMyGroupsUsers = httpsCallable(functions, 'listMyGroupsUsers');
+    const result = await listMyGroupsUsers();
+    return result.data;
+}
+
+// async function fetchAssignmentRequestsByGroup(groupId: string) {
+//     const assignmentRequestsCollection = collection(db, 'assignmentRequests');
+//     const assignmentRequests = await getDocs(query(assignmentRequestsCollection, where('group', '==', groupId)));
+//     return assignmentRequests.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+// }
+
+export { auth, db, functions, fetchAllUsers, fetchMyGroupsUsers }
+
+
+
+// const groupsCollection = collection(db, 'groups');
+// const groups = await getDocs(query(groupsCollection, where('private', '==', false)));
+// // Create an object with group id as key and group name as value
+// return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});

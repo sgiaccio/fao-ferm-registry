@@ -67,7 +67,7 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue'),
       meta: { public: true }
     },
-    
+
     // Authentication and registration
     {
       path: "/login",
@@ -84,7 +84,7 @@ const router = createRouter({
       name: "registration",
       component: () => import('../views/UserRegistrationView.vue')
     },
-    
+
     // Administration
     {
       path: "/admin",
@@ -99,17 +99,21 @@ const router = createRouter({
           path: 'groups',
           name: 'groups',
           component: () => import('../views/admin/GroupListView.vue')
+        }, {
+          path: "groupAssignments",
+          name: "groupAssignments",
+          component: () => import('../views/admin/GroupAssignmentRequests.vue')
         }
       ]
     },
-    
+
     // Initiatives
     {
       path: '/registry/initiatives',
       name: 'initiatives',
       component: () => import('../views/project/ProjectListView.vue')
     },
-    
+
     // {
     //   path: '/initiatives/:id',
     //   name: 'initiative',
@@ -129,7 +133,7 @@ const router = createRouter({
     //   // props: { edit: true },
     //   children: [...projectTabs]
     // },
-    
+
     {
       path: '/registry/initiatives/:id',
       component: () => import('../views/project/ProjectView.vue'),

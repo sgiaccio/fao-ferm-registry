@@ -89,6 +89,7 @@ export const useAuthStore = defineStore({
         authLoaded: false,
         user: null as User | null,
         isAdmin: false,
+        isGroupAdmin: false,
         privileges: {},
         userGroups: {},
         returnUrl: '/'
@@ -107,6 +108,7 @@ export const useAuthStore = defineStore({
 
             this.user = null;
             this.isAdmin = false;
+            this.isGroupAdmin = false;
             this.privileges = {};
 
             router.push('/login')
@@ -122,6 +124,8 @@ export const useAuthStore = defineStore({
                 if (idToken) {
                     this.isAdmin = idToken.claims.admin as unknown as boolean,
                         this.privileges = idToken.claims.privileges || {};
+
+                    this.isGroupAdmin = Object.values(this.privileges).some((priv: any) => priv === 'admin');
                 }
 
                 // await router.isReady();
@@ -205,8 +209,18 @@ export const useAuthStore = defineStore({
         async fetchAllGroups() {
             const groupsCollection = collection(db, 'groups');
             const groups = await getDocs(query(groupsCollection));
+            // Create an object with group id as key and group name as value
             return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
         },
+
+        async fetchPublicGroups() {
+            // hide private groups - for now private groups are only used to hide them from the list of the groups proposed for the user to join
+            const groupsCollection = collection(db, 'groups');
+            const groups = await getDocs(query(groupsCollection, where('private', '==', false)));
+            // Create an object with group id as key and group name as value
+            return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+        },
+
 
         async signInWithGoogle() {
             await signInWithPopup(auth, provider);

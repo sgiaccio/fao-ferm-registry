@@ -8,6 +8,8 @@ import {
 
 import { ArrowSmallRightIcon, GlobeAltIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/solid'
 
+import ShittyDivider from '../components/shittyDivider.vue'
+
 
 const points = [
     { flagship: "Flagship", target2030: "2030 target", restored: "Restored", memberStates: "Member States", iucnEcosystemsBiomes: "IUCN ecosystem biomes", latitude: 1, longitude: 1 },
@@ -26,6 +28,19 @@ const points = [
     { flagship: "SIDS Ecosystem Restoration Flagship", target2030: "", restored: "Vanuatu: 10 ha under restoration", memberStates: "Saint Lucia@ Comoros@ Vanuatu", iucnEcosystemsBiomes: "Rivers and streams biome; Tropical or subtropical forests biome; Shrublands and shrubby woodlands biome; Savannas and grasslands biome; Intensive land use (crop and urban) biome; Marine shelf biome; Shorelines biome; Brackish tidal biome", latitude: -15.3767, longitude: 166.9592 },
     { flagship: "Trinational Atlantic Forest Pact", target2030: "1 million ha", restored: "700@000 ha", memberStates: "Argentina@ Brazil@ Paraguay", iucnEcosystemsBiomes: "Tropical-subtropical forests biome; Intensive land-use systems biome; Rivers and streams biome; Shorelines biome; Supralittoral coastal biome; Anthropogenic shorelines biome", latitude: -23.4425, longitude: -58.4438 },
 ];
+
+const lastFlagships = [
+    { name: "Altyn Dala Conservation Initiative", memberStates: "Kazakhstan", ecosystems: "Grasslands, Shrublands and Savannahs" },
+    { name: "Building with Nature in Indonesia", memberStates: "Indonesia", ecosystems: "Forests; Coasts; Human settlements" },
+    { name: "Central American Dry Corridor", memberStates: "Costa Rica, El Salvador, Guatemala, Honduras, Nicaragua, Panama", ecosystems: "Farmlands; Forests" },
+    { name: "Great Green Wall for Restoration and Peace", memberStates: "Burkina Faso, Niger", ecosystems: "Grasslands, Shrublands and Savannahs; Farmlands" },
+    { name: "Multi-country Mountain Flagship", memberStates: "DRC/Uganda/Rwanda, Kyrgyzstan, Serbia", ecosystems: "Mountains; Forests" },
+    { name: "Namami Gange", memberStates: "India", ecosystems: "Freshwaters; Peatlands" },
+    { name: "Abu Dhabi Marine Restoration", memberStates: "United Arab Emirates", ecosystems: "Oceans and coasts" },
+    { name: "Shan-Shui Initiative in China", memberStates: "China", ecosystems: "Forests; Peatlands; Freshwaters; Farmlands; Mountains; Coasts; Grasslands, Shrublands and Savannahs" },
+    { name: "SIDS Ecosystem Restoration Flagship", memberStates: "Saint Lucia, Comoros, Vanuatu", ecosystems: "Oceans and coasts; Freshwaters" },
+    { name: "Trinational Atlantic Forest Pact", memberStates: "Argentina, Brazil, Paraguay", ecosystems: "Forests; Freshwaters; Coasts" }
+]
 
 async function initMap() {
     const { Map } = await google.maps.importLibrary('maps');
@@ -252,9 +267,11 @@ onMounted(async () => {
 <template>
     <div class="bg-white">
         <header class="inset-x-0 top-0">
-            <div class="overflow-hidden shadow-md bg-none relative">
-                <img src="/seashore.jpg" class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-75">
-                <div class="px-4 sm:px-12 py-12">
+            <div class="overflow-hidden bg-none relative">
+                <img src="/seashore.jpg"
+                     class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-50">
+                <shitty-divider class="absolute -left-1 bottom-0" />
+                <div class="px-4 sm:px-12 pt-12 pb-28">
                     <!-- Logos -->
                     <div class="relative w-full pl-10 flex mb-10">
                         <div class="mb-2 sm:mb-5 mt-2 grid grid-flow-col gap-x-6 mx-auto md:mx-0 divide-x divide-gray-300">
@@ -274,13 +291,13 @@ onMounted(async () => {
 
                     <div class="relative text-white mt-20 max-w-sm md:max-w-3xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-0 md:grid-rows-none md:grid-cols-3 md:gap-x-5">
                         <router-link :to="{ name: 'initiatives' }"
-                                     class="bg-ferm-green-dark/80 border-ferm-green-light_ border-4_ rounded-xl px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur">
+                                     class="bg-ferm-green-light/70 border-ferm-green-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur">
                             <div class="flex flex-row gap-x-2">
                                 <div class="mt-0.5">
                                     <ArrowSmallRightIcon class="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <div class="text-lg font-semibold">Register</div>
+                                    <div class="text-xl font-bold">Register</div>
                                     <div class="text-sm mt-3">Your restoration initiative and good practices</div>
                                 </div>
                             </div>
@@ -288,7 +305,7 @@ onMounted(async () => {
 
                         <a href="https://data.apps.fao.org/ferm/"
                            target="_blank"
-                           class="bg-ferm-blue-dark/80 border-ferm-blue-light_ border-4_ rounded-xl px-4 py-4 text-left transition-colors hover:bg-ferm-blue-light shadow backdrop-blur">
+                           class="bg-ferm-blue-dark/80 border-ferm-blue-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-blue-light shadow backdrop-blur">
                             <div class="flex flex-row gap-x-2">
                                 <div>
                                     <GlobeAltIcon class="w-6 h-6" />
@@ -300,7 +317,7 @@ onMounted(async () => {
                             </div>
                         </a>
 
-                        <button class="bg-ferm-mustard-dark/70 border-ferm-mustard-dark_ border-4_ rounded-xl px-4 py-4 text-left transition-colors shadow cursor-default backdrop-blur">
+                        <button class="bg-ferm-mustard-dark/70 border-ferm-mustard-dark_ border-4_ rounded-lg px-4 py-4 text-left transition-colors shadow cursor-default backdrop-blur">
                             <div class="flex flex-row gap-x-2">
                                 <div>
                                     <MagnifyingGlassIcon class="w-6 h-6" />
@@ -324,7 +341,7 @@ onMounted(async () => {
 
             <div class="px-4 sm:px-0 mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
 
-                <div class="bg-ferm-blue-light p-4 rounded-xl text-base font-light flex flex-col shadow">
+                <div class="bg-ferm-blue-light p-4 rounded-lg text-sm font-base flex flex-col shadow">
                     <div>
                         The <span class="font-semibold">FERM Registry</span> provides a harmodized data collection mechanism to aggregate data from restoration platforms.
                     </div>
@@ -333,9 +350,9 @@ onMounted(async () => {
                     </div>
                 </div>
 
-                <div class="bg-ferm-green-light p-4 rounded-xl text-base font-light flex flex-col shadow">
+                <div class="bg-ferm-green-light p-4 rounded-lg text-sm font-base flex flex-col shadow">
                     <div>
-                        The <span class="font-semibold">FERM platform</span> is built on FAO's corporate <span class="whitespace-nowrap">Hand-In-Hand</span> geospatial architecture and provides accessible and transparent information for restoration practitioners.
+                        The <span class="font-semibold">FERM Platform</span> is built on FAO's corporate <span class="whitespace-nowrap">Hand-In-Hand</span> geospatial architecture and provides accessible and transparent information for restoration practitioners.
                     </div>
                     <div class="flex-grow flex h-full justify-end items-end">
                         <GlobeEuropeAfricaIcon class="text-gray-100 h-10 w-10" />
@@ -343,19 +360,33 @@ onMounted(async () => {
                 </div>
 
 
-                <div class="p-4 font-akrobat font-semibold text-white col-span-2 rounded-xl text-sm bg-[url('/soil.jpg')] bg-cover bg-center flex lg:h-full justify-end items-end h-48 shadow">
+                <div class="p-4 font-akrobat font-semibold text-white col-span-2 rounded-lg text-sm bg-[url('/soil.jpg')] bg-cover bg-center flex lg:h-full justify-end items-end h-48 shadow">
                     <div class="px-16 aligh-bottom text-center bottom-3 text-lg sm:text-xl brightness-100 z-50 sm:leading-tight text-shadow-sm shadow-black">
                         Join #GenerationRestoration and share your restoration initiative and good practices with the world.
                     </div>
                 </div>
 
-                <div class="p-4 col-span-2">
-
+                <div class="col-span-2 h-72 rounded-lg bg-white border-2 border-ferm-blue-dark-300 overflow-hidden shadow flex flex-col">
+                    <div class="py-4 px-8 font-akrobat font-bold text-xl bg-ferm-blue-light-50">New Initiatives</div>
+                    <div class="overflow-y-auto px-4 py-2">
+                        <ul role="list"
+                            class="divide-y divide-gray-200 text-sm">
+                            <li v-for="flagship in lastFlagships"
+                                :key="flagship.name"
+                                class="px-4 py-3 sm:px-4">
+                                <div class="flex flex-col">
+                                    <div class="font-bold text-ferm-blue-dark">{{ flagship.name }}</div>
+                                    <div><span class="font-semibold text-ferm-blue-dark-900">Countries: </span>{{ flagship.memberStates }}</div>
+                                    <div><span class="font-semibold text-ferm-blue-dark-900">Ecosystems: </span>{{ flagship.ecosystems }}</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="col-span-2 h-64 rounded-xl shadow">
+                <div class="col-span-2 h-72 rounded-lg shadow">
                     <div id="map"
-                         class="overflow-hidden rounded-xl"></div>
+                         class="overflow-hidden rounded-lg"></div>
                 </div>
             </div>
         </div>

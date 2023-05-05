@@ -91,7 +91,7 @@ async function getGroupAdmins(groupId) {
 
 // Creates a new user. Only admins can call this function for now.
 // Group admins should be able to create new users in their group.
-exports.createUser = functions.https.onCall(async ({ email, displayName, privileges, admin: admin_ }, context ) => {
+exports.createUser = functions.https.onCall(async ({ email, displayName, privileges, admin: admin_ }, context) => {
     // check if the user is an admin
     if (!isAdmin(context)) {
         throw new functions.https.HttpsError('permission-denied', 'Only admins can create new users');
@@ -156,6 +156,39 @@ exports.listAllUsers = functions.https.onCall(async (_data, context) => {
     }
 })
 
+// Returns the list of all users in my groups.
+exports.listMyGroupsUsers = functions.https.onCall(async (_data, context) => {
+    // Get the groups where the user is group admin
+    const groupsWhereAdmin = getGroupsWhereAdmin(context);
+
+    if (groupsWhereAdmin.length === 0) {
+        throw new functions.https.HttpsError('permission-denied', 'User is not an admin or a group admin');
+    }
+
+    // Get all the users in the groups
+    const allUsers = await admin.auth().listUsers();
+    const filteredUsers = allUsers.users.filter(u => u.customClaims && u.customClaims.privileges && groupsWhereAdmin.some(g => u.customClaims.privileges[g]));
+    // const users = await Promise.all(groupsWhereAdmin.map(async groupId => {
+    //     const groupUsers = allUsers.users.filter(u => u.customClaims && u.customClaims.privileges && u.customClaims.privileges[groupId]);
+    //     return groupUsers;
+    // }));
+
+
+    // Delete duplicate users
+    const usersNoDuplicates = filteredUsers.reduce((acc, val) => acc.includes(val) ? acc : [...acc, val], []);
+    
+    // Make suer that we don't return sensitive data
+    return { users: usersNoDuplicates.map(u => ({
+        uid: u.uid,
+        photoURL: u.photoURL,
+        displayName: u.displayName,
+        enabled: u.enabled,
+        customClaims: u.customClaims,
+        metadata: u.metadata,
+    })) };
+});
+
+
 // Set a user's privileges by updating their custom claims. Also sets the admin claim.
 // Only admins can call this function for now.
 // Group admins should be able to set the privileges of users in their group.
@@ -194,7 +227,46 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
 
     // Set the user's custom claims
     const user = await admin.auth().getUserByEmail(email);
+    
+    // TODO pass uid to the function instead of email
     await admin.auth().setCustomUserClaims(user.uid, { privileges, admin: !!_admin });
+
+    return { message: 'Success! Privileges assigned' }
+});
+
+exports.setUserPrivilegesGroupAdmin = functions.https.onCall(async ({ uid, privileges}, context) => {
+    if (!privileges) privileges = {}
+
+    // check if the user is admin of all the groups in privileges
+    const groupsIds = Object.keys(privileges);
+    const groupsWhereAdmin = getGroupsWhereAdmin(context);
+    const invalidGroup = groupsIds.find(g => !groupsWhereAdmin.includes(g));
+    if (invalidGroup) {
+        throw new functions.https.HttpsError('permission-denied', `User is not admin of group ${invalidGroup}`);
+    }
+
+    // Check if the roles are valid
+    const roles = Object.values(privileges);
+    const invalidRole = roles.find(r => !GROUP_ROLES.includes(r));
+    if (invalidRole) {
+        throw new functions.https.HttpsError('invalid-argument', `Role ${invalidRole} doesn't exist`);
+    }
+
+    const invalidGroup2 = await checkValidGroups(privileges);
+    if (invalidGroup2) {
+        throw new functions.https.HttpsError('invalid-argument', `Invalid group id ${invalidGroup2}`);
+    }
+    
+    // throw error if the user is no a member of all the groups in privileges
+    const user = await admin.auth().getUser(uid);
+    const userPrivileges = user.customClaims.privileges;
+    const userGroups = Object.keys(userPrivileges);
+    const invalidGroup3 = groupsIds.find(g => !userGroups.includes(g));
+    if (invalidGroup3) {
+        throw new functions.https.HttpsError('permission-denied', `User is not a member of group ${invalidGroup3}`);
+    }
+
+    await admin.auth().setCustomUserClaims(uid, { privileges, admin: false });
 
     return { message: 'Success! Privileges assigned' }
 });
@@ -223,7 +295,7 @@ exports.scheduledFirestoreExport = functions.pubsub
 // Update the user's name in the auth system when the user's name is updated in the database
 exports.updateAuthDisplayName = functions.firestore.document('users/{userId}').onUpdate(async (change, context) => {
     const { userId } = context.params;
-    const { registrationData: { name }  } = change.after.data();
+    const { registrationData: { name } } = change.after.data();
 
 
     // Check if the user already has a displayName
@@ -240,10 +312,74 @@ exports.updateAuthDisplayName = functions.firestore.document('users/{userId}').o
     }
 });
 
+async function getSuperAdmins() {
+    // TODO store custom claims in a collection in firestore for performance
+    const users = await admin.auth().listUsers();
+    return users.users.filter(u => u.customClaims && u.customClaims.admin).map(u => ({ uid: u.uid, email: u.email }));
+}
+
+// Create documents in the mail collection when a user requests for a new group to be created
+exports.sendNewGroupRequestEmail = functions.firestore.document('newGroupRequests/{requestId}').onCreate(async (snap, context) => {
+    const data = snap.data();
+
+    // name: '',
+    // type: '',
+    // otherType: '',
+    // unDecade: null,
+    // isa: {
+    //     partner: false,
+    //     actor: false,
+    //     flagship: false
+    // },
+    // status: 'pending'
+
+
+    const { userId, name, type, otherType, isa: { partner, actor, flagship } } = data;
+
+    // Get all superadmins
+    const superAdmins = await getSuperAdmins();
+    const superAdminEmails = superAdmins.map(a => a.email);
+
+    // Get user's name from the auth system
+    const { displayName } = await admin.auth().getUser(userId);
+
+    // create mail document
+    const mailDoc = {
+        to: superAdminEmails,
+        message: {
+            subject: `New group request for group ${name}`,
+            html: `
+                <p>Hi,</p>
+                <p>User ${displayName || 'anonymous'} has requested to create a new group ${name}:</p>
+                
+                <p>
+                Name of the group: ${name}<br>
+                Type of the group: ${type} ${type === 'Other' ? ' - Other type: ' + otherType : ''}<br>
+                </p>
+
+                <p>
+                ${partner ? 'UN Decade partner<br>' : ''}
+                ${actor ? 'UN Decade actor<br>' : ''}
+                ${flagship ? 'Global Flagship' : ''}
+                </p>
+
+                <p>As a superadmin, please go to the <a href="https://ferm.fao.org/admin/groups">https://ferm.fao.org/admin/newGroups</a> to create the new group.</p>
+
+                <p>Best regards,</p>
+                <p>the FERM team</p>
+            `
+        }
+    };
+
+    // add mail document to mail collection
+    await admin.firestore().collection('mail').add(mailDoc);
+});
+
+
 // Create documents in the mail collection when a user requests to be assigned to a group
 exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRequests/{requestId}').onCreate(async (snap, context) => {
     const data = snap.data();
-    const { user, group, status, reasons } = data;
+    const { userId, groupId, status, reasons } = data;
 
     // check if status is 'pending'
     if (status !== 'pending') {
@@ -252,95 +388,60 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
 
     // TODO check if group exists - already checked in rules
 
-    // Get group admins
-    const admins = await getGroupAdmins(group);
-    const adminEmails = admins.map(a => a.email);
+    // Get all group admins
+    const admins = await getGroupAdmins(groupId);
+    const groupAdminEmails = admins.map(a => a.email);
 
     // Get user's name from the auth system
-    const { displayName } = await admin.auth().getUser(user);
-    
+    const { displayName } = await admin.auth().getUser(userId);
+
     // Get group name from the database
-    const groupDoc = await admin.firestore().collection('groups').doc(group).get();
+    const groupDoc = await admin.firestore().collection('groups').doc(groupId).get();
     const groupName = groupDoc.data().name;
 
     // create mail document
-    const mailDoc = {
-        to: adminEmails,
+    const mailDocforGroupAdmins = {
+        to: groupAdminEmails,
         message: {
             subject: `New assignement request for group ${groupName}`,
             html: `
                 <p>Hi,</p>
-                <p>User ${displayName} has requested to be assigned to group ${groupName}:</p>
+                <p>User ${displayName || 'anonymous'} has requested to be assigned to your institution ${groupName}:</p>
                 
                 <p style="font-style: italic;">${reasons}</p>
-
-                <p>Go to the <a href="https://ferm.fao.org">FERM group administration page</a> to accept or reject the request</p>
-
+        
+                <p>As an administrator of the group, please go to the <a href="https://ferm.fao.org/admin/groupAssignments">https://ferm.fao.org/admin/groupAssignments</a> to accept or reject the request.</p>
+        
                 <p>Best regards,</p>
                 <p>the FERM team</p>
-
             `
         }
     };
 
-    // add mail document to mail collection
-    await admin.firestore().collection('mail').add(mailDoc);
-});
-
-// Accept or reject an assignment request
-exports.acceptOrRejectAssignmentRequest = functions.https.onCall(async ({ requestId, status }, context) => {
-    // Check if the user is an admin or a group admin
-    if (!isAdmin(context) && !isGroupAdmin(context)) {
-        throw new functions.https.HttpsError('permission-denied', 'Only admins can accept or reject assignment requests');
-    }
-
-    // Check if the status is valid
-    if (!['accepted', 'rejected'].includes(status)) {
-        throw new functions.https.HttpsError('invalid-argument', 'Status must be "accepted" or "rejected"');
-    }
-
-    // Get the request
-    const requestDoc = await admin.firestore().collection('assignementRequests').doc(requestId).get();
-    const request = requestDoc.data();
-
-    // Check if the request exists
-    if (!request) {
-        throw new functions.https.HttpsError('not-found', 'Request not found');
-    }
-
-    // Check if the request is pending
-    if (request.status !== 'pending') {
-        throw new functions.https.HttpsError('invalid-argument', 'Request is not pending');
-    }
-
-    // Get the user's email
-    const { email } = await admin.auth().getUser(request.user);
-
-    // Get the group name
-    const groupDoc = await admin.firestore().collection('groups').doc(request.group).get();
-    const groupName = groupDoc.data().name;
-
-    // Update the request
-    await admin.firestore().collection('assignementRequests').doc(requestId).update({ status });
-
-    // Send email to user
-    const mailDoc = {
-        to: [email],
+    // Get all superadmins
+    const superAdmins = await getSuperAdmins();
+    const mailDocforSuperAdmins = {
+        to: superAdmins.map(a => a.email),
         message: {
-            subject: `Your request to join group ${groupName} has been ${status}`,
+            subject: `New assignement request for group ${groupName}`,
             html: `
                 <p>Hi,</p>
-                <p>Your request to join group ${groupName} has been ${status}.</p>
+                <p>User ${displayName || 'anonymous'} has requested to be assigned to the institution ${groupName}:</p>
+                
+                <p style="font-style: italic;">${reasons}</p>
+        
+                <p>Group administrators should handle the request, please go to the <a href="https://ferm.fao.org/admin/groupAssignments">https://ferm.fao.org/admin/groupAssignments</a> to monitor, accept or reject it.</p>
+        
                 <p>Best regards,</p>
                 <p>the FERM team</p>
             `
         }
     };
 
-    // add mail document to mail collection
-    await admin.firestore().collection('mail').add(mailDoc);
+    // add mail documents to mail collection
+    await admin.firestore().collection('mail').add(mailDocforGroupAdmins);
+    await admin.firestore().collection('mail').add(mailDocforSuperAdmins);
 });
-
 
 // Set default custom claims and create a user record in Firestore when a user is created
 exports.createUserRecord = functions.auth.user().onCreate(async ({ uid }) => {
@@ -457,3 +558,183 @@ exports.beforeSignIn = functions.auth.user().beforeSignIn((_user, context) => {
 //     }
 // });
 
+
+
+
+
+
+
+// exports.getMyGroupsAssigmentRequests = functions.https.onCall(async ({ requestId, status }, context) => {
+//     // Check if the user is an admin or a group admin
+//     if (!isAdmin(context) && !isGroupAdmin(context)) {
+//         throw new functions.https.HttpsError('permission-denied', 'Only admins can accept or reject assignment requests');
+//     }
+
+//     // Check if the status is valid
+//     if (!['accepted', 'rejected'].includes(status)) {
+//         throw new functions.https.HttpsError('invalid-argument', 'Status must be "accepted" or "rejected"');
+//     }
+
+//     // Get the request
+//     const requestDoc = await admin.firestore().collection('assignementRequests').doc(requestId).get();
+//     const request = requestDoc.data();
+
+//     // Check if the request exists
+//     if (!request) {
+//         throw new functions.https.HttpsError('not-found', 'Request not found');
+//     }
+
+//     // Check if the request is pending
+//     if (request.status !== 'pending') {
+//         throw new functions.https.HttpsError('invalid-argument', 'Request is not pending');
+//     }
+
+//     // Get the user's email
+//     const { email } = await admin.auth().getUser(request.user);
+
+//     // Get the group name
+//     const groupDoc = await admin.firestore().collection('groups').doc(request.group).get();
+//     const groupName = groupDoc.data().name;
+
+//     // Update the request
+//     await admin.firestore().collection('assignementRequests').doc(requestId).update({ status });
+
+//     // Send email to user
+//     const mailDoc = {
+//         to: [email],
+//         message: {
+//             subject: `Your request to join group ${groupName} has been ${status}`,
+//             html: `
+//                 <p>Hi,</p>
+//                 <p>Your request to join group ${groupName} has been ${status}.</p>
+//                 <p>Best regards,</p>
+//                 <p>the FERM team</p>
+//             `
+//         }
+//     };
+
+//     // add mail document to mail collection
+//     await admin.firestore().collection('mail').add(mailDoc);
+// });
+
+
+// GROUP ASSIGNMENT REQUESTS
+
+function getGroupsWhereAdmin(context) {
+    const privileges = context.auth.token && context.auth.token.privileges || {};
+    return Object.keys(privileges).filter(group => privileges[group] === 'admin');
+}
+
+
+exports.getMyGroupsAssigmentRequests = functions.https.onCall(async (_, context) => {
+    const groupsWhereAdmin = getGroupsWhereAdmin(context);
+
+    if (groupsWhereAdmin.length === 0) {
+        throw new functions.https.HttpsError('permission-denied', 'User is not an admin or a group admin');
+    }
+
+    // Get the requests
+    const requests = await admin.firestore().collection('assignementRequests')
+        .where('groupId', 'in', groupsWhereAdmin)
+        .get();
+
+    const requestDocs = requests.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // add user display name to each request
+    const requestsWithUserDisplayName = await Promise.all(requestDocs.map(async request => {
+        const { displayName } = await admin.auth().getUser(request.userId);
+        return { ...request, userName: displayName };
+    }));
+
+    // add group name to each request
+    const requestsWithUserAndGroupDisplayName = await Promise.all(requestsWithUserDisplayName.map(async request => {
+        const groupDoc = await admin.firestore().collection('groups').doc(request.groupId).get();
+        const groupName = groupDoc.data().name;
+        const dateFormatted = request.createTime.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        return { ...request, groupName, createTime: dateFormatted };
+    }));
+
+
+    return requestsWithUserAndGroupDisplayName;
+});
+
+// Accept or reject an assignment request
+exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId, status: newStatus }, context) => {
+    // Check if the user is a group admin of the group the user wants to join
+    const groupsWhereAdmin = getGroupsWhereAdmin(context);
+    const requestDoc = await admin.firestore().collection('assignementRequests').doc(requestId).get();
+    const request = requestDoc.data();
+    if (!groupsWhereAdmin.includes(request.groupId) && !isAdmin(context)) {
+        throw new functions.https.HttpsError('permission-denied', 'User is not an admin of the group');
+    }
+
+    // Check if the status is valid
+    if (!['accepted', 'rejected'].includes(newStatus)) {
+        throw new functions.https.HttpsError('invalid-argument', 'Status must be "accepted" or "rejected"');
+    }
+
+    // Get the request
+    // const requestDoc = await admin.firestore().collection('assignementRequests').doc(requestId).get();
+    // const request = requestDoc.data();
+
+    // Check if the request exists
+    if (!request) {
+        throw new functions.https.HttpsError('not-found', 'Request not found');
+    }
+
+    const { status, userId, groupId } = request;
+
+    // Check if the request is pending
+    if (status !== 'pending') {
+        throw new functions.https.HttpsError('invalid-argument', 'Request is not pending');
+    }
+
+
+    // Check if the group exists
+    const groupDoc = await admin.firestore().collection('groups').doc(request.groupId).get();
+    const group = groupDoc.data();
+    if (!group) {
+        throw new functions.https.HttpsError('not-found', 'Group not found');
+    }
+
+    // Check if the user exists in the auth service
+    const user = await admin.auth().getUser(userId);
+    if (!user) {
+        throw new functions.https.HttpsError('not-found', 'User not found');
+    }
+
+    // Update the request
+    await admin.firestore().collection('assignementRequests').doc(requestId).update({ status: newStatus });
+
+    // Add the user to the group by modifying the privileges in the user's token
+    if (newStatus === 'accepted') {
+        try {
+            const user = await admin.auth().getUser(userId);
+            const privileges = { ...user.customClaims.privileges, [groupId]: 'editor' };
+            await admin.auth().setCustomUserClaims(userId, { privileges });
+        } catch (error) {
+            // revert the request status
+            await admin.firestore().collection('assignementRequests').doc(requestId).update({ status });
+            throw new functions.https.HttpsError('internal', 'Could not add user to group');
+        }
+    }
+
+    // Send email to user
+    const { email } = await admin.auth().getUser(userId);
+    const groupName = groupDoc.data().name;
+    const mailDoc = {
+        to: [email],
+        message: {
+            subject: `${groupName} - Membership Request Status`,
+            html: `
+                <p>Hi,</p>
+                <p>This email is to inform you about the status of your membership request to ${groupName}. Your request has been ${newStatus}.</p>
+                <p>Sincerely,</p>
+                <p>the FERM team</p>
+            `
+        }
+    };
+
+    // add mail document to mail collection
+    await admin.firestore().collection('mail').add(mailDoc);
+});

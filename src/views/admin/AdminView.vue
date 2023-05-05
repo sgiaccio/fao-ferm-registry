@@ -1,8 +1,24 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/auth';
+
 const tabs = [
-    { name: 'Users', routeName: 'users', current: false },
-    { name: 'Groups', routeName: 'groups', current: false },
+    { name: 'Users', routeName: 'users', current: false, superAdminOnly: false },
+    { name: 'Groups', routeName: 'groups', current: false, superAdminOnly: true },
+    { name: 'Institution assignments requests', routeName: 'groupAssignments', current: false, superAdminOnly: false },
 ]
+
+const store = useAuthStore();
+
+const filteredTabs = tabs.filter(tab => !tab.superAdminOnly || (tab.superAdminOnly && store.isAdmin));
+
+// Check if user is super admin
+if (store.user) {
+    if (store.isAdmin) {
+        tabs[0].current = true;
+    } else {
+        tabs[2].current = true;
+    }
+}
 </script>
 
 <template>
@@ -24,7 +40,7 @@ const tabs = [
                 <div class="border-b border-gray-200">
                     <nav class="-mb-px flex"
                          aria-label="Tabs">
-                        <router-link v-for="tab in tabs"
+                        <router-link v-for="tab in filteredTabs"
                                      :key="tab.name"
                                      :to="{ name: tab.routeName }"
                                      :class="[tab.current ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm']"
