@@ -1,256 +1,226 @@
 import { useAuthStore } from "../stores/auth"
+import { useUserPrefsStore } from "../stores/userPreferences"
 
 import { createRouter, createWebHistory } from "vue-router";
 
-const HomeView  = () => import('../views/HomeView.vue')
-const LoginView = () => import('../views/LoginView.vue')
-const AdminView = () => import('../views/admin/AdminView.vue')
+// Initiatives tabs are used both for editing and viewing projects, so define them once here
+// Can't set the route name here because they are used twice.
+const projectTabs = [{
+    path: 'info',
+    component: () => import('../views/project/RegistrationView.vue')
+}, {
+    path: 'aoi',
+    component: () => import('../views/project/AoiView.vue')
+}, {
+    path: 'characteristics',
+    component: () => import('../views/project/characteristics/CharacteristicsView.vue')
+}, {
+    path: 'activities',
+    component: () => import('../views/project/ActivitiesView.vue')
+}, {
+    path: 'ecosystems',
+    component: () => import('../views/project/EcosystemsView.vue')
+}, {
+    path: 'indicators',
+    component: () => import('../views/project/IndicatorsView.vue')
+}, {
+    path: 'results',
+    component: () => import('../views/project/ResultsView.vue')
+}];
 
-// Projects
-const ProjectView             = () => import('../views/project/ProjectView.vue')
-const ProjectRegistrationView = () => import('../views/project/RegistrationView.vue')
-const ProjectAoi              = () => import('../views/project/AoiView.vue')
-const ProjectCharacteristics  = () => import('../views/project/characteristics/CharacteristicsView.vue')
-const ProjectActivities       = () => import('../views/project/ActivitiesView.vue')
-const ProjectEcosystems       = () => import('../views/project/EcosystemsView.vue')
-const ProjectIndicators       = () => import('../views/project/IndicatorsView.vue')
-const ProjectResults          = () => import('../views/project/ResultsView.vue')
-
-// Best practices
-const BestPracticeListView    = () => import('../views/bestpractices/BestPracticeListView.vue')
-const BestPracticeView        = () => import('../views/bestpractices/BestPracticeView.vue')
-const ObjectivesView          = () => import('../views/bestpractices/ObjectivesView.vue')
-const MethodologyView         = () => import('../views/bestpractices/MethodologyView.vue')
-const KeyFactorsView          = () => import('../views/bestpractices/KeyFactorsView.vue')
-const BenefitsView            = () => import('../views/bestpractices/BenefitsView.vue')
-const AdditionalResourcesView = () => import('../views/bestpractices/AdditionalResourcesView.vue')
-const ProjectListViewVue      = () => import('../views/project/ProjectListView.vue')
-
-// Admin
-const UserListView = () => import ('../views/admin/UserListView.vue');
-
-// Print
-const BestPracticePrintView = () => import('../views/bestpractices/BestPracticePrint.vue')
-const ProjectPrintView      = () => import('../views/project/ProjectPrint.vue')
-
-const NotFoundView = () => import('../views/NotFoundView.vue');
-
+// Good Practices tabs are used both for editing and viewing projects, so define them once here
+const bestPracticeTabs = [{
+    path: 'objectives',
+    component: () => import('../views/bestpractices/ObjectivesView.vue'),
+    meta: { dataPath: 'objectives' }
+}, {
+    path: 'methodology',
+    component: () => import('../views/bestpractices/MethodologyView.vue'),
+    meta: { dataPath: 'methodology' }
+}, {
+    path: 'key-factors',
+    component: () => import('../views/bestpractices/KeyFactorsView.vue'),
+    meta: { dataPath: 'keyFactors' }
+}, {
+    path: 'benefits',
+    component: () => import('../views/bestpractices/BenefitsView.vue'),
+    meta: { dataPath: 'benefits' }
+}, {
+    path: 'additional-resources',
+    component: () => import('../views/bestpractices/AdditionalResourcesView.vue'),
+    meta: { dataPath: 'additionalResources' }
+}];
 
 const router = createRouter({
-  scrollBehavior(_to, _from, _savedPosition) {
-    // always scroll to top
-    return {
-      top: 0,
-      behavior: 'smooth'
-    }
-  },
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: "/",
-      name: "home",
-      component: HomeView,
+    scrollBehavior(_to, _from, _savedPosition) {
+        // always scroll to top
+        return {
+            top: 0,
+            behavior: 'smooth'
+        }
     },
-    {
-      path: "/login",
-      name: "login",
-      component: LoginView,
-    },
-    {
-      path: "/admin",
-      name: "admin",
-      component: AdminView,
-      meta: {
-        requiresAuth: true
-      },
-      children: [
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: [
         {
-          path: 'users',
-          name: 'users',
-          component: UserListView,
-          meta: {
-            requiresAuth: true
-          }
+            path: "/",
+            name: "home",
+            component: () => import('../views/HomeView.vue'),
+            meta: { public: true }
         },
-        {
-          path: 'groups',
-          name: 'groups',
-          component: UserListView,
-          meta: {
-            requiresAuth: true
-          }
-        }
-      ]
-    },
-    // {
-    //   path: "/about",
-    //   name: "about",
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import("../views/AboutView.vue"),
-    // },
-    {
-      path: '/initiatives',
-      name: 'initiatives',
-      component: ProjectListViewVue,
-      meta: {
-        requiresAuth: true
-      },
-    },
-    {
-      path: '/initiatives/:id',
-      name: 'initiative',
-      component: ProjectView,
-      meta: {
-        requiresAuth: true
-      },
-      children: [
-        {
-          path: 'print',
-          name: 'printProject',
-          component: ProjectPrintView,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'info',
-          name: 'initiative-info',
-          component: ProjectRegistrationView,
-          meta: {
-            requiresAuth: true
-          },
-          // props: { edit: true }
-        }, {
-          path: 'aoi',
-          name: 'aoi',
-          component: ProjectAoi,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'characteristics',
-          name: 'initiative-characteristics',
-          component: ProjectCharacteristics,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'activities',
-          name: 'initiative-activities',
-          component: ProjectActivities,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'ecosystems',
-          name: 'initiative-ecosystems',
-          component: ProjectEcosystems,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'indicators',
-          name: 'initiative-indicators',
-          component: ProjectIndicators,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'results',
-          name: 'initiative-results',
-          component: ProjectResults,
-          meta: {
-            requiresAuth: true
-          }
-        }
-      ]
-    },
-    {
-      path: '/good-practices',
-      component: BestPracticeListView,
-      meta: {
-        requiresAuth: true
-      }
-    },
-    {
-      path: '/good-practices/:id',
-      component: BestPracticeView,
-      name: 'bestPractice',
-      meta: {
-        requiresAuth: true
-      },
-      children: [
-        {
-          path: 'print',
-          name: 'printBestPractice',
-          component: BestPracticePrintView,
-          meta: {
-            requiresAuth: true
-          }
-        }, {
-          path: 'objectives',
-          name: 'objectives',
-          component: ObjectivesView,
-          meta: {
-            requiresAuth: true,
-            dataPath: 'objectives'
-          }
-        }, {
-          path: 'methodology',
-          name: 'methodology',
-          component: MethodologyView,
-          meta: {
-            requiresAuth: true,
-            dataPath: 'methodology'
-          }
-        }, {
-          path: 'key-factors',
-          name: 'key-factors',
-          component: KeyFactorsView,
-          meta: {
-            requiresAuth: true,
-            dataPath: 'keyFactors'
-          }
-        }, {
-          path: 'benefits',
-          name: 'benefits',
-          component: BenefitsView,
-          meta: {
-            requiresAuth: true,
-            dataPath: 'benefits'
-          }
-        }, {
-          path: 'additional-resources',
-          name: 'additional-resources',
-          component: AdditionalResourcesView,
-          meta: {
-            requiresAuth: true,
-            dataPath: 'additionalResources'
-          }
-        }
-      ]
-    },
 
-    { path: '/:pathMatch(.*)', component: NotFoundView }
-  ],
+        // Authentication and registration
+        {
+            path: "/login",
+            name: "login",
+            component: () => import('../views/LoginView.vue'),
+            meta: { public: true }
+        }, {
+            path: "/signup",
+            name: "signup",
+            component: () => import('../views/SignUpView.vue'),
+            meta: { public: true }
+        }, {
+            path: "/registration",
+            name: "registration",
+            component: () => import('../views/UserRegistrationView.vue')
+        },
+
+        // Administration
+        {
+            path: "/admin",
+            name: "admin",
+            component: () => import('../views/admin/AdminView.vue'),
+            children: [
+                {
+                    path: 'users',
+                    name: 'users',
+                    component: () => import('../views/admin/UserListView.vue')
+                }, {
+                    path: 'groups',
+                    name: 'groups',
+                    component: () => import('../views/admin/GroupListView.vue')
+                }, {
+                    path: "groupAssignments",
+                    name: "groupAssignments",
+                    component: () => import('../views/admin/GroupAssignmentRequests.vue')
+                }
+            ]
+        },
+
+        // Initiatives
+        {
+            path: '/registry/initiatives',
+            name: 'initiatives',
+            component: () => import('../views/project/ProjectListView.vue'),
+        }, {
+            path: '/registry/newOrganization',
+            name: 'newOrganization',
+            component: () => import('../views/InstitutionAssignmentPage.vue')
+        },
+        // {
+        //   path: '/initiatives/:id',
+        //   name: 'initiative',
+        //   component: () => import('../views/project/ProjectViewView.vue')
+        //   children: [
+        //     {
+        //       path: 'print',
+        //       name: 'printProject',
+        //       component: () => import('../views/project/ProjectPrintView.vue')
+        //     },
+        //     ...projectTabs
+        //   ]
+        // }, {
+        //   path: '/initiatives/:id/edit',
+        //   name: 'initiative-edit',
+        //   component: () => import('../views/project/ProjectEditView.vue'),
+        //   // props: { edit: true },
+        //   children: [...projectTabs]
+        // },
+
+        {
+            path: '/registry/initiatives/:id',
+            component: () => import('../views/project/ProjectView.vue'),
+            children: [
+                {
+                    path: '',
+                    name: 'initiative',
+                    component: () => import('../views/project/ProjectViewView.vue'),
+                    children: [...projectTabs]
+                }, {
+                    path: 'print',
+                    name: 'printInitiative',
+                    component: () => import('../views/project/ProjectPrintView.vue')
+                }, {
+                    path: 'edit',
+                    name: 'editInitiative',
+                    component: () => import('../views/project/ProjectEditView.vue'),
+                    children: [...projectTabs]
+                },
+            ]
+        },
+
+        // Good Practices
+        {
+            path: '/registry/good-practices',
+            component: () => import('../views/bestpractices/BestPracticeListView.vue')
+        }, {
+            path: '/registry/good-practices/:id',
+            component: () => import('../views/bestpractices/BestPracticeView.vue'),
+            children: [
+                {
+                    path: '',
+                    name: 'bestPractice',
+                    component: () => import('../views/bestpractices/BestPracticeViewView.vue'),
+                    children: [...bestPracticeTabs]
+                },
+                {
+                    path: 'print',
+                    name: 'printBestPractice',
+                    component: () => import('../views/bestpractices/BestPracticePrint.vue')
+                },
+                {
+                    path: 'edit',
+                    name: 'editBestPractice',
+                    component: () => import('../views/bestpractices/BestPracticeEditView.vue'),
+                    children: [...bestPracticeTabs]
+                },
+            ]
+        }, {
+            path: '/:pathMatch(.*)',
+            component: () => import('../views/NotFoundView.vue')
+        }
+    ],
 });
 
-router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore();
+router.beforeEach(async (to) => {
+    const authStore = useAuthStore();
+    const userPrefsStore = useUserPrefsStore();
 
-  if (to.path === "/login" && authStore.user) {
-    next("/");
-    return;
-  }
+    // Fetch the registration data if the user is logged in
+    if (authStore.user && !userPrefsStore.userPrefs.registrationData) {
+        await userPrefsStore.fetchUserPrefs();
+    }
 
-  if (to.matched.some(record => record.meta.requiresAuth) && !authStore.user) {
-    authStore.returnUrl = to.fullPath;
-    next("/login");
-    return;
-  }
+    // If the user is logged in and filled the registration form and tries to access the registration page, redirect to the registry
+    if (authStore.user && to.name === 'registration' && userPrefsStore.userPrefs.registrationData) {
+        return { name: 'initiatives' };
+    }
 
-  next();
+    // If the user is logged in but didn't fill the registration form, redirect to registration
+    if (authStore.user && to.name !== 'registration' && !userPrefsStore.userPrefs.registrationData) {
+        return { name: 'registration' };
+    }
+
+    // If the user is logged in and tries to access the login page, redirect to the registry
+    if (authStore.user && to.name === 'login') {
+        return { name: 'initiatives' };
+    }
+
+    // If the user is not logged in and tries to access a page that requires auth, redirect to login
+    if (to.matched.some(record => !record.meta.public) && authStore.authLoaded && !authStore.user) {
+        authStore.returnUrl = to.fullPath;
+        return { name: 'login' };
+    }
 });
 
 export default router;

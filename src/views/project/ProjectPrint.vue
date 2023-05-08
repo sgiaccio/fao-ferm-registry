@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 
-import RegistrationView from '../../views/project/RegistrationView.vue';
-import AoiView from '../../views/project/AoiView.vue';
-import CharacteristicsView from '../../views/project/characteristics/CharacteristicsView.vue';
-import ActivitiesView from '../../views/project/ActivitiesView.vue';
-import EcosystemsView from '../../views/project/EcosystemsView.vue';
-import IndicatorsView from '../../views/project/IndicatorsView.vue';
-import ResultsView from '../../views/project/ResultsView.vue';
+import RegistrationView from './RegistrationView.vue';
+import AoiView from './AoiView.vue';
+import CharacteristicsView from './characteristics/CharacteristicsView.vue';
+import ActivitiesView from './ActivitiesView.vue';
+import EcosystemsView from './EcosystemsView.vue';
+import IndicatorsView from './IndicatorsView.vue';
+import ResultsView from './ResultsView.vue';
 
 onMounted(async () => {
     window.print();

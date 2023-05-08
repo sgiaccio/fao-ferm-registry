@@ -1,140 +1,176 @@
 rules_version = '2';
 service cloud.firestore {
 	match /databases/{database}/documents {
-  	match /bestPractices/{document=**} {
-      allow read: if request.auth != null // TODO
-      // allow create: if request.auth != null // TODO
-      allow create: if request.auth != null
-                    && request.auth.token != null
-                    // && request.auth.uid == request.resource.data.created_by
-                    && (
-                      // User is admin
-                      request.auth.token.admin == true
 
-                      // User is admin or editor in the group the data belongs to
-                      ||
-                      ("privileges" in request.auth.token
-                       && request.auth.token.privileges[
-                            get(/databases/$(database)/documents/registry/$(request.resource.data.projectId))
-                          .data.group] in ["admin", "editor"]
-                      )
-                    )
-      allow update: if request.auth != null
-                    && request.auth.token != null
-      							&& (!('status' in resource.data) || resource.data.status != 'published')
-                    && (
-                    	// User is admin
-                      request.auth.token.admin == true
-                      ||
-                      // User is group admin
-                      ("privileges" in request.auth.token
-                       && request.auth.token.privileges[
-                            get(/databases/$(database)/documents/registry/$(request.resource.data.projectId))
-                          .data.group] in ["admin"]
-                      )
-                      ||
-                      // User is editor and status is draft
-                      ("privileges" in request.auth.token
-                       && request.auth.token.privileges[
-                            get(/databases/$(database)/documents/registry/$(resource.data.projectId))
-                          .data.group] in ["editor"]
-                       && (!('status' in resource.data) || resource.data.status == 'draft')
-                       && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'submitted'])
-                      )
-                    )
-      allow delete: if request.auth != null
+    function isSignedIn() {
+      // Determine if the user is signed in
+      return request.auth != null;
     }
-  	match /areas/{document=**} {
-      allow read: if request.auth != null
-      allow create: if request.auth != null
-      allow update: if request.auth != null
-      allow delete: if request.auth != null
+
+    function isAdmin() {
+      // Determine if the user is an admin
+      return isSignedIn() && ("token" in request.auth) && ("admin" in request.auth.token) && request.auth.token.admin == true;
     }
-    
-    match /users/{document=**} {
-      allow create: if request.auth != null
-        && (request.auth.uid == debug(request.resource.id))
-    	allow read, update, delete: if request.auth != null
-        && (request.auth.token.admin == true || request.auth.uid == resource.id)
+
+    function getRole(group) {
+      // Determine the role of the user in the group - returns null if privileges not defined
+      return isSignedIn()
+        ? (("privileges" in request.auth.token)
+          ? request.auth.token.privileges[group]
+          : null)
+        : null;
     }
-  }
-  
-  match /databases/{database}/documents {
+
+    function isOneOfRoles(rsc, array) {
+      // Determine if the user has one of an array of roles in the resource group
+      return getRole(rsc.data.group) in array
+    }
+
+    function getStatus(rsc) {
+      // Determine the status of the resource
+      return ("status" in rsc.data) ? rsc.data.status : null;
+    }
+
+    function isOneOfStatuses(rsc, array) {
+      // Determine if the resource has one of an array of statuses
+      return getStatus(rsc) in array;
+    }
+
+    // Project registry documents
     match /registry/{document=**} {
-      // allow list: if debug(resource.data.public == true)
-      allow create: if request.auth != null
-                        && request.auth.token != null
+      allow create: if isSignedIn()
+                        // && request.auth.token != null
+
+                        // The user is the creator of the resource
                         && request.auth.uid == request.resource.data.created_by
+                        
                         && (
-                          // User is admin
-                          request.auth.token.admin == true
+                          // The user is a superadmin
+                          isAdmin()
 
-                          // User is admin or editor in the group the data belongs to
-                          ||
-                          ("privileges" in request.auth.token && request.auth.token.privileges[request.resource.data.group] in ["admin", "editor"])
+                          // The group exists
+                          && ('group' in request.resource.data) && exists(/databases/$(database)/documents/groups/$(request.resource.data.group))
+
+                          // User is admin or editor in the project group
+                          || isOneOfRoles(request.resource, ["admin", "editor"])
                         )
-                            
-    	allow read: if "public" in resource.data && resource.data.public == true
-                     || request.auth != null
-                     && (
-                        request.auth.token.admin == true
 
+      allow read: if "public" in resource.data && resource.data.public == true
+                      || (
+                        isAdmin()
                         // user is the creator of the resource
-                        || request.auth.uid == resource.data.created_by
+                        // commented ouy because he shouldnt be able to read it if he is not in the group
+                        // || request.auth.uid == resource.data.created_by
 
                         // it's a new record - used to create a temporary ID
                         || resource == null
 
                         // has any group privileges (admin, editor or guest)
-                        || (
-                          "privileges" in request.auth.token
-                          && resource.data.group in request.auth.token.privileges.keys()
-                          // && request.auth.token.privileges.get(resource.data.group, null) in ["admin", "editor", "guest"]
-                        )
-                     )
-                     
+                        || isOneOfRoles(resource, ["admin", "editor", "guest"])
+                      )
+              
+      allow update: if (isAdmin()
+                        // User is group editor and the user is the creator of the resource
+                        || isOneOfRoles(resource, ["editor"]) && request.auth.uid == resource.data.created_by
+                        // TODO re enable this condition and test
+                        // && (!resource.data.status || resource.data.status == 'draft')
 
-                     
-    	allow update: if request.auth != null
-      											// can't change the created by value
-                            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['created_by'])
-                            && (
-                              // User is admin
-                              request.auth.token.admin == true
-                              
-                              ||
-                              request.auth.token.privileges[resource.data.group] in ["editor"]
-                              && request.auth.uid == resource.data.created_by
-                              // && (!resource.data.status || resource.data.status == 'draft')
-                              
-                              ||  
-                              "privileges" in request.auth.token
-                               && request.auth.token.privileges[resource.data.group] in ["admin"])
-                            
-  
-      allow delete: if request.auth != null       
-                             && (
-                               // User is admin
-                               request.auth.token.admin == true
+                        // Or user is group admin
+                        || isOneOfRoles(resource, ["admin"])
+                      ) 
+                      // Users cannnot change the created by value
+                      && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['created_by'])
 
-                               ||
-                               ("privileges" in request.auth.token
-                               && request.auth.token.privileges[resource.data.group] in ["admin", "editor"]))
-                             
+      allow delete: if isAdmin()
+        // User is group editor and the user is the creator of the resource
+        || (isOneOfRoles(resource, ["editor"]) && request.auth.uid == resource.data.created_by)
+        // TODO re enable this condition and test
+        // && (!resource.data.status || resource.data.status == 'draft')
 
+        // User is group admin
+        || isOneOfRoles(resource, ["admin"])
     }
 
+    // Best practice documents
+    match /bestPractices/{document=**} {
+      allow read: if isAdmin()
+        || isOneOfRoles(get(/databases/$(database)/documents/registry/$(resource.data.projectId)), ["admin", "editor", "guest"])
 
+      allow create: if isSignedIn()
+                    && request.auth.token != null
+                    // && request.auth.uid == request.resource.data.created_by
+                    && (
+                      isAdmin()
 
+                      // User is admin or editor in the related project group
+                      || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin", "editor"])
+                    )
+      allow update: if isSignedIn()
+                    && request.auth.token != null
+
+                    // Best practice is not published
+      							&& (!('status' in resource.data) || resource.data.status != 'published')
+                    
+                    && (
+                      isAdmin()
+
+                      // User is admin in the related project group
+                      || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin"])
+
+                      // User is editor of the related project group
+                      || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["editor"]) 
+
+                        // and the best practice is in draft status
+                        && (!('status' in resource.data) || resource.data.status == 'draft')
+
+                        // and the best practice new status is draft or submitted
+                        && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'submitted'])
+                    )
+      // allow delete: if isSignedIn()
+    }
+
+    // Project areas documents
+  	match /areas/{document=**} {
+      allow read: if isSignedIn()
+      allow create: if isSignedIn()
+      allow update: if isSignedIn()
+      allow delete: if isSignedIn()
+    }
+    
+    // User data documents
+    match /users/{document=**} {
+      allow create: if isAdmin() || isSignedIn() && request.auth.uid == request.resource.id
+      allow read:   if isAdmin() || isSignedIn() && request.auth.uid == resource.id
+      allow update: if isAdmin() || isSignedIn() && request.auth.uid == request.resource.id
+      allow delete: if isAdmin()
+        && (!("privileges" in request.auth.token)) ||
+        (request.auth.token.privileges.size() == 0)
+    }
+
+    // Group documents
     match /groups/{document=**} {
-      // allow list: if debug(resource.data.public == true)
-    	allow create, read, update, delete: if request.auth != null
+      allow read: if isSignedIn()
+      allow create, update, delete: if isAdmin()
     }
 
+    // TODO tests
+    match /assignementRequests/{document=**} {
+      allow read: if true // TODO fix the rule below
+      // allow read: if debug(isAdmin()) || getRole(debug(resource.data.groupId)) == 'admin' || (isSignedIn() && request.auth.uid == resource.data.userId)
+      allow create: if request.resource.data.userId == request.auth.uid 
+        && request.resource.data.status == 'pending'
+        && request.resource.data.groupId != null
+        && exists(/databases/$(database)/documents/groups/$(request.resource.data.groupId))
+      allow update: if false
+      allow delete: if false
+    }
 
-    // match /user-registration/{document=**} {
-    // 	allow create, read, update, delete: if request.auth.token.admin == true
-    // }
-
-}
+    // TODO tests
+    match /newGroupRequests/{document=**} {
+      allow read: if isAdmin()
+      allow create: if request.resource.data.userId == request.auth.uid && request.resource.data.status == 'pending'
+      allow update: if false
+      allow delete: if false
+    }
+  }  
 }

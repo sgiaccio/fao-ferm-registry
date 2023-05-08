@@ -185,7 +185,8 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
                                       :edit=edit />
                 <TextareaFormGroup v-model="store.bestPractice.context"
                                    label="1.7 Context"
-                                   description="Please share any relevant ecological, socioeconomic and cultural context for the practice's implementation." />
+                                   description="Please share any relevant ecological, socioeconomic and cultural context for the practice's implementation."
+                                   :edit=edit />
                 <MultiSelectFormGroup :options="activitiesMenu"
                                       v-model="store.bestPractice.activities"
                                       label="1.8 Activities"

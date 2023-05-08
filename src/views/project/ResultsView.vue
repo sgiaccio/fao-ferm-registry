@@ -4,9 +4,9 @@ import { useProjectStore } from '../../stores/project';
 
 import TabTemplate from "../TabTemplate.vue"
 
-import SelectFormGroup from "@/components/inputs/base/SelectFormGroup.vue";
+// import SelectFormGroup from "@/components/inputs/base/SelectFormGroup.vue";
 
-import { achieved, achievingTargets } from "../../components/project/menus";
+// import { achieved, achievingTargets } from "../../components/project/menus";
 
 
 withDefaults(defineProps<{
@@ -15,7 +15,7 @@ withDefaults(defineProps<{
     edit: true
 });
 
-const store = useProjectStore();
+// const store = useProjectStore();
 </script>
       
 
@@ -23,7 +23,7 @@ const store = useProjectStore();
 <template>
 
 
-    <TabTemplate title="Results">
+    <TabTemplate title="Monitoring & Results">
         <!-- <template #description>
             <p>Results are calculated for selected indicators in each area of interests. The indicator calculation is based on available global layers and cloud computing environment such as SEPAL. The standard operating procedure to assess ecosystem restoration indicators is under preparation.</p>
         </template> -->

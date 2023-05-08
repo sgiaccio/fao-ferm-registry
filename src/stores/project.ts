@@ -7,6 +7,7 @@ import { snakeToCamel } from '../lib/util'
 
 import { useAuthStore } from './auth';
 
+
 const projectsCollection = collection(db, 'registry')
 const areaCollection = collection(db, 'areas')
 const bestPracticesCollection = collection(db, 'bestPractices');
@@ -16,16 +17,19 @@ export const useProjectStore = defineStore({
     state: () => ({
         projects: [] as any[],
         id: null as string | null,
-        project: null as any, // TODO
-        projectAreas: [] as any[] // TODO
+        project: null as any, // TODO type
+        projectAreas: [] as any[], // TODO type
+        loaded: false
     }),
     actions: {
         resetProjectState() {
             this.id = null;
             this.project = null;
             this.projectAreas = [];
+            this.loaded = false;
         },
         async fetchProject(projectId: string) {
+            this.loaded = false;
             const docRef = doc(db, 'registry', projectId);
             this.project = {
                 project: {},
@@ -47,32 +51,69 @@ export const useProjectStore = defineStore({
             }
 
             this.id = projectId;
+
+            // Use a separate flag to indicate that the project is loaded,
+            // because projectAreas is never null so it cannot be used to check if all the data is loaded
+            this.loaded = true
         },
         async fetchGroupOwnedProjects(groupId: string | null) {
             const authStore = useAuthStore();
-            let userGroups = null;
+
+            let userGroups: string[] = authStore.privileges ? Object.keys(authStore.privileges) : [];
+
+            if (!authStore.isAdmin && userGroups.length === 0) {
+                // if user is not admin and has no groups, return empty array
+                return [];
+            }
+
+            let q;
             if (groupId) {
-                userGroups = [groupId]
+                // if a group is selected, get only the projects from that group
+                q = query(projectsCollection, where('group', '==', groupId), orderBy('updateTime', 'desc'));
             } else {
-                if (!authStore.isAdmin) {
-                    userGroups = Object.keys(authStore.privileges);
+                if (authStore.isAdmin) {
+                    // if user is admin and no group is selected, get all the projects
+                    q = query(projectsCollection, orderBy('updateTime', 'desc'));
+                } else {
+                    // if user is not admin, get the projects from the groups they belong to
+                    q = query(projectsCollection, where('group', 'in', userGroups)), orderBy('updateTime', 'desc');                    
                 }
             }
 
-            const q = userGroups
-                ? query(projectsCollection, where('group', 'in', userGroups))
-                : query(projectsCollection)
-            // const q = query(projectsCollection, where('group', 'in', userGroups));
             const querySnapshot = await getDocs(q);
             this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
 
+            // if (authStore.isAdmin) {
+            //     if (groupId) {
+            //         // if user is admin and a group is selected, get only the projects from that group
+            //         const q = query(projectsCollection, where('group', '==', groupId));
+            //         const querySnapshot = await getDocs(q);
+            //         this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
+            //     } else {
+            //         // if user is admin and no group is selected, get all the projects
+            //         const q = query(projectsCollection);
+            //         const querySnapshot = await getDocs(q);
+            //        this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
+            //     }
+            // } else if (userGroups && userGroups.length > 0) {
+            //     // if user is not admin, get the projects from the groups he has access to
+            //     const q = query(projectsCollection, where('group', 'in', userGroups))
+            //     // const q = query(projectsCollection, where('group', 'in', userGroups));
+            //     const querySnapshot = await getDocs(q);
+            //     this.projects = querySnapshot.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
+
+            // } else {
+            //     // if user is not admin and has no groups, return empty array
+            //     this.projects = [];
+            // }
+
             // Get related good practices
-            this.projects.forEach(async (p: any) => {
+            await Promise.all(this.projects.map(async (p: any) => {
                 const projectId = p.id;
                 const q2 = query(bestPracticesCollection, where('projectId', '==', projectId));
                 const querySnapshot2 = await getDocs(q2);
                 p.nBestPractices = querySnapshot2.size;
-            });
+            }));
         },
         createEmptyProject(groupId: string) {
             const projectRef = doc(projectsCollection);
@@ -84,6 +125,8 @@ export const useProjectStore = defineStore({
                 results: {}
             }
             this.projectAreas = [];
+
+            this.loaded = true;
         },
         canEdit() {
             const authStore = useAuthStore();
@@ -153,22 +196,7 @@ export const useProjectStore = defineStore({
             querySnapshot.forEach(doc => { batch.delete(doc.ref) });
 
             await batch.commit();
-            return this.fetchGroupOwnedProjects();
+            // return this.fetchGroupOwnedProjects();
         }
     }
 });
-
-// (defn get-user-accessible-projects
-//     "Returns a list of records accessible by the current user (either public or belonging to one of his groups)"
-//     []
-//     (let [user-groups (-> @privileges keys clj->js)
-//           q           (query registry-collection (where "group" "in" user-groups))
-//           group-owned (getDocs q)
-//           user-owned  (query registry-collection (where "created_by" "==" @userid))
-//           public      (get-public-projects)]
-//       (.then (js/Promise.all #js [group-owned user-owned public])
-//              (fn [[g u p]]
-//                ;; Deduplicate results from the two queries
-//                (let [duplicates (concat (vec p) (vec ^js/Array (.-docs u)) (vec ^js/Array (.-docs g)))
-//                      t (into {} (map #(-> [(.-id %) %]) duplicates))]
-//                  (vals t))))))

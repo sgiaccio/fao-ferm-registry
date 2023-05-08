@@ -12,7 +12,7 @@ import type BestPractice from '../lib/bestpractice';
 const bestPracticesCollection = collection(db, 'bestPractices');
 const areaCollection = collection(db, "areas")
 
-const authStore = useAuthStore();  
+const authStore = useAuthStore();
 
 const newBestPractice = {
     implementationSteps: [
@@ -29,6 +29,12 @@ export const useBestPracticesStore = defineStore({
         bestPracticeAreaIdxs: []
     }),
     actions: {
+        resetBestPracticesState() {
+            this.id = null;
+            this.bestPractice = null;
+            this.projectAreas = null;
+            this.bestPracticeAreaIdxs = [];
+        },
         async fetchOwnedBestPractices() {
             // if (authStore.isAdmin) {
             //     const fsDocs = await getDocs(bestPracticesCollection);
@@ -39,11 +45,17 @@ export const useBestPracticesStore = defineStore({
             //     return fsDocs.docs;
             // }
 
-            const userGroups = Object.keys(authStore.privileges);
+            let q;
+            if (authStore.isAdmin) {
+                q = query(bestPracticesCollection);
+                // const fsDocs = await getDocs(bestPracticesCollection);
+                // return fsDocs.docs
+            } else {
+                const userGroups = Object.keys(authStore.privileges);
+                q = query(bestPracticesCollection, where('group', 'in', userGroups));
+            }
 
-            const q = query(bestPracticesCollection, where('group', 'in', userGroups));
             const querySnapshot = await getDocs(q);
-
             return querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
         },
         async fetchProjectBestPractices(projectId: string) {
@@ -113,7 +125,7 @@ export const useBestPracticesStore = defineStore({
             // Save areas in a separate collection
             const areasRef = doc(areaCollection, this.bestPractice.projectId);
             batch.set(areasRef, { areas: projectAreasCopy });
-                        
+
             await batch.commit();
         },
 
@@ -138,7 +150,7 @@ export const useBestPracticesStore = defineStore({
             const bpRef = doc(bestPracticesCollection, id);
             setDoc(bpRef, { status: 'submitted' }, { merge: true });
         },
-        
+
         async canSetStatus(newStatus: 'draft' | 'submitted' | 'published') {
             // Global administrators can do whatever they want
             if (authStore.isAdmin) {

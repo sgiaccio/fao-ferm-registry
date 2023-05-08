@@ -30,7 +30,7 @@ withDefaults(defineProps<{
         </template>
         <template #default>
             <div v-if="store.projectAreas?.length"
-                 class="flex flex-col gap-y-4">
+                 class="flex flex-col gap-y-4 pt-6">
                 <div v-for="area, i in store.projectAreas"
                      class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
                     <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2">
@@ -45,7 +45,7 @@ withDefaults(defineProps<{
             </div>
             <div v-else
                  class="text-red-600 font-bold text-lg pb-4">Please enter at least one area in the <router-link class="text-blue-400 underline hover:text-blue-600"
-                             :to="{ name: 'aoi' }">Area tab</router-link></div>
+                             :to="{ path: 'aoi' }">Area tab</router-link></div>
         </template>
     </TabTemplate>
 </template>

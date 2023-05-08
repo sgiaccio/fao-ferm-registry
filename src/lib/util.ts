@@ -1,5 +1,5 @@
 export function fbTimestampToString(ts: any) {
-    return (new Date(ts?.seconds * 1000)).toLocaleDateString('default');
+    return ts.toDate().toLocaleDateString('default');
 }
 
 export function snakeToCamel(o: any) {

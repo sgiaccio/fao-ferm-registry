@@ -168,9 +168,12 @@ function deleteFile() {
         </div>
         <div v-else
              class="dark:text-white">
-            <img v-if="thumbnailUrl" :src="thumbnailUrl">
-            <span if="edit"
-                  @click="deleteFile()">[delete]</span>
+            <img v-if="thumbnailUrl"
+                 :src="thumbnailUrl">
+            <button v-if="edit"
+                    @click="deleteFile()"
+                    type="button"
+                    class="rounded-md bg-indigo-600 py-2.5 px-3.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Delete</button>
         </div>
     </FormGroup>
 </template>

@@ -29,7 +29,7 @@ onMounted(async () => {
         <div v-if="bestPractices.length" class="mt-8 overflow-hidden bg-white shadow sm:rounded-md">
             <ul role="list" class="divide-y divide-gray-200">
                 <li v-for="bestPractice in bestPractices" :key="bestPractice.id">
-                    <router-link :to="`/good-practices/${bestPractice.id}/objectives`" href="#" class="block hover:bg-gray-50">
+                    <router-link :to="`/registry/good-practices/${bestPractice.id}/objectives`" href="#" class="block hover:bg-gray-50">
                         <div class="px-4 py-4 sm:px-6">
                             <div class="flex items-center justify-between">
                                 <p class="truncate text-sm font-medium" :class="[bestPractice.data.title ? 'text-indigo-600' : 'italic text-gray-400']">

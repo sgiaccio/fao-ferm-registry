@@ -53,7 +53,6 @@ const pointsOfContact = {
 
 const store = useProjectStore();
 
-
 const selectedFile = vue.ref<File | null>(null);
 const uploadStatus = vue.ref<'idle' | 'uploading' | 'uploaded'>('idle');
 function setSelectedFile(event: Event) {
@@ -119,7 +118,7 @@ vue.watch(() => store.id as string, async id => {
 
 
 <template>
-    <TabTemplate title="Initiative Registration">
+    <TabTemplate title="General">
         <template #description>
             <p>
                 In this tab, basic information about your initiative is needed. The title and a summary of the aims and expected results of the initiative can be provided in the description section. You also need to provide further information such as when the initiative is expected to start and end, sources of funding and responsible organisms.

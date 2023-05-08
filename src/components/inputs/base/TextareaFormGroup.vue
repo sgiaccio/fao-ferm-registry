@@ -41,8 +41,7 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
 </script>
 
 <template>
-    <FormGroup v-if="edit"
-               :label="label"
+    <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
         <textarea v-if="edit"
@@ -54,7 +53,8 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
                   :class="{ 'border-red-400 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500': showValidation, 'focus:ring-0 dark:border-black dark:focus:border-black': !showValidation }"
                   @input="onInput"
                   :value="modelValue"></textarea>
-        <div v-else-if="modelValue">{{ modelValue }}</div>
+        <div v-else-if="modelValue"
+             class="whitespace-pre-wrap">{{ modelValue }}</div>
         <div v-else
              class="italic text-gray-400">Not available</div>
         <p v-if="showValidation"
@@ -62,6 +62,4 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
            class="mt-2 text-sm text-red-600"
            id="email-error">{{ message }}</p>
     </FormGroup>
-    <div v-else-if="modelValue">{{modelValue}}</div>
-    <div v-else class="italic text-gray-400">Not available</div>
 </template>

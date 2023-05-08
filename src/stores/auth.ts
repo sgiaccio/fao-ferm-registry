@@ -1,32 +1,31 @@
 import { defineStore } from "pinia";
 
-// import { auth } from '../firebase'
+import { functions } from '../firebase'
+
 import {
     signOut,
-    getAuth,
     sendSignInLinkToEmail,
     isSignInWithEmailLink,
     signInWithEmailLink,
     type User,
-    getRedirectResult
 } from "firebase/auth";
 import { collection, query, getDocs, where, documentId } from "firebase/firestore";
 
 
 import router from '@/router';
 
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 
 
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { httpsCallable } from "firebase/functions";
 
+// import { useUserPrefsStore } from './userPreferences';
+// import { useProjectStore } from './project';
+// import { useBestPracticesStore } from './bestpractices';
 
-import { GoogleAuthProvider } from "firebase/auth";
-import { signInWithRedirect } from "firebase/auth";
 
 const provider = new GoogleAuthProvider();
-const auth = getAuth();
-
-
 
 const baseUrl = process.env.NODE_ENV === 'development'
     ? 'http://localhost:5173'
@@ -36,8 +35,6 @@ const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this
     // URL must be in the authorized domains list in the Firebase Console.
     url: baseUrl,
-    // url: 'http://ferm.fao.org',
-    // url: 'http://127.0.0.1:5173',
     // This must be true.
     handleCodeInApp: true,
     // iOS: {
@@ -94,117 +91,44 @@ export const useAuthStore = defineStore({
         authLoaded: false,
         user: null as User | null,
         isAdmin: false,
+        isGroupAdmin: false,
         privileges: {},
         userGroups: {},
         returnUrl: '/'
     }),
     actions: {
-        // async register(email: string, password: string) {
-        //     try {
-        //         await createUserWithEmailAndPassword(auth, email, password);
-        //     } catch (error: any) {
-        //         switch (error.code) {
-        //             case "auth/email-already-in-use":
-        //                 alert("Email already in use");
-        //                 break;
-        //             case "auth/invalid-email":
-        //                 alert("Invalid email");
-        //                 break;
-        //             case "auth/operation-not-allowed":
-        //                 alert("Operation not allowed");
-        //                 break;
-        //             case "auth/weak-password":
-        //                 alert("Weak password");
-        //                 break;
-        //             default:
-        //                 alert(`Sorry, something went wrong. Error code: ${error.code}`);
-        //         }
-        //         return;
-        //     }
+        async signInWithEmail(email: string) {
+            // const auth = getAuth();
 
-        //     this.user = auth.currentUser;
-
-        //     router.push("/");
-
-        //     // await signInWithEmailAndPassword(auth, email, password);
-        //     // const privileges = await getUserAccessPrivileges();
-
-        //     // // update pinia state
-        //     // this.userId     = userId;
-        //     // this.isAdmin    = privileges.admin;
-        //     // this.privileges = privileges.privileges;
-
-        //     // // redirect to previous url or default to home page
-        //     // router.push(this.returnUrl);
-        // },
-
-        async login(email: string) {
-            const auth = getAuth();
-            actionCodeSettings.url = baseUrl + this.returnUrl;
-            sendSignInLinkToEmail(auth, email, actionCodeSettings)
-                .then(() => {
-                    // The link was successfully sent. Inform the user.
-                    // Save the email locally so you don't need to ask the user for it again
-                    // if they open the link on the same device.
-                    window.localStorage.setItem('emailForSignIn', email);
-                    alert("An email was sent to you to complete the login, please click on the link provided.");
-                })
-                .catch((error) => {
-                    // const errorCode = error.code;
-                    const errorMessage = error.message;
-                    alert(`Sorry, something went wrong: ${errorMessage}`);
-                });
-            // try {
-            //     await signInWithEmailAndPassword(auth, email, password);
-            // } catch (error: any) {
-            //     switch(error.code) {
-            //         case "auth/user-not-found":
-            //             alert("User not found");
-            //             break;
-            //         case "auth/wrong-password":
-            //             alert("Wrong password");
-            //             break;
-            //         default:
-            //             alert(`Sorry, something went wrong. Error code: ${error.code}`);
-            //     }
-            //     return;
-            // }
-
-            // this.user = auth.currentUser;
-
-            // const idToken = await this.user.getIdTokenResult();
-            // if (idToken) {
-            //     this.isAdmin = idToken.claims.admin,
-            //     this.privileges = idToken.claims.privileges || {}
-            // }
-
-            // router.push(this.returnUrl);
+            // actionCodeSettings.url = baseUrl + this.returnUrl;
+            actionCodeSettings.url = '/registy/initiatives'; // TODO
+            await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+            window.localStorage.setItem('emailForSignIn', email);
         },
-
         async logout() {
-            const auth = getAuth();
+            // const auth = getAuth();
             await signOut(auth);
 
             this.user = null;
             this.isAdmin = false;
+            this.isGroupAdmin = false;
             this.privileges = {};
 
-            router.push('/login')
 
-            // try {
-            //     await logout();
+            // const projectStore = useProjectStore();
+            // projectStore.resetProjectState();
 
-            //     // update pinia state
-            //     this.userId = null;
-            //     this.isAdmin = false;
-            //     this.privileges = {};
-            // } catch(error) {
-            //     alert("Error logging out"); // TODO: better message
-            // }
+            // const userPrefsStore = useUserPrefsStore();
+            // userPrefsStore.resetUserPrefsState();
+
+            // const bestPracticesStore = useBestPracticesStore();
+            // bestPracticesStore.resetBestPracticesState();
+
+            router.push('/login');
         },
         async setUserData(user: User | null) {
             if (user === null) {
-                console.log('user is null');
+                console.log('User is null');
             } else {
                 this.user = user;
 
@@ -213,33 +137,36 @@ export const useAuthStore = defineStore({
                 if (idToken) {
                     this.isAdmin = idToken.claims.admin as unknown as boolean,
                         this.privileges = idToken.claims.privileges || {};
+
+                    this.isGroupAdmin = Object.values(this.privileges).some((priv: any) => priv === 'admin');
                 }
-                await router.isReady();
-                if (router.currentRoute.value.path === "/login") {
-                    router.push(this.returnUrl);
-                }
+
+                // await router.isReady();
+                // if (router.currentRoute.value.path === "/login") {
+                //     this.authLoaded = true;
+                //     router.push(this.returnUrl);
+                // }
 
                 // Get user group names
                 const groupIds = Object.keys(this.privileges);
                 const groupsCollection = collection(db, 'groups');
 
+                // Set user groups
                 if (groupIds.length) {
-                    const setUserGroups = getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
+                    await getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
                         .then(groups => {
                             // this.userGroups = groups
                             this.userGroups = groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
                         });
 
                     // TODO fetch user preferences in parallel
-                    await setUserGroups;
                 }
-                // const userPrefsStore = useUserPrefsStore();
-                // await userPrefsStore.fetchUserPrefs();
             }
             this.authLoaded = true;
         },
         async fetchUser() {
-            const auth = getAuth();
+            // const auth = getAuth();
+            // auth.onAuthStateChanged(async user => { this.setUserData(user); });
 
             if (isSignInWithEmailLink(auth, window.location.href)) {
                 // Additional state parameters can also be passed via URL.
@@ -254,7 +181,7 @@ export const useAuthStore = defineStore({
                     email = window.prompt('Please provide your email for confirmation');
                 }
                 // The client SDK will parse the code from the link for you.
-                return signInWithEmailLink(auth, email!, window.location.href)
+                await signInWithEmailLink(auth, email!, window.location.href)
                     .then(async (result) => {
                         // Clear email from storage.
                         window.localStorage.removeItem('emailForSignIn');
@@ -275,79 +202,63 @@ export const useAuthStore = defineStore({
                         // if (!continueUrl || continueUrl.includes('login')) {
                         //     continueUrl = '/';
                         // }
-                        await this.setUserData(result.user);
-                    })
-                    .catch(error => {
+                        // await this.setUserData(result.user);
+                    }).catch(error => {
                         alert('Some error occurred: ' + error.code);
                         // Some error occurred, you can inspect the code: error.code
                         // Common errors could be invalid email and invalid or expired OTPs.
                     });
             }
 
-            auth.onAuthStateChanged(async user => { this.setUserData(user); });
+            return new Promise((resolve, reject) => {
+                // const auth = getAuth();
+                auth.onAuthStateChanged(async user => {
+                    await this.setUserData(user)
+                    resolve(user);
+                }, () => reject(''))
+            });
         },
 
-        async getAllGroups() {
+        async fetchAllGroups() {
             const groupsCollection = collection(db, 'groups');
             const groups = await getDocs(query(groupsCollection));
+            // Create an object with group id as key and group name as value
             return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
         },
 
-        loginWithGoogle() {
-            signInWithRedirect(auth, provider);
+        async fetchPublicGroups() {
+            // hide private groups - for now private groups are only used to hide them from the list of the groups proposed for the user to join
+            const groupsCollection = collection(db, 'groups');
+            const groups = await getDocs(query(groupsCollection, where('private', '==', false)));
+            // Create an object with group id as key and group name as value
+            return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+        },
+
+
+        async signInWithGoogle() {
+            await signInWithPopup(auth, provider);
+
+            // This is a repetition from main.ts
+            // It is needed because we are using a popup so the page is not laaded again
+            // Will find a better way to do this
+            await this.fetchUser()
+            await router.isReady();
+            if (router.currentRoute.value.path === "/login") {
+                this.authLoaded = true;
+                // router.push(this.returnUrl);
+                router.push('/registry/initiatives');
+            }
+        },
+
+        async signUp(email: string, fullName: string) {
+            try {
+                const signUp = httpsCallable(functions, 'signUp');
+                await signUp({ email, fullName });
+                window.localStorage.setItem('emailForSignIn', email);
+            } catch (error: any) {
+                console.log(error.details?.code);
+                throw error.details?.code ? Error(error.details.code, { cause: error }) : error;
+            }
         }
-
-        // fetchUser_() {
-        //     const auth = getAuth();
-        //     auth.onAuthStateChanged(async user => {
-        //         if (user === null) {
-        //             //
-        //         } else {
-        //             this.user = user;
-        //             // TODO repetition
-        //             const idToken = await user.getIdTokenResult();
-        //             if (idToken) {
-        //                 this.isAdmin = idToken.claims.admin as unknown as boolean,
-        //                     this.privileges = idToken.claims.privileges || {}
-        //             }
-
-        //             await router.isReady();
-        //             if (router.currentRoute.value.path === "/login") {
-        //                 router.push(this.returnUrl); // TODO
-        //             }
-
-        //             // get user groups
-        //             const groupIds = Object.keys(this.privileges);
-
-        //             const groupsCollection = collection(db, 'groups');
-        //             const setUserGroups = getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
-        //                 .then(groups => {
-        //                     // this.userGroups = groups
-        //                     this.userGroups = groups.docs.reduce((prev, current) =>
-        //                         ({ ...prev, [current.id]: current.data().name }), {});
-        //                 });
-
-        //             // TODO fetch user preferences in parallel
-
-        //             await setUserGroups
-        //             // TODO await for user pref
-        //         }
-        //         this.authLoaded = true;
-        //     });
-        // },
-
-        // (defn get-groups []
-        //     (.then (getDocs (query groups-collection))
-        //            (fn [query-snapshot]
-        //              ^js/Array (.-docs query-snapshot))))
-
-
-        // getAccessToken() {
-        //     return this.user.accessToken;
-        // }
     }
 });
-
-
-// (defn get-access-token []
-//     (.. auth -currentUser -accessToken))

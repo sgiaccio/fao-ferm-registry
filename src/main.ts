@@ -4,11 +4,27 @@ import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
 
+import { useAuthStore } from "./stores/auth";
+
 import './index.css'
 
-const app = createApp(App);
 
-app.use(createPinia());
-app.use(router);
+(async () => {
+    const app = createApp(App);
+    app.use(createPinia());
 
-app.mount("#app");
+    const auth = useAuthStore();
+    await auth.fetchUser();
+
+    // !!! ORDER IS IMPORTANT !!!
+    // !!! LOAD ROUTER AFTER THE AUTH STORE IS LOADED AND USER IS FETCHED !!!
+    app.use(router);
+
+    await router.isReady();
+    if (router.currentRoute.value.path === "/login") {
+        auth.authLoaded = true;
+        router.push(auth.returnUrl);
+    }
+
+    app.mount("#app");
+})();

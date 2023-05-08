@@ -1,20 +1,20 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, connectAuthEmulator, type Auth } from "firebase/auth";
 import { initializeFirestore, Firestore, connectFirestoreEmulator } from "firebase/firestore";
-import { getFunctions, connectFunctionsEmulator, httpsCallable } from "firebase/functions";
+import { getFunctions, connectFunctionsEmulator, httpsCallable, type Functions } from "firebase/functions";
 
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M",
-    authDomain: "fao-ferm.firebaseapp.com",
-    projectId: "fao-ferm",
-    storageBucket: "fao-ferm.appspot.com",
-    messagingSenderId: "1081330009070",
-    appId: "1:1081330009070:web:bdfbf7c72821c9be1784ff"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 let auth: Auth, db: Firestore;
-let functions;
+let functions: Functions;
 
 // Initialize Firebase
 if (!getApps().length) {
@@ -39,10 +39,25 @@ async function fetchAllUsers() {
     const result = await listAllUsers();
     return result.data;
 }
-
-// (defn get-groups []
-//     (.then (getDocs (query groups-collection))
-//            (fn [query-snapshot]
-//              ^js/Array (.-docs query-snapshot))))
   
-export { auth, db, fetchAllUsers }
+async function fetchMyGroupsUsers() {
+    const functions = getFunctions();
+    const listMyGroupsUsers = httpsCallable(functions, 'listMyGroupsUsers');
+    const result = await listMyGroupsUsers();
+    return result.data;
+}
+
+// async function fetchAssignmentRequestsByGroup(groupId: string) {
+//     const assignmentRequestsCollection = collection(db, 'assignmentRequests');
+//     const assignmentRequests = await getDocs(query(assignmentRequestsCollection, where('group', '==', groupId)));
+//     return assignmentRequests.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+// }
+
+export { auth, db, functions, fetchAllUsers, fetchMyGroupsUsers }
+
+
+
+// const groupsCollection = collection(db, 'groups');
+// const groups = await getDocs(query(groupsCollection, where('private', '==', false)));
+// // Create an object with group id as key and group name as value
+// return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});

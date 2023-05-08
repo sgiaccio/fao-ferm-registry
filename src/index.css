@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -35,3 +35,13 @@
         url("/fonts/akrobat/Akrobat-ExtraBold.woff2") format("woff2"), url("/fonts/akrobat/Akrobat-ExtraBold.woff") format("woff"), url("/fonts/akrobat/Akrobat-ExtraBold.ttf") format("truetype");
     font-weight: 800;
 }
+
+
+#map {
+    height: 100%;
+    -webkit-mask-image:-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,1)));
+}
+
+/* #map > div {
+    border-radius: 10px;
+} */
