@@ -12,7 +12,6 @@ import ShittyDivider from '../components/shittyDivider.vue'
 
 
 const points = [
-    { flagship: "Flagship", target2030: "2030 target", restored: "Restored", memberStates: "Member States", iucnEcosystemsBiomes: "IUCN ecosystem biomes", latitude: 1, longitude: 1 },
     { flagship: "Altyn Dala Conservation Initiative", target2030: "5 million ha new protected areas and ecological corridors", restored: "", memberStates: "Kazakhstan", iucnEcosystemsBiomes: "Shrublands & shrubby woodlands biome; Savannas and grasslands biome; Deserts and semi-deserts biome; Palustrine wetlands biome (*which covers Peatlands); Rivers and streams biome", latitude: 48.0196, longitude: 66.9237 },
     { flagship: "Building with Nature in Indonesia - restoring an eroding coastline and inspiring action at scale", target2030: "", restored: "119 ha mangroves restored@ 300 ha of sustainable aquaculture and 3.4 km permeable structures built", memberStates: "Indonesia", iucnEcosystemsBiomes: "Intensive land-use systems biome; Shorelines biome; Brackish tidal biome", latitude: -0.7893, longitude: 113.9213 },
     { flagship: "Central America dry corridor Agro-Forestry Restoration", target2030: "300@000 ha", restored: "", memberStates: "Costa Rica@ El Salvador@ Guatemala@ Honduras@ Nicaragua@ Panama", iucnEcosystemsBiomes: "Tropical-subtropical forests biome", latitude: 12.8654, longitude: -85.2072 },
