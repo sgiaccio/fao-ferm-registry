@@ -176,16 +176,18 @@ exports.listMyGroupsUsers = functions.https.onCall(async (_data, context) => {
 
     // Delete duplicate users
     const usersNoDuplicates = filteredUsers.reduce((acc, val) => acc.includes(val) ? acc : [...acc, val], []);
-    
+
     // Make suer that we don't return sensitive data
-    return { users: usersNoDuplicates.map(u => ({
-        uid: u.uid,
-        photoURL: u.photoURL,
-        displayName: u.displayName,
-        enabled: u.enabled,
-        customClaims: u.customClaims,
-        metadata: u.metadata,
-    })) };
+    return {
+        users: usersNoDuplicates.map(u => ({
+            uid: u.uid,
+            photoURL: u.photoURL,
+            displayName: u.displayName,
+            enabled: u.enabled,
+            customClaims: u.customClaims,
+            metadata: u.metadata,
+        }))
+    };
 });
 
 
@@ -227,14 +229,14 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
 
     // Set the user's custom claims
     const user = await admin.auth().getUserByEmail(email);
-    
+
     // TODO pass uid to the function instead of email
     await admin.auth().setCustomUserClaims(user.uid, { privileges, admin: !!_admin });
 
     return { message: 'Success! Privileges assigned' }
 });
 
-exports.setUserPrivilegesGroupAdmin = functions.https.onCall(async ({ uid, privileges}, context) => {
+exports.setUserPrivilegesGroupAdmin = functions.https.onCall(async ({ uid, privileges }, context) => {
     if (!privileges) privileges = {}
 
     // check if the user is admin of all the groups in privileges
@@ -256,7 +258,7 @@ exports.setUserPrivilegesGroupAdmin = functions.https.onCall(async ({ uid, privi
     if (invalidGroup2) {
         throw new functions.https.HttpsError('invalid-argument', `Invalid group id ${invalidGroup2}`);
     }
-    
+
     // throw error if the user is no a member of all the groups in privileges
     const user = await admin.auth().getUser(uid);
     const userPrivileges = user.customClaims.privileges;
@@ -319,7 +321,7 @@ async function getSuperAdmins() {
 }
 
 // Create documents in the mail collection when a user requests for a new group to be created
-exports.sendNewGroupRequestEmail = functions.firestore.document('newGroupRequests/{requestId}').onCreate(async (snap, context) => {
+exports.sendNewGroupRequestEmail = functions.firestore.document('newGroupRequests/{requestId}').onCreate(async (snap, _context) => {
     const data = snap.data();
 
     // name: '',
@@ -363,7 +365,7 @@ exports.sendNewGroupRequestEmail = functions.firestore.document('newGroupRequest
                 ${flagship ? 'Global Flagship' : ''}
                 </p>
 
-                <p>As a superadmin, please go to the <a href="https://ferm.fao.org/admin/groups">https://ferm.fao.org/admin/newGroups</a> to create the new group.</p>
+                <p>As a superadmin, please go to <a href="https://ferm.fao.org/admin/groups">https://ferm.fao.org/admin/groups</a> to create the new group.</p>
 
                 <p>Best regards,</p>
                 <p>the FERM team</p>
@@ -389,9 +391,6 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
     // TODO check if group exists - already checked in rules
 
     // Get all group admins
-    const admins = await getGroupAdmins(groupId);
-    const groupAdminEmails = admins.map(a => a.email);
-
     // Get user's name from the auth system
     const { displayName } = await admin.auth().getUser(userId);
 
@@ -399,48 +398,53 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
     const groupDoc = await admin.firestore().collection('groups').doc(groupId).get();
     const groupName = groupDoc.data().name;
 
-    // create mail document
-    const mailDocforGroupAdmins = {
-        to: groupAdminEmails,
-        message: {
-            subject: `New assignement request for group ${groupName}`,
-            html: `
+    const admins = await getGroupAdmins(groupId);
+    const groupAdminEmails = admins.map(a => a.email);
+
+    let mailDoc = null;
+    if (admins.length > 0) {
+        // create mail document
+        mailDoc = {
+            to: groupAdminEmails,
+            message: {
+                subject: `New assignement request for group ${groupName}`,
+                html: `
                 <p>Hi,</p>
                 <p>User ${displayName || 'anonymous'} has requested to be assigned to your institution ${groupName}:</p>
                 
                 <p style="font-style: italic;">${reasons}</p>
         
-                <p>As an administrator of the group, please go to the <a href="https://ferm.fao.org/admin/groupAssignments">https://ferm.fao.org/admin/groupAssignments</a> to accept or reject the request.</p>
+                <p>As an administrator of the group, please go to <a href="https://ferm.fao.org/admin/groupAssignments">https://ferm.fao.org/admin/groupAssignments</a> to accept or reject the request.</p>
         
                 <p>Best regards,</p>
                 <p>the FERM team</p>
             `
-        }
-    };
-
-    // Get all superadmins
-    const superAdmins = await getSuperAdmins();
-    const mailDocforSuperAdmins = {
-        to: superAdmins.map(a => a.email),
-        message: {
-            subject: `New assignement request for group ${groupName}`,
-            html: `
+            }
+        };
+    } else {
+        // Get all superadmins
+        const superAdmins = await getSuperAdmins();
+        mailDoc = {
+            to: superAdmins.map(a => a.email),
+            message: {
+                subject: `New assignement request for group ${groupName}`,
+                html: `
                 <p>Hi,</p>
                 <p>User ${displayName || 'anonymous'} has requested to be assigned to the institution ${groupName}:</p>
                 
                 <p style="font-style: italic;">${reasons}</p>
         
-                <p>Group administrators should handle the request, please go to the <a href="https://ferm.fao.org/admin/groupAssignments">https://ferm.fao.org/admin/groupAssignments</a> to monitor, accept or reject it.</p>
+                <p>This institution has no administators - as a superadmin please go to <a href="https://ferm.fao.org/admin/groupAssignments">https://ferm.fao.org/admin/groupAssignments</a> to accept or reject the request.</p>
         
                 <p>Best regards,</p>
                 <p>the FERM team</p>
             `
+            }
         }
-    };
+    }
 
     // add mail documents to mail collection
-    await admin.firestore().collection('mail').add(mailDocforGroupAdmins);
-    await admin.firestore().collection('mail').add(mailDocforSuperAdmins);
+    await admin.firestore().collection('mail').add(mailDoc);
 });
 
 // Set default custom claims and create a user record in Firestore when a user is created
@@ -629,14 +633,22 @@ function getGroupsWhereAdmin(context) {
 exports.getMyGroupsAssigmentRequests = functions.https.onCall(async (_, context) => {
     const groupsWhereAdmin = getGroupsWhereAdmin(context);
 
-    if (groupsWhereAdmin.length === 0) {
+    if (groupsWhereAdmin.length === 0 && !isAdmin(context)) {
         throw new functions.https.HttpsError('permission-denied', 'User is not an admin or a group admin');
     }
 
     // Get the requests
-    const requests = await admin.firestore().collection('assignementRequests')
-        .where('groupId', 'in', groupsWhereAdmin)
-        .get();
+    let requests;
+    if (isAdmin(context)) {
+        // if superadmin, get all requests
+        requests = await admin.firestore().collection('assignementRequests')
+            .get();
+    } else {
+        // if group admin, get only requests for the groups where the user is admin
+        requests = await admin.firestore().collection('assignementRequests')
+            .where('groupId', 'in', groupsWhereAdmin)
+            .get();
+    }
 
     const requestDocs = requests.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 

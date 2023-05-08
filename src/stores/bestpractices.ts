@@ -29,6 +29,12 @@ export const useBestPracticesStore = defineStore({
         bestPracticeAreaIdxs: []
     }),
     actions: {
+        resetBestPracticesState() {
+            this.id = null;
+            this.bestPractice = null;
+            this.projectAreas = null;
+            this.bestPracticeAreaIdxs = [];
+        },
         async fetchOwnedBestPractices() {
             // if (authStore.isAdmin) {
             //     const fsDocs = await getDocs(bestPracticesCollection);

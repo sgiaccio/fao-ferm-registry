@@ -20,10 +20,12 @@ import { db, auth } from '../firebase';
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 
+// import { useUserPrefsStore } from './userPreferences';
+// import { useProjectStore } from './project';
+// import { useBestPracticesStore } from './bestpractices';
+
+
 const provider = new GoogleAuthProvider();
-
-
-
 
 const baseUrl = process.env.NODE_ENV === 'development'
     ? 'http://localhost:5173'
@@ -98,7 +100,8 @@ export const useAuthStore = defineStore({
         async signInWithEmail(email: string) {
             // const auth = getAuth();
 
-            actionCodeSettings.url = baseUrl + this.returnUrl;
+            // actionCodeSettings.url = baseUrl + this.returnUrl;
+            actionCodeSettings.url = '/registy/initiatives'; // TODO
             await sendSignInLinkToEmail(auth, email, actionCodeSettings)
             window.localStorage.setItem('emailForSignIn', email);
         },
@@ -111,7 +114,17 @@ export const useAuthStore = defineStore({
             this.isGroupAdmin = false;
             this.privileges = {};
 
-            router.push('/login')
+
+            // const projectStore = useProjectStore();
+            // projectStore.resetProjectState();
+
+            // const userPrefsStore = useUserPrefsStore();
+            // userPrefsStore.resetUserPrefsState();
+
+            // const bestPracticesStore = useBestPracticesStore();
+            // bestPracticesStore.resetBestPracticesState();
+
+            router.push('/login');
         },
         async setUserData(user: User | null) {
             if (user === null) {
@@ -232,7 +245,8 @@ export const useAuthStore = defineStore({
             await router.isReady();
             if (router.currentRoute.value.path === "/login") {
                 this.authLoaded = true;
-                router.push(this.returnUrl);
+                // router.push(this.returnUrl);
+                router.push('/registry/initiatives');
             }
         },
 

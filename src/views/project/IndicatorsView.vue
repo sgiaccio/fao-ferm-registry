@@ -17,7 +17,7 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-    <TabTemplate title="Indicator selection">
+    <TabTemplate title="Indicators">
         <template #description>
             <p>Indicators are selected to monitor ecosystem restoration progress. The list of priority indicators is based on a compilation of >5,000 indicators found on international, regional, and national frameworks. More frequently used indicators in this compilation have been grouped under the same topic category and one final indicator representing all of them has been formulated. You can select several indicators from this list to monitor your restoration project. You are advised to select up to 10 indicators by project.</p>
         </template>

@@ -57,7 +57,6 @@ export const useProjectStore = defineStore({
             this.loaded = true
         },
         async fetchGroupOwnedProjects(groupId: string | null) {
-
             const authStore = useAuthStore();
 
             let userGroups: string[] = authStore.privileges ? Object.keys(authStore.privileges) : [];
@@ -70,14 +69,14 @@ export const useProjectStore = defineStore({
             let q;
             if (groupId) {
                 // if a group is selected, get only the projects from that group
-                q = query(projectsCollection, where('group', '==', groupId));
+                q = query(projectsCollection, where('group', '==', groupId), orderBy('updateTime', 'desc'));
             } else {
                 if (authStore.isAdmin) {
                     // if user is admin and no group is selected, get all the projects
-                    q = query(projectsCollection);
+                    q = query(projectsCollection, orderBy('updateTime', 'desc'));
                 } else {
                     // if user is not admin, get the projects from the groups they belong to
-                    q = query(projectsCollection, where('group', 'in', userGroups));                    
+                    q = query(projectsCollection, where('group', 'in', userGroups)), orderBy('updateTime', 'desc');                    
                 }
             }
 

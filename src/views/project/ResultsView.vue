@@ -23,7 +23,7 @@ withDefaults(defineProps<{
 <template>
 
 
-    <TabTemplate title="Results">
+    <TabTemplate title="Monitoring & Results">
         <!-- <template #description>
             <p>Results are calculated for selected indicators in each area of interests. The indicator calculation is based on available global layers and cloud computing environment such as SEPAL. The standard operating procedure to assess ecosystem restoration indicators is under preparation.</p>
         </template> -->

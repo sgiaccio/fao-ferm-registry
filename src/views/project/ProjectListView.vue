@@ -11,18 +11,15 @@ import {
     ChevronDownIcon,
     PencilSquareIcon,
     PaperAirplaneIcon,
-    MegaphoneIcon
+    MegaphoneIcon,
+    PlusIcon
 } from '@heroicons/vue/20/solid';
 
 import { useAuthStore } from '../../stores/auth';
 import { useProjectStore } from '../../stores/project';
 import { useBestPracticesStore } from '../../stores/bestpractices';
 
-// import { requestGroupAssignment } from '../../firebase/firestore';
-
 import InstitutionsAssignment from '../InstitutionsAssignment.vue';
-import AlertModal from '../AlertModal.vue';
-// import GroupAssignmentRequests from '../GroupAssigmentRequests.vue';
 
 
 const projectStore = useProjectStore();
@@ -37,28 +34,13 @@ onMounted(async () => {
     await projectStore.fetchGroupOwnedProjects(null);
     userGroups.value = authStore.isAdmin ? await authStore.fetchAllGroups() : authStore.userGroups;
     Object.assign(allGroups, await authStore.fetchAllGroups());
-    // bestPractices.value = projects.map(p => ({ id: p.id, data: p.data() }));
 });
-
-// function getLastModified(bestPractice: any) {
-//     return '' + (new Date(bestPractice.data.lastModified?.seconds * 1000)).toLocaleDateString('default')
-// }
 
 const bestPractices = ref([]);
 async function showBestPractices(projectId: string) {
     bestPractices.value = await bestPracticesStore.fetchProjectBestPractices(projectId);
     // console.log(bestPractices.value)
 }
-
-// function canEdit(project) {
-//     if (authStore.isAdmin) return true;
-
-//     const level = authStore.privileges[project.data.group];
-//     if (level === 'admin') return true;
-//     if (level === 'editor' && project.data.created_by === authStore.user.uid) return true
-
-//     return false;
-// }
 
 function getAccessLevel(group: string): string {
     if (authStore.isAdmin) return 'admin';
@@ -80,61 +62,14 @@ async function deleteProject(projectId: string) {
 async function filterByGroup(groupId: string | null) {
     await projectStore.fetchGroupOwnedProjects(groupId);
 }
-
-// const showAssignmentRequests = ref(true);
-// const showAssignmentConfirm = ref(false);
-// const showAssignmentSuccess = ref(false);
-// const assignmentRequestGroupId = ref('');
-
-
-// function assignmentRequested(groupId: string) {
-//     showAssignmentRequests.value = false;
-//     showAssignmentConfirm.value = true;
-//     assignmentRequestGroupId.value = groupId;
-// }
-// async function assignmentConfirmed() {
-//     if (assignmentRequestGroupId.value === '') return;
-//     showAssignmentConfirm.value = false;
-//     await requestGroupAssignment(authStore.user!.uid, assignmentRequestGroupId.value);
-//     assignmentRequestGroupId.value = '';
-//     showAssignmentSuccess.value = true;
-// }
 </script>
 
 <template>
-    <!-- Group assignment request modal -->
-    <!-- <InstitutionsModal :onClose="() => { showAssignmentRequests = false }"
-                      :open="showAssignmentRequests"
-                      buttonText="Cancel">
-            <GroupAssignmentRequests :onRequest="assignmentRequested" />
-        </InstitutionsModal> -->
-    <!-- Group assignment confirmation modal -->
-    <!-- <AlertModal type="warning"
-                title="Please confirm"
-                :onClose="() => { assignmentConfirmed() }"
-                :open="showAssignmentConfirm"
-                buttonText="Ok">
-        <p class="text-sm text-gray-500">Are you sure you want to join the institution <span class="font-bold">{{ allGroups[assignmentRequestGroupId] }}</span>?</p>
-    </AlertModal> -->
-    <!-- Group assignment success modal -->
-    <!-- <AlertModal type="success"
-                title="Request sent"
-                :onClose="() => { showAssignmentSuccess = false }"
-                :open="showAssignmentSuccess"
-                buttonText="Ok">
-        <p class="text-sm text-gray-500">Your request will be sent to the administrator. You will be notified by email once it is processed.</p>
-    </AlertModal> -->
-
-    <!-- <AlertModal :onClose="() => { showAssignmentSuccess = false}"
-                            :open="showAssignmentSuccess"
-                            buttonText="Ok">
-                            </AlertModal> -->
-    <!-- <p class="text-sm text-gray-500">Are you sure you want to delete this initiative? You will releted the related areas and best practices</p> -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
             <h1 class="mt-12 font-akrobat text-4xl text-gray-800 dark:text-white mb-8 font-extrabold uppercase">Initiatives</h1>
 
-            <p class="font-light dark:text-white">Restoration projects, programs and initiatives at all spatial scales, from
+            <p class="dark:text-white">Restoration projects, programs and initiatives at all spatial scales, from
                 individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for
                 sustaining life on Earth. The FERM registry allows you to consistently and transparently monitor, report, and share
                 information on restoration initiatives good practices. The information published in the FERM
@@ -143,38 +78,19 @@ async function filterByGroup(groupId: string | null) {
             <!-- If the user is not an admin and not part of any group, show a message -->
             <!-- <div v-if="true" -->
             <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
-                 class="mt-6 dark:text-gray-100">
-
+                 class="mt-10 dark:text-gray-100">
                 <InstitutionsAssignment />
-
-                <!-- Once an administrator assigns you to an institution, you will be able to add new initiatives and edit existing ones. -->
-
-                <!-- <div class="border rounded-lg w-full sm:max-w-md mx-auto">
-                    <ul role="list"
-                        class="divide-y divide-gray-200">
-                        <li v-for="[groupId, groupName] in Object.entries(allGroups).sort((a, b) => a[1].localeCompare(b[1]))"
-                            :key="groupId"
-                            class="flex py-4 cursor-pointer hover:bg-blue-100">
-                            <img class="h-10 w-10 rounded-full"
-                                    src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                    alt="" />
-                            <div class="ml-3">
-                                <p class="text-sm font-medium text-gray-900">{{ groupName }}</p>
-                                <!- - <p class="text-sm text-gray-500">{{ groupName }}</p> - ->
-                            </div>
-                        </li>
-                    </ul>
-                </div> -->
             </div>
 
 
-            <template v-else>
+            <!-- <template v-else-if="projectStore.projects && projectStore.projects.length"> -->
+            <template v-else="projectStore.projects && projectStore.projects.length">
                 <div class="flex mt-6">
                     <Menu as="div"
                           class="relative inline-block text-left">
                         <div>
                             <MenuButton class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                                Filter by organization
+                                Filter by institution
                                 <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
                                                  aria-hidden="true" />
                             </MenuButton>
@@ -216,7 +132,7 @@ async function filterByGroup(groupId: string | null) {
                           class="ml-auto relative inline-block text-left">
                         <div>
                             <MenuButton class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                                Add new initiative
+                                New initiative
                                 <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
                                                  aria-hidden="true" />
                             </MenuButton>
@@ -230,7 +146,7 @@ async function filterByGroup(groupId: string | null) {
                                     leave-to-class="transform opacity-0 scale-95">
                             <menu-items class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div class="px-4 py-3">
-                                    <p class="text-sm font-medium text-gray-900">Your organizations:</p>
+                                    <p class="text-sm font-medium text-gray-900">Your institutions:</p>
                                 </div>
                                 <div class="py-1">
                                     <menu-item v-for="[id, name] in Object.entries(authStore.userGroups)"
@@ -238,6 +154,14 @@ async function filterByGroup(groupId: string | null) {
                                         <router-link :to="{ path: '/registry/initiatives/new/edit/info', query: { groupId: id } }"
                                                      :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                                             {{ name }}
+                                        </router-link>
+                                    </menu-item>
+                                </div>
+                                <div class="py-1">
+                                    <menu-item v-slot="{ active }">
+                                        <router-link :to="{ name: 'newOrganization' }"
+                                                     :class="[active ? 'bg-gray-100 text-ferm-blue-dark-900' : 'text-ferm-blue-dark-900', 'block px-4 py-2 text-sm font-semibold']">
+                                            Join or create new institution
                                         </router-link>
                                     </menu-item>
                                 </div>
@@ -249,7 +173,6 @@ async function filterByGroup(groupId: string | null) {
                 <div class="mt-8 overflow-hidden_ bg-white shadow sm:rounded-md">
                     <!-- <pre>{{JSON.stringify(projectStore.projects, null, 2)}}</pre> -->
                     <ul role="list"
-                        v-if="projectStore.projects"
                         class="divide-y divide-gray-200">
                         <li v-for="project in projectStore.projects"
                             :key="project.id">
@@ -315,7 +238,7 @@ async function filterByGroup(groupId: string | null) {
                                                             <div class="py-1">
                                                                 <menu-item v-slot="{ active }">
                                                                     <router-link :to="{ path: '/registry/good-practices/new/edit/objectives', query: { projectId: project.id } }"
-                                                                                 :class="[active ? 'bg-gray-100 text-blue-900' : 'text-blue-700', 'block px-4 py-2 text-sm font-medium']">Add new good practice</router-link>
+                                                                                 :class="[active ? 'bg-gray-100 text-blue-900' : 'text-blue-700', 'block px-4 py-2 text-sm font-medium']">New good practice</router-link>
                                                                 </menu-item>
                                                             </div>
                                                         </menu-items>
@@ -326,7 +249,7 @@ async function filterByGroup(groupId: string | null) {
                                                     <router-link :to="{ path: '/registry/good-practices/new/edit/objectives', query: { projectId: project.id } }"
                                                                  type="button"
                                                                  class="inline-flex items-center text-sm font-medium text-indigo-700">
-                                                        Add good practice
+                                                        New good practice
                                                     </router-link>
                                                 </div>
                                             </div>
@@ -346,8 +269,6 @@ async function filterByGroup(groupId: string | null) {
                                     </span>
                                 </div>
 
-
-                                
                                 <div class="self-center pr-4">
                                     <Menu as="div"
                                           class="relative inline-block text-left">
@@ -393,6 +314,70 @@ async function filterByGroup(groupId: string | null) {
                     </ul>
                 </div>
             </template>
+            <!-- <div v-else
+                 class="text-center pt-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                     aria-hidden="true">
+                    <path vector-effect="non-scaling-stroke"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-semibold text-gray-900">No initiatives</h3>
+                <p class="mt-1 text-sm text-gray-500">Get started by creating a new initiative.</p>
+                <div class="mt-6">
+                    <Menu as="div"
+                          class="ml-auto relative inline-block text-left">
+                        <div>
+                            <MenuButton class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                                New initiative
+                                <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
+                                                 aria-hidden="true" />
+                            </MenuButton>
+                        </div>
+
+                        <transition enter-active-class="transition ease-out duration-100"
+                                    enter-from-class="transform opacity-0 scale-95"
+                                    enter-to-class="transform opacity-100 scale-100"
+                                    leave-active-class="transition ease-in duration-75"
+                                    leave-from-class="transform opacity-100 scale-100"
+                                    leave-to-class="transform opacity-0 scale-95">
+                            <menu-items class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <div class="px-4 py-3">
+                                    <p class="text-sm font-medium text-gray-900">Your institutions:</p>
+                                </div>
+                                <div class="py-1">
+                                    <menu-item v-for="[id, name] in Object.entries(authStore.userGroups)"
+                                               v-slot="{ active }">
+                                        <router-link :to="{ path: '/registry/initiatives/new/edit/info', query: { groupId: id } }"
+                                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                                            {{ name }}
+                                        </router-link>
+                                    </menu-item>
+                                </div>
+                                <div class="py-1">
+                                    <menu-item v-slot="{ active }">
+                                        <router-link :to="{ name: 'newOrganization' }"
+                                                     :class="[active ? 'bg-gray-100 text-ferm-blue-dark-900' : 'text-ferm-blue-dark-900', 'block px-4 py-2 text-sm font-semibold']">
+                                            Join or create new institution
+                                        </router-link>
+                                    </menu-item>
+                                </div>
+                            </menu-items>
+                        </transition>
+                    </Menu>
+                    <!- - <button type="button"
+                            class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        <PlusIcon class="-ml-0.5 mr-1.5 h-5 w-5"
+                                  aria-hidden="true" />
+                        New Initiative
+                    </button> - ->
+                </div>
+            </div> -->
         </div>
     </div>
 </template>

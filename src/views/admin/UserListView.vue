@@ -171,12 +171,12 @@ function deleteUser() {
     showEditDialog.value = false;
 }
 
-const registrationData = ref();
-async function toggleRegistrationData(userId: string) {
-    const userPrefs = await userPrefsStore.getRegistrationData(userId)
-    // alert(JSON.stringify(userPrefs, null, 2));
-    registrationData.value = userPrefs;
-}
+// const registrationData = ref();
+// async function toggleRegistrationData(userId: string) {
+//     const userPrefs = await userPrefsStore.getRegistrationData(userId)
+//     // alert(JSON.stringify(userPrefs, null, 2));
+//     registrationData.value = userPrefs;
+// }
 
 const userToAdd = ref<any | null>(null);
 async function addUser() {
@@ -318,8 +318,9 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                 <div class="mt-3 text-center sm:mt-0 sm:text-left">
                                     <DialogTitle as="h3"
                                                  class="text-lg font-medium leading-6 text-gray-900">Edit user {{ userToEdit.displayName || userToEdit.email }}</DialogTitle>
-                                    <div class="mt-2">
-                                        <button @click="toggleRegistrationData(userToEdit.uid)">Show registration data</button>
+                                    <div v-if="authStore.isAdmin"
+                                         class="mt-2">
+                                        <!-- <button @click="toggleRegistrationData(userToEdit.uid)">Show registration data</button> -->
                                         <SwitchGroup as="div"
                                                      class="mt-4 flex items-center">
                                             <Switch v-model="userToEdit.admin"

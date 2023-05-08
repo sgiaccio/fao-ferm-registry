@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth';
+import { useRoute } from 'vue-router'
+
+
+const route = useRoute();
 
 const tabs = [
     { name: 'Users', routeName: 'users', current: false, superAdminOnly: false },
@@ -23,7 +27,7 @@ if (store.user) {
 
 <template>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-3xl mx-auto mt-6">
             <div class="sm:hidden">
                 <label for="tabs"
                        class="sr-only">Select a tab</label>
@@ -43,11 +47,12 @@ if (store.user) {
                         <router-link v-for="tab in filteredTabs"
                                      :key="tab.name"
                                      :to="{ name: tab.routeName }"
-                                     :class="[tab.current ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm']"
-                                     :aria-current="tab.current ? 'page' : undefined">{{ tab.name }}</router-link>
+                                     :class="[route.name === tab.routeName ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'w-1/4 border-b-2 py-4 px-1 text-center text-sm font-medium']"
+                                         :aria-current="route.name === tab.routeName ? 'page' : undefined">{{ tab.name }}</router-link>
                     </nav>
                 </div>
             </div>
+
             <router-view />
         </div>
     </div>

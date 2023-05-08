@@ -35,6 +35,10 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
     const userPrefs = ref<UserPrefs>({});
     const darkMode = ref<boolean | undefined>();
 
+    function resetUserPrefsState() {
+        userPrefs.value = {};
+    }
+
     async function fetchUserPrefs() {
         const authStore = useAuthStore();
 
@@ -106,5 +110,5 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
         window.localStorage.setItem('darkMode', '' + mode);
     }
 
-    return { userPrefs, fetchUserPrefs, acceptBpConsent, register, darkMode, setDarkMode, getRegistrationData };
+    return { userPrefs, fetchUserPrefs, acceptBpConsent, register, darkMode, setDarkMode, getRegistrationData, resetUserPrefsState };
 });

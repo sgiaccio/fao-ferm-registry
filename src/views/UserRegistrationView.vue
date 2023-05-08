@@ -139,8 +139,8 @@ function onClose() {
                 :onClose="onClose"
                 :open="showTanksDialog"
                 title="Thank you for registering"
-                buttonText="Go to home page">
-        <p class="text-sm text-gray-500">We will assign you to the appropriate groups shortly.</p>
+                buttonText="Go to the registry">
+        <p class="text-sm text-gray-500">To proceed, select a group and submit a join request. Administrators will review your request and notify you of their decision.</p>
     </AlertModal>
 
     <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">

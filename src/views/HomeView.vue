@@ -287,7 +287,7 @@ onMounted(async () => {
                             </div>
                         </div>
                     </div>
-                    <div class="relative w-full text-center font-akrobat font-extrabold text-gray-50 text-5xl lg:text-6xl uppercase shadow-black text-shadow-sm">Framework for Ecosystem<br>Restoration Monitoring</div>
+                    <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-5xl md:text-6xl lg:text-7xl uppercase shadow-black text-shadow-sm">Framework for Ecosystem<br>Restoration Monitoring</div>
 
                     <div class="relative text-white mt-20 max-w-sm md:max-w-3xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-0 md:grid-rows-none md:grid-cols-3 md:gap-x-5">
                         <router-link :to="{ name: 'initiatives' }"
@@ -297,7 +297,7 @@ onMounted(async () => {
                                     <ArrowSmallRightIcon class="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <div class="text-xl font-bold">Register</div>
+                                    <div class="text-xl font-bold uppercase">Register</div>
                                     <div class="text-sm mt-3">Your restoration initiative and good practices</div>
                                 </div>
                             </div>
@@ -311,7 +311,7 @@ onMounted(async () => {
                                     <GlobeAltIcon class="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <div class="text-lg font-semibold">Visualize</div>
+                                    <div class="text-xl font-semibold uppercase">Visualize</div>
                                     <div class="text-sm mt-3">The latest geospatial data on restoration</div>
                                 </div>
                             </div>
@@ -323,7 +323,7 @@ onMounted(async () => {
                                     <MagnifyingGlassIcon class="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <div class="text-lg font-semibold">Search</div>
+                                    <div class="text-xl font-semibold uppercase">Search</div>
                                     <div class="text-sm mt-3">For good practices on ecosystem restoration (coming soon)</div>
                                 </div>
                             </div>

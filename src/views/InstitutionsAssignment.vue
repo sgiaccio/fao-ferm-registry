@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, reactive, watch, nextTick } from 'vue'
+import { computed, ref, onMounted, watch, nextTick } from 'vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 import {
     Combobox,
@@ -18,6 +18,12 @@ import { requestGroupAssignment, getUserAssignmentRequests, submitNewInstitution
 import ConfirmModal from '@/views/ConfirmModal.vue'
 import AlertModal from '@/views/AlertModal.vue'
 
+
+const props = withDefaults(defineProps<{
+    onFinished?: () => void
+}>(), {
+    onFinished: () => { }
+});
 
 const authStore = useAuthStore();
 // const projectStore = useProjectStore();
@@ -98,12 +104,14 @@ async function requestAssignment() {
         await refreshAssignments();
         query.value = '';
         selectedGroup.value = null;
+        reasons.value = '';
     }
 }
 
 function cancelAssignment() {
     showConfirmDialog.value = false
     query.value = '';
+    reasons.value = '';
     selectedGroup.value = null;
 }
 
@@ -173,6 +181,21 @@ async function confirmSubmit() {
         throw (e);
     }
 }
+
+function cancelSubmit() {
+    showSubmitNew.value = false;
+    newInstitutionFormData.value = {
+        name: '',
+        type: '',
+        otherType: '',
+        isa: {
+            partner: false,
+            actor: false,
+            flagship: false
+        },
+        status: 'pending'
+    }
+}
 </script>
 
 <template>
@@ -181,9 +204,10 @@ async function confirmSubmit() {
                   :title="`Join ${selectedGroup?.name}`"
                   :onConfirm="() => { confirmAssignment() }"
                   :onCancel="() => { cancelAssignment() }"
+                  :okButtonEnabled="selectedGroup !== null && reasons !== ''"
                   :open="showConfirmDialog"
                   ok-button-text="Join">
-        <p class="text-sm text-gray-500">Please provide your reasons for joining <span class="font-bold">{{ selectedGroup?.name }}</span>; your response will be sent to the administrator for review.</p>
+        <p class="text-sm text-gray-700">Please provide your reasons for joining <span class="font-bold">{{ selectedGroup?.name }}</span>; your response will be sent to the administrator for review.</p>
         <div>
             <div class="mt-2">
                 <textarea rows="2"
@@ -193,13 +217,12 @@ async function confirmSubmit() {
                           class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
             </div>
         </div>
-
     </ConfirmModal>
 
     <!-- Group assignment success modal -->
     <AlertModal type="success"
                 title="Request sent"
-                :onClose="() => { showAssignmentSuccess = false }"
+                :onClose="() => { showAssignmentSuccess = false; props.onFinished() }"
                 :open="showAssignmentSuccess"
                 buttonText="Ok">
         <p class="text-sm text-gray-500">Your request has been sent to the administrator. You will be notified by email once it is processed.</p>
@@ -208,7 +231,7 @@ async function confirmSubmit() {
     <!-- Group assignment error modal -->
     <AlertModal type="error"
                 title="Error sending request"
-                :onClose="() => { showAssignmentError = false }"
+                :onClose="() => { showAssignmentError = false; props.onFinished() }"
                 :open="showAssignmentError"
                 buttonText="Ok">
         <p class="text-sm text-gray-500">There was an error sending the request, please try again later.</p>
@@ -218,11 +241,11 @@ async function confirmSubmit() {
     <ConfirmModal type="info"
                   title="Submit new institution"
                   :onConfirm="() => { confirmSubmit() }"
-                  :onCancel="() => { showSubmitNew = false }"
+                  :onCancel="() => cancelSubmit()"
                   :open="showSubmitNew"
                   okButtonText="Submit"
-                  buttonText="Ok">
-        <p class="text-sm text-gray-500">Please submit your institution for inclusion in the registry.</p>
+                  :okButtonEnabled="!isDisabled">
+        <p class="text-sm text-gray-700">Please submit your institution for inclusion in the registry.</p>
         <div class="mt-2">
             <label for="name"
                    class="block text-sm font-medium leading-6 text-gray-900">Name <span class="text-red-600">*</span></label>
@@ -269,13 +292,11 @@ async function confirmSubmit() {
                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
             </div>
         </div>
-
-
         <div class="pt-4">
             <fieldset>
                 <legend class="sr-only">The institution is a</legend>
                 <div class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
-                     aria-hidden="true">The institution is a <span class="text-red-600">*</span></div>
+                     aria-hidden="true">The institution is a</div>
                 <div class="mt-2 space-y-2">
                     <div class="relative flex items-start">
                         <div class="flex h-6 items-center">
@@ -316,150 +337,15 @@ async function confirmSubmit() {
                                    class="font-normal text-gray-900 dark:text-gray-100">Global Flagship </label>
                         </div>
                     </div>
-                    <!-- <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input v-model="formData.affiliation.flagship"
-                                   id="flagship"
-                                   name="flagship"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="flagship"
-                                   class="font-normal text-gray-900 dark:text-gray-100">UN Decade flagship</label>
-                        </div>
-                    </div>
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input v-model="formData.affiliation.partner"
-                                   id="partner"
-                                   name="partner"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="partner"
-                                   class="font-normal text-gray-900 dark:text-gray-100">FERM partner government or initiative</label>
-                        </div>
-                    </div>
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input v-model="otherAffiliation"
-                                   id="other"
-                                   name="other"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="other"
-                                   class="font-normal text-gray-900 dark:text-gray-100">Other <span v-if="otherAffiliation"
-                                      class="text-red-600">*</span></label>
-                        </div>
-
-                        <div>
-                            <div class="relative ml-2">
-                                <input v-model="formData.affiliation.otherAffiliationText"
-                                       ref="otherInstitutionTextRef"
-                                       :disabled="!otherAffiliation"
-                                       :placeholder="otherAffiliation ? 'Please specify' : ''"
-                                       type="text"
-                                       name="otherText"
-                                       id="otherText"
-                                       class="bg-transparent peer block w-full border-0 py-0 text-gray-900 dark:text-gray-100 focus:ring-0 sm:text-sm sm:leading-6" />
-                                <div :class="[otherAffiliation ? 'border-t border-gray-300' : '', 'absolute inset-x-0 bottom-0 peer-focus:border-t-2 peer-focus:border-indigo-600']"
-                                     aria-hidden="true" />
-                            </div>
-                        </div>
-
-                    </div> -->
                 </div>
             </fieldset>
         </div>
-
-
-        <!-- <div>
-            <fieldset>
-                <legend class="sr-only">Institution affiliation</legend>
-                <div class="block text-base font-medium leading-6 text-gray-900 dark:text-gray-100"
-                     aria-hidden="true">Institution affiliation <span class="text-red-600">*</span></div>
-                <div class="mt-2 space-y-2">
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input v-model="formData.affiliation.ecosystem"
-                                   id="ecosystem"
-                                   name="ecosystem"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="ecosystem"
-                                   class="font-normal text-gray-900 dark:text-gray-100">UN Decade on Ecosystem Restoration partner or actor</label>
-                        </div>
-                    </div>
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input v-model="formData.affiliation.flagship"
-                                   id="flagship"
-                                   name="flagship"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="flagship"
-                                   class="font-normal text-gray-900 dark:text-gray-100">UN Decade flagship</label>
-                        </div>
-                    </div>
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input v-model="formData.affiliation.partner"
-                                   id="partner"
-                                   name="partner"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="partner"
-                                   class="font-normal text-gray-900 dark:text-gray-100">FERM partner government or initiative</label>
-                        </div>
-                    </div>
-                    <div class="relative flex items-start">
-                        <div class="flex h-6 items-center">
-                            <input v-model="otherAffiliation"
-                                   id="other"
-                                   name="other"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                        </div>
-                        <div class="ml-3 text-sm leading-6">
-                            <label for="other"
-                                   class="font-normal text-gray-900 dark:text-gray-100">Other <span v-if="otherAffiliation"
-                                      class="text-red-600">*</span></label>
-                        </div>
-
-                        <div>
-                            <div class="relative ml-2">
-                                <input v-model="formData.affiliation.otherAffiliationText"
-                                       ref="otherInstitutionTextRef"
-                                       :disabled="!otherAffiliation"
-                                       :placeholder="otherAffiliation ? 'Please specify' : ''"
-                                       type="text"
-                                       name="otherText"
-                                       id="otherText"
-                                       class="bg-transparent peer block w-full border-0 py-0 text-gray-900 dark:text-gray-100 focus:ring-0 sm:text-sm sm:leading-6" />
-                                <div :class="[otherAffiliation ? 'border-t border-gray-300' : '', 'absolute inset-x-0 bottom-0 peer-focus:border-t-2 peer-focus:border-indigo-600']"
-                                     aria-hidden="true" />
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </fieldset>
-        </div> -->
     </ConfirmModal>
+
     <!-- Group submit success modal -->
     <AlertModal type="success"
                 title="Request sent"
-                :onClose="() => { showSubmitSuccess = false }"
+                :onClose="() => { showSubmitSuccess = false; props.onFinished() }"
                 :open="showSubmitSuccess"
                 buttonText="Ok">
         <p class="text-sm text-gray-500">Your request has been sent to the administrator. You will be notified by email once it is processed.</p>
@@ -467,8 +353,8 @@ async function confirmSubmit() {
 
     <div class="shadow sm:rounded-lg max-w-2xl mx-auto bg-ferm-blue-dark-100">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-bold leading-6 text-gray-900">Join an instituition</h3>
-            <div class="mt-2 max-w-xl text-sm text-gray-700">
+            <h3 class="text-3xl font-bold leading-6 text-gray-900 font-akrobat">Join an instituition</h3>
+            <div class="mt-6 max-w-xl text-sm text-gray-700">
                 <p>
                     To request an institution assignment, simply select one from the list provided. Administrators will be notified of your request and can either approve or deny it. You will be informed of their decision regardless of the outcome.
                 </p>
@@ -556,7 +442,7 @@ async function confirmSubmit() {
                     </div>
                 </Combobox> -->
                 <button @click="() => selectedGroup && (showConfirmDialog = true)"
-                        :class="[selectedGroup ? 'hover:bg-indigo-500' : 'cursor-default', 'mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']">Join</button>
+                        :class="[selectedGroup ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400', 'mt-3 inline-flex w-full items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']">Join</button>
                 <div class="sm:flex-grow sm:justify-items-end sm:text-right">
                     <button @click.prevent="submitNewInstitutionRequest"
                             :class="['mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']">Submit new institution</button>
