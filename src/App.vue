@@ -29,9 +29,6 @@ watch(user, async () => {
 
 <template>
     <div id="modal" />
-    <div v-if="route.name !== 'home'" class="dark:bg-slate-900">
-        <Navbar />
-    </div>
     <RouterView />
     <!--
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

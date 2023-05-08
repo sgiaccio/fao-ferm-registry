@@ -109,81 +109,88 @@ const router = createRouter({
 
         // Initiatives
         {
-            path: '/registry/initiatives',
-            name: 'initiatives',
-            component: () => import('../views/project/ProjectListView.vue'),
-        }, {
-            path: '/registry/newOrganization',
-            name: 'newOrganization',
-            component: () => import('../views/InstitutionAssignmentPage.vue')
-        },
-        // {
-        //   path: '/initiatives/:id',
-        //   name: 'initiative',
-        //   component: () => import('../views/project/ProjectViewView.vue')
-        //   children: [
-        //     {
-        //       path: 'print',
-        //       name: 'printProject',
-        //       component: () => import('../views/project/ProjectPrintView.vue')
-        //     },
-        //     ...projectTabs
-        //   ]
-        // }, {
-        //   path: '/initiatives/:id/edit',
-        //   name: 'initiative-edit',
-        //   component: () => import('../views/project/ProjectEditView.vue'),
-        //   // props: { edit: true },
-        //   children: [...projectTabs]
-        // },
-
-        {
-            path: '/registry/initiatives/:id',
-            component: () => import('../views/project/ProjectView.vue'),
+            path: '/registry',
+            name: 'registry',
+            component: () => import('../views/RegistryView.vue'),
             children: [
                 {
-                    path: '',
-                    name: 'initiative',
-                    component: () => import('../views/project/ProjectViewView.vue'),
-                    children: [...projectTabs]
+                    path: '/initiatives',
+                    name: 'initiatives',
+                    component: () => import('../views/project/ProjectListView.vue'),
                 }, {
-                    path: 'print',
-                    name: 'printInitiative',
-                    component: () => import('../views/project/ProjectPrintView.vue')
-                }, {
-                    path: 'edit',
-                    name: 'editInitiative',
-                    component: () => import('../views/project/ProjectEditView.vue'),
-                    children: [...projectTabs]
+                    path: '/newOrganization',
+                    name: 'newOrganization',
+                    component: () => import('../views/InstitutionAssignmentPage.vue')
                 },
-            ]
-        },
+                // {
+                //   path: '/initiatives/:id',
+                //   name: 'initiative',
+                //   component: () => import('../views/project/ProjectViewView.vue')
+                //   children: [
+                //     {
+                //       path: 'print',
+                //       name: 'printProject',
+                //       component: () => import('../views/project/ProjectPrintView.vue')
+                //     },
+                //     ...projectTabs
+                //   ]
+                // }, {
+                //   path: '/initiatives/:id/edit',
+                //   name: 'initiative-edit',
+                //   component: () => import('../views/project/ProjectEditView.vue'),
+                //   // props: { edit: true },
+                //   children: [...projectTabs]
+                // },
 
-        // Good Practices
-        {
-            path: '/registry/good-practices',
-            component: () => import('../views/bestpractices/BestPracticeListView.vue')
-        }, {
-            path: '/registry/good-practices/:id',
-            component: () => import('../views/bestpractices/BestPracticeView.vue'),
-            children: [
                 {
-                    path: '',
-                    name: 'bestPractice',
-                    component: () => import('../views/bestpractices/BestPracticeViewView.vue'),
-                    children: [...bestPracticeTabs]
+                    path: '/initiatives/:id',
+                    component: () => import('../views/project/ProjectView.vue'),
+                    children: [
+                        {
+                            path: '',
+                            name: 'initiative',
+                            component: () => import('../views/project/ProjectViewView.vue'),
+                            children: [...projectTabs]
+                        }, {
+                            path: 'print',
+                            name: 'printInitiative',
+                            component: () => import('../views/project/ProjectPrintView.vue')
+                        }, {
+                            path: 'edit',
+                            name: 'editInitiative',
+                            component: () => import('../views/project/ProjectEditView.vue'),
+                            children: [...projectTabs]
+                        },
+                    ]
                 },
+
+                // Good Practices
                 {
-                    path: 'print',
-                    name: 'printBestPractice',
-                    component: () => import('../views/bestpractices/BestPracticePrint.vue')
-                },
-                {
-                    path: 'edit',
-                    name: 'editBestPractice',
-                    component: () => import('../views/bestpractices/BestPracticeEditView.vue'),
-                    children: [...bestPracticeTabs]
-                },
+                    path: '/good-practices',
+                    component: () => import('../views/bestpractices/BestPracticeListView.vue')
+                }, {
+                    path: '/good-practices/:id',
+                    component: () => import('../views/bestpractices/BestPracticeView.vue'),
+                    children: [
+                        {
+                            path: '',
+                            name: 'bestPractice',
+                            component: () => import('../views/bestpractices/BestPracticeViewView.vue'),
+                            children: [...bestPracticeTabs]
+                        },
+                        {
+                            path: 'print',
+                            name: 'printBestPractice',
+                            component: () => import('../views/bestpractices/BestPracticePrint.vue')
+                        },
+                        {
+                            path: 'edit',
+                            name: 'editBestPractice',
+                            component: () => import('../views/bestpractices/BestPracticeEditView.vue'),
+                            children: [...bestPracticeTabs]
+                        },
+                    ]
+                }
             ]
         }, {
             path: '/:pathMatch(.*)',

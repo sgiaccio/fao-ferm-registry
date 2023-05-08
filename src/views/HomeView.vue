@@ -278,12 +278,12 @@ onMounted(async () => {
                             <div class="-ml-10 mr-3">
                                 <img src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg"
                                      alt="FERM logo"
-                                     class="h-16 w-auto scale-125" />
+                                     class="h-12 sm:h-16 w-auto scale-125" />
                             </div>
                             <div>
                                 <img src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
                                      alt="FERM logo"
-                                     class="h-16 w-auto scale-150 ml-10" />
+                                     class="h-12 sm:h-16 w-auto scale-150 ml-10" />
                             </div>
                         </div>
                     </div>

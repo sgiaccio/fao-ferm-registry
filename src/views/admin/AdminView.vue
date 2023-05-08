@@ -2,6 +2,8 @@
 import { useAuthStore } from '@/stores/auth';
 import { useRoute } from 'vue-router'
 
+import Navbar from '@/components/Navbar.vue';
+
 
 const route = useRoute();
 
@@ -26,6 +28,7 @@ if (store.user) {
 </script>
 
 <template>
+    <Navbar />
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto mt-6">
             <div class="sm:hidden">
