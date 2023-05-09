@@ -7,46 +7,58 @@ import { createRouter, createWebHistory } from "vue-router";
 // Can't set the route name here because they are used twice.
 const projectTabs = [{
     path: 'info',
+    name: 'projectInfo',
     component: () => import('../views/project/RegistrationView.vue')
 }, {
     path: 'aoi',
+    name: 'projectAoi',
     component: () => import('../views/project/AoiView.vue')
 }, {
     path: 'characteristics',
+    name: 'projectCharacteristics',
     component: () => import('../views/project/characteristics/CharacteristicsView.vue')
 }, {
     path: 'activities',
+    name: 'projectActivities',
     component: () => import('../views/project/ActivitiesView.vue')
 }, {
     path: 'ecosystems',
+    name: 'projectEcosystems',
     component: () => import('../views/project/EcosystemsView.vue')
 }, {
     path: 'indicators',
+    name: 'projectIndicators',
     component: () => import('../views/project/IndicatorsView.vue')
 }, {
     path: 'results',
+    name: 'projectResults',
     component: () => import('../views/project/ResultsView.vue')
 }];
 
 // Good Practices tabs are used both for editing and viewing projects, so define them once here
 const bestPracticeTabs = [{
     path: 'objectives',
+    name: 'goodPracticesObjectives',
     component: () => import('../views/bestpractices/ObjectivesView.vue'),
     meta: { dataPath: 'objectives' }
 }, {
     path: 'methodology',
+    name: 'goodPracticesMethodology',
     component: () => import('../views/bestpractices/MethodologyView.vue'),
     meta: { dataPath: 'methodology' }
 }, {
     path: 'key-factors',
+    name: 'goodPracticesKeyFactors',
     component: () => import('../views/bestpractices/KeyFactorsView.vue'),
     meta: { dataPath: 'keyFactors' }
 }, {
     path: 'benefits',
+    name: 'goodPracticesBenefits',
     component: () => import('../views/bestpractices/BenefitsView.vue'),
     meta: { dataPath: 'benefits' }
 }, {
     path: 'additional-resources',
+    name: 'goodPracticesAdditionalResources',
     component: () => import('../views/bestpractices/AdditionalResourcesView.vue'),
     meta: { dataPath: 'additionalResources' }
 }];
@@ -105,45 +117,25 @@ const router = createRouter({
                     component: () => import('../views/admin/GroupAssignmentRequests.vue')
                 }
             ]
-        },
-
-        // Initiatives
-        {
+        }, {
             path: '/registry',
             name: 'registry',
             component: () => import('../views/RegistryView.vue'),
+            redirect: { name: 'initiatives' },
             children: [
                 {
-                    path: '/initiatives',
+                    path: 'newOrganization',
+                    name: 'newOrganization',
+                    component: () => import('../views/InstitutionAssignmentPage.vue')
+                }, 
+                
+                // Initiatives
+                {
+                    path: 'initiatives',
                     name: 'initiatives',
                     component: () => import('../views/project/ProjectListView.vue'),
                 }, {
-                    path: '/newOrganization',
-                    name: 'newOrganization',
-                    component: () => import('../views/InstitutionAssignmentPage.vue')
-                },
-                // {
-                //   path: '/initiatives/:id',
-                //   name: 'initiative',
-                //   component: () => import('../views/project/ProjectViewView.vue')
-                //   children: [
-                //     {
-                //       path: 'print',
-                //       name: 'printProject',
-                //       component: () => import('../views/project/ProjectPrintView.vue')
-                //     },
-                //     ...projectTabs
-                //   ]
-                // }, {
-                //   path: '/initiatives/:id/edit',
-                //   name: 'initiative-edit',
-                //   component: () => import('../views/project/ProjectEditView.vue'),
-                //   // props: { edit: true },
-                //   children: [...projectTabs]
-                // },
-
-                {
-                    path: '/initiatives/:id',
+                    path: 'initiatives/:id',
                     component: () => import('../views/project/ProjectView.vue'),
                     children: [
                         {
@@ -159,17 +151,17 @@ const router = createRouter({
                             path: 'edit',
                             name: 'editInitiative',
                             component: () => import('../views/project/ProjectEditView.vue'),
-                            children: [...projectTabs]
+                            children: projectTabs.map(tab => ({ ...tab, name: tab.name + 'Edit' }))
                         },
                     ]
                 },
 
                 // Good Practices
                 {
-                    path: '/good-practices',
+                    path: 'good-practices',
                     component: () => import('../views/bestpractices/BestPracticeListView.vue')
                 }, {
-                    path: '/good-practices/:id',
+                    path: 'good-practices/:id',
                     component: () => import('../views/bestpractices/BestPracticeView.vue'),
                     children: [
                         {
@@ -187,11 +179,15 @@ const router = createRouter({
                             path: 'edit',
                             name: 'editBestPractice',
                             component: () => import('../views/bestpractices/BestPracticeEditView.vue'),
-                            children: [...bestPracticeTabs]
+                            children: bestPracticeTabs.map(tab => ({ ...tab, name: tab.name + 'Edit' }))
                         },
                     ]
                 }
             ]
+        }, {
+            path: '/support',
+            name: 'support',
+            component: () => import('../views/SupportView.vue'),
         }, {
             path: '/:pathMatch(.*)',
             component: () => import('../views/NotFoundView.vue')

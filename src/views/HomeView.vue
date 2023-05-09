@@ -8,8 +8,8 @@ import {
 
 import { ArrowSmallRightIcon, GlobeAltIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/solid'
 
-import ShittyDivider from '../components/shittyDivider.vue'
-
+import ShittyDivider from '@/views/ShittyDivider.vue';
+import Footer from '@/views/Footer.vue'
 
 const points = [
     { flagship: "Altyn Dala Conservation Initiative", target2030: "5 million ha new protected areas and ecological corridors", restored: "", memberStates: "Kazakhstan", iucnEcosystemsBiomes: "Shrublands & shrubby woodlands biome; Savannas and grasslands biome; Deserts and semi-deserts biome; Palustrine wetlands biome (*which covers Peatlands); Rivers and streams biome", latitude: 48.0196, longitude: 66.9237 },
@@ -275,14 +275,19 @@ onMounted(async () => {
                     <div class="relative w-full pl-10 flex mb-10">
                         <div class="mb-2 sm:mb-5 mt-2 grid grid-flow-col gap-x-6 mx-auto md:mx-0 divide-x divide-gray-300">
                             <div class="-ml-10 mr-3">
-                                <img src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg"
-                                     alt="FERM logo"
-                                     class="h-12 sm:h-16 w-auto scale-125" />
+                                <a href="/">
+                                    <img src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg"
+                                         alt="FERM logo"
+                                         class="h-12 sm:h-16 w-auto scale-125" />
+                                </a>
                             </div>
                             <div>
-                                <img src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
-                                     alt="FERM logo"
-                                     class="h-12 sm:h-16 w-auto scale-150 ml-10" />
+                                <a href="https://www.decadeonrestoration.org"
+                                   target="_blank">
+                                    <img src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
+                                         alt="FERM logo"
+                                         class="h-12 sm:h-16 w-auto scale-150 ml-10" />
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -390,4 +395,5 @@ onMounted(async () => {
             </div>
         </div>
     </div>
+    <Footer />
 </template>

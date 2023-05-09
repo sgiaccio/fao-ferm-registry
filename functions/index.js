@@ -750,3 +750,46 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
     // add mail document to mail collection
     await admin.firestore().collection('mail').add(mailDoc);
 });
+
+
+exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastName, email, message }, _context) => {
+    console.log('firstName', firstName);
+    console.log('lastName', lastName);
+    console.log('email', email);
+    console.log('message', message);
+
+    if (!firstName || !lastName || !email || !message) {
+        throw new functions.https.HttpsError('invalid-argument', 'Missing arguments');
+    }
+
+    // find all superadmins
+    const superAdmins = await getSuperAdmins();
+    const superAdminEmails = superAdmins.map(a => a.email);
+
+    // create mail document
+    const mailDoc = {
+        to: superAdminEmails,
+        message: {
+            subject: `New support request from ${firstName} ${lastName}`,
+            html: `
+                <p>Hi,</p>
+                <p>${firstName} ${lastName} has sent a support request:</p>
+                <p>
+                    Name: ${firstName} ${lastName}<br>
+                    Email: <a href="mailto:${email}">${email}</a><br>
+                </p>
+
+                <p style="font-style: italic;white-space: break-spaces;">${message}</p>
+
+                <p>Best regards,</p>
+                <p>the FERM team</p>
+            `
+        }
+    };
+
+    // add mail document to mail collection
+    await admin.firestore().collection('mail').add(mailDoc);
+
+    return { message: 'Success! Contact request sent.' };
+});
+

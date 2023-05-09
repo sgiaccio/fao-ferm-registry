@@ -25,7 +25,7 @@ onBeforeMount(async () => {
 });
 
 function edit() {
-    router.push({ path: `/registry/good-practices/${route.params.id}/edit/objectives` });
+    router.push({ name: 'goodPracticesObjectivesEdit', params: { id: route.params.id } });
 }
 
 async function submit() {

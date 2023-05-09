@@ -135,6 +135,7 @@ function bubble(val: number[]) {
         </ul>
     </dl>
     <div v-else>
+
         <div
             class="border border-slate-400 rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
             <div class="ml-2 text-gray-600 dark:text-gray-400" v-if="!props.modelValue?.length">

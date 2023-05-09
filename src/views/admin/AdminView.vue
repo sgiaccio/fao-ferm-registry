@@ -2,7 +2,7 @@
 import { useAuthStore } from '@/stores/auth';
 import { useRoute } from 'vue-router'
 
-import Navbar from '@/components/Navbar.vue';
+import Navbar from '@/views/Navbar.vue';
 
 
 const route = useRoute();

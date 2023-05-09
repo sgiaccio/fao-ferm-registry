@@ -82,3 +82,12 @@ export async function submitNewInstitution(formData: any) {
     const docRef = doc(newGroupRequests);
     await setDoc(docRef, formData);
 }
+
+export async function handleSupportRequest(firstName: string, lastName: string, email: string, message: string) {
+    if (!firstName || !lastName || !email || !message) {
+        throw new Error('Missing required fields');
+    }
+
+    const f = httpsCallable(functions, 'handleSupportRequest');
+    return f({ firstName, lastName, email, message });
+}

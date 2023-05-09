@@ -3,7 +3,7 @@ import { watch } from 'vue';
 import { RouterView } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
-import Navbar from './components/Navbar.vue';
+import Navbar from '@/views/Navbar.vue';
 
 import { useAuthStore } from './stores/auth';
 import { useUserPrefsStore } from './stores/userPreferences';

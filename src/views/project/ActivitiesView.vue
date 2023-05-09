@@ -28,7 +28,7 @@ const store = useProjectStore();
                 <div v-for="area, i in store.projectAreas"
                      class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
                     <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2">
-                        Area {{ i + 1}}<span class="text-black dark:text-gray-100"
+                        Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
                               v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}</span>
                     </div>
                     <DateFormGroup :edit="edit"
@@ -42,9 +42,14 @@ const store = useProjectStore();
                               :treeData="activities" />
                 </div>
             </div>
-            <div v-else
-                 class="text-red-600 font-bold text-lg pb-4">Please enter at least one area in the <router-link class="text-blue-400 underline hover:text-blue-600"
-                             :to="{ path: 'aoi' }">Area tab</router-link></div>
+            <div v-else-if="edit"
+                 class="text-red-600 font-bold text-lg pb-4 mt-6">Please enter at least one area in the
+                <router-link class="text-blue-400 underline hover:text-blue-600"
+                             :to="{ path: 'aoi' }">Area tab</router-link>
+            </div>
+            <div v-else>
+                <div class="text-lg italic mt-6 text-gray-600 dark:text-gray-400">None selected</div>
+            </div>
         </template>
     </TabTemplate>
     <!-- <pre class="text-white">{{JSON.stringify(store.projectAreas, null, 2)}}</pre> -->

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-    import Navbar from '../components/Navbar.vue';
+    import Navbar from '@/views/Navbar.vue';
+    import Footer from '@/views/Footer.vue';
 </script>
 
 <template>
     <div class="dark:bg-slate-900">
         <Navbar />
     </div>
-    <RouterView />
+    <router-view />
+    <Footer />
 </template>

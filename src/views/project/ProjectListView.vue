@@ -151,7 +151,7 @@ async function filterByGroup(groupId: string | null) {
                                 <div class="py-1">
                                     <menu-item v-for="[id, name] in Object.entries(authStore.userGroups)"
                                                v-slot="{ active }">
-                                        <router-link :to="{ path: '/registry/initiatives/new/edit/info', query: { groupId: id } }"
+                                        <router-link :to="{ name: 'projectInfoEdit', params: { id: 'new' }, query: { groupId: id } }"
                                                      :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                                             {{ name }}
                                         </router-link>
@@ -180,7 +180,7 @@ async function filterByGroup(groupId: string | null) {
                                 <div class="px-4 py-4 sm:px-6 sm:grow">
                                     <span class="block hover:bg-gray-50_">
                                         <div class="flex items-center justify-between">
-                                            <router-link :to="{ path: `/registry/initiatives/${project.id}/info` }"
+                                            <router-link :to="{ name: 'projectInfo', params: { id: project.id } }"
                                                          :class="[project.data.project?.title ? 'text-indigo-600' : 'italic text-gray-400', 'truncate_ text-sm font-medium hover:text-indigo-500']">
                                                 {{ project.data.project?.title || 'No title' }}
                                             </router-link>
@@ -237,7 +237,7 @@ async function filterByGroup(groupId: string | null) {
                                                             </div>
                                                             <div class="py-1">
                                                                 <menu-item v-slot="{ active }">
-                                                                    <router-link :to="{ path: '/registry/good-practices/new/edit/objectives', query: { projectId: project.id } }"
+                                                                    <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
                                                                                  :class="[active ? 'bg-gray-100 text-blue-900' : 'text-blue-700', 'block px-4 py-2 text-sm font-medium']">New good practice</router-link>
                                                                 </menu-item>
                                                             </div>
@@ -246,7 +246,7 @@ async function filterByGroup(groupId: string | null) {
                                                 </Menu>
                                                 <div v-else
                                                      class="sm:mt-0 sm:ml-6 text-sm">
-                                                    <router-link :to="{ path: '/registry/good-practices/new/edit/objectives', query: { projectId: project.id } }"
+                                                    <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
                                                                  type="button"
                                                                  class="inline-flex items-center text-sm font-medium text-indigo-700">
                                                         New good practice
@@ -289,7 +289,7 @@ async function filterByGroup(groupId: string | null) {
                                             <menu-items class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <div class="py-1">
                                                     <menu-item v-slot="{ active }">
-                                                        <router-link :to="{ path: `/registry/initiatives/${project.id}/edit/info` }"
+                                                        <router-link :to="{ name: 'projectInfoEdit', params: { id: project.id } }"
                                                                      :class="[projectStore.canEdit() ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
                                                             Edit</router-link>
                                                     </menu-item>
@@ -299,9 +299,9 @@ async function filterByGroup(groupId: string | null) {
                                                             Delete</div>
                                                     </menu-item>
                                                     <menu-item v-slot="{ active }">
-                                                        <router-link :to="{ path: `/registry/good-practices/new/edit/objectives`, query: { projectId: project.id } }"
+                                                        <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
                                                                      :class="[canAddBestPractice(project) ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
-                                                            Add good practice
+                                                            New good practice
                                                         </router-link>
                                                     </menu-item>
                                                 </div>
