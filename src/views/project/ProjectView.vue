@@ -17,8 +17,8 @@ onBeforeRouteLeave((_to, _from) => {
 });
 
 const tabs = [
-    { name: 'General', path: 'info' },
-    { name: 'Area', path: 'aoi' },
+    { name: 'General', path: 'general' },
+    { name: 'Area', path: 'area' },
     { name: 'Ecosystems', path: 'ecosystems' },
     // { name: 'Characteristics', path: 'characteristics' },
     { name: 'Activities', path: 'activities' },

@@ -6,11 +6,11 @@ import { createRouter, createWebHistory } from "vue-router";
 // Initiatives tabs are used both for editing and viewing projects, so define them once here
 // Can't set the route name here because they are used twice.
 const projectTabs = [{
-    path: 'info',
+    path: 'general',
     name: 'projectInfo',
     component: () => import('../views/project/RegistrationView.vue')
 }, {
-    path: 'aoi',
+    path: 'area',
     name: 'projectAoi',
     component: () => import('../views/project/AoiView.vue')
 }, {
