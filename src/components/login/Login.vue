@@ -26,7 +26,7 @@ async function authenticateWithEmail() {
             loginSuccess.value = true;
         } catch (error) {
             // Account creation is disabled on the server.
-            // Firebase throws Firebase throws  Error (auth/admin-restricted-operation) if the email doesn't exist
+            // Firebase throws Firebase throws Error (auth/admin-restricted-operation) if the email doesn't exist
             // Since it's the only error we're expecting, we assume that the account doesn't exist.
             loginError.value = true;
         }
