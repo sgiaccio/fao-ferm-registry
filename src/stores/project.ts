@@ -1,4 +1,4 @@
-import { getDocs, getDoc, collection, writeBatch, setDoc, addDoc, doc, query, where, serverTimestamp, orderBy } from 'firebase/firestore'
+import { getDocs, getDoc, collection, writeBatch, doc, query, where, serverTimestamp, orderBy } from 'firebase/firestore/lite'
 import { defineStore } from 'pinia';
 
 import { db } from '../firebase';

@@ -5,7 +5,7 @@ import {
     deleteUser,
     type User,
 } from "firebase/auth";
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore/lite";
 
 import { db } from '../firebase';
 

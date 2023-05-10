@@ -13,7 +13,7 @@ import {
 import { useAuthStore } from '../stores/auth';
 // import { useProjectStore } from '../../stores/project';
 
-import { requestGroupAssignment, getUserAssignmentRequests, submitNewInstitution } from '../firebase/firestore';
+import { requestGroupAssignment, getUserAssignmentRequests, submitNewInstitution } from '@/firebase/firestore';
 
 import ConfirmModal from '@/views/ConfirmModal.vue'
 import AlertModal from '@/views/AlertModal.vue'

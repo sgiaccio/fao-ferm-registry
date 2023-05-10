@@ -1,7 +1,5 @@
-import { query, serverTimestamp, where } from "firebase/firestore";
+import { query, serverTimestamp, where, collection, doc, getDocs, setDoc } from "firebase/firestore/lite";
 import { db } from "./index";
-
-import { collection, doc, getDocs, setDoc } from '@firebase/firestore';
 
 // import { getAuth } from "firebase/auth";
 

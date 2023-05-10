@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, connectAuthEmulator, type Auth } from "firebase/auth";
-import { initializeFirestore, Firestore, connectFirestoreEmulator } from "firebase/firestore";
+import { initializeFirestore, Firestore, connectFirestoreEmulator } from "firebase/firestore/lite";
 import { getFunctions, connectFunctionsEmulator, httpsCallable, type Functions } from "firebase/functions";
 
 
@@ -19,10 +19,10 @@ let functions: Functions;
 // Initialize Firebase
 if (!getApps().length) {
     const app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
     db = initializeFirestore(app, {
         ignoreUndefinedProperties: true
     });
+    auth = getAuth(app);
 
     functions = getFunctions(app);
 

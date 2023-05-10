@@ -17,7 +17,7 @@ import { db, fetchAllUsers } from '../../firebase';
 import TabTemplate from '../TabTemplate.vue'
 
 import { useAuthStore } from '../../stores/auth';
-import { collection, doc, setDoc } from '@firebase/firestore';
+import { collection, doc, setDoc } from 'firebase/firestore/lite';
 
 
 const authStore = useAuthStore();

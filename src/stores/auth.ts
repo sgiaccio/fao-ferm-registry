@@ -9,7 +9,7 @@ import {
     signInWithEmailLink,
     type User,
 } from "firebase/auth";
-import { collection, query, getDocs, where, documentId } from "firebase/firestore";
+import { collection, query, getDocs, where, documentId } from "firebase/firestore/lite";
 
 
 import router from '@/router';

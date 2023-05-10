@@ -30,3 +30,5 @@ coverage
 emulator_data_2/
 firestore-coverage.html
 .firebase
+stats.json
+stats.html

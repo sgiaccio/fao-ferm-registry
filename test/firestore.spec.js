@@ -4,7 +4,7 @@ const http = require("http");
 const testing = require('@firebase/rules-unit-testing');
 const { initializeTestEnvironment, assertFails, assertSucceeds } = testing;
 
-const { doc, getDoc, setDoc, deleteDoc, serverTimestamp, setLogLevel } = require('firebase/firestore');
+const { doc, getDoc, setDoc, deleteDoc, setLogLevel } = require('firebase/firestore');
 
 
 /** @type testing.RulesTestEnvironment */
