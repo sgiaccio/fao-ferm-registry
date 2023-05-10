@@ -101,7 +101,7 @@ export const useAuthStore = defineStore({
             // const auth = getAuth();
 
             // actionCodeSettings.url = baseUrl + this.returnUrl;
-            actionCodeSettings.url = '/registy/initiatives'; // TODO
+            actionCodeSettings.url = baseUrl + '/registry/initiatives'; // TODO
             await sendSignInLinkToEmail(auth, email, actionCodeSettings)
             window.localStorage.setItem('emailForSignIn', email);
         },
