@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue';
 
-import { getUserAssignmentRequests } from '@/firebase/firestore';
+import { fetchAllGroups, getUserAssignmentRequests } from '@/firebase/firestore';
 
 import { useAuthStore } from '@/stores/auth';
-// import { useProjectStore } from '@/stores/project';
 
 
 const props = defineProps<{
     onRequest: (groupId: string) => void
 }>();
 
-// const projectStore = useProjectStore();
 const authStore = useAuthStore();
 
 const allGroups = reactive<{ [key: string]: string }>({});
@@ -35,7 +33,7 @@ async function refreshAssignments() {
 
 onMounted(async () => {
     refreshAssignments();
-    Object.assign(allGroups, await authStore.fetchAllGroups());
+    Object.assign(allGroups, await fetchAllGroups());
 });
 
 function getRequestStatus(groupId: string) {

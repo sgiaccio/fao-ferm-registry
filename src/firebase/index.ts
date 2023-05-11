@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, connectAuthEmulator, type Auth } from "firebase/auth";
 import { initializeFirestore, Firestore, connectFirestoreEmulator } from "firebase/firestore/lite";
-import { getFunctions, connectFunctionsEmulator, httpsCallable, type Functions } from "firebase/functions";
+import { getFunctions, connectFunctionsEmulator, type Functions } from "firebase/functions";
 
 
 const firebaseConfig = {
@@ -33,27 +33,13 @@ if (!getApps().length) {
     }
 }
 
-async function fetchAllUsers() {
-    const functions = getFunctions();
-    const listAllUsers = httpsCallable(functions, 'listAllUsers');
-    const result = await listAllUsers();
-    return result.data;
-}
-  
-async function fetchMyGroupsUsers() {
-    const functions = getFunctions();
-    const listMyGroupsUsers = httpsCallable(functions, 'listMyGroupsUsers');
-    const result = await listMyGroupsUsers();
-    return result.data;
-}
-
 // async function fetchAssignmentRequestsByGroup(groupId: string) {
 //     const assignmentRequestsCollection = collection(db, 'assignmentRequests');
 //     const assignmentRequests = await getDocs(query(assignmentRequestsCollection, where('group', '==', groupId)));
 //     return assignmentRequests.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 // }
 
-export { auth, db, functions, fetchAllUsers, fetchMyGroupsUsers }
+export { auth, db, functions }
 
 
 

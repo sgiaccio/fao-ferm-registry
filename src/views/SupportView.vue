@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue';
 
-import { handleSupportRequest } from '@/firebase/firestore';
+import { handleSupportRequest } from '@/firebase/functions';
 
 import Footer from '@/views/Footer.vue';
 import ShittyDivider from '@/views/ShittyDivider.vue';

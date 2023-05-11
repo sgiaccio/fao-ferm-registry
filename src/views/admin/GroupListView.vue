@@ -12,12 +12,14 @@ import {
     TransitionRoot,
 } from '@headlessui/vue'
 
-import { db, fetchAllUsers } from '../../firebase';
+import { db } from '@/firebase';
+import { fetchAllUsers } from '@/firebase/functions';
 
 import TabTemplate from '../TabTemplate.vue'
 
 import { useAuthStore } from '../../stores/auth';
 import { collection, doc, setDoc } from 'firebase/firestore/lite';
+import { fetchAllGroups } from '@/firebase/firestore';
 
 
 const authStore = useAuthStore();
@@ -41,7 +43,7 @@ async function edit(groupId: string) {
 }
 
 async function fetchGroups() {
-    allGroups.value = authStore.isAdmin ? await authStore.fetchAllGroups() : authStore.userGroups;
+    allGroups.value = authStore.isAdmin ? await fetchAllGroups() : authStore.userGroups;
 }
 
 // Adds a new group to the database
@@ -53,7 +55,6 @@ async function addGroup() {
     }
 
     // TODO check if group already exists
-
 
     // Add the group to the database
     const groupsCollection = collection(db, 'groups');

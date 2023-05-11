@@ -1,12 +1,6 @@
 import { query, serverTimestamp, where, collection, doc, getDocs, setDoc } from "firebase/firestore/lite";
 import { db } from "./index";
 
-// import { getAuth } from "firebase/auth";
-
-import { functions } from './index';
-import { httpsCallable } from "firebase/functions";
-
-
 
 export async function requestGroupAssignment(uid: string, groupId: string, userName: string, email: string, reasons: string) {
     if (!uid || !groupId) {
@@ -40,38 +34,6 @@ export async function getUserAssignmentRequests(uid: string) {
     return requests;
 }
 
-// async function fetchAllUsers() {
-//     const functions = getFunctions();
-//     const listAllUsers = httpsCallable(functions, 'listAllUsers');
-//     const result = await listAllUsers();
-//     return result.data;
-// }
-
-
-export async function getMyGroupsAssigmentRequests() {
-    const f = httpsCallable(functions, 'getMyGroupsAssigmentRequests');
-    const result = await f();
-
-    return result.data;
-}
-    
-export async function handleGroupAssignmentRequest(requestId: string, newStatus: 'accepted' | 'rejected') {
-    const f = httpsCallable(functions, 'handleGroupAssignmentRequest');
-    const result = await f({ requestId, status: newStatus });
-
-    return result.data;
-}
-
-// name: '',
-// type: '',
-// otherType: '',
-// unDecade: null,
-// isa: {
-//     partner: false,
-//     actor: false,
-//     flagship: false
-// }
-
 export async function submitNewInstitution(formData: any) {
     // check if the data is valid
     // TODO
@@ -81,11 +43,20 @@ export async function submitNewInstitution(formData: any) {
     await setDoc(docRef, formData);
 }
 
-export async function handleSupportRequest(firstName: string, lastName: string, email: string, message: string) {
-    if (!firstName || !lastName || !email || !message) {
-        throw new Error('Missing required fields');
-    }
 
-    const f = httpsCallable(functions, 'handleSupportRequest');
-    return f({ firstName, lastName, email, message });
+export async function fetchAllGroups(): Promise<{ [key: string]: string }> {
+    const groupsCollection = collection(db, 'groups');
+    const groups = await getDocs(query(groupsCollection));
+    // Create an object with group id as key and group name as value
+    return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
 }
+
+export async function fetchPublicGroups() {
+    // hide private groups - for now private groups are only used to hide them from the list of the groups proposed for the user to join
+    const groupsCollection = collection(db, 'groups');
+    const groups = await getDocs(query(groupsCollection, where('private', '==', false)));
+    // Create an object with group id as key and group name as value
+    return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+}
+
+

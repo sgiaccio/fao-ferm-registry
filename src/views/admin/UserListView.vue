@@ -15,17 +15,16 @@ import {
     SwitchLabel,
 } from '@headlessui/vue'
 
-import { fetchAllUsers, fetchMyGroupsUsers, functions } from '../../firebase';
+import { functions } from '@/firebase';
+import { fetchAllUsers, fetchMyGroupsUsers } from '@/firebase/functions';
 
 import TabTemplate from '../TabTemplate.vue'
 
 import { useAuthStore } from '@/stores/auth';
-
-import { useUserPrefsStore } from '@/stores/userPreferences';
+import { fetchAllGroups } from '@/firebase/firestore';
 
 
 const authStore = useAuthStore();
-const userPrefsStore = useUserPrefsStore();
 
 const users = ref();
 const allGroups = ref();
@@ -49,7 +48,7 @@ async function refreshUsers() {
 onMounted(async () => {
     try {
         await refreshUsers();
-        const groups = await authStore.fetchAllGroups();
+        const groups = await fetchAllGroups();
 
         if (authStore.isAdmin) {
             allGroups.value = groups;
@@ -124,6 +123,7 @@ function onAfterLeave() {
     userToEdit.value = null;
 }
 
+// TODO: move this function
 function save() {
     if (authStore.isAdmin) {
         const addMessage = httpsCallable(functions, 'setUserPrivileges');
