@@ -22,6 +22,7 @@ const props = defineProps<{
 
 onBeforeMount(async () => {
     await store.fetch(route.params.id as string);
+    canSubmit.value = await store.canSetStatus('submitted');
 });
 
 function edit() {

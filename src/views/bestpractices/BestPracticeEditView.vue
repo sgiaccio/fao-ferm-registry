@@ -18,7 +18,6 @@ const props = defineProps<{
 
 const store = useBestPracticesStore();
 
-const canSubmit = ref<boolean>()
 const route = useRoute();
 
 onBeforeMount(async () => {
@@ -30,7 +29,6 @@ onBeforeMount(async () => {
     } else {
         await store.fetch(route.params.id as string);
     }
-    canSubmit.value = await store.canSetStatus('submitted');
 });
 
 async function saveAndExit() {
