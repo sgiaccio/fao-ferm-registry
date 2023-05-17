@@ -3,7 +3,8 @@ import { ref, watch } from 'vue';
 import json from '../project/gaul.json';
 import FormGroup from './FormGroup.vue';
 import SelectInput from './base/SelectInput.vue';
-import TextInput from './base/TextInput.vue';
+// import TextInput from './base/TextInput.vue';
+// import NumberInput from './base/NumberInput.vue';
 
 
 type AdminArea = {
@@ -18,6 +19,7 @@ const props = withDefaults(defineProps<{
         admin0?: string,
         admin1?: string,
         admin2?: string,
+        area: number,
         activities: number[]
     },
     edit?: boolean
@@ -77,9 +79,9 @@ watch(admin1, (val, prev) => {
     }
 
     if (prev) {
-       admin2.value = undefined;
+        admin2.value = undefined;
     }
-    
+
     if (!admin0.value && !val) emit('update:modelValue', undefined);
     emit('update:modelValue', {
         // activities: props.modelValue.activities,
@@ -107,24 +109,61 @@ watch(admin2, val => {
 <template>
     <FormGroup label="Administrative area">
         <div class="flex flex-col gap-y-3">
-            <TextInput
-                :edit="edit"
-                v-model="modelValue.siteName" />
-            <SelectInput
-                :edit="edit"
-                v-model="admin0"
-                :options="admin0Menu"
-                placeholder="Please select Country" />
-            <SelectInput
-                :edit="edit"
-                v-model="admin1"
-                :options="admin1Menu"
-                placeholder="Please select Region" />
-            <SelectInput
-                :edit="edit"
-                v-model="admin2"
-                :options="admin2Menu"
-                placeholder="Please select Province" />
+            <div>
+                <legend class="block text-sm font-medium leading-6 text-gray-900">
+                    Site name
+                </legend>
+                <template v-if="edit">
+                    <div class="mt-2 flex rounded-md shadow-sm">
+                        <div class="relative flex flex-grow items-stretch focus-within:z-10">
+                            <input type="text"
+                                   v-model="modelValue.siteName"
+                                   name="siteName"
+                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        </div>
+                    </div>
+                </template>
+                <div v-else>{{ modelValue.siteName }}</div>
+            </div>
+            <!-- <FormGroup label="Site name">
+                <TextInput :edit="edit"
+                           v-model="modelValue.siteName" />
+            </FormGroup> -->
+
+            <div>
+                <legend class="block text-sm font-medium leading-6 text-gray-900">
+                    Area [ha]
+                </legend>
+                <template v-if="edit">
+                    <div class="mt-2 flex rounded-md shadow-sm">
+                        <div class="relative flex flex-grow items-stretch focus-within:z-10">
+                            <input type="number"
+                                   v-model="modelValue.area"
+                                   name="area"
+                                   class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        </div>
+                    </div>
+                </template>
+                <div v-else>{{ modelValue.area }}</div>
+            </div>
+            <!-- <FormGroup label="Area [ha]">
+                <NumberInput :edit="edit"
+                             v-model="modelValue.area" />
+            </FormGroup> -->
+
+            <div class="block text-sm font-medium leading-6 text-gray-900">Administrative area</div>
+            <SelectInput :edit="edit"
+                         v-model="admin0"
+                         :options="admin0Menu"
+                         placeholder="Please select Country" />
+            <SelectInput :edit="edit"
+                         v-model="admin1"
+                         :options="admin1Menu"
+                         placeholder="Please select Region" />
+            <SelectInput :edit="edit"
+                         v-model="admin2"
+                         :options="admin2Menu"
+                         placeholder="Please select Province" />
         </div>
     </FormGroup>
 </template>

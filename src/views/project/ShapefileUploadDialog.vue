@@ -109,12 +109,16 @@ async function uploadFile() {
                 return response.text().then(text => { throw new Error(text) })
             }
             return response.text();
-        }).then(uuids => {
-            const uuidsArr: string[] = JSON.parse(uuids)
+        }).then(uuidsAndAreas => {
+            const uuidsAndAreasParsed = JSON.parse(uuidsAndAreas);
+            const uuidsArr: string[] = uuidsAndAreasParsed.map(([uuid, _]: [string, any]) => uuid);
+            const areasArr: number[] = uuidsAndAreasParsed.map(([_, area]: [string, number]) => (area * 0.0001).toFixed(2));
+
             uploadStatus.value = 'uploaded';
             emit('done', uuidsArr.map((uuid, i) => ({
-                siteName: (rows.value!)[i][(areaNameField.value as string)],
+                siteName: getAreaName.value ? (rows.value!)[i][(areaNameField.value as string)] : undefined,
                 uuid: uuid,
+                area: areasArr[i],
                 activities: null
             })));
             selectedFile.value = null;
