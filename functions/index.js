@@ -230,6 +230,39 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
     // Set the user's custom claims
     const user = await admin.auth().getUserByEmail(email);
 
+
+    // get the previous privileges
+    const previousPrivileges = user.customClaims.privileges || {};
+    // find the differences between the previous privileges and the new privileges
+    const privilegesToAdd = Object.keys(privileges).filter(g => !Object.keys(previousPrivileges).includes(g));
+    const privilegesToRemove = Object.keys(previousPrivileges).filter(g => !Object.keys(privileges).includes(g));
+    const privilegesToUpdate = Object.keys(previousPrivileges).filter(g => Object.keys(privileges).includes(g) && previousPrivileges[g] !== privileges[g]);
+
+    console.log('privilegesToAdd', privilegesToAdd);
+    console.log('privilegesToRemove', privilegesToRemove);
+    console.log('privilegesToUpdate', privilegesToUpdate);
+
+    // send email to user with the changes in privileges
+    const mailDoc = {
+        to: [email],
+        message: {
+            subject: 'Changes in your FERM privileges',
+            html: `
+                <p>Hi,</p>
+                <p>Your privileges in the FERM Registry have been updated.</p>
+                <p>Privileges added: ${privilegesToAdd.join(', ')}</p>
+                <p>Privileges removed: ${privilegesToRemove.join(', ')}</p>
+                <p>Privileges updated: ${privilegesToUpdate.join(', ')}</p>
+                <p>Best regards,</p>
+                <p>the FERM team</p>
+            `
+        }
+    };
+
+    // add mail document to mail collection
+    await admin.firestore().collection('mail').add(mailDoc);
+
+
     // TODO pass uid to the function instead of email
     await admin.auth().setCustomUserClaims(user.uid, { privileges, admin: !!_admin });
 
@@ -323,18 +356,6 @@ async function getSuperAdmins() {
 // Create documents in the mail collection when a user requests for a new group to be created
 exports.sendNewGroupRequestEmail = functions.firestore.document('newGroupRequests/{requestId}').onCreate(async (snap, _context) => {
     const data = snap.data();
-
-    // name: '',
-    // type: '',
-    // otherType: '',
-    // unDecade: null,
-    // isa: {
-    //     partner: false,
-    //     actor: false,
-    //     flagship: false
-    // },
-    // status: 'pending'
-
 
     const { userId, name, type, otherType, isa: { partner, actor, flagship } } = data;
 
@@ -449,6 +470,7 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
 
 // Set default custom claims and create a user record in Firestore when a user is created
 exports.createUserRecord = functions.auth.user().onCreate(async ({ uid }) => {
+    console.log('Adding custom claims and creating user record for user', uid);
     // get user's custom claims
     const user = await admin.auth().getUser(uid);
     const currentCustomClaims = user.customClaims || {};
@@ -696,6 +718,8 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
 
     const { status, userId, groupId } = request;
 
+    console.log('Handling request', requestId, 'with userId', userId, 'and groupId', groupId, 'and old status', status, 'and new status', newStatus);
+
     // Check if the request is pending
     if (status !== 'pending') {
         throw new functions.https.HttpsError('invalid-argument', 'Request is not pending');
@@ -722,11 +746,24 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
     if (newStatus === 'accepted') {
         try {
             const user = await admin.auth().getUser(userId);
-            const privileges = { ...user.customClaims.privileges, [groupId]: 'editor' };
-            await admin.auth().setCustomUserClaims(userId, { privileges });
+
+            // Custom claims should already be there as they are set when the user signs up. Old users might not have them though.
+            // const newCustomClaims = user.customClaims ? { ...user.customClaims, privileges: user.customClaims.privileges || {} } : { privileges: {}, admin : false };
+            let customClaims = user.customClaims;
+            if (!customClaims) {
+                customClaims = { privileges: {}, admin: false };
+            }
+            if (!customClaims.privileges) {
+                customClaims.privileges = {};
+            }
+            customClaims.privileges[groupId] = 'editor';
+
+            console.log('New custom claims:', JSON.stringify);
+            await admin.auth().setCustomUserClaims(userId, newCustomClaims);
         } catch (error) {
             // revert the request status
             await admin.firestore().collection('assignementRequests').doc(requestId).update({ status });
+            console.log(error);
             throw new functions.https.HttpsError('internal', 'Could not add user to group');
         }
     }
@@ -753,11 +790,6 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
 
 
 exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastName, email, message }, _context) => {
-    console.log('firstName', firstName);
-    console.log('lastName', lastName);
-    console.log('email', email);
-    console.log('message', message);
-
     if (!firstName || !lastName || !email || !message) {
         throw new functions.https.HttpsError('invalid-argument', 'Missing arguments');
     }
@@ -793,3 +825,25 @@ exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastNa
     return { message: 'Success! Contact request sent.' };
 });
 
+
+
+
+
+
+
+// Update the good practices count in the registry document when a good practice is created or deleted
+exports.updateGoodPracticesCount = functions.firestore.document('bestPractices/{bestPracticeId}').onWrite(async (change, _context) => {
+    // get the projectId from the best practice document - project id never changes
+    console.log(change.before.data());
+    const { projectId } = change.before.data();
+
+    // Count the number of best practices for the project
+    const bestPractices = await admin.firestore().collection('bestPractices').where('projectId', '==', projectId).get();
+    const bestPracticesCount = bestPractices.size;
+
+    // Update the best practices count in the project document
+    const asf = admin.firestore().collection('registry').doc(projectId);
+    console.log(asf);
+    console.log('Updating best practices count to', bestPracticesCount);
+    await admin.firestore().collection('registry').doc(projectId).update({ bestPracticesCount });
+});

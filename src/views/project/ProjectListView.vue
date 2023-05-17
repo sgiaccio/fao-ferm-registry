@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, reactive, onUpdated } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 import { fbTimestampToString } from '@/lib/util';
 
@@ -12,7 +12,7 @@ import {
     PencilSquareIcon,
     PaperAirplaneIcon,
     MegaphoneIcon,
-    PlusIcon
+    // PlusIcon
 } from '@heroicons/vue/20/solid';
 
 import { useAuthStore } from '../../stores/auth';
@@ -20,26 +20,24 @@ import { useProjectStore } from '../../stores/project';
 import { useBestPracticesStore } from '../../stores/bestpractices';
 
 import InstitutionsAssignment from '../InstitutionsAssignment.vue';
+import { fetchAllGroups } from '@/firebase/firestore';
 
 
 const projectStore = useProjectStore();
 const authStore = useAuthStore();
 const bestPracticesStore = useBestPracticesStore();
 
-const allGroups = reactive<{ [key: string]: string }>({});
-const userGroups = ref(); // TODO make it reactive
-
+// const allGroups = ref<{ [key: string]: string }>({});
+const userGroups = ref();
 
 onMounted(async () => {
-    await projectStore.fetchGroupOwnedProjects(null);
-    userGroups.value = authStore.isAdmin ? await authStore.fetchAllGroups() : authStore.userGroups;
-    Object.assign(allGroups, await authStore.fetchAllGroups());
+    projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true);
+    userGroups.value = authStore.isAdmin ? await fetchAllGroups() : authStore.userGroups;
 });
 
 const bestPractices = ref([]);
 async function showBestPractices(projectId: string) {
     bestPractices.value = await bestPracticesStore.fetchProjectBestPractices(projectId);
-    // console.log(bestPractices.value)
 }
 
 function getAccessLevel(group: string): string {
@@ -58,10 +56,13 @@ async function deleteProject(projectId: string) {
         return projectStore.deleteProject(projectId)
 }
 
-// const filterGroup = ref<string | null>(null);
-async function filterByGroup(groupId: string | null) {
-    await projectStore.fetchGroupOwnedProjects(groupId);
-}
+const filterGroup = ref<string | null>(null);
+
+watch(filterGroup, (newValue, oldValue) => {
+    if (newValue !== oldValue) {
+        filterByGroup(true, 'next');
+    }
+});
 </script>
 
 <template>
@@ -106,14 +107,14 @@ async function filterByGroup(groupId: string | null) {
                                 <div class="py-1">
                                     <menu-item v-slot="{ active }">
                                         <span :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-12 py-2 text-sm', 'cursor-default']"
-                                              @click="() => filterByGroup(null)"
+                                              @click="filterGroup = null"
                                               href="#">
                                             All
                                         </span>
                                     </menu-item>
                                     <menu-item v-for="[id, name] in Object.entries(userGroups).sort((a, b) => a[1].localeCompare(b[1]))"
                                                v-slot="{ active }">
-                                        <div @click="() => filterByGroup(id)"
+                                        <div @click="filterGroup = id"
                                              :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm', 'cursor-default flex flex-row']">
                                             <div class="w-5 mr-3">
                                                 <PencilSquareIcon v-if="['admin', 'editor'].includes(getAccessLevel(id))"
@@ -169,6 +170,11 @@ async function filterByGroup(groupId: string | null) {
                         </transition>
                     </Menu>
                 </div>
+                <div class="text-lg text-center mt-2 mb-2 text-gray-900">0 - {{ projectStore.projects.length}} of {{ projectStore.nProjectsFound }} initiatives</div>
+                <!-- <div class="grid grid-flow-col">
+                    <button @click="() => filterByGroup(false, 'previous')">Previous</button>
+                    <button @click="() => filterByGroup(false, 'next')">Next</button>
+                </div> -->
 
                 <div class="mt-8 overflow-hidden_ bg-white shadow sm:rounded-md">
                     <!-- <pre>{{JSON.stringify(projectStore.projects, null, 2)}}</pre> -->
@@ -314,6 +320,16 @@ async function filterByGroup(groupId: string | null) {
                     </ul>
                 </div>
             </template>
+
+            <div class="text-center mt-8">
+                <div class="text-lg text-center mb-4 text-gray-900">0 - {{ projectStore.projects.length}} of {{ projectStore.nProjectsFound }} initiatives</div>
+                <button v-if="!projectStore.isLastPage && !projectStore.loadingNext"
+                        @click="projectStore.fetchNextProjects(filterGroup)"
+                        class="rounded-md bg-ferm-blue-dark-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ferm-blue-dark-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ferm-blue-dark-500">Load more</button>
+                <template v-if="projectStore.loadingNext"
+                     class="text-gray-500 text-lg">Loading...</template>
+            </div>
+
             <!-- <div v-else
                  class="text-center pt-12">
                 <svg class="mx-auto h-12 w-12 text-gray-400"

@@ -13,7 +13,7 @@ const store = useBestPracticesStore();
 const canSubmit = ref<boolean>()
 const route = useRoute();
 
-const props = defineProps<{
+defineProps<{
     previous: () => void,
     next: () => void,
     first: boolean,
