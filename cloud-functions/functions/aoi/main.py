@@ -252,7 +252,20 @@ def load_shapefile_multiple(request):
         shp_file_path = file_paths[0]
         uuids = _insert_into_postgis(project_id, shp_file_path, dst_path, orig_filename)
 
-        return (json.dumps(uuids), 200, { 'Access-Control-Allow-Origin': '*' })
+        # Get the areas of the inserted polygons
+        cursor = conn.cursor()
+        cursor.execute("SELECT area_uuid, ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s", [tuple(uuids), str(project_id)])   
+        areas = cursor.fetchall()
+        cursor.close()
+
+        print('Areas inserted: %s' % len(areas))
+
+        # return the uuids
+        # return (json.dumps(uuids), 200, { 'Access-Control-Allow-Origin': '*' })
+        
+        # return the areas
+        return (json.dumps(areas), 200, { 'Access-Control-Allow-Origin': '*' })
+
 
     except AssertionError as error:
         print(traceback.format_exc())
@@ -268,6 +281,27 @@ def load_shapefile_multiple(request):
         return ('Internal server error: %s' % str(error), 400, { 'Access-Control-Allow-Origin': '*' } )
     finally:
         tmp_dir.cleanup()
+
+@authenticated
+def get_polygon_area(request):
+    """ Returns the area of a polygon
+    Args:
+        request (flask.Request): The request object.
+    Returns:
+        The area of the polygon
+    """
+    area_uuid = request.args['area_uuid']
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) FROM project_areas WHERE area_uuid = %s", [str(area_uuid)])
+        area = cursor.fetchone()[0]
+        return (str(area), 200, { 'Access-Control-Allow-Origin': '*' })
+    except Exception as error:
+        print(traceback.format_exc())
+        return (str(error), 400, { 'Access-Control-Allow-Origin': '*' })
+    finally:
+        cursor.close()
+
 
 # def get_file_path(filename):
 #     # Note: tempfile.gettempdir() points to an in-memory file system
@@ -336,7 +370,6 @@ def get_area_json(request):
 
         cursor.execute("SELECT ST_AsGeoJSON(geom) FROM project_areas WHERE area_uuid = %s AND project_id = %s", [str(area_uuid), str(project_id)])
         area = cursor.fetchone()[0]
-        cursor.close()
         return (area, 200, { 'Access-Control-Allow-Origin': '*' })
     except Exception as error:
         print(traceback.format_exc())

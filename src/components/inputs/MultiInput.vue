@@ -87,7 +87,7 @@ const errorMessages = computed(() => {
             :is="d.addDialog"
             :open="openedDialog === k"
             @cancel="openedDialog = null"
-            @done="(newData: any)=> addFromDialog(k, newData)" />
+            @done="(newData: any) => addFromDialog(k, newData)" />
         <div v-for="v, i in modelValue" class="p-3">
             <div class="text-gray-400 dark:text-gray-100 text-lg font-bold" v-if="numbering">{{numbering(i + 1)}}</div>
             <component

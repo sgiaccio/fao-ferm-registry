@@ -15,17 +15,34 @@ import 'ol/ol.css'
 import { useAuthStore } from '../../../stores/auth'
 import { useProjectStore } from '../../../stores/project'
 
+import FormGroup from '../FormGroup.vue'
 import TextInput from './TextInput.vue'
 
+import { CalculatorIcon } from '@heroicons/vue/20/solid'
 
-const props = defineProps<{
+
+const props = withDefaults(defineProps<{
     modelValue: {
         siteName: string,
         uuid: string,
+        area: number,
         activities: number[],
-        ecosystems: string[]
+        ecosystems: string[],
     }
-}>()
+    edit?: boolean
+}>(), {
+    edit: true
+});
+
+// const props = defineProps<{
+//     modelValue: {
+//         siteName: string,
+//         uuid: string,
+//         area: number,
+//         activities: number[],
+//         ecosystems: string[],
+//     }
+// }>()
 
 const uploadStatus = ref('idle');
 
@@ -64,21 +81,20 @@ async function postGeoJson() {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             },
             body: `project_id=${projectStore.id}&geojson=${encodeURIComponent(geoJson)}`
-        }
-    ).then(response => {
-        if (!response.ok) {
-            return response.text().then(text => { throw new Error(text) })
-        }
-        return response.text();
-    }).then(uuids => {
-        const uuidsArr: string[] = JSON.parse(uuids)
-        uploadStatus.value = 'uploaded';
-        emit('update:modelValue', { ...props.modelValue, uuid: uuidsArr[0] });
-        alert(`Area uploaded with UUID ${uuidsArr[0]}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
-    }).catch(error => {
-        alert('Error uploading the JSON file');
-        uploadStatus.value = 'idle'
-    });
+        }).then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text) })
+            }
+            return response.text();
+        }).then(uuids => {
+            const uuidsArr: string[] = JSON.parse(uuids)
+            uploadStatus.value = 'uploaded';
+            emit('update:modelValue', { ...props.modelValue, uuid: uuidsArr[0] });
+            alert(`Area uploaded with UUID ${uuidsArr[0]}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
+        }).catch(_error => {
+            alert('Error uploading the JSON file');
+            uploadStatus.value = 'idle'
+        });
 }
 
 async function fetchGeoJson() {
@@ -108,7 +124,7 @@ onMounted(async () => {
         }),
     });
 
-    if (!areaUploaded.value && edit) {
+    if (!areaUploaded.value && props.edit) {
         m.addInteraction(draw);
         m.addInteraction(modify);
         m.addInteraction(snap);
@@ -123,7 +139,7 @@ onMounted(async () => {
 });
 
 watch(areaUploaded, (uploaded) => {
-    if (uploaded && edit) {
+    if (uploaded && props.edit) {
         m.removeInteraction(draw);
         m.removeInteraction(modify);
         m.removeInteraction(snap);
@@ -134,13 +150,57 @@ watch(areaUploaded, (uploaded) => {
     }
 });
 
-const edit = true;
+function fetchPolygonArea() {
+    // Calls the get_polygon_area cloud function with area_uuid as argument
+    // and returns the area in hectares
+    fetch(
+        `https://europe-west3-fao-ferm.cloudfunctions.net/get_polygon_area?area_uuid=${props.modelValue.uuid}&project_id=${projectStore.id}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${authStore.user.accessToken}`,
+        },
+    }).then(response => response.json()).then(area => {
+        console.log(area);
+        console.log({ ...props.modelValue, area });
+        emit('update:modelValue', { ...props.modelValue, area: (area * 0.0001).toFixed(2) });
+    });
+}
+
+// const edit = true;
 </script>
 
 <template>
-    <TextInput v-if="edit"
-               placeholder="Site name"
-               v-model="modelValue.siteName" />
+    <FormGroup label="Site name">
+        <TextInput :edit="edit"
+                   v-model="modelValue.siteName" />
+    </FormGroup>
+    <div>
+        <legend class="block text-sm font-medium leading-6 text-gray-900">
+            Area [ha]
+        </legend>
+        <template v-if="edit">
+            <div class="mt-2 flex rounded-md shadow-sm">
+                <div class="relative flex flex-grow items-stretch focus-within:z-10">
+                    <input type="number"
+                           v-model="modelValue.area"
+                           name="area"
+                           class="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                </div>
+                <button type="button"
+                        @click="fetchPolygonArea()"
+                        class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    <CalculatorIcon class="-ml-0.5 h-5 w-5 text-gray-400"
+                                    aria-hidden="true" />
+                    Calculate area
+                </button>
+            </div>
+        </template>
+        <div v-else>{{ modelValue.area }}</div>
+    </div>
+    <!-- <FormGroup label="Area [ha]">
+        <NumberInput :edit="edit"
+                     v-model="modelValue.area" />
+    </FormGroup> -->
     <div class="mt-4"
          ref="mapRoot"
          style="width: 600px; height: 400px" />
