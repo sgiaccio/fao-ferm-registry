@@ -86,6 +86,7 @@ export const useProjectStore = defineStore({
 
             if (reset) {
                 this.lastVisible = null;
+                this.isLastPage = false;
                 this.projects = [];
             }
 

@@ -4,8 +4,8 @@ import { CheckIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@hero
 
 withDefaults(defineProps<{
     open: boolean
-    type: 'success' | 'error' | 'warning' | 'info'
-    title: string
+    type?: 'success' | 'error' | 'warning' | 'info'
+    title?: string
     okButtonText?: string
     okButtonEnabled?: boolean,
     cancelButtonText?: string
@@ -33,6 +33,7 @@ withDefaults(defineProps<{
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
             </TransitionChild>
 
+            <!-- backgroound with gradient -->
             <div class="fixed inset-0 z-10 overflow-y-auto">
                 <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <TransitionChild as="template"
@@ -44,29 +45,33 @@ withDefaults(defineProps<{
                                      leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                         <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                             <div class="sm:flex sm:items-start">
-                                <div v-if="type === 'success'"
-                                     class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-green-100">
-                                    <CheckIcon class="h-6 w-6 text-green-600"
-                                               aria-hidden="true" />
-                                </div>
-                                <div v-else-if="type === 'error'"
-                                     class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-red-100">
-                                    <ExclamationTriangleIcon class="h-6 w-6 text-red-600"
-                                                             aria-hidden="true" />
-                                </div>
-                                <div v-else-if="type === 'warning'"
-                                     class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-yellow-100">
-                                    <ExclamationTriangleIcon class="h-6 w-6 text-yellow-600"
-                                                             aria-hidden="true" />
-                                </div>
-                                <div v-else-if="type === 'info'"
-                                     class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-yellow-100">
-                                    <InformationCircleIcon class="h-6 w-6 text-yellow-600"
-                                                           aria-hidden="true" />
-                                </div>
-                                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                    <DialogTitle as="h3"
-                                                 class="text-base font-semibold leading-6 text-gray-900">{{title}}</DialogTitle>
+                                <template v-if="type">
+                                    <div v-if="type === 'success'"
+                                         class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-green-100">
+                                        <CheckIcon class="h-6 w-6 text-green-600"
+                                                   aria-hidden="true" />
+                                    </div>
+                                    <div v-else-if="type === 'error'"
+                                         class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-red-100">
+                                        <ExclamationTriangleIcon class="h-6 w-6 text-red-600"
+                                                                 aria-hidden="true" />
+                                    </div>
+                                    <div v-else-if="type === 'warning'"
+                                         class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-yellow-100">
+                                        <ExclamationTriangleIcon class="h-6 w-6 text-yellow-600"
+                                                                 aria-hidden="true" />
+                                    </div>
+                                    <div v-else-if="type === 'info'"
+                                         class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 bg-yellow-100">
+                                        <InformationCircleIcon class="h-6 w-6 text-yellow-600"
+                                                               aria-hidden="true" />
+                                    </div>
+                                </template>
+
+                                <div class="mt-12 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                    <DialogTitle v-if="title"
+                                                 as="h3"
+                                                 class="sm:mt-6 font-akrobat text-3xl font-bold leading-6 text-ferm-blue-light-800">{{ title }}</DialogTitle>
                                     <div class="mt-2">
                                         <slot />
                                         <!-- <p class="text-sm text-gray-500">{{message}}</p> -->
@@ -76,12 +81,12 @@ withDefaults(defineProps<{
                             <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                                 <button type="button"
                                         :disabled="!okButtonEnabled"
-                                        :class="[okButtonEnabled ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400', 'inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto']"
-                                        @click="onConfirm()">{{okButtonText}}</button>
+                                        :class="[okButtonEnabled ? 'bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600' : 'bg-gray-400', 'inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto']"
+                                        @click="onConfirm()">{{ okButtonText }}</button>
                                 <button type="button"
                                         class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                                         @click="onCancel()"
-                                        ref="cancelButtonRef">{{cancelButtonText}}</button>
+                                        ref="cancelButtonRef">{{ cancelButtonText }}</button>
                             </div>
                         </DialogPanel>
                     </TransitionChild>

@@ -22,12 +22,13 @@ import { useBestPracticesStore } from '../../stores/bestpractices';
 import InstitutionsAssignment from '../InstitutionsAssignment.vue';
 import { fetchAllGroups } from '@/firebase/firestore';
 
+import ConfirmModal from '@/views/ConfirmModal.vue';
+import NewProjectDialog from '@/views/project/NewProjectDialog.vue';
 
 const projectStore = useProjectStore();
 const authStore = useAuthStore();
 const bestPracticesStore = useBestPracticesStore();
 
-// const allGroups = ref<{ [key: string]: string }>({});
 const userGroups = ref();
 
 onMounted(async () => {
@@ -60,12 +61,22 @@ const filterGroup = ref<string | null>(null);
 
 watch(filterGroup, (newValue, oldValue) => {
     if (newValue !== oldValue) {
-        filterByGroup(true, 'next');
+        projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true);
     }
 });
+
+const showNewInitiativeDialog = ref(true);
+
 </script>
 
 <template>
+    <ConfirmModal :open="showNewInitiativeDialog"
+                  title="Create a new initiative"
+                  @confirm="() => { }"
+                  @cancel="() => { showNewInitiativeDialog = false }"
+                  ok-button-text="Create">
+        <NewProjectDialog />
+    </ConfirmModal>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
             <h1 class="mt-12 font-akrobat text-4xl text-gray-800 dark:text-white mb-8 font-extrabold uppercase">Initiatives</h1>
@@ -170,14 +181,9 @@ watch(filterGroup, (newValue, oldValue) => {
                         </transition>
                     </Menu>
                 </div>
-                <div class="text-lg text-center mt-2 mb-2 text-gray-900">0 - {{ projectStore.projects.length}} of {{ projectStore.nProjectsFound }} initiatives</div>
-                <!-- <div class="grid grid-flow-col">
-                    <button @click="() => filterByGroup(false, 'previous')">Previous</button>
-                    <button @click="() => filterByGroup(false, 'next')">Next</button>
-                </div> -->
+                <div class="text-lg text-center mt-2 mb-2 text-gray-900">{{ projectStore.projects.length }} of {{ projectStore.nProjectsFound }} initiatives</div>
 
                 <div class="mt-8 overflow-hidden_ bg-white shadow sm:rounded-md">
-                    <!-- <pre>{{JSON.stringify(projectStore.projects, null, 2)}}</pre> -->
                     <ul role="list"
                         class="divide-y divide-gray-200">
                         <li v-for="project in projectStore.projects"
@@ -322,12 +328,13 @@ watch(filterGroup, (newValue, oldValue) => {
             </template>
 
             <div class="text-center mt-8">
-                <div class="text-lg text-center mb-4 text-gray-900">0 - {{ projectStore.projects.length}} of {{ projectStore.nProjectsFound }} initiatives</div>
+                <div v-if="projectStore.projects.length > 10"
+                     class="text-lg text-center mb-4 text-gray-900">{{ projectStore.projects.length }} of {{ projectStore.nProjectsFound }} initiatives</div>
                 <button v-if="!projectStore.isLastPage && !projectStore.loadingNext"
                         @click="projectStore.fetchNextProjects(filterGroup)"
                         class="rounded-md bg-ferm-blue-dark-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ferm-blue-dark-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ferm-blue-dark-500">Load more</button>
                 <template v-if="projectStore.loadingNext"
-                     class="text-gray-500 text-lg">Loading...</template>
+                          class="text-gray-500 text-lg">Loading...</template>
             </div>
 
             <!-- <div v-else

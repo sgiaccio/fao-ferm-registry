@@ -97,7 +97,6 @@ exports.createUser = functions.https.onCall(async ({ email, displayName, privile
         throw new functions.https.HttpsError('permission-denied', 'Only admins can create new users');
     }
 
-
     // Validate the input
     if (typeof admin_ === 'undefined') {
         throw new functions.https.HttpsError('invalid-argument', 'admin is undefined');

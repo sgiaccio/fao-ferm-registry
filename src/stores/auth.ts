@@ -219,6 +219,22 @@ export const useAuthStore = defineStore({
             });
         },
 
+        async fetchAllGroups() {
+            const groupsCollection = collection(db, 'groups');
+            const groups = await getDocs(query(groupsCollection));
+            // Create an object with group id as key and group name as value
+            return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+        },
+
+        async fetchPublicGroups() {
+            // hide private groups - for now private groups are only used to hide them from the list of the groups proposed for the user to join
+            const groupsCollection = collection(db, 'groups');
+            const groups = await getDocs(query(groupsCollection, where('private', '==', false)));
+            // Create an object with group id as key and group name as value
+            return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+        },
+
+
         async signInWithGoogle() {
             await signInWithPopup(auth, provider);
 
