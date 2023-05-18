@@ -830,20 +830,18 @@ exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastNa
 
 
 
+functions.firestore.document('newGroupRequests/{requestId}').onCreate
 
-// Update the good practices count in the registry document when a good practice is created or deleted
-exports.updateGoodPracticesCount = functions.firestore.document('bestPractices/{bestPracticeId}').onWrite(async (change, _context) => {
-    // get the projectId from the best practice document - project id never changes
-    console.log(change.before.data());
-    const { projectId } = change.before.data();
+// Cloud functions that updates the number of good practices in the registry document when a good practice is created or deleted
+exports.updateBestPracticesCount = functions.firestore.document('bestPractices/{goodPracticeId}').onWrite(async (change, _context) => {
+    // get the project id from the good practice document
+    const { projectId } = change.after.data();
 
-    // Count the number of best practices for the project
-    const bestPractices = await admin.firestore().collection('bestPractices').where('projectId', '==', projectId).get();
-    const bestPracticesCount = bestPractices.size;
+    // count the number of good practices for the project
+    const bestPractices = await admin.firestore().collection('bestPractices').where('projectId', '==', projectId).count().get();
+    const bestPracticesCount = bestPractices.data().count;
+    console.log('Updating best practices count for project', projectId, 'to', bestPracticesCount);
 
-    // Update the best practices count in the project document
-    const asf = admin.firestore().collection('registry').doc(projectId);
-    console.log(asf);
-    console.log('Updating best practices count to', bestPracticesCount);
+    // update the good practices count in the registry document
     await admin.firestore().collection('registry').doc(projectId).update({ bestPracticesCount });
 });

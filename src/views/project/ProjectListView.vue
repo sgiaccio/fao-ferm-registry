@@ -199,14 +199,14 @@ watch(filterGroup, (newValue, oldValue) => {
                                                     Draft
                                                 </p>
                                                 <!-- Best practices menu -->
-                                                <Menu v-if="project.nBestPractices"
+                                                <Menu v-if="project.data.bestPracticesCount"
                                                       as="div"
                                                       class="relative inline-block text-left">
                                                     <div class="sm:mt-0 sm:ml-6 text-sm">
                                                         <MenuButton @click="showBestPractices(project.id)"
                                                                     class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none">
-                                                            <span class="text-gray-600">{{ project.nBestPractices }} good
-                                                                practice{{ project.nBestPractices === 1 ? '' : 's' }}</span>
+                                                            <span class="text-gray-600">{{ project.data.bestPracticesCount }} good
+                                                                practice{{ project.data.bestPracticesCount === 1 ? '' : 's' }}</span>
                                                             <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
                                                                              aria-hidden="true" />
                                                         </MenuButton>
