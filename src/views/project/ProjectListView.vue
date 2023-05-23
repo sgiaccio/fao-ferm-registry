@@ -12,18 +12,26 @@ import {
     PencilSquareIcon,
     PaperAirplaneIcon,
     MegaphoneIcon,
+    TrashIcon,
+    PrinterIcon,
+    HandThumbUpIcon,
+    DocumentMagnifyingGlassIcon,
+    EyeIcon
     // PlusIcon
 } from '@heroicons/vue/20/solid';
 
-import { useAuthStore } from '../../stores/auth';
-import { useProjectStore } from '../../stores/project';
-import { useBestPracticesStore } from '../../stores/bestpractices';
+import { useAuthStore } from '@/stores/auth';
+import { useProjectStore } from '@/stores/project';
+import { useBestPracticesStore } from '@/stores/bestpractices';
 
 import InstitutionsAssignment from '../InstitutionsAssignment.vue';
 import { fetchAllGroups } from '@/firebase/firestore';
 
-import ConfirmModal from '@/views/ConfirmModal.vue';
 import NewProjectDialog from '@/views/project/NewProjectDialog.vue';
+import router from '@/router';
+
+import ConfirmModal from '@/views/ConfirmModal.vue';
+
 
 const projectStore = useProjectStore();
 const authStore = useAuthStore();
@@ -32,7 +40,9 @@ const bestPracticesStore = useBestPracticesStore();
 const userGroups = ref();
 
 onMounted(async () => {
+    // if (authStore.isAdmin || Object.keys(authStore.userGroups).length) {
     projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true);
+    // }
     userGroups.value = authStore.isAdmin ? await fetchAllGroups() : authStore.userGroups;
 });
 
@@ -47,13 +57,16 @@ function getAccessLevel(group: string): string {
 }
 
 function canAddBestPractice(project) {
+    // Superadmins can add best practices to any project
     if (authStore.isAdmin) return true;
+
+    // If the user is not an admin, check if they are an editor of the project's group
     const level = authStore.privileges[project.data.group];
     return ['admin', 'editor'].includes(level);
 }
 
 async function deleteProject(projectId: string) {
-    if (confirm('Are you sure you want to delete this initiative? You will releted the related areas and best practices'))
+    if (confirm('Are you sure you want to delete this initiative? You will releted the related areas and best practices.'))
         return projectStore.deleteProject(projectId)
 }
 
@@ -61,22 +74,97 @@ const filterGroup = ref<string | null>(null);
 
 watch(filterGroup, (newValue, oldValue) => {
     if (newValue !== oldValue) {
-        projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true);
+        if (authStore.isAdmin || Object.keys(authStore.userGroups).length) {
+            projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true);
+        }
     }
 });
 
-const showNewInitiativeDialog = ref(true);
+const showNewInitiativeDialog = ref(false);
 
+async function createProject({ title, reportingLine, group }) {
+    showNewInitiativeDialog.value = false;
+
+    if (!title || !group || !reportingLine) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    if (!termsAndConditionAccepted.value) {
+        alert('Please accept the terms and conditions');
+        return;
+    }
+
+    try {
+        await projectStore.createProject(group, title, reportingLine, termsAndConditionAccepted.value);
+        router.push({ name: 'projectInfoEdit', params: { id: projectStore.id } });
+    } catch (e) {
+        alert('Error creating project');
+        console.error(e);
+    }
+}
+
+const showTermsAndConditions = ref(false);
+// I'm not sure if this make sense, I could just send the flag to the backend set to true without storing it.
+const termsAndConditionAccepted = ref(false);
+
+function acceptTermsAndConditions() {
+    termsAndConditionAccepted.value = true;
+    showTermsAndConditions.value = false;
+}
+
+function rejectTermsAndConditions() {
+    termsAndConditionAccepted.value = false;
+    showTermsAndConditions.value = false;
+}
+
+// Using a separate function to check the terms and conditions and show the dialog.
+// This is needed because setting the value of showNewInitiativeDialog.value in the acceptTermsAndConditions function causes problems with scrolling. I don't know why.
+async function checkTermsAndConditionsAndShowDialog() {
+    showNewInitiativeDialog.value = termsAndConditionAccepted.value;
+}
+
+async function print(projectId: string) {
+    const routeData = router.resolve({ name: 'printInitiative', params: { id: projectId } });
+    window.open(routeData.href, '_blank');
+}
 </script>
 
 <template>
-    <ConfirmModal :open="showNewInitiativeDialog"
-                  title="Create a new initiative"
-                  @confirm="() => { }"
-                  @cancel="() => { showNewInitiativeDialog = false }"
-                  ok-button-text="Create">
-        <NewProjectDialog />
+    <ConfirmModal :open="showTermsAndConditions"
+                  title="Terms and Conditions for Adding an Initiative to the FERM Registry"
+                  ok-button-text="Accept"
+                  cancel-button-text="Reject"
+                  :ok-button-enabled=true
+                  @confirm="acceptTermsAndConditions"
+                  @closed="checkTermsAndConditionsAndShowDialog"
+                  @cancel="rejectTermsAndConditions">
+        <!-- <h1 class="font-akrobat text-xl font-bold ">Terms and Conditions for Adding a Project/Initiative to the FERM Registry</h1> -->
+        <div class="mt-3 max-w-xl text-sm text-gray-500 text-left">
+            <p>By adding your initiative to the Framework for Ecosystem Restoration Monitoring (FERM) Registry, you agree to abide by the following terms and conditions:</p>
+            <ul class="mt-3">
+                <li><span class="font-bold">Ownership and Responsibility:</span>
+                    You affirm that you are authorized to represent the institution associated with the initiative, and that you hold all necessary rights to share information pertaining to the initiative.</li>
+                <li class="mt-2"><span class="font-bold">Accuracy of Information:</span>
+                    You affirm that all information provided to the FERM Registry is accurate, complete, and up-to-date. You agree to promptly update any information should changes occur.</li>
+                <li class="mt-2"><span class="font-bold">Data Sharing:</span>
+                    You understand that the initiative data will be publicly available and shared with other FERM users. The data may be used for monitoring restoration activities, research purposes, informing policy decisions, and furthering the cause of ecosystem restoration.</li>
+                <li class="mt-2"><span class="font-bold">Privacy:</span>
+                    All personal data provided will be processed in accordance with our Privacy Policy. We will take appropriate measures to ensure your personal data remains secure.</li>
+                <li class="mt-2"><span class="font-bold">Compliance with Laws:</span>
+                    You agree to comply with all applicable local, national, and international laws and regulations pertaining to environmental conservation and data sharing.</li>
+            </ul>
+            <p class="mt-3">By clicking "Accept", you agree to these terms and conditions.</p>
+
+            <p class="mt-3">For any further questions regarding these terms, please contact us at <a class="font-bold underline"
+                   href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>.</p>
+        </div>
     </ConfirmModal>
+
+    <NewProjectDialog :show="showNewInitiativeDialog"
+                      @cancel="() => { showNewInitiativeDialog = false }"
+                      @confirm="createProject" />
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
             <h1 class="mt-12 font-akrobat text-4xl text-gray-800 dark:text-white mb-8 font-extrabold uppercase">Initiatives</h1>
@@ -95,8 +183,7 @@ const showNewInitiativeDialog = ref(true);
             </div>
 
 
-            <!-- <template v-else-if="projectStore.projects && projectStore.projects.length"> -->
-            <template v-else="projectStore.projects && projectStore.projects.length">
+            <template v-else-if="projectStore.projects && projectStore.projects.length">
                 <div class="flex mt-6">
                     <Menu as="div"
                           class="relative inline-block text-left">
@@ -140,7 +227,13 @@ const showNewInitiativeDialog = ref(true);
                             </menu-items>
                         </transition>
                     </Menu>
-                    <Menu as="div"
+                    <button v-if="authStore.isAdmin || Object.keys(authStore.userGroups).length"
+                            type="button"
+                            class="ml-auto inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            @click="showTermsAndConditions = true">
+                        Create new initiative
+                    </button>
+                    <!-- <Menu as="div"
                           class="ml-auto relative inline-block text-left">
                         <div>
                             <MenuButton class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
@@ -179,7 +272,7 @@ const showNewInitiativeDialog = ref(true);
                                 </div>
                             </menu-items>
                         </transition>
-                    </Menu>
+                    </Menu> -->
                 </div>
                 <div class="text-lg text-center mt-2 mb-2 text-gray-900">{{ projectStore.projects.length }} of {{ projectStore.nProjectsFound }} initiatives</div>
 
@@ -282,7 +375,92 @@ const showNewInitiativeDialog = ref(true);
                                 </div>
 
                                 <div class="self-center pr-4">
+
+
                                     <Menu as="div"
+                                          class="relative inline-block text-left">
+                                        <div>
+                                            <menu-button class="flex items-center rounded-full bg-gray-100_ text-gray-400 hover:text-gray-600 focus:outline-none">
+                                                <span class="sr-only">Open options</span>
+                                                <EllipsisVerticalIcon class="h-5 w-5"
+                                                                      aria-hidden="true" />
+                                            </menu-button>
+                                        </div>
+
+                                        <transition enter-active-class="transition ease-out duration-100"
+                                                    enter-from-class="transform opacity-0 scale-95"
+                                                    enter-to-class="transform opacity-100 scale-100"
+                                                    leave-active-class="transition ease-in duration-75"
+                                                    leave-from-class="transform opacity-100 scale-100"
+                                                    leave-to-class="transform opacity-0 scale-95">
+                                            <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                <div class="py-1">
+                                                    <menu-item v-slot="{ active }">
+                                                        <router-link :to="{ name: 'projectInfo', params: { id: project.id } }"
+                                                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
+                                                            <EyeIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                     aria-hidden="true" />
+                                                            View
+                                                        </router-link>
+                                                    </menu-item>
+                                                    <menu-item v-slot="{ active }">
+                                                        <span @click="() => print(project.id)"
+                                                              :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
+                                                            <PrinterIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                         aria-hidden="true" />
+                                                            Print
+                                                        </span>
+                                                    </menu-item>
+                                                </div>
+                                                <div class="py-1"
+                                                     v-if="projectStore.canEdit() || canAddBestPractice(project)">
+                                                    <menu-item v-if="projectStore.canEdit()"
+                                                               v-slot="{ active }">
+                                                        <router-link :to="{ name: 'projectInfoEdit', params: { id: project.id } }"
+                                                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
+                                                            <pencil-square-icon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                aria-hidden="true" />
+                                                            Edit
+                                                        </router-link>
+                                                    </menu-item>
+                                                    <menu-item v-if="projectStore.canEdit()"
+                                                               v-slot="{ active }">
+                                                        <a href="#"
+                                                           :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
+                                                            <document-magnifying-glass-icon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                            aria-hidden="true" />
+                                                            Submit for review
+                                                        </a>
+                                                    </menu-item>
+                                                    <menu-item v-if="canAddBestPractice(project)"
+                                                               v-slot="{ active }">
+                                                        <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
+                                                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
+                                                            <HandThumbUpIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                             aria-hidden="true" />
+                                                            Add Good Practice
+                                                        </router-link>
+                                                    </menu-item>
+                                                </div>
+                                                <div v-if="projectStore.canEdit()"
+                                                     class="py-1">
+                                                    <menu-item v-slot="{ active }">
+                                                        <span @click="deleteProject(project.id)"
+                                                              :class="[active ? 'bg-gray-100 text-ferm-red-light' : 'text-ferm-red-dark', 'group flex items-center px-4 py-2 text-sm']">
+                                                            <TrashIcon class="mr-3 h-5 w-5 text-ferm-red-dark group-hover:text-ferm-red-light"
+                                                                       aria-hidden="true" />
+                                                            Delete
+                                                        </span>
+                                                    </menu-item>
+                                                </div>
+                                            </MenuItems>
+                                        </transition>
+                                    </Menu>
+
+
+
+
+                                    <!-- <Menu as="div"
                                           class="relative inline-block text-left">
                                         <div>
                                             <MenuButton class="flex items-center rounded-full bg-gray-100_ text-gray-400 hover:text-gray-600 focus:outline-none">
@@ -300,6 +478,9 @@ const showNewInitiativeDialog = ref(true);
                                                     leave-to-class="transform opacity-0 scale-95">
                                             <menu-items class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <div class="py-1">
+
+                                                    <!- - edit, submit for review, add good practice, print, delete - ->
+
                                                     <menu-item v-slot="{ active }">
                                                         <router-link :to="{ name: 'projectInfoEdit', params: { id: project.id } }"
                                                                      :class="[projectStore.canEdit() ? (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700') : 'text-gray-300', 'block px-4 py-2 text-sm cursor-default']">
@@ -319,7 +500,7 @@ const showNewInitiativeDialog = ref(true);
                                                 </div>
                                             </menu-items>
                                         </transition>
-                                    </Menu>
+                                    </Menu> -->
                                 </div>
                             </div>
                         </li>
@@ -332,7 +513,9 @@ const showNewInitiativeDialog = ref(true);
                      class="text-lg text-center mb-4 text-gray-900">{{ projectStore.projects.length }} of {{ projectStore.nProjectsFound }} initiatives</div>
                 <button v-if="!projectStore.isLastPage && !projectStore.loadingNext"
                         @click="projectStore.fetchNextProjects(filterGroup)"
-                        class="rounded-md bg-ferm-blue-dark-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ferm-blue-dark-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ferm-blue-dark-500">Load more</button>
+                        class="rounded-md bg-ferm-blue-dark-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ferm-blue-dark-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ferm-blue-dark-500">
+                    Load more
+                </button>
                 <template v-if="projectStore.loadingNext"
                           class="text-gray-500 text-lg">Loading...</template>
             </div>

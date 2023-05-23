@@ -41,6 +41,9 @@ service cloud.firestore {
       allow create: if isSignedIn()
                         // && request.auth.token != null
 
+                        // The document status is draft or not defined
+                        && (!('status' in request.resource.data) || request.resource.data.status == 'draft')
+
                         // The user is the creator of the resource
                         && request.auth.uid == request.resource.data.created_by
                         
@@ -77,9 +80,15 @@ service cloud.firestore {
 
                         // Or user is group admin
                         || isOneOfRoles(resource, ["admin"])
-                      ) 
-                      // Users cannnot change the created by value
+                      )
+                      
+                      // No one can change the created by value directly - need to use the change created by functions
+                      // created_by is in fact owner
                       && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['created_by'])
+                      // No one can change the group value directly - need to use the change group functions
+                      && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['group'])
+                      // No one can change the status value directly - need to use the change status functions
+                      && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status'])
 
       allow delete: if isAdmin()
         // User is group editor and the user is the creator of the resource

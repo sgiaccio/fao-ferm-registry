@@ -11,7 +11,8 @@ import {
     startAfter,
     limit,
     getCount,
-    QueryConstraint
+    QueryConstraint,
+    addDoc
 } from 'firebase/firestore/lite';
 
 import { defineStore } from 'pinia';
@@ -78,11 +79,13 @@ export const useProjectStore = defineStore({
             // because projectAreas is never null so it cannot be used to check if all the data is loaded
             this.loaded = true
         },
-        async fetchNextProjects(projectId: string | null, freeTextSearch = null, nProjects: number = 25, reset: boolean = false) {
+        async fetchNextProjects(groupId: string | null, freeTextSearch = null, nProjects: number = 25, reset: boolean = false) {
             // if we are on the last page and getting the next page, do nothing
             if (this.isLastPage && !reset) {
                 return;
             }
+
+            const authStore = useAuthStore();
 
             if (reset) {
                 this.lastVisible = null;
@@ -98,10 +101,24 @@ export const useProjectStore = defineStore({
 
             // set the filter constraints (group)
             const filterConstraints: QueryConstraint[] = [];
-            if (projectId) {
+            if (groupId) {
                 // if a group is selected, get only the projects from that group
-                filterConstraints.push(where('group', '==', projectId));
+                filterConstraints.push(where('group', '==', groupId));
+            } else if (!authStore.isAdmin) {
+                // otherwise if user is not admin, get the projects only from the groups they belong to
+                let userGroups: string[] = authStore.privileges ? Object.keys(authStore.privileges) : [];
+                if (userGroups.length === 0) {
+                    // if the user does not belong to any group, return an empty list
+                    this.projects = [];
+                    this.isLastPage = true;
+                    return;
+                }
+                filterConstraints.push(where('group', 'in', userGroups));
             }
+            // if (projectId) {
+            //     // if a group is selected, get only the projects from that group
+            //     filterConstraints.push(where('group', '==', projectId));
+            // }
             // if (freeTextSearch) {
             //     // if a free text search is present, get only the projects that match the search
             //     // TODO - this is not a good solution, because it will not work with pagination
@@ -126,7 +143,7 @@ export const useProjectStore = defineStore({
 
                 }
                 this.projects = [...this.projects, ...newProjects];
-                
+
                 this.loadingNext = false;
             });
 
@@ -232,6 +249,30 @@ export const useProjectStore = defineStore({
             this.projectAreas = [];
 
             this.loaded = true;
+        },
+        async createProject(groupId: string, title: string, reportingLine: string, termsAndConditionsAccepted: boolean) {
+            if (!groupId || !title || !reportingLine || !termsAndConditionsAccepted) {
+                throw new Error('Missing required fields');
+            }
+
+            const authStore = useAuthStore();
+
+            const projectRef = await addDoc(projectsCollection, {
+                group: groupId,
+                project: {
+                    title: title,
+                },
+                indicators: [],
+                results: {},
+                reportingLine: reportingLine,
+                created_by: authStore.user.uid,
+                termsAndConditionsAccepted: termsAndConditionsAccepted,
+                createTime: serverTimestamp(),
+                updateTime: serverTimestamp()
+            });
+            console.log("Document written with ID: ", projectRef);
+
+            await this.fetchProject(projectRef.id);
         },
         canEdit() {
             const authStore = useAuthStore();

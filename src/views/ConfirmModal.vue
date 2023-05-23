@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { CheckIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
+import { ref } from 'vue';
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
     open: boolean
     type?: 'success' | 'error' | 'warning' | 'info'
     title?: string
@@ -17,7 +18,30 @@ withDefaults(defineProps<{
     okButtonEnabled: true,
     cancelButtonText: 'Cancel'
 });
+
+const emit = defineEmits(['closed', 'cancel']); // TODO: add 'close' event
+
+// 2x closing is needed because of the 2x TransitionChild and 1 in TransitionRoot.
+// Setting after-leave in TransitionRoot only causes it to be called three times. I don't know why.
+const closingCount = ref(0);
+function closing() {
+    closingCount.value++;
+    console.log(closingCount.value);
+    if (closingCount.value === 2) {
+        closingCount.value = 0;
+        emit('closed');
+    }
+}
+
+// watch(() => props.open, (newValue, oldValue) => {
+//     console.log('watch', newValue, oldValue);
+// });
+
+function cancel() {
+    emit('cancel');
+}
 </script>
+
 <template>
     <TransitionRoot as="template"
                     :show="open">
@@ -29,7 +53,8 @@ withDefaults(defineProps<{
                              enter-to="opacity-100"
                              leave="ease-in duration-200"
                              leave-from="opacity-100"
-                             leave-to="opacity-0">
+                             leave-to="opacity-0"
+                             @after-leave="closing">
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
             </TransitionChild>
 
@@ -42,7 +67,8 @@ withDefaults(defineProps<{
                                      enter-to="opacity-100 translate-y-0 sm:scale-100"
                                      leave="ease-in duration-200"
                                      leave-from="opacity-100 translate-y-0 sm:scale-100"
-                                     leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                                     leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                     @after-leave="closing">
                         <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                             <div class="sm:flex sm:items-start">
                                 <template v-if="type">
@@ -68,13 +94,12 @@ withDefaults(defineProps<{
                                     </div>
                                 </template>
 
-                                <div class="mt-12 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                <div :class="[type ? 'sm:ml-4' : '', 'mt-12 text-center sm:mt-0 sm:text-left']">
                                     <DialogTitle v-if="title"
                                                  as="h3"
-                                                 class="sm:mt-6 font-akrobat text-3xl font-bold leading-6 text-ferm-blue-light-800">{{ title }}</DialogTitle>
+                                                 class="sm:mt-2 font-akrobat text-3xl font-bold _leading-6 text-ferm-blue-light-800">{{ title }}</DialogTitle>
                                     <div class="mt-2">
                                         <slot />
-                                        <!-- <p class="text-sm text-gray-500">{{message}}</p> -->
                                     </div>
                                 </div>
                             </div>
@@ -85,7 +110,7 @@ withDefaults(defineProps<{
                                         @click="onConfirm()">{{ okButtonText }}</button>
                                 <button type="button"
                                         class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                                        @click="onCancel()"
+                                        @click="cancel()"
                                         ref="cancelButtonRef">{{ cancelButtonText }}</button>
                             </div>
                         </DialogPanel>

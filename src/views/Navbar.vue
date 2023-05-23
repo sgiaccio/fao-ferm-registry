@@ -126,9 +126,9 @@ watch(darkMode, (mode) => {
                     <!-- Profile dropdown -->
                     <Menu v-if="authStore.user"
                           as="div"
-                          class="ml-3 relative z-50">
+                          class="ml-3 relative z-10">
                         <div>
-                            <MenuButton class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white text-white">
+                            <menu-button class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white text-white">
                                 <span class="sr-only">Open user menu</span>
                                 <!-- <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" /> -->
                                 <span class="inline-block h-6 w-6 overflow-hidden rounded-full bg-gray-600">
@@ -138,7 +138,7 @@ watch(darkMode, (mode) => {
                                         <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                                     </svg>
                                 </span>
-                            </MenuButton>
+                            </menu-button>
                         </div>
                         <transition enter-active-class="transition ease-out duration-100"
                                     enter-from-class="transform opacity-0 scale-95"
@@ -146,16 +146,16 @@ watch(darkMode, (mode) => {
                                     leave-active-class="transition ease-in duration-75"
                                     leave-from-class="transform opacity-100 scale-100"
                                     leave-to-class="transform opacity-0 scale-95">
-                            <MenuItems class="origin-top-right absolute right-0 mt-2 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                <MenuItem>
-                                <div class="font-semibold block px-4 py-2 text-sm text-gray-400 cursor-default">{{ authStore.user.email }}</div>
-                                </MenuItem>
-                                <MenuItem v-slot="{ active }">
-                                <a href="#"
-                                   :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
-                                   @click="logout">Sign out</a>
-                                </MenuItem>
-                            </MenuItems>
+                            <menu-items class="origin-top-right absolute right-0 mt-2 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <menu-item>
+                                    <div class="font-semibold block px-4 py-2 text-sm text-gray-400 cursor-default whitespace-nowrap">{{ authStore.user.displayName || authStore.user.email }}</div>
+                                </menu-item>
+                                <menu-item v-slot="{ active }">
+                                    <a href="#"
+                                       :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
+                                       @click="logout">Sign out</a>
+                                </menu-item>
+                            </menu-items>
                         </transition>
                     </Menu>
                 </div>

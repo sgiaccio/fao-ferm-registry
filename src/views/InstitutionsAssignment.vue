@@ -200,8 +200,7 @@ function cancelSubmit() {
 
 <template>
     <!-- Group assignment confirmation modal -->
-    <ConfirmModal type="warning"
-                  :title="`Join ${selectedGroup?.name}`"
+    <ConfirmModal :title="`Join ${selectedGroup?.name}`"
                   :onConfirm="() => { confirmAssignment() }"
                   :onCancel="() => { cancelAssignment() }"
                   :okButtonEnabled="selectedGroup !== null && reasons !== ''"

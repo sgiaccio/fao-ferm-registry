@@ -13,6 +13,7 @@ withDefaults(defineProps<{
 }>(), {
     open: false
 });
+
 </script>
 
 <template>
@@ -55,12 +56,12 @@ withDefaults(defineProps<{
                                     <div v-else-if="type === 'warning'"
                                          class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
                                         <ExclamationTriangleIcon class="h-6 w-6 text-yellow-600"
-                                                   aria-hidden="true" />
+                                                                 aria-hidden="true" />
                                     </div>
                                     <div v-else-if="type === 'info'"
                                          class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
                                         <InformationCircleIcon class="h-6 w-6 text-yellow-600"
-                                                   aria-hidden="true" />
+                                                               aria-hidden="true" />
                                     </div>
                                     <div class="mt-3 text-center sm:mt-5">
                                         <DialogTitle as="h3"
