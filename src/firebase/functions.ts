@@ -37,3 +37,10 @@ export async function fetchMyGroupsUsers() {
     const result = await listMyGroupsUsers();
     return result.data;
 }
+
+export async function submitForReview(projectId: string) {
+    const functions = getFunctions();
+    const submitForReview = httpsCallable(functions, 'submitProject');
+    const result = await submitForReview({ projectId });
+    return result.data;
+}

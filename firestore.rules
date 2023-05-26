@@ -110,10 +110,11 @@ service cloud.firestore {
                     // && request.auth.uid == request.resource.data.created_by
                     && (
                       isAdmin()
-
                       // User is admin or editor in the related project group
                       || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin", "editor"])
                     )
+                    // The document status is draft or not defined
+                    && (!('status' in request.resource.data) || request.resource.data.status == 'draft')
       allow update: if isSignedIn()
                     && request.auth.token != null
 
@@ -135,7 +136,23 @@ service cloud.firestore {
                         // and the best practice new status is draft or submitted
                         && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'submitted'])
                     )
-      // allow delete: if isSignedIn()
+      allow delete: if isSignedIn()
+                    && request.auth.token != null
+
+                    // Best practice is not published
+      							&& (!('status' in resource.data) || resource.data.status != 'published')
+                    
+                    && (
+                      isAdmin()
+
+                      // User is admin in the related project group
+                      || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin"])
+
+                      // User is editor of the related project group
+                      || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["editor"])
+                        // and the best practice is in draft status
+                        && (!('status' in resource.data) || resource.data.status == 'draft')
+                    )
     }
 
     // Project areas documents
