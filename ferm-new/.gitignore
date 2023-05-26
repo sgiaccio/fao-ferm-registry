@@ -1,0 +1,14 @@
+node_modules
+public/js
+out
+.shadow-cljs
+.nrepl-port
+.clj-kondo/.cache
+yarn-error.log
+report.html
+.clj-kondo/.cache
+.firebase
+.DS_Store
+public/css/style.css
+firebase-debug.log
+firestore-debug.log
