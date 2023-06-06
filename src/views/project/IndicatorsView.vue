@@ -22,7 +22,9 @@ withDefaults(defineProps<{
             <p>Indicators are selected to monitor ecosystem restoration progress. The list of priority indicators is based on a compilation of >5,000 indicators found on international, regional, and national frameworks. More frequently used indicators in this compilation have been grouped under the same topic category and one final indicator representing all of them has been formulated. You can select several indicators from this list to monitor your restoration project. You are advised to select up to 10 indicators by project.</p>
         </template>
         <template #default>
-            <div class="pt-6 pb-6">
+            <!-- hide if not GEF -->
+            <div v-if="store.project.reportingLine !== 'GEF'"
+                class="pt-6 pb-6">
                 <h1 class="font-akrobat text-2xl dark:text-zinc-300 font-bold">SDG indicators</h1>
                 <TreeItem :edit="edit"
                           v-model="store.project.indicators"
@@ -31,7 +33,7 @@ withDefaults(defineProps<{
 
             </div>
 
-            <div class="pt-8">
+            <div class="pt-8" v-if="store.project.reportingLine === 'GEF'">
                 <h1 class="font-akrobat text-2xl dark:text-zinc-300 font-bold">GEF indicators</h1>
                 <div v-if="store.projectAreas?.length"
                      class="flex flex-col gap-y-4">

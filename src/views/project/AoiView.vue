@@ -54,7 +54,7 @@ const store = useProjectStore();
             </ul>
         </template>
         <template #default>
-            <FormGroup label="Total area under restoration (ha)">
+            <FormGroup :label="'Total area under restoration (ha)' + (store.project.reportingLine === 'GEF' ? '' : ' (achieved area in tabular format)')">
                 <NumberInput :edit="edit"
                              v-model="store.project.project.areaUnderRestoration" />
             </FormGroup>

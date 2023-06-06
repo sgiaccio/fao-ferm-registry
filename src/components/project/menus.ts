@@ -1200,187 +1200,7 @@ export const achievingTargets: Menu = [
     { value: 8, label: 'Improve access to energy' },
     { value: 9, label: 'Rights and culture' },
     { value: 10, label: 'Ensure sustainability of restoration practices' },
-]
-
-export const gefIndicators: RecursiveMenu = {
-    label: 'GEF indicators',
-    children: [{
-        value: '-1',
-        label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use (hectares)',
-        children: [{
-            value: '-1',
-            label: 'Component Sub-Indicators',
-            children: [{
-                value: 'GEF1.1',
-                label: '1.1 Terrestrial protected areas newly created',
-            }, {
-                value: 'GEF1.2',
-                label: '1.2 Terrestrial protected areas under improved management effectiveness',
-            }]
-        }]
-    }, {
-        value: '-1',
-        label: '2. Marine protected areas created or under improved management for conservation and sustainable use (hectares)',
-        children: [{
-            value: '-1',
-            label: 'Component Sub-Indicators',
-            children: [{
-                value: 'GEF2.1',
-                label: '2.1 Marine protected areas newly created',
-            }, {
-                value: 'GEF2.2',
-                label: '2.2 Marine protected areas under improved management effectiveness',
-            }]
-        }]
-    }, {
-        value: '-1',
-        label: '3. Area of land restored (hectares)',
-        children: [{
-            value: '-1',
-            label: 'Component Sub-Indicators',
-            children: [{
-                value: 'GEF3.1',
-                label: '3.1 Area of degraded agricultural lands restored',
-            }, {
-                value: 'GEF3.2',
-                label: '3.2 Area of forest and forest land restored',
-            }, {
-                value: 'GEF3.3',
-                label: '3.3 Area of natural grass and shrublands restored',
-            }, {
-                value: 'GEF3.4',
-                label: '3.4 Area of wetlands (including estuaries and mangroves) restored',
-            }]
-        }]
-    }, {
-        value: '-1',
-        label: '4. Area of landscapes under improved practices (hectares; excluding protected areas)',
-        children: [{
-            value: '-1',
-            label: 'Component Sub-Indicators',
-            children: [{
-                value: 'GEF4.1',
-                label: '4.1 Area of landscapes under improved management to benefit biodiversity (qualitative assessment, non-certified)',
-            }, {
-                value: 'GEF4.2',
-                label: '4.2 Area of landscapes that meet national or international third-party certification and that incorporates biodiversity considerations',
-            }, {
-                value: 'GEF4.3',
-                label: '4.3 Area of landscapes under sustainable land management in production systems',
-            }, {
-                value: 'GEF4.4',
-                label: '4.4 Area of High Conservation Value forest loss avoided',
-            }]
-        }]
-    }, {
-        value: '-1',
-        label: '5. Area of marine habitat under improved practices to benefit biodiversity (hectares; excluding protected areas)',
-        children: [{
-            value: '-1',
-            label: 'Contextual Sub-Indicators',
-            children: [{
-                value: 'GEF5.1',
-                label: '5.1 Number of fisheries that meet national or international third-party certification that incorporates biodiversity considerations',
-            }, {
-                value: 'GEF5.2',
-                label: '5.2 Number of Large Marine Ecosystems with reduced pollution and hypoxia',
-            }, {
-                value: 'GEF5.3',
-                label: '5.3 Amount of Marine Litter Avoided',
-            }]
-        }]
-    }, {
-        value: '-1',
-        label: '6. Greenhouse gas emissions mitigated (metric tons of carbon dioxide equivalent)',
-        children: [{
-            value: '-1',
-            label: 'Component Sub-Indicators',
-            children: [{
-                value: 'GEF6.1',
-                label: '6.1 Carbon sequestered, or emissions avoided in the sector of Agriculture, Forestry and Other Land Use',
-            }, {
-                value: 'GEF6.2',
-                label: '6.2 Emissions avoided outside Agriculture, Forestry and Other Land Use (AFOLU) sector Contextual Sub-Indicators',
-            }, {
-                value: 'GEF6.3',
-                label: '6.3 Energy saved',
-            }, {
-                value: 'GEF6.4',
-                label: '6.4 Increase in installed renewable energy capacity per technology',
-            }]
-        }]
-    }, {
-        value: '-1',
-        label: '7. Number of shared water ecosystems (fresh or marine) under new or improved cooperative management',
-        children: [{
-            value: '-1',
-            label: 'Contextual Sub-Indicators',
-            children: [{
-                value: 'GEF7.1',
-                label: '7.1 Level of Transboundary Diagnostic Analysis and Strategic Action Program formulation and implementation',
-            }, {
-                value: 'GEF7.2',
-                label: '7.2 Level of regional legal agreements and regional management institution(s) to support its implementation',
-            }, {
-                value: 'GEF7.3',
-                label: '7.3 Level of national/local reforms and active participation of Inter-Ministerial Committees',
-            }, {
-                value: 'GEF7.4',
-                label: '7.4 Level of engagement in IW:LEARN through participation and delivery of key products',
-            }]
-        }]
-    }, {
-        value: 'GEF8',
-        label: '8. Globally over-exploited fisheries moved to more sustainable levels (metric tons)',
-    }, {
-        value: '-1',
-        label: '9. Reduction, disposal/destruction, phase out, elimination and avoidance of chemicals of global concern and their waste in the environment and in processes, materials, and products (metric tons of toxic chemicals reduced)',
-        children: [{
-            value: '-1',
-            label: 'Component Sub-Indicators',
-            children: [{
-                value: 'GEF9.1',
-                label: '9.1 Solid and liquid Persistent Organic Pollutants (POPs) removed or disposed (POPs type)',
-            }, {
-                value: 'GEF9.2',
-                label: '9.2 Quantity of mercury reduced',
-            }, {
-                value: 'GEF9.3',
-                label: '9.3 Hydrochlorofluorocarbons reduced/phased out',
-            }]
-        }, {
-            value: '-1',
-            label: 'Contextual Sub-Indicators',
-            children: [{
-                value: 'GEF9.4',
-                label: '9.4 Number of countries with legislation and policy implemented to control chemicals and waste',
-            }, {
-                value: 'GEF9.5',
-                label: '9.5 Number of low-chemical/non-chemical systems implemented, particularly in food production, manufacturing, and cities',
-            }, {
-                value: 'GEF9.6',
-                label: '9.6 Quantity of products/materials containing POPs/Mercury directly avoided',
-            }]
-        }]
-    }, {
-        value: '-1',
-        label: '10. Reduction, avoidance of emissions of POPS to air from point and non-point sources (grams of toxic equivalent gTEQ)',
-        children: [{
-            value: '-1',
-            label: 'Contextual Sub-Indicators',
-            children: [{
-                value: 'GEF10.1',
-                label: '10.1 Number of countries with legislation and policies implemented to control emissions of POPs to air',
-            }, {
-                value: 'GEF10.2',
-                label: '10.2 Number of emission control technologies/practices implemented',
-            }]
-        }]
-    }, {
-        value: 'GEF11',
-        label: '11. Number of direct beneficiaries disaggregated by gender as co-benefit of GEF investment',
-    }]
-}
+];
 
 export const iucnEcosystems: RecursiveMenu = {
 	label: "ecosystems",
@@ -1465,4 +1285,202 @@ export const iucnEcosystems: RecursiveMenu = {
 			value: "i.TF1", label: "i.TF1 Palustrine wetlands biome"
         }]
 	}]
-}
+};
+
+// GEF SPECIFIC
+
+export const gefIndicators: RecursiveMenu = {
+    label: 'GEF indicators',
+    children: [{
+        value: '-1',
+        label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use (hectares)',
+        children: [{
+            value: '-1',
+            label: 'Component Sub-Indicators',
+            children: [{
+                value: 'GEF1.1',
+                label: '1.1 Terrestrial protected areas newly created',
+            }, {
+                value: 'GEF1.2',
+                label: '1.2 Terrestrial protected areas under improved management effectiveness',
+            }]
+        }]
+    }, {
+        value: '-1',
+        label: '2. Marine protected areas created or under improved management for conservation and sustainable use (hectares)',
+        children: [{
+            value: '-1',
+            label: 'Component Sub-Indicators',
+            children: [{
+                value: 'GEF2.1',
+                label: '2.1 Marine protected areas newly created',
+            }, {
+                value: 'GEF2.2',
+                label: '2.2 Marine protected areas under improved management effectiveness',
+            }]
+        }]
+    }, {
+        value: '-1',
+        label: '3. Area of land and ecosystems under restoration',
+        children: [{
+            value: '-1',
+            label: 'Component Sub-Indicators',
+            children: [{
+                value: 'GEF3.1',
+                label: '3.1 Area of land restored (hectares)',
+            }, {
+                value: 'GEF3.2',
+                label: '3.2 Area of degraded agricultural lands under restoration',
+            }, {
+                value: 'GEF3.3',
+                label: '3.3 Area of forest and forest land under restoration',
+            }, {
+                value: 'GEF3.4',
+                label: '3.4 Area of natural grass and woodlands under restoration',
+            }]
+        }]
+    }, {
+        value: '-1',
+        label: '4. Area of landscapes under improved practices (hectares; excluding protected areas)',
+        children: [{
+            value: '-1',
+            label: 'Component Sub-Indicators',
+            children: [{
+                value: 'GEF4.1',
+                label: '4.1 Area of landscapes under improved management to benefit biodiversity (qualitative assessment, non-certified)',
+            }, {
+                value: 'GEF4.2',
+                label: '4.2 Area of landscapes that meet national or international third-party certification and that incorporates biodiversity considerations',
+            }, {
+                value: 'GEF4.3',
+                label: '4.3 Area of landscapes under sustainable land management in production systems',
+            }, {
+                value: 'GEF4.4',
+                label: '4.4 Area of High Conservation Value forest loss avoided',
+            }]
+        }]
+    }, {
+        value: '-1',
+        label: '5. Area of marine habitat under improved practices to benefit biodiversity (hectares; excluding protected areas)',
+        children: [{
+            value: '-1',
+            label: 'Contextual Sub-Indicators',
+            children: [{
+                value: 'GEF5.1',
+                label: '5.1 Number of fisheries that meet national or international third-party certification that incorporates biodiversity considerations',
+            }, {
+                value: 'GEF5.2',
+                label: '5.2 Number of Large Marine Ecosystems with reduced pollution and hypoxia',
+            }, {
+                value: 'GEF5.3',
+                label: '5.3 Amount of Marine Litter Avoided',
+            }]
+        }]
+    }
+    // {
+    //     value: '-1',
+    //     label: '6. Greenhouse gas emissions mitigated (metric tons of carbon dioxide equivalent)',
+    //     children: [{
+    //         value: '-1',
+    //         label: 'Component Sub-Indicators',
+    //         children: [{
+    //             value: 'GEF6.1',
+    //             label: '6.1 Carbon sequestered, or emissions avoided in the sector of Agriculture, Forestry and Other Land Use',
+    //         }, {
+    //             value: 'GEF6.2',
+    //             label: '6.2 Emissions avoided outside Agriculture, Forestry and Other Land Use (AFOLU) sector Contextual Sub-Indicators',
+    //         }, {
+    //             value: 'GEF6.3',
+    //             label: '6.3 Energy saved',
+    //         }, {
+    //             value: 'GEF6.4',
+    //             label: '6.4 Increase in installed renewable energy capacity per technology',
+    //         }]
+    //     }]
+    // }, {
+    //     value: '-1',
+    //     label: '7. Number of shared water ecosystems (fresh or marine) under new or improved cooperative management',
+    //     children: [{
+    //         value: '-1',
+    //         label: 'Contextual Sub-Indicators',
+    //         children: [{
+    //             value: 'GEF7.1',
+    //             label: '7.1 Level of Transboundary Diagnostic Analysis and Strategic Action Program formulation and implementation',
+    //         }, {
+    //             value: 'GEF7.2',
+    //             label: '7.2 Level of regional legal agreements and regional management institution(s) to support its implementation',
+    //         }, {
+    //             value: 'GEF7.3',
+    //             label: '7.3 Level of national/local reforms and active participation of Inter-Ministerial Committees',
+    //         }, {
+    //             value: 'GEF7.4',
+    //             label: '7.4 Level of engagement in IW:LEARN through participation and delivery of key products',
+    //         }]
+    //     }]
+    // }, {
+    //     value: 'GEF8',
+    //     label: '8. Globally over-exploited fisheries moved to more sustainable levels (metric tons)',
+    // }, {
+    //     value: '-1',
+    //     label: '9. Reduction, disposal/destruction, phase out, elimination and avoidance of chemicals of global concern and their waste in the environment and in processes, materials, and products (metric tons of toxic chemicals reduced)',
+    //     children: [{
+    //         value: '-1',
+    //         label: 'Component Sub-Indicators',
+    //         children: [{
+    //             value: 'GEF9.1',
+    //             label: '9.1 Solid and liquid Persistent Organic Pollutants (POPs) removed or disposed (POPs type)',
+    //         }, {
+    //             value: 'GEF9.2',
+    //             label: '9.2 Quantity of mercury reduced',
+    //         }, {
+    //             value: 'GEF9.3',
+    //             label: '9.3 Hydrochlorofluorocarbons reduced/phased out',
+    //         }]
+    //     }, {
+    //         value: '-1',
+    //         label: 'Contextual Sub-Indicators',
+    //         children: [{
+    //             value: 'GEF9.4',
+    //             label: '9.4 Number of countries with legislation and policy implemented to control chemicals and waste',
+    //         }, {
+    //             value: 'GEF9.5',
+    //             label: '9.5 Number of low-chemical/non-chemical systems implemented, particularly in food production, manufacturing, and cities',
+    //         }, {
+    //             value: 'GEF9.6',
+    //             label: '9.6 Quantity of products/materials containing POPs/Mercury directly avoided',
+    //         }]
+    //     }]
+    // }, {
+    //     value: '-1',
+    //     label: '10. Reduction, avoidance of emissions of POPS to air from point and non-point sources (grams of toxic equivalent gTEQ)',
+    //     children: [{
+    //         value: '-1',
+    //         label: 'Contextual Sub-Indicators',
+    //         children: [{
+    //             value: 'GEF10.1',
+    //             label: '10.1 Number of countries with legislation and policies implemented to control emissions of POPs to air',
+    //         }, {
+    //             value: 'GEF10.2',
+    //             label: '10.2 Number of emission control technologies/practices implemented',
+    //         }]
+    //     }]
+    // }, {
+    //     value: 'GEF11',
+    //     label: '11. Number of direct beneficiaries disaggregated by gender as co-benefit of GEF investment',
+    // }
+    ]
+};
+
+export const gefCycles: Menu = [
+    { value: 6, label: 'GEF 6' },
+    { value: 7, label: 'GEF 7' },
+    { value: 8, label: 'GEF 8' },
+]
+
+export const gefFocalAreas: Menu = [
+    { value: 1, label: 'Land degradation' },
+    { value: 2, label: 'Biodiversity' },
+    { value: 3, label: 'Climate change' },
+    { value: 4, label: 'Chemicals & waste' },
+    { value: 5, label: 'International waters' },
+];

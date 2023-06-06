@@ -79,7 +79,7 @@ const id_ = Math.ceil(Math.random() * 1e9) // TODO
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription"
-               v-on:focusout="focusedOut = true">
+               @focusout="focusedOut = true">
         <template v-if="edit">
             <fieldset class="space-y-2">
                 <div v-for="option in options"

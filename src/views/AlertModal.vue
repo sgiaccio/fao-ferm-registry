@@ -6,7 +6,7 @@ import { CheckIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@hero
 
 withDefaults(defineProps<{
     open: boolean
-    type: 'success' | 'error' | 'warning' | 'info'
+    type?: 'success' | 'error' | 'warning' | 'info'
     title: string
     buttonText: string
     onClose: () => void
