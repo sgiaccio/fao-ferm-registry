@@ -7,9 +7,10 @@ import { PencilSquareIcon, PrinterIcon, ArrowSmallLeftIcon, ArrowSmallRightIcon 
 import router from '@/router';
 
 import { useProjectStore } from '@/stores/project';
+import ActionsMenu from '@/views/project/ActionsMenu.vue';
 
 
-const props = defineProps<{
+defineProps<{
     previous: () => void,
     next: () => void,
     first: boolean,
@@ -43,7 +44,8 @@ async function print() {
 
 <template>
     <div class="w-full pb-8 flex gap-x-6">
-        <div v-if="store.loaded && store.canEdit()" class="shrink">
+        <div v-if="store.loaded && store.canEdit()"
+             class="shrink">
             <button @click="edit"
                     type="button"
                     class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500">
@@ -89,6 +91,9 @@ async function print() {
                              aria-hidden="true" />
                 Print
             </button>
+            <ActionsMenu :project="{ id: store.id, data: store.project }"
+                            :exclude-view-menu-item="true"
+                            label="Actions" />
         </div>
     </div>
 

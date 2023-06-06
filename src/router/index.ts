@@ -112,6 +112,10 @@ const router = createRouter({
                     name: 'groups',
                     component: () => import('../views/admin/GroupListView.vue')
                 }, {
+                    path: "submittedInitiatives",
+                    name: "submittedInitiatives",
+                    component: () => import('../views/admin/SubmittedInitiativesView.vue')
+                }, {
                     path: "groupAssignments",
                     name: "groupAssignments",
                     component: () => import('../views/admin/GroupAssignmentRequests.vue')
@@ -142,6 +146,7 @@ const router = createRouter({
                             path: '',
                             name: 'initiative',
                             component: () => import('../views/project/ProjectViewView.vue'),
+                            redirect: to => ({ name: 'projectInfo', params: { id: to.params.id } }),
                             children: [...projectTabs]
                         }, {
                             path: 'print',

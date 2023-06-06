@@ -16,14 +16,10 @@ const route = useRoute();
 const authStore = useAuthStore();
 const userPrefsStore = useUserPrefsStore();
 
-// onBeforeMount(async () => {
-//     await authStore.fetchUser();
-// });
-
 const { user } = storeToRefs(authStore);
 
 watch(user, async () => {
-    userPrefsStore.fetchUserPrefs();
+    await userPrefsStore.fetchUserPrefs();
 });
 </script>
 

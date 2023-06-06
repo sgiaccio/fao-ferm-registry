@@ -3,101 +3,15 @@ const admin = require("firebase-admin");
 
 const firestore = require('@google-cloud/firestore');
 
+// import util functions
+const util = require('./util');
 
-// const emailTemplates = require('./emailTemplates');
-
-// Initialize admin SDK
-admin.initializeApp();
-
-// These are the roles that can be assigned to users in a group.
-// Possibly add 'restricted'? Restricted users could only edit and view their own data
-const GROUP_ROLES = ['admin', 'editor', 'guest'];
-const STATUSES = ['draft', 'submitted', 'published'];
-
-
-const db = admin.firestore();
-const usersCollection = db.collection('users');
-const groupsCollection = db.collection('groups');
-const registryCollection = db.collection('registry');
-const bestPracticesCollection = db.collection('bestPractices');
-const assignmentRequestsCollection = db.collection('assignementRequests'); // Typo in the name
-const mailCollection = db.collection('mail');
-
-
-// Finds the first element in the array for which the async predicate returns true
-async function findAsync(array, predicate) {
-    for (const t of array) {
-        if (await predicate(t)) {
-            return t;
-        }
-    }
-}
-
-// Checks if a group exists
-async function isValidGroup(groupId) {
-    const snapshot = await groupsCollection.doc(groupId).get();
-    return snapshot.exists;
-}
-
-// Checks if the groups are valid, returns the first invalid group or null if all are valid
-async function checkValidGroups(privileges) {
-    // TODO handle the case where privileges is empty!!!
-
-    const groupIds = Object.keys(privileges);
-    const groupsSnapshot = await groupsCollection.where(firestore.FieldPath.documentId(), 'in', groupIds).get();
-    const groupIdsFromFirestore = groupsSnapshot.docs.map(d => d.id);
-    const invalidGroup = groupIds.find(g => !groupIdsFromFirestore.includes(g));
-    return invalidGroup || null;
-}
-
-// Checks if the privilege levels are valid, returns teh first group with an invalid privilege level or null if all are valid
-async function checkValidLevels(privileges) {
-    const groupIds = Object.keys(privileges);
-    const invalidGroup = await findAsync(groupIds, async (g) => !GROUP_ROLES.includes(privileges[g]));
-
-    return invalidGroup || null;
-}
-
-
-// Checks if the user is an admin
-function isSuperAdmin(context) {
-    if (!context.auth.token) {
-        return false;
-    }
-    return !!context.auth.token.admin;
-}
-
-// Check if the user is an admin of the group
-function hasGroupRole(context, groupId, role) {
-    // check if the role is valid
-    if (!GROUP_ROLES.includes(role)) {
-        throw new functions.https.HttpsError('invalid-argument', `Invalid role ${role}`);
-    }
-
-    return !!context.auth.token.privileges[groupId] && context.auth.token.privileges[groupId] === role;
-}
-
-// Find the administrators of a group
-async function getGroupAdmins(groupId) {
-    // get all users
-    const users = await admin.auth().listUsers();
-    // filter out the admins
-    const admins = users.users.filter(u => u.customClaims && u.customClaims.privileges && u.customClaims.privileges[groupId] === 'admin');
-    // return the uids
-    // return admins.map(a => a.uid);
-    return admins;
-}
-
-// function getGroupRole(privileges, groupName) {
-//     const group = privileges.find((p => p.group === groupName));
-//     return group.role;
-// }
 
 // Creates a new user. Only admins can call this function for now.
 // Group admins should be able to create new users in their group.
 exports.createUser = functions.https.onCall(async ({ email, displayName, privileges, admin: admin_ }, context) => {
     // check if the user is an admin
-    if (!isSuperAdmin(context)) {
+    if (!util.isSuperAdmin(context)) {
         throw new functions.https.HttpsError('permission-denied', 'Only admins can create new users');
     }
 
@@ -110,12 +24,12 @@ exports.createUser = functions.https.onCall(async ({ email, displayName, privile
         throw new functions.https.HttpsError('invalid-argument', 'The function must be called with one argument "email" containing the email for the user.');
     }
 
-    const invalidGroup = await checkValidGroups(privileges);
+    const invalidGroup = await util.checkValidGroups(privileges);
     if (invalidGroup) {
         throw new functions.https.HttpsError('invalid-argument', `Invalid group id ${invalidGroup}`);
     }
 
-    const invalidLevelGroup = await checkValidLevels(privileges);
+    const invalidLevelGroup = await util.checkValidLevels(privileges);
     if (invalidLevelGroup) {
         throw new functions.https.HttpsError('invalid-argument', `Invalid privilege ${privileges[invalidLevelGroup]} level for group ${invalidLevelGroup}`);
     }
@@ -136,7 +50,7 @@ exports.createUser = functions.https.onCall(async ({ email, displayName, privile
             console.error('Error setting custom claims:', JSON.stringify(err, null, 2));
         }
 
-        sendWelcomeEmail(email, displayName);
+        await sendWelcomeEmail(email, displayName);
 
         return { message: 'Successfully created new user', uid };
     } catch (err) {
@@ -148,29 +62,24 @@ exports.createUser = functions.https.onCall(async ({ email, displayName, privile
 // Returns the list of all users. Only admins can call this function for now.
 // Group admins should be able to list all users in their group.
 exports.listAllUsers = functions.https.onCall(async (_data, context) => {
-    console.log('listAllUsers called');
-    console.log(context.auth);
     if (!context.auth) {
         console.log('User is not authenticated');
         throw new functions.https.HttpsError('unauthenticated', 'User is not authenticated');
     }
 
-    if (!isSuperAdmin(context)) {
+    if (!util.isSuperAdmin(context)) {
         console.log('Only admins can list all users');
         throw new functions.https.HttpsError('permission-denied', 'Only admins can list all users');
     }
 
-    console.log('ecchice');
     try {
-        console.log('riecchice');
         console.log(await(admin.auth().listUsers()));
         return await admin.auth().listUsers();
     } catch (err) {
-        console.log('error!');
         console.log(err);
         throw new functions.https.HttpsError('internal', err);
     }
-})
+});
 
 // Returns the list of all users in my groups.
 exports.listMyGroupsUsers = functions.https.onCall(async (_data, context) => {
@@ -179,7 +88,7 @@ exports.listMyGroupsUsers = functions.https.onCall(async (_data, context) => {
     }
 
     // Get the groups where the user is group admin
-    const groupsWhereAdmin = getGroupsWhereAdmin(context);
+    const groupsWhereAdmin = util.getGroupsWhereAdmin(context);
 
     if (groupsWhereAdmin.length === 0) {
         throw new functions.https.HttpsError('permission-denied', 'User is not an admin or a group admin');
@@ -218,11 +127,11 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'User is not authenticated');
     }
-    // if (!GROUP_ROLES.includes(role)) {
+    // if (!util.GROUP_ROLES.includes(role)) {
     //     throw new functions.https.HttpsError('invalid-argument', `Invalid role: ${role}`);
     // }
 
-    if (!isSuperAdmin(context)) {
+    if (!util.isSuperAdmin(context)) {
         throw new functions.https.HttpsError('permission-denied', 'Only admins can change user privileges (for now)');
     }
 
@@ -234,7 +143,7 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
 
     // Check if the roles are valid
     const roles = Object.values(privileges);
-    const invalidRole = roles.find(r => !GROUP_ROLES.includes(r));
+    const invalidRole = roles.find(r => !util.GROUP_ROLES.includes(r));
     if (invalidRole) {
         throw new functions.https.HttpsError('invalid-argument', `Role ${invalidRole} doesn't exist`);
     }
@@ -242,10 +151,10 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
     // Check if the groups are valid
     const groups = Object.keys(privileges);
 
-    // if (Promise.any(groups.map(async g => !(await isValidGroup(g))))) {
+    // if (Promise.any(groups.map(async g => !(await util.isValidGroup(g))))) {
     //     throw new functions.https.HttpsError('invalid-argument', `Group ${invalidGroup} doesn't exist`);
     // }
-    const invalidGroup = await findAsync(groups, async g => !(await isValidGroup(g)));
+    const invalidGroup = await util.findAsync(groups, async g => !(await util.isValidGroup(g)));
     if (invalidGroup) {
         throw new functions.https.HttpsError('invalid-argument', `Group ${invalidGroup} doesn't exist`);
     }
@@ -285,7 +194,7 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
     };
 
     // add mail document to mail collection
-    await mailCollection.add(mailDoc);
+    await util.mailCollection.add(mailDoc);
 
     await admin.auth().setCustomUserClaims(user.uid, { privileges, admin: !!_admin });
 
@@ -305,20 +214,20 @@ exports.setUserPrivilegesGroupAdmin = functions.https.onCall(async ({ uid, privi
     if (!privileges) privileges = {}
 
     // check if the groups are valid
-    const invalidAssignedGroup = await checkValidGroups(privileges);
+    const invalidAssignedGroup = await util.checkValidGroups(privileges);
     if (invalidAssignedGroup) {
         throw new functions.https.HttpsError('invalid-argument', `Invalid group id ${invalidAssignedGroup}`);
     }
 
     // check if the roles are valid
     const roles = Object.values(privileges);
-    const invalidRole = roles.find(r => !GROUP_ROLES.includes(r));
+    const invalidRole = roles.find(r => !util.GROUP_ROLES.includes(r));
     if (invalidRole) {
         throw new functions.https.HttpsError('invalid-argument', `Role ${invalidRole} doesn't exist`);
     }
 
     // check if the current user is admin of all the groups in privileges
-    const groupsWhereAdmin = getGroupsWhereAdmin(context);
+    const groupsWhereAdmin = util.getGroupsWhereAdmin(context);
     const groupsIds = Object.keys(privileges);
     const invalidGroup = groupsIds.find(g => !groupsWhereAdmin.includes(g));
     if (invalidGroup) {
@@ -386,15 +295,8 @@ exports.updateAuthDisplayName = functions.firestore.document('users/{userId}').o
 async function getUserGroupIds(uid) {
     const user = await admin.auth().getUser(uid);
     const userPrivileges = user.customClaims.privileges;
-    const userGroups = Object.keys(userPrivileges);
 
-    return userGroups;
-}
-
-async function getSuperAdmins() {
-    // TODO store custom claims in a collection in firestore for performance
-    const users = await admin.auth().listUsers();
-    return users.users.filter(u => u.customClaims && u.customClaims.admin).map(u => ({ uid: u.uid, email: u.email }));
+    return Object.keys(userPrivileges);
 }
 
 // Create documents in the mail collection when a user requests for a new group to be created
@@ -408,7 +310,7 @@ exports.sendNewGroupRequestEmail = functions.firestore.document('newGroupRequest
 
     // create mail document
     const mailDoc = {
-        to: await getSuperAdminEmails(),
+        to: await util.getSuperAdminEmails(),
         message: {
             subject: `New group request for group ${name}`,
             html: `
@@ -435,12 +337,12 @@ exports.sendNewGroupRequestEmail = functions.firestore.document('newGroupRequest
     };
 
     // add mail document to mail collection
-    await mailCollection.add(mailDoc);
+    await util.mailCollection.add(mailDoc);
 });
 
 
 // Create documents in the mail collection when a user requests to be assigned to a group
-exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRequests/{requestId}').onCreate(async (snap, context) => {
+exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRequests/{requestId}').onCreate(async (snap, _context) => {
     const data = snap.data();
     const { userId, groupId, status, reasons } = data;
 
@@ -456,17 +358,17 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
     const { displayName } = await admin.auth().getUser(userId);
 
     // Get group name from the database
-    const groupDoc = await groupsCollection.doc(groupId).get();
+    const groupDoc = await util.groupsCollection.doc(groupId).get();
     const groupName = groupDoc.data().name;
 
-    const groupAdminEmails = await getGroupAdminEmails(groupDoc.data());
-    let mailDoc = null;
+    const groupAdminEmails = await util.getGroupAdminEmails(groupDoc.data());
+    let mailDoc;
     if (groupAdminEmails > 0) {
         // create mail document
         mailDoc = {
             to: groupAdminEmails,
             message: {
-                subject: `New assignement request for group ${groupName}`,
+                subject: `New assignment request for group ${groupName}`,
                 html: `
                 <p>Hi,</p>
                 <p>User ${displayName || 'anonymous'} has requested to be assigned to your institution ${groupName}:</p>
@@ -482,9 +384,9 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
         };
     } else {
         mailDoc = {
-            to: await getSuperAdminEmails(),
+            to: await util.getSuperAdminEmails(),
             message: {
-                subject: `New assignement request for group ${groupName}`,
+                subject: `New assignment request for group ${groupName}`,
                 html: `
                 <p>Hi,</p>
                 <p>User ${displayName || 'anonymous'} has requested to be assigned to the institution ${groupName}:</p>
@@ -501,7 +403,7 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
     }
 
     // add mail documents to mail collection
-    await mailCollection.add(mailDoc);
+    await util.mailCollection.add(mailDoc);
 });
 
 // Set default custom claims and create a user record in Firestore when a user is created
@@ -525,7 +427,7 @@ exports.createUserRecord = functions.auth.user().onCreate(async ({ uid }) => {
     // Try to create user record, just log error if it fails
     const newUserRecord = { bpConsentAccepted: false };
     try {
-        await usersCollection.doc(uid).set(newUserRecord);
+        await util.usersCollection.doc(uid).set(newUserRecord);
     } catch (err) {
         console.error('Error creating user record:', err);
     }
@@ -558,27 +460,27 @@ async function sendWelcomeEmail(email, displayName) {
     // <p>If you have any questions or need assistance, we will be launching a dedicated support email and an FAQ section soon. In the meantime, please feel free to reply to this email if you need any help.</p>
 
     // add mail document to mail collection
-    await mailCollection.add(mailDoc);
+    await util.mailCollection.add(mailDoc);
 }
 
 
 // Delete a user record in Firestore when a user is deleted
 exports.deleteUserRecord = functions.auth.user().onDelete(async ({ uid }) => {
-    await usersCollection.doc(uid).delete();
+    await util.usersCollection.doc(uid).delete();
 });
 
 // TODO: deploy this function and configure it as a blocking function in the Firebase console
-// Blocks password sign in attempts. Only passwordless and social sign in are allowed
+// Blocks password sign in attempts. Only password-less and social sign in are allowed
 exports.beforeSignIn = functions.auth.user().beforeSignIn((_user, context) => {
     if (context.eventType.endsWith('password')) {
-        throw new functions.auth.HttpsError('permission-denied');
+        throw new functions.auth.HttpsError('permission-denied', 'Password sign in is not allowed');
     }
 });
 
 
 // New user signup. Everyone can sign up.
 // This function is not used anymore. We now use the client SDK to send the email sign in link.
-// It might be useful in the future if we want to allow users to sign up with a password and send them an email verification link.
+// It might be useful in the future if we want to allow users to sign up with a password and email them a verification link.
 // Initialize client SDK - for sending emails
 // const apiKey = 'AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M';
 // firebase.initializeApp({
@@ -587,7 +489,7 @@ exports.beforeSignIn = functions.auth.user().beforeSignIn((_user, context) => {
 // });
 // exports.signUp = functions.https.onCall(async (data, _context) => {
 //     try {
-//         // Create the user - do not set the password as we will only allow login via email linkå
+//         // Create the user - do not set the password as we will only allow login via email link
 //         const { uid } = await admin.auth().createUser({
 //             email: data.email,
 //             emailVerified: false,
@@ -620,58 +522,25 @@ exports.beforeSignIn = functions.auth.user().beforeSignIn((_user, context) => {
 //     }
 // });
 
-function getGroupsWhereRole(context, role) {
-    const privileges = context.auth.token && context.auth.token.privileges || {};
-    return Object.keys(privileges).filter(group => privileges[group] === role);
-}
-
-function getGroupsWhereEditor(context) {
-    return getGroupsWhereRole(context, 'editor');
-}
-
-function getGroupsWhereAdmin(context) {
-    return getGroupsWhereRole(context, 'admin');
-}
-
-function isGroupAdmin(context, project) {
-    const groupsWhereAdmin = getGroupsWhereAdmin(context);
-    return groupsWhereAdmin.includes(project.groupId);
-}
-
-function isGroupEditor(context, project) {
-    const groupsWhereEditor = getGroupsWhereEditor(context);
-    return groupsWhereEditor.includes(project.groupId);
-}
-
-async function getSuperAdminEmails() {
-    const superAdmins = await getSuperAdmins();
-    return superAdmins.map(a => a.email);
-}
-
-async function getGroupAdminEmails(project) {
-    const groupAdmins = await getGroupAdmins(project.groupId);
-    return groupAdmins.map(a => a.email);
-}
-
 exports.getMyGroupsAssigmentRequests = functions.https.onCall(async (_, context) => {
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'User is not authenticated');
     }
 
-    const groupsWhereAdmin = getGroupsWhereAdmin(context);
+    const groupsWhereAdmin = util.getGroupsWhereAdmin(context);
 
-    if (groupsWhereAdmin.length === 0 && !isSuperAdmin(context)) {
+    if (groupsWhereAdmin.length === 0 && !util.isSuperAdmin(context)) {
         throw new functions.https.HttpsError('permission-denied', 'User is not a superadmin nor a group admin');
     }
 
     // Get the requests
     let requests;
-    if (isSuperAdmin(context)) {
+    if (util.isSuperAdmin(context)) {
         // if superadmin, get all requests
-        requests = await assignmentRequestsCollection.get();
+        requests = await util.assignmentRequestsCollection.get();
     } else {
         // if group admin, get only requests for the groups where the user is admin
-        requests = await assignmentRequestsCollection
+        requests = await util.assignmentRequestsCollection
             .where('groupId', 'in', groupsWhereAdmin)
             .get();
     }
@@ -690,15 +559,17 @@ exports.getMyGroupsAssigmentRequests = functions.https.onCall(async (_, context)
         }
     }))).filter(r => r !== null);
 
-    // add group name to each request
-    const requestsWithUserAndGroupDisplayName = await Promise.all(requestsWithUserDisplayName.map(async request => {
-        const groupDoc = await groupsCollection.doc(request.groupId).get();
+    // add group name and format date to each request
+    return await Promise.all(requestsWithUserDisplayName.map(async request => {
+        const groupDoc = await util.groupsCollection.doc(request.groupId).get();
         const groupName = groupDoc.data().name;
-        const dateFormatted = request.createTime.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        const dateFormatted = request.createTime.toDate().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
         return { ...request, groupName, createTime: dateFormatted };
     }));
-
-    return requestsWithUserAndGroupDisplayName;
 });
 
 // Accept or reject an assignment request
@@ -708,10 +579,10 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
     }
 
     // Check if the user is a group admin of the group the user wants to join
-    const groupsWhereAdmin = getGroupsWhereAdmin(context);
-    const requestDoc = await assignmentRequestsCollection.doc(requestId).get();
+    const groupsWhereAdmin = util.getGroupsWhereAdmin(context);
+    const requestDoc = await util.assignmentRequestsCollection.doc(requestId).get();
     const request = requestDoc.data();
-    if (!groupsWhereAdmin.includes(request.groupId) && !isSuperAdmin(context)) {
+    if (!groupsWhereAdmin.includes(request.groupId) && !util.isSuperAdmin(context)) {
         throw new functions.https.HttpsError('permission-denied', 'User is not an admin of the group');
     }
 
@@ -740,7 +611,7 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
 
 
     // Check if the group exists
-    const groupDoc = await groupsCollection.doc(request.groupId).get();
+    const groupDoc = await util.groupsCollection.doc(request.groupId).get();
     const group = groupDoc.data();
     if (!group) {
         throw new functions.https.HttpsError('not-found', 'Group not found');
@@ -753,7 +624,7 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
     }
 
     // Update the request
-    await assignmentRequestsCollection.doc(requestId).update({ status: newStatus });
+    await util.assignmentRequestsCollection.doc(requestId).update({ status: newStatus });
 
     // Add the user to the group by modifying the privileges in the user's token
     if (newStatus === 'accepted') {
@@ -775,7 +646,7 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
             await admin.auth().setCustomUserClaims(userId, customClaims);
         } catch (error) {
             // revert the request status - TODO use a transaction
-            await assignmentRequestsCollection.doc(requestId).update({ status });
+            await util.assignmentRequestsCollection.doc(requestId).update({ status });
             console.log(error);
             throw new functions.https.HttpsError('internal', 'Could not add user to group');
         }
@@ -809,7 +680,7 @@ exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastNa
 
     // create mail document
     const mailDoc = {
-        to: await getSuperAdminEmails(),
+        to: await util.getSuperAdminEmails(),
         message: {
             subject: `New support request from ${firstName} ${lastName}`,
             html: `
@@ -829,7 +700,7 @@ exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastNa
     };
 
     // add mail document to mail collection
-    await mailCollection.add(mailDoc);
+    await util.mailCollection.add(mailDoc);
 
     return { message: 'Success! Contact request sent.' };
 });
@@ -847,19 +718,19 @@ exports.updateBestPracticesCount = functions.firestore.document('bestPractices/{
     const { projectId } = change.after.data();
 
     // count the number of good practices for the project
-    const bestPractices = await bestPracticesCollection.where('projectId', '==', projectId).count().get();
+    const bestPractices = await util.bestPracticesCollection.where('projectId', '==', projectId).count().get();
     const bestPracticesCount = bestPractices.data().count;
     console.log('Updating best practices count for project', projectId, 'to', bestPracticesCount);
 
     // update the good practices count in the registry document
-    await registryCollection.doc(projectId).update({ bestPracticesCount });
+    await util.registryCollection.doc(projectId).update({ bestPracticesCount });
 });
 
 
 /************************************************
- * 
- * POJECT PUBLISHING WORKFLOW
- * 
+ *
+ * PROJECT PUBLISHING WORKFLOW
+ *
  * **********************************************/
 
 
@@ -870,17 +741,17 @@ exports.updateBestPracticesCount = functions.firestore.document('bestPractices/{
 //     if (allowed) {
 //         // Get a reference to the Firestore document for the project
 //         const projectRef = admin.firestore().collection('projects').doc(project.projectId);
-        
+
 //         // Run the update operation as a transaction
 //         await admin.firestore().runTransaction(async (transaction) => {
 //             // Read the current project document
 //             const projectDoc = await transaction.get(projectRef);
-            
+
 //             // If the document does not exist, throw an error
 //             if (!projectDoc.exists) {
 //                 throw new functions.https.HttpsError('invalid-argument', 'Project does not exist');
 //             }
-            
+
 //             // Update the status of the project
 //             transaction.update(projectRef, { status: newStatus });
 //         });
@@ -889,111 +760,17 @@ exports.updateBestPracticesCount = functions.firestore.document('bestPractices/{
 //     // If not allowed, an error should have been thrown before reaching this point
 // }
 
-async function updateStatus(projectRef, newStatus) {
-    await db.runTransaction(async (transaction) => {
-        // Read the current project document
-        const projectDoc = await transaction.get(projectRef);
+// async function updateStatus(projectRef, newStatus) {
+//     await db.runTransaction(async (transaction) => {
+//         // Read the current project document
+//         const projectDoc = await transaction.get(projectRef);
+//
+//         // Update the status of the project
+//         transaction.update(projectRef, { status: newStatus });
+//     });
+// }
 
-        // Update the status of the project
-        transaction.update(projectRef, { status: newStatus });
-    });
-}
-
-function updateProjectStatus(context, projectRef, newStatus) {
-    // Check if the user is authenticated
-    if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'User is not authenticated');
-    }
-
-    // Check arguments
-    if (!projectRef.exists) {
-        throw new functions.https.HttpsError('invalid-argument', 'Project does not exist');
-    }
-    if (!newStatus) {
-        throw new functions.https.HttpsError('invalid-argument', 'Missing new status');
-    }
-
-    const oldStatus = project.status;
-
-    if (oldStatus === newStatus) {
-        throw new functions.https.HttpsError('invalid-argument', 'Old status and new status are the same');
-    }
-
-    if (!STATUSES.includes(newStatus)) {
-        throw new functions.https.HttpsError('invalid-argument', 'Invalid status');
-    }
-
-    // Check if the user is authorized to update the project status
-    if (isSuperAdmin(context)) {
-        // superadmin can update from any status to any status
-        updateStatus(projectRef, newStatus);
-    } else if (user.role === 'admin') {
-        // group admins can update from 'draft' to 'submitted' and from 'submitted' to 'draft' (when they reject a project submission)
-        if ((oldStatus === 'draft' && newStatus === 'submitted') || (oldStatus === 'submitted' || newStatus === 'draft')) {
-            updateStatus(projectRef, newStatus);
-            // they can also update from 'submitted' to 'published' or from 'published' to 'draft' (when they unpublish a project) 
-        } else if ((oldStatus === 'submitted' && newStatus === 'published') || (oldStatus === 'published' || newStatus === 'draft')) {
-            updateStatus(projectRef, newStatus);
-        } else {
-            throw new functions.https.HttpsError('permission-denied', 'Group admins can only update from draft to submitted, from submitted to draft, or from submitted to published.');
-        }
-    } else if (user.role === 'editor') {
-        // editors can update from 'draft' to 'submitted' only if they are the author of the project
-        if (newStatus === 'submitted' && oldStatus === 'draft' && user.id === project.authorId) {
-            updateStatus(projectRef, newStatus);
-        } else {
-            throw new functions.https.HttpsError('permission-denied', 'Editors can only update to draft status if they are the author of the project.');
-        }
-    } else {
-        throw new functions.https.HttpsError('permission-denied', 'User is not authorized to update project status');
-    }
-}
-
-exports.submitProject = functions.https.onCall(async ({ projectId }, context) => {
-    // check if the user is authenticated
-    if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'User is not authenticated');
-    }
-
-    // check arguments
-    if (!projectId) {
-        throw new functions.https.HttpsError('invalid-argument', 'Missing arguments');
-    }
-
-    // get the project document from Firestore
-        const projectRef = await registryCollection.doc(projectId).get();
-    // check that the project exists
-    if (!projectRef.exists) {
-        throw new functions.https.HttpsError('not-found', 'Project not found');
-    }
-    
-    const project = projectRef.data();
-
-    // check that the project status is 'draft' - only draft projects can be submitted   
-    if (project.status && project.status !== 'draft') {
-        throw new functions.https.HttpsError('invalid-argument', 'Project status must be "draft"');
-    }
-
-    const isAdmin = isGroupAdmin(context, project);
-    const isAuthorAndEditor = isGroupEditor(context, project) && project.created_by === context.auth.uid;
-    const authorized = isSuperAdmin(context) || isAdmin || isAuthorAndEditor;
-    if (!authorized) {
-        throw new functions.https.HttpsError('permission-denied', 'User is not a super admin, nor a group admin, nor a group editor and owner of the project');
-    }
-
-    // updateProjectStatus also checks if the user is authorized to update the project status
-    // updateStatus(projectRef, 'submitted');
-    console.log('Updating project status to submitted');
-    registryCollection.doc(projectId).update({ status: 'submitted' });
-    console.log('Project status updated to submitted');
-
-    // send email to group admins
-    // const groupAdminEmails = await getGroupAdminEmails(project);
-    // const groupDoc = await groupsCollection.doc(project.groupId).get();
-    // const groupName = groupDoc.data().name;
-
-    // const mailDoc = emailTemplates.submittedForReview(groupAdminEmails, groupName, projectId, project.project.title);
-    // await mailCollection.add(mailDoc);
-
-    // return { message: 'Success! Project submitted.' };
-});
+const projectPublishWorkflow = require('./projectPublishWorkflow');
+exports.submitProject = projectPublishWorkflow.submitProject;
+exports.publishProject = projectPublishWorkflow.publishProject;
+exports.rejectProject = projectPublishWorkflow.rejectProject;

@@ -44,3 +44,17 @@ export async function submitForReview(projectId: string) {
     const result = await submitForReview({ projectId });
     return result.data;
 }
+
+export async function publishProject(projectId: string) {
+    const functions = getFunctions();
+    const submitForReview = httpsCallable(functions, 'publishProject');
+    const result = await submitForReview({ projectId });
+    return result.data;
+}
+
+export async function rejectProject(projectId: string, reason: string) {
+    const functions = getFunctions();
+    const rejectProject = httpsCallable(functions, 'rejectProject');
+    const result = await rejectProject({ projectId, reason });
+    return result.data;
+}

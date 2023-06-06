@@ -152,7 +152,24 @@ export const useProjectStore = defineStore({
                 this.nProjectsFound = countSnapshot.data().count;
             });
         },
+        async refetchProject(projectId: string) {
+            // find the index of the project in the list
+            const index = this.projects.findIndex(p => p.id === projectId);
+            // if the project is not found, do nothing
+            if (index === -1) {
+                return;
+            }
+            // fetch the project again
+            const docRef = doc(db, 'registry', projectId);
+            
+            // replace the project in the list
+            this.projects[index] = { id: projectId, data: snakeToCamel((await getDoc(docRef)).data()) };
 
+            // re-fetch the current project if any
+            if (this.id === projectId) {
+                await this.fetchProject(projectId);
+            }
+        },
         // I could not make this work, so I am using the previous function. Keeping this code here for reference
         // async fetchNextProjects_(groupId: string | null, nProjects: number = 25, reset: boolean = false, get: 'next' | 'previous' = 'next') {
         //     // This code sucks, but pagination in Firestore is not easy
@@ -277,14 +294,27 @@ export const useProjectStore = defineStore({
         canEdit() {
             const authStore = useAuthStore();
 
+            // super admins can edit any project
+            // if (authStore.isAdmin) {
+            //     return true;
+            // }
+
+            // if the project is not a draft, it cannot be edited
+            if (!this.project.status || this.project.status !== 'draft') {
+                return false;
+            }
+
             if (authStore.isAdmin) {
                 return true;
             }
 
+            // if the user is admin, he can edit any project if it is a draft
             const level = authStore.privileges[this.project.group];
             if (level === 'admin') {
                 return true;
             }
+
+            // if the user is editor, he can edit the project if it is a draft and he is the owner
             if (level === 'editor' && this.project.created_by === authStore.user.uid) {
                 return true
             }

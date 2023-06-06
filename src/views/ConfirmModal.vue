@@ -26,16 +26,11 @@ const emit = defineEmits(['closed', 'cancel']); // TODO: add 'close' event
 const closingCount = ref(0);
 function closing() {
     closingCount.value++;
-    console.log(closingCount.value);
     if (closingCount.value === 2) {
         closingCount.value = 0;
         emit('closed');
     }
 }
-
-// watch(() => props.open, (newValue, oldValue) => {
-//     console.log('watch', newValue, oldValue);
-// });
 
 function cancel() {
     emit('cancel');

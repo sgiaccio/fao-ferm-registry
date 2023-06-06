@@ -10,6 +10,7 @@ const route = useRoute();
 const tabs = [
     { name: 'Users', routeName: 'users', current: false, superAdminOnly: false },
     { name: 'Groups', routeName: 'groups', current: false, superAdminOnly: true },
+    { name: 'Submitted initiatives', routeName: 'submittedInitiatives', current: false, superAdminOnly: false },
     { name: 'Institution assignments requests', routeName: 'groupAssignments', current: false, superAdminOnly: false },
 ]
 
