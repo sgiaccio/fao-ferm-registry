@@ -40,7 +40,7 @@ function _getGroupsWhereEditor(context) {
 async function _getGroupAdmins(groupId) {
     // get all users
     const users = await admin.auth().listUsers();
-    // filter out the admins
+    // filter the users that have the admin role for the group
     return users.users.filter(u => u.customClaims && u.customClaims.privileges && u.customClaims.privileges[groupId] === 'admin');
 }
 
@@ -146,8 +146,8 @@ async function getSuperAdminEmails() {
     return superAdmins.map(a => a.email);
 }
 
-async function getGroupAdminEmails(project) {
-    const groupAdmins = await _getGroupAdmins(project.group);
+async function getGroupAdminEmails(groupId) {
+    const groupAdmins = await _getGroupAdmins(groupId);
     return groupAdmins.map(a => a.email);
 }
 

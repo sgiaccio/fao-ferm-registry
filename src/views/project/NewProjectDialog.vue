@@ -18,7 +18,8 @@ const authStore = useAuthStore();
 const groups = ref({});
 
 onMounted(async () => {
-    const t = authStore.isAdmin ? await fetchAllGroups() : groups.value = authStore.privileges;
+    const allGroups = await fetchAllGroups();
+    const t = authStore.isAdmin ? allGroups : Object.keys(authStore.privileges).reduce((acc, key) => ({...acc, [key]: allGroups[key]}), {})
     groups.value = Object.entries(t).sort((a, b) => a[1].localeCompare(b[1]));
 });
 

@@ -28,7 +28,7 @@ service cloud.firestore {
 
         function getStatus(rsc) {
             // Determine the status of the resource
-            return ("status" in rsc.data) ? rsc.data.status : null;
+            return ("status" in rsc.data) ? rsc.data.status : "draft";
         }
 
         function isOneOfStatuses(rsc, array) {
@@ -61,7 +61,7 @@ service cloud.firestore {
                 || (
                     isAdmin()
                     // user is the creator of the resource
-                    // commented ouy because he shouldnt be able to read it if he is not in the group
+                    // commented ouy because he shouldn't be able to read it if he is not in the group
                     // || request.auth.uid == resource.data.created_by
 
                     // it's a new record - used to create a temporary ID

@@ -61,13 +61,14 @@ export async function fetchPublicGroups() {
 }
 
 export async function fetchSubmittedProjects(groupIds: string[]) {
+    console.log('groupIds: ' + groupIds)
     if (!groupIds || groupIds.length === 0) {
         return [];
     }
     const projectsCollection = collection(db, "registry");
     // fetch the projects that belong to the groups that the user is a member of and that are published
     const projects = await getDocs(query(projectsCollection,
-        // where("group", "in", groupIds),
+        where("group", "in", groupIds),
         where("status", "==", "submitted")));
     return projects.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
 }

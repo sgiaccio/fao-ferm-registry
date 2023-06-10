@@ -48,7 +48,7 @@ const thumbnailUrl = vue.ref();
 async function loadThumbnail(maxRetries = 1, pause = 2000) {
     try {
         const imgBlob = await loadFile(`${props.folder}/thumbnail/thumbnail.jpg`, maxRetries, pause);
-        var urlCreator = window.URL || window.webkitURL;
+        const urlCreator = window.URL || window.webkitURL;
         thumbnailUrl.value = urlCreator.createObjectURL(imgBlob);
     } catch (error) {
         thumbnailUrl.value = null;
@@ -75,7 +75,7 @@ function uploadFile() {
 
     uploadStatus.value = 'uploading';
     uploadTask.then(_snapshot => {
-        getFiles(props.folder!);
+        getFiles();
         selectedFile.value = null;
         uploadStatus.value = 'uploaded';
         loadThumbnail(5);

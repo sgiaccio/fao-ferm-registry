@@ -359,11 +359,11 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
 
     // Get group name from the database
     const groupDoc = await util.groupsCollection.doc(groupId).get();
-    const groupName = groupDoc.data().name;
 
-    const groupAdminEmails = await util.getGroupAdminEmails(groupDoc.data());
     let mailDoc;
-    if (groupAdminEmails > 0) {
+    const groupAdminEmails = await util.getGroupAdminEmails(groupId);
+    const groupName = groupDoc.data().name;
+    if (groupAdminEmails.length > 0) {
         // create mail document
         mailDoc = {
             to: groupAdminEmails,
@@ -609,7 +609,6 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
         throw new functions.https.HttpsError('invalid-argument', 'Request is not pending');
     }
 
-
     // Check if the group exists
     const groupDoc = await util.groupsCollection.doc(request.groupId).get();
     const group = groupDoc.data();
@@ -652,24 +651,24 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
         }
     }
 
-    // // Send email to user
-    // const { email } = await admin.auth().getUser(userId);
-    // const groupName = groupDoc.data().name;
-    // const mailDoc = {
-    //     to: [email],
-    //     message: {
-    //         subject: `${groupName} - Membership Request Status`,
-    //         html: `
-    //             <p>Hi,</p>
-    //             <p>This email is to inform you about the status of your membership request to ${groupName}. Your request has been ${newStatus}.</p>
-    //             <p>Sincerely,</p>
-    //             <p>the FERM team</p>
-    //         `
-    //     }
-    // };
+    // Send email to user
+    const { email } = await admin.auth().getUser(userId);
+    const groupName = groupDoc.data().name;
+    const mailDoc = {
+        to: [email],
+        message: {
+            subject: `${groupName} - Membership Request Status`,
+            html: `
+                <p>Hi,</p>
+                <p>This email is to inform you about the status of your membership request to ${groupName}. Your request has been ${newStatus}.</p>
+                <p>Sincerely,</p>
+                <p>the FERM team</p>
+            `
+        }
+    };
 
-    // // add mail document to mail collection
-    // await admin.firestore().collection('mail').add(mailDoc);
+    // add mail document to mail collection
+    await admin.firestore().collection('mail').add(mailDoc);
 });
 
 
@@ -732,43 +731,6 @@ exports.updateBestPracticesCount = functions.firestore.document('bestPractices/{
  * PROJECT PUBLISHING WORKFLOW
  *
  * **********************************************/
-
-
-
-// async function updateStatus(projectRef, newStatus) {
-//     // ... the rest of your code here ...
-
-//     if (allowed) {
-//         // Get a reference to the Firestore document for the project
-//         const projectRef = admin.firestore().collection('projects').doc(project.projectId);
-
-//         // Run the update operation as a transaction
-//         await admin.firestore().runTransaction(async (transaction) => {
-//             // Read the current project document
-//             const projectDoc = await transaction.get(projectRef);
-
-//             // If the document does not exist, throw an error
-//             if (!projectDoc.exists) {
-//                 throw new functions.https.HttpsError('invalid-argument', 'Project does not exist');
-//             }
-
-//             // Update the status of the project
-//             transaction.update(projectRef, { status: newStatus });
-//         });
-//     }
-
-//     // If not allowed, an error should have been thrown before reaching this point
-// }
-
-// async function updateStatus(projectRef, newStatus) {
-//     await db.runTransaction(async (transaction) => {
-//         // Read the current project document
-//         const projectDoc = await transaction.get(projectRef);
-//
-//         // Update the status of the project
-//         transaction.update(projectRef, { status: newStatus });
-//     });
-// }
 
 const projectPublishWorkflow = require('./projectPublishWorkflow');
 exports.submitProject = projectPublishWorkflow.submitProject;

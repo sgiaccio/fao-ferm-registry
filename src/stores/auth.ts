@@ -14,7 +14,7 @@ import { collection, query, getDocs, where, documentId } from "firebase/firestor
 
 import router from '@/router';
 
-import { db, auth } from '../firebase';
+import { db, auth } from "@/firebase";
 
 
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";

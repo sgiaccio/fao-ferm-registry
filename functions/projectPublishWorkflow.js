@@ -53,7 +53,7 @@ exports.submitProject = functions.https.onCall(async ({ projectId }, context) =>
         console.log("Project status updated to submitted");
 
         // send email to group admins
-        const groupAdminEmails = await util.getGroupAdminEmails(project);
+        const groupAdminEmails = await util.getGroupAdminEmails(project.group);
         const groupDoc = await util.groupsCollection.doc(project.group).get();
         const groupName = groupDoc.data().name;
 

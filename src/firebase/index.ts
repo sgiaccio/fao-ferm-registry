@@ -1,8 +1,14 @@
+/**
+ * @fileoverview Firebase configuration and initialization.
+ * @module firebase
+ * @preferred
+ */
+
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, connectAuthEmulator, type Auth } from "firebase/auth";
 import { initializeFirestore, Firestore, connectFirestoreEmulator } from "firebase/firestore/lite";
 import { getFunctions, connectFunctionsEmulator, type Functions } from "firebase/functions";
-
+import { getStorage, connectStorageEmulator, type FirebaseStorage } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -15,6 +21,7 @@ const firebaseConfig = {
 
 let auth: Auth, db: Firestore;
 let functions: Functions;
+let storage: FirebaseStorage;
 
 // Initialize Firebase
 if (!getApps().length) {
@@ -22,28 +29,17 @@ if (!getApps().length) {
     db = initializeFirestore(app, {
         ignoreUndefinedProperties: true
     });
-    auth = getAuth(app);
 
+    auth = getAuth(app);
     functions = getFunctions(app);
+    storage = getStorage(app);
 
     if (process.env.NODE_ENV === 'development') {
         connectFirestoreEmulator(db, 'localhost', 8080);
         connectAuthEmulator(auth, "http://localhost:9099");
         connectFunctionsEmulator(functions, "localhost", 5001);
+        connectStorageEmulator(storage, "localhost", 9199);
     }
 }
 
-// async function fetchAssignmentRequestsByGroup(groupId: string) {
-//     const assignmentRequestsCollection = collection(db, 'assignmentRequests');
-//     const assignmentRequests = await getDocs(query(assignmentRequestsCollection, where('group', '==', groupId)));
-//     return assignmentRequests.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-// }
-
-export { auth, db, functions }
-
-
-
-// const groupsCollection = collection(db, 'groups');
-// const groups = await getDocs(query(groupsCollection, where('private', '==', false)));
-// // Create an object with group id as key and group name as value
-// return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+export { auth, db, functions, storage }

@@ -1,9 +1,66 @@
 rules_version = '2';
 service firebase.storage {
-  match /b/{bucket}/o {
-    match /{allPaths=**} {
-      // if user is signed in and he has been assigned at least to one group
-      allow read, write: if request.auth != null && request.auth.token.privileges.size() > 0;
+    match /b/{bucket}/o {
+        function isSignedIn() {
+            // Determine if the user is signed in
+            return request.auth != null;
+        }
+
+        function isAdmin() {
+            // Determine if the user is an admin
+            return isSignedIn() && ("token" in request.auth) && ("admin" in request.auth.token) && request.auth.token.admin == true;
+        }
+
+        function getRole(group) {
+            // Determine the role of the user in the group. Returns null if not signed in or not in the group
+            return isSignedIn()
+                ? (("privileges" in request.auth.token)
+                    ? request.auth.token.privileges[group]
+                    : null)
+                : null;
+        }
+
+        function isOneOfRoles(rsc, array) {
+            // Determine if the user has one of an array of roles in the resource group
+            return getRole(rsc.data.group) in array
+        }
+
+        function getStatus(rsc) {
+            // Determine the status of the resource
+            return ("status" in rsc.data) ? rsc.data.status : "draft";
+        }
+
+        function isOneOfStatuses(rsc, array) {
+            // Determine if the resource has one of an array of statuses
+            return getStatus(rsc) in array;
+        }
+
+        match /{projectId}/{allPaths=**} {
+            // allow read, write: if request.auth != null && request.auth.token.privileges.size() > 0;
+
+            allow read: if // related project is public
+                    getStatus(firestore.get(/databases/(default)/documents/registry/$(projectId))) == "public"
+                    // user is superadmin
+                    || isAdmin()
+                    // user has any role in the group
+                    || isOneOfRoles(firestore.get(/databases/(default)/documents/registry/$(projectId)), ["admin", "editor", "guest"])
+
+            // only allow write if the initiative is in draft status
+            allow write: if getStatus(firestore.get(/databases/(default)/documents/registry/$(projectId))) == "draft"
+                && (
+                // request.resource.size < 100 * 1024 * 1024
+                // request.resource.contentType.matches('image/.*')
+                    isAdmin()
+                    ||
+                        (
+                        // user uploading is the owner of the resource and is an editor
+                            firestore.get(/databases/(default)/documents/registry/$(projectId)).created_by == request.auth.uid
+                            && isOneOfRoles(firestore.get(/databases/(default)/documents/registry/$(projectId)), ["editor"])
+                        )
+                    // user is an admin of the group
+                    || isOneOfRoles(firestore.get(/databases/(default)/documents/registry/$(projectId)), ["admin"])
+                )
+
+        }
     }
-  }
 }

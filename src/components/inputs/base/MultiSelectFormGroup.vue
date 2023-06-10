@@ -52,8 +52,7 @@ function check(event: Event, value: MenuValue) {
         while (i < tempModel.length) {
             if (tempModel[i] === value) {
                 tempModel.splice(i, 1);
-            }
-            else {
+            } else {
                 i += 1;
             }
         }
