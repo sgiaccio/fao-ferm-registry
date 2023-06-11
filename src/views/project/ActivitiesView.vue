@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useProjectStore } from '../../stores/project';
 
-import { activities } from '../../components/project/menus';
+import { activities, restorationTypes, tenureStatuses } from '../../components/project/menus';
 
 import TabTemplate from "../TabTemplate.vue";
 import TreeItem from '../../components/inputs/base/TreeItem.vue';
-import DateFormGroup from '../../components/inputs/base/DateFormGroup.vue';
+import SelectFormGroup from "@/components/inputs/base/SelectFormGroup.vue";
 
 
 withDefaults(defineProps<{
@@ -31,12 +31,21 @@ const store = useProjectStore();
                         Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
                               v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}</span>
                     </div>
-                    <DateFormGroup :edit="edit"
-                                   v-model="area[Object.keys(area)[0]].startingDate"
-                                   label="Starting date"></DateFormGroup>
-                    <DateFormGroup :edit="edit"
-                                   v-model="area[Object.keys(area)[0]].endingDate"
-                                   label="Ending date"></DateFormGroup>
+<!--                    <DateFormGroup :edit="edit"-->
+<!--                                   v-model="area[Object.keys(area)[0]].startingDate"-->
+<!--                                   label="Starting date"></DateFormGroup>-->
+<!--                    <DateFormGroup :edit="edit"-->
+<!--                                   v-model="area[Object.keys(area)[0]].endingDate"-->
+<!--                                   label="Ending date"></DateFormGroup>-->
+                    <SelectFormGroup :edit="edit"
+                                     v-model="area[Object.keys(area)[0]].restorationType"
+                                     label="Restoration type"
+                                     :options="restorationTypes"></SelectFormGroup>
+                    <SelectFormGroup :edit="edit"
+                                     v-model="area[Object.keys(area)[0]].tenureStatus"
+                                     label="Tenure status"
+                                     :options="tenureStatuses"></SelectFormGroup>
+                    <h1 class="font-akrobat text-2xl dark:text-zinc-300 font-bold mb-2">Activities</h1>
                     <TreeItem :edit="edit"
                               v-model="area[Object.keys(area)[0]].activities"
                               :treeData="activities" />
