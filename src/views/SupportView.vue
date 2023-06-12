@@ -89,7 +89,7 @@ const onCloseError = () => {
             </div>
         </div>
         <div class="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2 relative">
-            <div class="relative px-6 pb-20 pt-24 lg:static lg:px-8">
+            <div class="relative px-6 pt-24 lg:static lg:px-8">
                 <div class="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
                     <h2 class="text-3xl font-bold tracking-tight text-white">Get in touch</h2>
                     <p class="mt-6 text-lg leading-8 text-gray-200 ">Need assistance with the FERM? We're here to help! Fill out this form with your name, email, and a detailed description of your issue or question. Our support team will get back to you as soon as possible.</p>
@@ -126,7 +126,7 @@ const onCloseError = () => {
             </div>
             <form @submit.prevent="onSubmit"
                   method="POST"
-                  class="px-6 pb-24 pt-20 sm:pb-32 lg:px-8">
+                  class="px-6 pb-24 pt-16 sm:pb-32 lg:px-8">
                 <div class="mx-auto max-w-xl lg:mr-0 lg:max-w-lg">
                     <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
                         <div>

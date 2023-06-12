@@ -364,9 +364,11 @@ onMounted(async () => {
                 </div>
 
 
-                <div class="p-4 font-akrobat font-semibold text-white col-span-2 rounded-lg text-sm bg-[url('/soil.jpg')] bg-cover bg-center flex lg:h-full justify-end items-end h-48 shadow">
+                <div class="p-4 font-akrobat font-semibold text-white col-span-2 rounded-lg text-sm bg-[url('/soil.jpg')] bg-cover bg-center flex lg:h-full justify-end items-end h-48">
                     <div class="px-16 aligh-bottom text-center bottom-3 text-lg sm:text-xl brightness-100 z-50 sm:leading-tight text-shadow-sm shadow-black">
-                        Join #GenerationRestoration and share your restoration initiative and good practices with the world.
+                        Join <a href="https://twitter.com/hashtag/GenerationRestoration"
+                                class="underline hover:text-yellow-300"
+                                target="_blank">#GenerationRestoration</a> and share your restoration initiative and good practices with the world.
                     </div>
                 </div>
 
