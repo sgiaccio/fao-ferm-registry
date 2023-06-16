@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { define } from 'mime';
 import MapInput from './MapInput.vue'
 
 

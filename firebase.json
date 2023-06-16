@@ -3,6 +3,14 @@
     "public": "dist",
     "rewrites": [
       {
+        "source": "/loadAreaJson",
+        "function": "load_area_json",
+        "region": "europe-west3"
+      },{
+        "source": "/loadShapefileMultiple",
+        "function": "load_shapefile_multiple",
+        "region": "europe-west3"
+      }, {
         "source": "**",
         "destination": "/index.html"
       }

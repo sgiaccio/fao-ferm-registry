@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import baseProps from "./formGroupProps";
-import { ref } from "vue";
-import AlertModal from "@/views/AlertModal.vue";
+import baseProps from './formGroupProps';
+import { ref } from 'vue';
+import AlertModal from '@/views/AlertModal.vue';
 
-import { QuestionMarkCircleIcon } from "@heroicons/vue/24/outline";
+import { QuestionMarkCircleIcon } from '@heroicons/vue/24/outline';
+
 
 const props = defineProps(baseProps);
 
-const emit = defineEmits(["focusout"]);
+const emit = defineEmits(['focusout']);
 
 const showAlertModal = ref(false);
 </script>
@@ -28,7 +29,8 @@ const showAlertModal = ref(false);
             <legend class="block text-sm font-bold text-gray-700 dark:text-zinc-300 sm:mt-px">
                 {{ label }}
                 <template v-if="$slots.info">
-                    <QuestionMarkCircleIcon @click="() => showAlertModal = true" class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                    <QuestionMarkCircleIcon @click="() => showAlertModal = true"
+                                            class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
                 </template>
             </legend>
             <div class="sm:col-span-3">

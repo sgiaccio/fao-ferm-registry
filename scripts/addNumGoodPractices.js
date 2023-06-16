@@ -13,18 +13,17 @@ admin.initializeApp({
 let db = admin.firestore();
 
 
-
 async function updateRegistry() {
     try {
         const snapshot = await db.collection('registry').get();
-    
+
         for (let doc of snapshot.docs) {
             try {
                 const bestPracticesSnapshot = await db.collection('bestPractices').where('projectId', '==', doc.id).get();
                 const bestPracticesCount = bestPracticesSnapshot.size;
-    
+
                 console.log('Updating goodPracticesCount in initiative', doc.id, 'to', bestPracticesCount);
-    
+
                 await doc.ref.update({
                     bestPracticesCount: bestPracticesCount
                 });

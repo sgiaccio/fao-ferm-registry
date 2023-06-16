@@ -73,7 +73,7 @@ exports.listAllUsers = functions.https.onCall(async (_data, context) => {
     }
 
     try {
-        console.log(await(admin.auth().listUsers()));
+        console.log(await (admin.auth().listUsers()));
         return await admin.auth().listUsers();
     } catch (err) {
         console.log(err);

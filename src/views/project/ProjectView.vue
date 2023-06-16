@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onBeforeMount, computed } from 'vue'
-import { useRoute, onBeforeRouteLeave } from 'vue-router'
+import { onBeforeMount, computed } from 'vue';
+import { useRoute, onBeforeRouteLeave } from 'vue-router';
 
 import router from '@/router';
 
@@ -63,7 +63,8 @@ function gotoPreviousTab() {
                             class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                         <option v-for="tab in tabs"
                                 :key="tab.name"
-                                :selected="route.path.endsWith(tab.path)">{{ tab.name }}</option>
+                                :selected="route.path.endsWith(tab.path)">{{ tab.name }}
+                        </option>
                     </select>
                 </div>
                 <div class="hidden sm:block">
@@ -74,7 +75,9 @@ function gotoPreviousTab() {
                                          :key="tab.name"
                                          :to="tab.path"
                                          :class="[route.path.endsWith(tab.path) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'w-1/4 border-b-2 py-4 px-1 text-center text-sm font-medium']"
-                                         :aria-current="route.path.endsWith(tab.path) ? 'page' : undefined">{{ tab.name }}</router-link>
+                                         :aria-current="route.path.endsWith(tab.path) ? 'page' : undefined">
+                                {{ tab.name }}
+                            </router-link>
                         </nav>
                     </div>
                 </div>

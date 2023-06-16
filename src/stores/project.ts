@@ -354,6 +354,20 @@ export const useProjectStore = defineStore({
             await this.save();
             this.resetProjectState();
         },
+        polygonsArea() {
+            const getType = (area: any) => Object.keys(area)[0];
+            const getValue = (area: any) => Object.values(area)[0];
+            try {
+                getValue({})
+                const areas = this.projectAreas
+                    .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
+                    .map((a: any) => +((getValue(a) as { area: number }).area || 0)); // TODO types
+                return areas.reduce((a: number, b: number) => a + b, 0);
+            } catch (e) {
+                console.log('Error calculating polygons area', e);
+                return NaN;
+            }
+        },
         async deleteProject(projectId: string) {
             const batch = writeBatch(db);
 

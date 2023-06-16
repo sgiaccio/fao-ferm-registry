@@ -17,7 +17,7 @@ onMounted(async () => {
 <template>
     <RegistrationView :edit="false" />
     <AoiView :edit="false" />
-    <CharacteristicsView :edit="false" />
+<!--    <CharacteristicsView :edit="false" />-->
     <ActivitiesView :edit="false" />
     <EcosystemsView :edit="false" />
     <IndicatorsView :edit="false" />

@@ -73,3 +73,40 @@ export async function fetchSubmittedProjects(groupIds: string[]) {
     return projects.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
 }
 
+function memoize<T extends (...args: any[]) => Promise<any>>(fn: T): (...x: Parameters<T>) => Promise<ReturnType<T>> {
+    const cache: { [key: string]: any } = {};
+    return function (...x: Parameters<T>): Promise<ReturnType<T>> {
+        const args = JSON.stringify(x);
+
+        if (!cache[args]) {
+            cache[args] = fn.apply(undefined, x).catch((err: any) => {
+                delete cache[args]; // remove from cache if promise was rejected
+                throw err; // re-throw the error so it can be handled downstream
+            });
+        }
+
+        return cache[args]
+    }
+}
+
+export const getGaulLevel0 = memoize(async () => {
+    console.log('This should be logged only once')
+    const gaulCollection = collection(db, "gaul");
+    const level0AreasDocs = await getDocs(query(gaulCollection));
+    return level0AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name }));
+});
+
+
+export const getGaulLevel1 = memoize(async (admin0: string) => {
+    console.log('This should be logged only once')
+    const gaulCollection = collection(db, "gaul", admin0, "children");
+    const level1AreasDocs = await getDocs(query(gaulCollection));
+    return level1AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name }));
+});
+
+export const getGaulLevel2 = memoize(async (admin0: string, admin2: string) => {
+    console.log('This should be logged only once')
+    const gaulCollection = collection(db, "gaul", admin0, "children", admin2, "children");
+    const level2AreasDocs = await getDocs(query(gaulCollection));
+    return level2AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name }));
+});

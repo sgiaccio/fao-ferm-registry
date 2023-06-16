@@ -1,14 +1,9 @@
-/**
- * @fileoverview Firebase configuration and initialization.
- * @module firebase
- * @preferred
- */
+import { initializeApp, getApps } from 'firebase/app';
+import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth';
+import { initializeFirestore, Firestore, connectFirestoreEmulator } from 'firebase/firestore/lite';
+import { getFunctions, connectFunctionsEmulator, type Functions } from 'firebase/functions';
+import { getStorage, connectStorageEmulator, type FirebaseStorage } from 'firebase/storage';
 
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth, connectAuthEmulator, type Auth } from "firebase/auth";
-import { initializeFirestore, Firestore, connectFirestoreEmulator } from "firebase/firestore/lite";
-import { getFunctions, connectFunctionsEmulator, type Functions } from "firebase/functions";
-import { getStorage, connectStorageEmulator, type FirebaseStorage } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -36,10 +31,10 @@ if (!getApps().length) {
 
     if (process.env.NODE_ENV === 'development') {
         connectFirestoreEmulator(db, 'localhost', 8080);
-        connectAuthEmulator(auth, "http://localhost:9099");
-        connectFunctionsEmulator(functions, "localhost", 5001);
-        connectStorageEmulator(storage, "localhost", 9199);
+        connectAuthEmulator(auth, 'http://localhost:9099');
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+        connectStorageEmulator(storage, 'localhost', 9199);
     }
 }
 
-export { auth, db, functions, storage }
+export { auth, db, functions, storage };

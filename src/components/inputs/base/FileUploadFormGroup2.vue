@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { uploadFiles, listFiles, getFileAsBlob, deleteFile } from "@/firebase/storage";
+import { ref, onMounted } from 'vue';
+import { uploadFiles, listFiles, getFileAsBlob, deleteFile } from '@/firebase/storage';
 
 
-import { TrashIcon, ArrowDownTrayIcon } from "@heroicons/vue/24/solid";
+import { TrashIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/solid';
 
-import baseProps from "../formGroupProps";
-import FormGroup from "../FormGroup.vue";
+import baseProps from '../formGroupProps';
+import FormGroup from '../FormGroup.vue';
 
 
 const progress = ref(0);
@@ -15,7 +15,6 @@ const props = defineProps({
     ...baseProps,
     ...{
         folder: { type: String, required: true }
-        // modelValue: { type: String }
     }
 });
 
@@ -26,7 +25,7 @@ async function getUploadedFiles() {
         uploadedFiles.value = await listFiles(props.folder);
     } catch (error) {
         console.error(error);
-        alert("Failed to load files: " + error);
+        alert('Failed to load files: ' + error);
     }
 }
 
@@ -34,20 +33,16 @@ onMounted(async () => {
     await getUploadedFiles();
 });
 
-// function onFilesSelected(event: Event) {
-//     selectedFiles.value = (event.target as HTMLInputElement).files;
-// }
-
 function upload(files: FileList) {
     uploadFiles(props.folder, Array.from(files), (uploadProgress) => {
         progress.value = uploadProgress;
     }).then(async () => {
-        console.log("Upload complete");
+        console.log('Upload complete');
         progress.value = 0;
         await getUploadedFiles();
     }).catch((error) => {
-        console.error("Upload failed:", error);
-        alert("Upload failed: " + error);
+        console.error('Upload failed:', error);
+        alert('Upload failed: ' + error);
     });
 }
 
@@ -56,13 +51,13 @@ async function download(path: string, name: string) {
         const blob = await getFileAsBlob(path);
         const url = URL.createObjectURL(blob);
 
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.href = url;
         link.download = name;
         link.click();
     } catch (error) {
         console.error(error);
-        alert("Download failed: " + error);
+        alert('Download failed: ' + error);
     }
 }
 
@@ -99,7 +94,7 @@ function handleFiles() {
     const filesAlreadyUploaded = Array.from(files).filter(file => uploadedFileNames.includes(file.name));
 
     if (filesAlreadyUploaded.length) {
-        const confirmMessage = `The following files have already been uploaded:\n${filesAlreadyUploaded.map(file => file.name).join("\n")}\n\nDo you want to upload them again?`;
+        const confirmMessage = `The following files have already been uploaded:\n${filesAlreadyUploaded.map(file => file.name).join('\n')}\n\nDo you want to upload them again?`;
         if (!confirm(confirmMessage)) {
             return;
         }
@@ -118,7 +113,7 @@ async function deleteFromStorage(name: string, path: string) {
             await deleteFile(path);
             await getUploadedFiles();
         } catch (error) {
-            alert("Failed to delete file: " + error);
+            alert('Failed to delete file: ' + error);
         }
     }
 }
@@ -128,15 +123,15 @@ async function deleteFromStorage(name: string, path: string) {
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
-
-        <div @dragover.prevent
+        <div v-if="edit"
+             @dragover.prevent
              @dragenter="dragEnter"
              @dragleave="dragLeave"
              @drop="handleDrop"
              @click="openFileDialog"
              class="w-full h-32 mb-6 border-2 border-dashed border-gray-400 flex items-center justify-center cursor-pointer font-bold text-center"
              :class="isDragging ? 'bg-ferm-blue-dark-200' : ''">
-            Drop {{uploadedFiles && uploadedFiles.length ? 'more' : ''}} files here or click to upload
+            Drop {{ uploadedFiles && uploadedFiles.length ? 'more' : '' }} files here or click to upload
             <input
                 ref="fileInput"
                 type="file"
@@ -146,7 +141,7 @@ async function deleteFromStorage(name: string, path: string) {
             />
         </div>
 
-        <div class="overflow-hidden bg-white shadow sm:rounded-md text-sm border">
+        <div v-if="uploadedFiles.length" class="overflow-hidden bg-white shadow sm:rounded-md text-sm border">
             <ul role="list" class="divide-y divide-gray-200">
                 <li v-for="file in uploadedFiles"
                     :key="file.name"
@@ -166,6 +161,9 @@ async function deleteFromStorage(name: string, path: string) {
                     </div>
                 </li>
             </ul>
+        </div>
+        <div v-else-if="!edit">
+            <p class="text-gray-400 italic">No files uploaded yet</p>
         </div>
         <template v-slot:info v-if="$slots.info">
             <slot name="info" />

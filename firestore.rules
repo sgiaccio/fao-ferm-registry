@@ -198,5 +198,10 @@ service cloud.firestore {
             allow update: if false
             allow delete: if false
         }
+
+        match /gaul/{document=**} {
+            allow read: if isSignedIn()
+        }
+
     }
 }

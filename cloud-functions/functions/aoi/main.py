@@ -170,7 +170,7 @@ def _insert_into_postgis(project_id, shp_file_path, bucket_path, orig_filename):
             for record in source:
                 uuid = uuid1()
                 geometry_type = record['geometry']['type']
-                assert geometry_type in ['Polygon', 'MultiPolygon', '3D Polygon', '3D MultiPolygon'], 'Invalid geometry type: %s' % geometry_type
+                assert geometry_type in ['Point', 'MultiPoint', 'Polygon', 'MultiPolygon', '3D Point', '3D MultiPoint', '3D Polygon', '3D MultiPolygon'], 'Invalid geometry type: %s' % geometry_type
 
                 polygon = shape(record['geometry'])
 

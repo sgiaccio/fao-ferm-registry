@@ -7,11 +7,12 @@ import Footer from '@/views/Footer.vue';
 import ShittyDivider from '@/views/ShittyDivider.vue';
 import AlertModal from '@/views/AlertModal.vue';
 
+
 const formData = reactive({
     firstName: '',
     lastName: '',
     email: '',
-    message: '',
+    message: ''
 });
 
 const submitEnabled = ref(false);
@@ -46,14 +47,16 @@ const onCloseError = () => {
     supportError.value = false;
 };
 </script>
-  
+
 <template>
     <AlertModal type="success"
                 :onClose="onCloseSuccess"
                 :open="supportSuccess"
                 title="Support request sent"
                 buttonText="Ok">
-        <p class="text-sm text-gray-500">Your support request has been submitted successfully. We will be in touch with you via email as soon as possible. Please check your inbox for further communications regarding your request.</p>
+        <p class="text-sm text-gray-500">Your support request has been submitted successfully. We will be in touch with
+            you via email as soon as possible. Please check your inbox for further communications regarding your
+            request.</p>
     </AlertModal>
 
     <AlertModal type="error"
@@ -92,7 +95,9 @@ const onCloseError = () => {
             <div class="relative px-6 pt-24 lg:static lg:px-8">
                 <div class="mx-auto max-w-xl lg:mx-0 lg:max-w-lg">
                     <h2 class="text-3xl font-bold tracking-tight text-white">Get in touch</h2>
-                    <p class="mt-6 text-lg leading-8 text-gray-200 ">Need assistance with the FERM? We're here to help! Fill out this form with your name, email, and a detailed description of your issue or question. Our support team will get back to you as soon as possible.</p>
+                    <p class="mt-6 text-lg leading-8 text-gray-200 ">Need assistance with the FERM? We're here to help!
+                        Fill out this form with your name, email, and a detailed description of your issue or question.
+                        Our support team will get back to you as soon as possible.</p>
                     <p class="mt-6 text-lg leading-8 text-gray-300">Thank you for using FERM!</p>
                     <!-- <dl class="mt-10 space-y-4 text-base leading-7 text-gray-300">
                         <div class="flex gap-x-4">
@@ -181,7 +186,9 @@ const onCloseError = () => {
                     <div class="mt-8 flex justify-end">
                         <button type="submit"
                                 :disabled="!submitEnabled"
-                                :class="[submitEnabled ? 'bg-ferm-blue-light-700 hover:bg-ferm-blue-light-600 ' : 'bg-gray-500/90 text-gray-200', 'rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:ferm-blue-light-700']">Send message</button>
+                                :class="[submitEnabled ? 'bg-ferm-blue-light-700 hover:bg-ferm-blue-light-600 ' : 'bg-gray-500/90 text-gray-200', 'rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:ferm-blue-light-700']">
+                            Send message
+                        </button>
                     </div>
                 </div>
             </form>

@@ -27,9 +27,11 @@ import { httpsCallable } from "firebase/functions";
 
 const provider = new GoogleAuthProvider();
 
-const baseUrl = process.env.NODE_ENV === 'development'
-    ? 'http://localhost:5173'
-    : 'http://ferm.fao.org';
+// const baseUrl = process.env.NODE_ENV === 'development'
+//     ? 'http://localhost:5173'
+//     : 'http://ferm.fao.org';
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this

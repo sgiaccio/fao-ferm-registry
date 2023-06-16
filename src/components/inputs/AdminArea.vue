@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import json from '../project/gaul.json';
+import { ref, watch, onMounted } from 'vue';
 import FormGroup from './FormGroup.vue';
 import SelectInput from './base/SelectInput.vue';
-// import TextInput from './base/TextInput.vue';
-// import NumberInput from './base/NumberInput.vue';
+import { getGaulLevel0, getGaulLevel1, getGaulLevel2 } from '@/firebase/firestore';
 
 
-type AdminArea = {
-    code?: string,
-    name?: string,
-    children?: AdminArea
-}[]
+// type AdminArea = {
+//     code?: string,
+//     name?: string,
+//     children?: AdminArea
+// }[]
 
 const props = withDefaults(defineProps<{
     modelValue: {
@@ -31,22 +29,18 @@ const admin0 = ref(props.modelValue?.admin0);
 const admin1 = ref(props.modelValue?.admin1);
 const admin2 = ref(props.modelValue?.admin2);
 
-const getSelectOptions = (a: any) => ({ label: a.name, value: a.code })
 
-const admin0Menu = json.map(getSelectOptions);
+const admin0Menu = ref();
 const admin1Menu = ref();
 const admin2Menu = ref();
 
-function findInJson(json: AdminArea, value?: string) {
-    if (!value) return
-    const item = (json.find(a => a.code === value));
-    return item ? item['children'] : null;
-}
+onMounted(async () => {
+    admin0Menu.value = await getGaulLevel0();
+});
 
-watch(admin0, (val, prev) => {
+watch(admin0, async (val, prev) => {
     if (val) {
-        const children = findInJson(json, val);
-        admin1Menu.value = children ? children.map(getSelectOptions) : undefined
+        admin1Menu.value = await getGaulLevel1(val) || undefined;
     } else {
         admin1Menu.value = undefined;
     }
@@ -67,13 +61,14 @@ watch(admin0, (val, prev) => {
     });
 }, { immediate: true });
 
-watch(admin1, (val, prev) => {
+watch(admin1, async (val, prev) => {
     if (val) {
-        const t0 = findInJson(json, admin0.value);
-        if (!t0) return
-        const t1 = findInJson(t0, val);
-        if (!t1) return
-        admin2Menu.value = t1.map(getSelectOptions);
+        // const t0 = findInJson(json, admin0.value);
+        // if (!t0) return
+        // const t1 = findInJson(t0, val);
+        // if (!t1) return
+        if (!admin0.value) return
+        admin2Menu.value = await getGaulLevel2(admin0.value, val);
     } else {
         admin2Menu.value = undefined;
     }

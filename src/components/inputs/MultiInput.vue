@@ -5,15 +5,30 @@ import { TrashIcon } from '@heroicons/vue/20/solid';
 
 const openedDialog = ref<string | null>(null);
 
-const props = defineProps({
-    deleteConfirmMessage: { type: String, default: "Are you sure you want to delete this item?" },
-    modelValue: { type: null },
-    inputComponents: null,
-    numbering: null, // TODO fn(number) => string
-    deleteConfirmMsg: String,
-    required: { type: Boolean, default: false }, // TODO
-    edit: { type: Boolean, default: true }
+// const props_ = defineProps({
+//     deleteConfirmMessage: { type: String, default: "Are you sure you want to delete this item?" },
+//     modelValue: { type: null },
+//     inputComponents: null,
+//     numbering: null, // TODO fn(number) => string
+//     deleteConfirmMsg: String,
+//     required: { type: Boolean, default: false }, // TODO
+//     edit: { type: Boolean, default: true }
+// });
+
+const props = withDefaults(defineProps<{
+    deleteConfirmMessage?: string,
+    modelValue?: any,
+    inputComponents?: any,
+    numbering?: () => string,
+    deleteConfirmMsg?: string,
+    required?: boolean,
+    edit?: boolean
+}>(), {
+    deleteConfirmMessage: "Are you sure you want to delete this item?",
+    required: false,
+    edit: true
 });
+
 
 // Sample inputComponents:
 // [
@@ -53,7 +68,7 @@ function addButtonPushed(type: string) {
     }
 }
 
-function addFromDialog(type: string, dataArr: any) {
+function addItemFromDialog(type: string, dataArr: any) {
     const newValues = dataArr.map(d => ({ [type]: d }));
     const tempProp = props.modelValue ? [...props.modelValue, ...newValues] : newValues
 
@@ -87,9 +102,9 @@ const errorMessages = computed(() => {
             :is="d.addDialog"
             :open="openedDialog === k"
             @cancel="openedDialog = null"
-            @done="(newData: any) => addFromDialog(k, newData)" />
-        <div v-for="v, i in modelValue" class="p-3">
-            <div class="text-gray-400 dark:text-gray-100 text-lg font-bold" v-if="numbering">{{numbering(i + 1)}}</div>
+            @done="(newData: any) => addItemFromDialog(k, newData)" />
+        <div v-for="(v, i) in modelValue" class="p-3">
+            <div class="text-gray-400 dark:text-gray-100 text-lg font-bold" v-if="numbering">{{numbering(i, v)}}</div>
             <component
                 :key="v"
                 :is="inputComponents[getKey(v)].component"
@@ -107,11 +122,11 @@ const errorMessages = computed(() => {
         </div>
         <div v-if="edit" class="flex p-3 gap-x-3">
             <button
-                v-for="(value, key) in props.inputComponents"
+                v-for="(componentDef, key) in props.inputComponents"
                 type="button"
                 @click="addButtonPushed('' + key)"
                 class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                {{value.addItemLabel}}
+                {{componentDef.addItemLabel}}
             </button>
         </div>
     </div>

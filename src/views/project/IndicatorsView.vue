@@ -5,6 +5,7 @@ import TabTemplate from "../TabTemplate.vue";
 
 import { indicators, gefIndicators } from '../../components/project/menus';
 import TreeItem from '../../components/inputs/base/TreeItem.vue';
+import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
 
 
 const store = useProjectStore();
@@ -35,6 +36,9 @@ withDefaults(defineProps<{
 
             <div class="pt-8" v-if="store.project.reportingLine === 'GEF'">
                 <h1 class="font-akrobat text-2xl dark:text-zinc-300 font-bold">GEF indicators</h1>
+                <LabelFormGroup v-if="store.project.reportingLine === 'GEF'"
+                                label="Total area under restoration (achieved area spatially explicit)"
+                                :value="store.polygonsArea()" />
                 <div v-if="store.projectAreas?.length"
                      class="flex flex-col gap-y-4">
                     <div v-for="area, i in store.projectAreas"

@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive, ref } from 'vue';
 
-import router from "@/router";
+import router from '@/router';
+import { useRoute } from 'vue-router';
 
-import * as projectUtils from "@/lib/project";
+import * as projectUtils from '@/lib/project';
 
-import { useProjectStore } from "@/stores/project";
+import { useProjectStore } from '@/stores/project';
+
 
 const projectStore = useProjectStore();
 
-import { submitForReview, publishProject, rejectProject } from "@/firebase/functions";
+import { submitForReview, publishProject, rejectProject } from '@/firebase/functions';
 
 import {
     EllipsisVerticalIcon,
@@ -22,29 +24,32 @@ import {
     DocumentMagnifyingGlassIcon,
     EyeIcon,
     ChevronDownIcon
-} from "@heroicons/vue/20/solid";
+} from '@heroicons/vue/20/solid';
 
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 
-import TwoStagesDialog from "@/components/TwoStagesDialog.vue";
+import TwoStagesDialog from '@/components/TwoStagesDialog.vue';
 
-import AlertModal from "@/views/AlertModal.vue";
-import ConfirmModal from "@/views/ConfirmModal.vue";
+import AlertModal from '@/views/AlertModal.vue';
+import ConfirmModal from '@/views/ConfirmModal.vue';
+
 
 const props = withDefaults(defineProps<{
     project: any,
     excludeViewMenuItem?: boolean,
     label?: string,
-    sections?: ("view" | "edit" | "publishing" | "best-practices" | "delete")[],
+    sections?: ('view' | 'edit' | 'publishing' | 'best-practices' | 'delete')[],
 }>(), {
     excludeViewMenuItem: false
 });
 
 const emit = defineEmits(['done']);
 
+const route = useRoute();
+
 async function print(projectId: string) {
-    const routeData = router.resolve({ name: "printInitiative", params: { id: projectId } });
-    window.open(routeData.href, "_blank");
+    const routeData = router.resolve({ name: 'printInitiative', params: { id: projectId } });
+    window.open(routeData.href, '_blank');
 }
 
 const submitDialog = ref();
@@ -61,6 +66,7 @@ function done() {
     projectStore.refetchProject(props.project.id);
     emit('done');
 }
+
 const publishDialog = ref();
 const rejectDialog = ref();
 
@@ -72,7 +78,7 @@ async function publish() {
     await publishProject(props.project.id);
 }
 
-const rejectReason = ref<string>("");
+const rejectReason = ref<string>('');
 
 function openRejectDialog() {
     rejectDialog.value.open();
@@ -80,15 +86,15 @@ function openRejectDialog() {
 
 async function reject() {
     await rejectProject(props.project.id, rejectReason.value);
-    rejectReason.value = "";
+    rejectReason.value = '';
 }
 
 function cancelReject() {
-    rejectReason.value = "";
+    rejectReason.value = '';
 }
 
 async function deleteProject(projectId: string) {
-    if (confirm("Are you sure you want to delete this initiative? You will releted the related areas and best practices."))
+    if (confirm('Are you sure you want to delete this initiative? You will releted the related areas and best practices.'))
         return projectStore.deleteProject(projectId);
 }
 </script>
@@ -141,7 +147,8 @@ async function deleteProject(projectId: string) {
                      @complete="done">
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Are you sure you want to publish the initiative <span
+                <p>
+                    Are you sure you want to publish the initiative <span
                     class="font-bold">'{{ project.data.project?.title
                     }}'</span>?
                 </p>
@@ -241,10 +248,12 @@ async function deleteProject(projectId: string) {
                      v-if="(!sections || sections.includes('edit') ||  sections.includes('publishing')) && (projectUtils.canEdit(project) || projectUtils.canAddBestPractice(project))">
                     <menu-item v-if="projectUtils.canEdit(project) && (!sections || sections.includes('edit'))"
                                v-slot="{ active }">
-                        <router-link :to="{ name: 'projectInfoEdit', params: { id: project.id } }"
-                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
-                            <pencil-square-icon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                aria-hidden="true" />
+                        <router-link
+                            :to="{ name: `${route.name}Edit`, params: { id: project.id } }"
+                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
+                            <pencil-square-icon
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true" />
                             Edit
                         </router-link>
                     </menu-item>

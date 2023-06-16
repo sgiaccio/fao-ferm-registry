@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onBeforeMount } from 'vue'
-import { useRoute } from 'vue-router'
+import { onBeforeMount, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 import router from '@/router';
 
@@ -22,26 +22,21 @@ const route = useRoute();
 
 onBeforeMount(async () => {
     if (route.params.id === 'new') {
-        store.createEmptyProject(route.query.groupId as string)
+        store.createEmptyProject(route.query.groupId as string);
     } else {
         await store.fetchProject(route.params.id as string);
     }
 });
 
-// This is a hack to reset the project state when the user navigates away from the project view
-// TODO: Find a better way to do this
-// TODO: move to the parent route?
-// onBeforeRouteLeave((_to, _from) => {
-//     store.resetProjectState();
-// });
-
 // const showJson = ref(false);
-// function toggleJson() { showJson.value = !showJson.value }
+// function toggleJson() {
+//     showJson.value = !showJson.value;
+// }
 
 
 async function saveAndExit() {
     await store.saveAndExit();
-    router.push({ name: 'initiatives' });
+    await router.push({ name: 'initiatives' });
 }
 
 async function saveAndNext() {
@@ -51,9 +46,9 @@ async function saveAndNext() {
 }
 
 async function cancel() {
-    if (confirm("Are you sure you want to cancel? You will loose the changes you made.")) {
+    if (confirm('Are you sure you want to cancel? You will loose the changes you made.')) {
         store.resetProjectState();
-        router.push({ name: 'initiatives' });
+        await router.push({ name: 'initiatives' });
     }
 }
 </script>
@@ -122,9 +117,14 @@ async function cancel() {
                 Cancel
             </button>
         </div>
-        <!-- <button 
-            class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
-            @click="toggleJson">JSON</button>
-            <pre v-if="showJson" class="text-xs font-medium absolute text-amber-700 dark:text-amber-600 top-20">{{JSON.stringify(store.project, null, 2)}}</pre> -->
-        </div>
+<!--        <button-->
+<!--            class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"-->
+<!--            @click="toggleJson">-->
+<!--            JSON-->
+<!--        </button>-->
+<!--        <pre v-if="showJson"-->
+<!--             class="text-xs font-medium text-amber-700 dark:text-amber-600">-->
+<!--            {{ JSON.stringify(store.project, null, 2) }}-->
+<!--        </pre>-->
+    </div>
 </template>
