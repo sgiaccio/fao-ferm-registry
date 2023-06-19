@@ -1,11 +1,19 @@
-import { query, serverTimestamp, where, collection, doc, getDocs, setDoc } from "firebase/firestore/lite";
-import { db } from "./index";
-import { snakeToCamel } from "@/lib/util";
+import { query, serverTimestamp, where, collection, doc, getDocs, setDoc } from 'firebase/firestore/lite';
+import { db } from './index';
+import { snakeToCamel } from '@/lib/util';
 
 
-export async function requestGroupAssignment(uid: string, groupId: string, userName: string, email: string, reasons: string) {
-    if (!uid || !groupId) {
-        throw new Error("Missing uid or groupId");
+/**
+ * Request to join a group
+ * @param uid
+ * @param groupId
+ * @param reasons
+ * TODO: check if the user is already a member of the group
+ * TODO: check if the user has already requested to join the group
+*/
+export async function requestGroupAssignment(uid: string, groupId: string, reasons: string) {
+    if (!uid || !groupId || !reasons) {
+        throw new Error("Missing uid or groupId or reasons");
     }
 
     const usersCollection = collection(db, "assignementRequests");
@@ -13,12 +21,10 @@ export async function requestGroupAssignment(uid: string, groupId: string, userN
     await setDoc(docRef, {
         userId: uid,
         groupId: groupId,
-        // userEmail: email,
-        // userName: userName,
         // TODO status should be set in the backend. Checking that it's 'pending' in firestore.rules anyway
-        status: "pending",
+        status: 'pending',
         reasons: reasons,
-        createTime: serverTimestamp()
+        createTime: serverTimestamp(),
     });
 }
 

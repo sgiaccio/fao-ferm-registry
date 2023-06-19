@@ -96,7 +96,7 @@ async function requestAssignment() {
     try {
         // await requestGroupAssignment(authStore.user!.uid, selectedGroup.value.id, reasons.value);
         // uid: string, groupId: string, userName: string, email: string, reasons: string
-        await requestGroupAssignment(authStore.user!.uid, selectedGroup.value.id, authStore.user!.displayName!, authStore.user!.email!, reasons.value);
+        await requestGroupAssignment(authStore.user!.uid, selectedGroup.value.id, reasons.value);
         showAssignmentSuccess.value = true;
     } catch (e) {
         showAssignmentError.value = true;
@@ -126,7 +126,9 @@ const newInstitutionFormData = ref({
         actor: false,
         flagship: false
     },
-    status: 'pending'
+    status: 'pending',
+    description: '',
+    website: ''
 });
 
 const otherTypeRef = ref();
@@ -143,9 +145,11 @@ function validateNewInstitution() {
     return newInstitutionFormData.value.name !== ''
         && newInstitutionFormData.value.type !== ''
         && (newInstitutionFormData.value.type !== 'Other' || newInstitutionFormData.value.otherType !== '')
+        && newInstitutionFormData.value.description !== '';
 }
 
 const isDisabled = computed(() => {
+    console.log('validate');
     return !validateNewInstitution();
 });
 
@@ -193,7 +197,9 @@ function cancelSubmit() {
             actor: false,
             flagship: false
         },
-        status: 'pending'
+        status: 'pending',
+        description: '',
+        website: ''
     }
 }
 </script>
@@ -246,7 +252,7 @@ function cancelSubmit() {
                   :okButtonEnabled="!isDisabled">
         <p class="text-sm text-gray-700">Please submit your institution for inclusion in the registry.</p>
         <div class="mt-2">
-            <label for="name"
+            <label for="institution"
                    class="block text-sm font-medium leading-6 text-gray-900">Name <span class="text-red-600">*</span></label>
             <div class="mt-2">
                 <input v-model="newInstitutionFormData.name"
@@ -285,8 +291,8 @@ function cancelSubmit() {
                 <input v-model="newInstitutionFormData.otherType"
                        ref="otherTypeRef"
                        :disabled="newInstitutionFormData.type !== 'Other'"
-                       id="institution"
-                       name="institution"
+                       id="institutionTypeOther"
+                       name="institutionTypeOther"
                        type="text"
                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
             </div>
@@ -296,7 +302,7 @@ function cancelSubmit() {
                 <legend class="sr-only">The institution is a</legend>
                 <div class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
                      aria-hidden="true">The institution is a</div>
-                <div class="mt-2 space-y-2">
+                <div class="mt-2">
                     <div class="relative flex items-start">
                         <div class="flex h-6 items-center">
                             <input v-model="newInstitutionFormData.isa.partner"
@@ -338,6 +344,29 @@ function cancelSubmit() {
                     </div>
                 </div>
             </fieldset>
+        </div>
+        <div class="pt-4">
+            <label for="description"
+                   class="block text-sm font-medium leading-6 text-gray-900">Description <span class="text-red-600">*</span></label>
+            <div class="mt-2">
+                <textarea v-model="newInstitutionFormData.description"
+                          id="description"
+                          placeholder="Please enter a description of the institution"
+                          name="description"
+                          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            </div>
+        </div>
+        <div class="mt-2">
+            <label for="website"
+                   class="block text-sm font-medium leading-6 text-gray-900">Website</label>
+            <div class="mt-2">
+                <input v-model="newInstitutionFormData.website"
+                       id="website"
+                       placeholder="Please the website of the institution if any"
+                       name="website"
+                       type="text"
+                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+            </div>
         </div>
     </ConfirmModal>
 
