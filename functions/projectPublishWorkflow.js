@@ -1,5 +1,4 @@
 const functions = require("firebase-functions");
-const util = require("./util");
 const admin = require("firebase-admin");
 
 const { Timestamp, FieldValue } = require("firebase-admin/firestore");
@@ -7,7 +6,9 @@ const { Timestamp, FieldValue } = require("firebase-admin/firestore");
 const emailTemplates = require("./emailTemplates");
 
 const db = admin.firestore();
-const registryCollection = db.collection("registry");
+
+const util = require("./util");
+// const registryCollection = db.collection("registry");
 
 
 exports.submitProject = functions.https.onCall(async ({ projectId }, context) => {
@@ -22,7 +23,7 @@ exports.submitProject = functions.https.onCall(async ({ projectId }, context) =>
     }
 
     // get the project document from Firestore
-    const projectRef = await registryCollection.doc(projectId).get();
+    const projectRef = await util.registryCollection.doc(projectId).get();
     // check that the project exists
     if (!projectRef.exists) {
         throw new functions.https.HttpsError("not-found", "Project not found");
@@ -46,7 +47,7 @@ exports.submitProject = functions.https.onCall(async ({ projectId }, context) =>
     // updateStatus(projectRef, 'submitted');
     console.log("Updating project status to submitted");
     try {
-        registryCollection.doc(projectId).update({
+        util.registryCollection.doc(projectId).update({
             status: "submitted",
             submittedTime: Timestamp.fromDate(new Date())
         });
@@ -87,7 +88,7 @@ exports.publishProject = functions.https.onCall(async ({ projectId }, context) =
     }
 
     // get the project document from Firestore
-    const projectRef = await registryCollection.doc(projectId).get();
+    const projectRef = await util.registryCollection.doc(projectId).get();
     // check that the project exists
     if (!projectRef.exists) {
         throw new functions.https.HttpsError("not-found", "Project not found");
@@ -109,7 +110,7 @@ exports.publishProject = functions.https.onCall(async ({ projectId }, context) =
     console.log("Updating project status to public");
     const publicationTime = new Date();
     try {
-        registryCollection.doc(projectId).update({
+        util.registryCollection.doc(projectId).update({
             status: "public",
             publishedTime: Timestamp.fromDate(publicationTime),
             // delete rejectedTime and rejectedReason if it exists
@@ -151,7 +152,7 @@ exports.rejectProject = functions.https.onCall(async ({ projectId, reason }, con
     }
 
     // get the project document from Firestore
-    const projectRef = await registryCollection.doc(projectId).get();
+    const projectRef = await util.registryCollection.doc(projectId).get();
     // check that the project exists
     if (!projectRef.exists) {
         throw new functions.https.HttpsError("not-found", "Project not found");
@@ -173,7 +174,7 @@ exports.rejectProject = functions.https.onCall(async ({ projectId, reason }, con
     console.log("Updating project status to public");
     const rejectedTime = new Date();
     try {
-        registryCollection.doc(projectId).update({
+        util.registryCollection.doc(projectId).update({
             status: "draft",
             rejectedTime: Timestamp.fromDate(rejectedTime),
             // delete publishedTime

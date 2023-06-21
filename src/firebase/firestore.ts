@@ -41,13 +41,15 @@ export async function getUserAssignmentRequests(uid: string) {
     return requests;
 }
 
-export async function submitNewInstitution(formData: any) {
-    // check if the data is valid
-    // TODO
+export async function submitNewGroup(formData: any) {
+    // TODO check if the data is valid
 
     const newGroupRequests = collection(db, "newGroupRequests");
     const docRef = doc(newGroupRequests);
-    await setDoc(docRef, formData);
+    await setDoc(docRef, {
+        ...formData,
+        createTime: serverTimestamp()
+    });
 }
 
 

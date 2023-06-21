@@ -15,6 +15,27 @@ export async function handleGroupAssignmentRequest(requestId: string, newStatus:
     return result.data;
 }
 
+export async function getMyNewGroupRequests() {
+    const f = httpsCallable(functions, 'getMyNewGroupRequests');
+    const result = await f();
+
+    return result.data;
+}
+
+export async function approveNewGroupRequest(requestId: string) {
+    const f = httpsCallable(functions, 'approveNewGroupRequest');
+    const result = await f({ requestId });
+
+    return result.data;
+}
+
+export async function rejectNewGroupRequest(requestId: string) {
+    const f = httpsCallable(functions, 'rejectNewGroupRequest');
+    const result = await f({ requestId });
+
+    return result.data;
+}
+
 export async function handleSupportRequest(firstName: string, lastName: string, email: string, message: string) {
     if (!firstName || !lastName || !email || !message) {
         throw new Error('Missing required fields');

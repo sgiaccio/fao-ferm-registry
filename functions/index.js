@@ -73,7 +73,6 @@ exports.listAllUsers = functions.https.onCall(async (_data, context) => {
     }
 
     try {
-        console.log(await (admin.auth().listUsers()));
         return await admin.auth().listUsers();
     } catch (err) {
         console.log(err);
@@ -298,51 +297,6 @@ async function getUserGroupIds(uid) {
 
     return Object.keys(userPrivileges);
 }
-
-// Create documents in the mail collection when a user requests for a new group to be created
-exports.sendNewGroupRequestEmail = functions.firestore.document('newGroupRequests/{requestId}').onCreate(async (snap, _context) => {
-    const data = snap.data();
-
-    const { userId, name, type, otherType, isa: { partner, actor, flagship }, description, website } = data;
-
-    // Get user's name from the auth system
-    const { displayName } = await admin.auth().getUser(userId);
-
-    // create mail document
-    const mailDoc = {
-        to: await util.getSuperAdminEmails(),
-        message: {
-            subject: `New group request for group ${name}`,
-            html: `
-                <p>Hi,</p>
-                <p>User ${displayName || 'anonymous'} has requested to create a new group ${name}:</p>
-                
-                <p>
-                    Name of the group: ${name}
-                    <br>
-                    Type of the group: ${type} ${type === 'Other' ? ' - Other type: ' + otherType : ''}
-                </p>
-                <p>
-                    ${partner ? 'UN Decade partner<br>' : ''}
-                    ${actor ? 'UN Decade actor<br>' : ''}
-                    ${flagship ? 'Global Flagship' : ''}
-                </p>
-
-                <p>Description: <span style="font-style: italic;">${description}</span></p>
-                <p>Website: ${website}</p>
-
-                <p>As a superadmin, please go to <a href="https://ferm.fao.org/admin/groups">https://ferm.fao.org/admin/groups</a> to create the new group.</p>
-
-                <p>Best regards,</p>
-                <p>the FERM team</p>
-            `
-        }
-    };
-
-    // add mail document to mail collection
-    await util.mailCollection.add(mailDoc);
-});
-
 
 // Create documents in the mail collection when a user requests to be assigned to a group
 exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRequests/{requestId}').onCreate(async (snap, _context) => {
@@ -739,3 +693,17 @@ const projectPublishWorkflow = require('./projectPublishWorkflow');
 exports.submitProject = projectPublishWorkflow.submitProject;
 exports.publishProject = projectPublishWorkflow.publishProject;
 exports.rejectProject = projectPublishWorkflow.rejectProject;
+
+
+/************************************************
+ *
+ * GROUP REQUESTS WORKFLOW
+ *
+ * **********************************************/
+
+const groupRequestsWorkflow = require('./groupRequestsWorkflow');
+exports.sendNewGroupRequestEmail = groupRequestsWorkflow.sendNewGroupRequestEmail;
+exports.getMyNewGroupRequests = groupRequestsWorkflow.getMyNewGroupRequests;
+exports.approveNewGroupRequest = groupRequestsWorkflow.approveNewGroupRequest;
+exports.rejectNewGroupRequest = groupRequestsWorkflow.rejectNewGroupRequest;
+

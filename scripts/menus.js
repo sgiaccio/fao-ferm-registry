@@ -1239,5 +1239,6 @@ exports.gefFocalAreas = [
     { value: 2, label: "Biodiversity" },
     { value: 3, label: "Climate change" },
     { value: 4, label: "Chemicals & waste" },
-    { value: 5, label: "International waters" }
+    { value: 5, label: "International waters" },
+    { value: 6, label: "Multifocal" }
 ];

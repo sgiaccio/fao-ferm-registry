@@ -1,5 +1,11 @@
 const baseUrl = process.env.NODE_ENV === 'production' ? 'https://ferm.fao.org' : 'http://localhost:5173';
 
+/************************************************
+ *
+ * PROJECT PUBLISHING WORKFLOW
+ *
+ * **********************************************/
+
 exports.initiativeSubmittedForReview = function(emails, groupName, projectId, projectTitle) {
     return {
         to: emails,
@@ -79,7 +85,6 @@ exports.initiativeSubmittedForReviewSuperAdmins = function(emails, groupName, pr
   };
 };
 
-
 exports.initiativePublished = function(emails, groupName, projectId, projectTitle, ownerName, publicationTime) {
     const publicationTimeStr = publicationTime.toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "numeric" });
 
@@ -146,8 +151,6 @@ exports.initiativePublished = function(emails, groupName, projectId, projectTitl
     }
 }
 
-// emailTemplates.initiativeRejected([ownerEmail], groupName, projectId, project.project.title, ownerName, rejectedTime, reason);
-
 exports.initiativeRejected = function(emails, groupName, projectId, projectTitle, ownerName, reason) {
     return {
         to: emails,
@@ -167,4 +170,110 @@ exports.initiativeRejected = function(emails, groupName, projectId, projectTitle
             `
         }
     }
+}
+
+
+
+exports.newGroupRequest = function(emails, name, displayName, type, otherType, partner, actor, flagship, description, website) {
+    return {
+        to: emails,
+        message: {
+            subject: `New group request for group ${name}`,
+            html: `
+                <p>Hi,</p>
+                <p>User ${displayName} has requested to create a new group ${name}:</p>
+                
+                <p>
+                    Name of the group: ${name}
+                    <br>
+                    Type of the group: ${type} ${type === 'Other' ? ' - Other type: ' + otherType : ''}
+                </p>
+                <p>
+                    ${partner ? 'UN Decade partner<br>' : ''}
+                    ${actor ? 'UN Decade actor<br>' : ''}
+                    ${flagship ? 'Global Flagship' : ''}
+                </p>
+
+                <p>Description: <span style="font-style: italic;">${description}</span></p>
+                <p>Website: ${website}</p>
+
+                <p>As a superadmin, please go to <a href="${baseUrl}/admin/newGroups">${baseUrl}/admin/newGroups</a> to create the new group.</p>
+
+                <p>Best regards,</p>
+                <p>the FERM team</p>
+            `
+        }
+    };
+}
+
+exports.newGroupApproval = function(email, displayName, institutionName) {
+    return {
+        to: email,
+        message: {
+            subject: `Your request to create a new group ${institutionName} has been approved`,
+            html: `
+                <p>Dear ${displayName || email},</p>
+
+                <p>We're writing to inform you that your proposal to create the new institution, 
+                <strong>${institutionName}</strong>, has been accepted. This acceptance is a clear indication 
+                of our belief in the vision and mission you have outlined for this cause. We're eager to see 
+                how <strong>${institutionName}</strong> will contribute to our shared objective of 
+                restoration and environmental conservation.</p>
+
+                <p>With this approval, you now have full access to manage your institution, engage with our 
+                community, share your initiatives, and invite others to join in your efforts. </p>
+
+                <p>To manage your institution, please visit the <a href="${baseUrl}/initiatives">Framework for Ecosystem Restoration Monitoring</a>.</p>
+
+
+                <p>Should you need any guidance or have any questions, our support team is available and 
+                ready to assist you. Please don't hesitate to contact us at 
+                <a href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>.</p>
+
+                <p>Best Regards,</p>
+
+                <p>The FERM team</p>
+
+            `
+        }
+    };
+}
+
+exports.newGroupRejection = function(email, displayName, institutionName) {
+    return {
+        to: email,
+        message: {
+            subject: `Your request to create a new group ${institutionName} has been rejected`,
+            html: `
+                <body>
+
+                <p>Dear ${displayName || email},</p>
+
+                <p>Thank you for your interest in creating a new institution, <strong${institutionName}</strong>, 
+                within our restoration community. We value your commitment and the initiative you have shown 
+                towards our shared goal of environmental conservation.</p>
+
+                <p>After careful review, we regret to inform you that we are unable to approve the creation 
+                of <strong>${institutionName}</strong> at this time. This decision was made based on several 
+                criteria that we use to evaluate new institutions.</p>
+
+                <p>We understand that this news may be disappointing, and we want to assure you that this 
+                decision is not a reflection of the value we place on your efforts. Each proposal is unique 
+                and is evaluated on its own merits, and while <strong>${institutionName}</strong> may not 
+                have met our criteria at this time, we encourage you to continue your involvement in our 
+                community and the cause of restoration.</p>
+
+                <p>If you have any questions or wish to receive feedback about the decision, please feel free 
+                to contact us at <a href="mailto:ferm-support@fao.org">mailto:ferm-support@fao.org</a>. 
+                We're here to assist you and answer any queries you may have.</p>
+
+                <p>We truly appreciate your understanding and your continued support of our collective 
+                restoration efforts. We look forward to your future contributions within our community.</p>
+
+                <p>Best Regards,</p>
+
+                <p>The FERM team<br>
+            `
+        }
+    };
 }

@@ -135,6 +135,15 @@ vue.watch(() => store.id as string, async id => {
             <TextFormGroup :edit="edit"
                            v-model="store.project.project.gefFaoSymbol"
                            label="GEF/FAO Symbol" />
+
+            <SelectFormGroup :edit="edit"
+                             v-model="store.project.project.gefCycle"
+                             label="GEF cycle"
+                             :options="gefCycles" />
+            <SelectFormGroup :edit="edit"
+                             v-model="store.project.project.gefFocalArea"
+                             label="GEF focal area"
+                             :options="gefFocalAreas" />
         </template>
 
         <TextareaFormGroup :edit="edit"
@@ -147,29 +156,48 @@ vue.watch(() => store.id as string, async id => {
                        label="Website"
                        description="Website of the initiative"
                        placeholder="www.example.com" />
-        <AreaFormGroup :edit="edit"
+
+        <!-- Disable this when the reporting line is GEF -->
+        <AreaFormGroup v-if="store.project.reportingLine !== 'GEF'"
+                       :edit="edit"
                        label="Target area"
                        v-model="store.project.project.targetArea"
                        description="Area of the restoration target">
-            <template v-if="store.project.reportingLine === 'GEF'" v-slot:info >
-                <p>Please include the land (in ha) committed in project design phase and updated in MTR/TE (sum of GEF 7 Indicators 1-5)</p>
-            </template>
         </AreaFormGroup>
+
+        <!--
+        <template v-if="store.project.reportingLine === 'GEF'" v-slot:info >
+            <p>Please include the land (in ha) committed in project design phase and updated in MTR/TE (sum of GEF 7 Indicators 1-5)</p>
+        </template>
+        -->
+
 
         <!-- Enable this when the reporting line is GEF -->
         <template v-if="store.project.reportingLine === 'GEF'">
             <AreaFormGroup :edit="edit"
-                           label="Design phase"
+                           label="Target area in design phase"
                            v-model="store.project.project.targetAreaDesignPhase"
-                           description="Area of the restoration target – design phase" />
+                           description="Area of land committed in design phase">
+                <template v-slot:info>
+                    <p>Please include the land (in ha) committed in <span class="font-bold">project design phase</span> (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                </template>
+            </AreaFormGroup>
             <AreaFormGroup :edit="edit"
-                           label="Mid-term review phase"
+                           label="Target area in mid-term review phase"
                            v-model="store.project.project.targetAreaReviewPhase"
-                           description="Area of the restoration target – mid-term review phase" />
+                           description="Area of land committed in mid-term review phase">
+                <template v-slot:info>
+                    <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span> (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                </template>
+            </AreaFormGroup>
             <AreaFormGroup :edit="edit"
-                           label="Terminal evaluation phase"
+                           label="Target area in terminal evaluation phase"
                            v-model="store.project.project.targetAreaEvaluationPhase"
-                           description="Area of the restoration target – terminal evaluation phase" />
+                           description="Area of land committed in terminal evaluation phase">
+                <template v-slot:info>
+                    <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span> (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                </template>
+            </AreaFormGroup>
         </template>
 
         <DateFormGroup :edit="edit"
@@ -180,8 +208,7 @@ vue.watch(() => store.id as string, async id => {
                        v-model="store.project.project.endingDate"
                        label="Ending date"
                        description="Date when the initiative finished or is expected to finish" />
-        <FormGroup
-            :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
+        <FormGroup :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
             <div v-if="edit">
                 <div v-if="!fileName">
                     <label for="file"
@@ -226,8 +253,7 @@ vue.watch(() => store.id as string, async id => {
                 </div>
 
                 <div class="dark:text-white"
-                     v-else>Initiative file: {{ fileName }} <span
-                    @click="deleteFile(store.id, fileName!)">[delete]</span></div>
+                     v-else>Initiative file: {{ fileName }} <span @click="deleteFile(store.id, fileName!)">[delete]</span></div>
             </div>
             <template v-else>
                 <div v-if="selectedFile">Initiative file: {{ fileName }}</div>
@@ -251,18 +277,6 @@ vue.watch(() => store.id as string, async id => {
                              description="Organizations that implement the project/initiative"
                              :inputComponents="organizations"
                              v-model="store.project.project.organizations" />
-
-        <!-- Enable this when the reporting line is GEF -->
-        <template v-if="store.project.reportingLine === 'GEF'">
-            <SelectFormGroup :edit="edit"
-                             v-model="store.project.project.gefCycle"
-                             label="GEF cycle"
-                             :options="gefCycles" />
-            <SelectFormGroup :edit="edit"
-                             v-model="store.project.project.gefFocalArea"
-                             label="GEF focal area"
-                             :options="gefFocalAreas" />
-        </template>
     </TabTemplate>
     <!-- <DynamicHeading level=2>Title</DynamicHeading> -->
     <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->

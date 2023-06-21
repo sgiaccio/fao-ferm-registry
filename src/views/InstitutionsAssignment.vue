@@ -13,7 +13,7 @@ import {
 import { useAuthStore } from '../stores/auth';
 // import { useProjectStore } from '../../stores/project';
 
-import { requestGroupAssignment, getUserAssignmentRequests, submitNewInstitution } from '@/firebase/firestore';
+import { requestGroupAssignment, getUserAssignmentRequests, submitNewGroup } from '@/firebase/firestore';
 
 import ConfirmModal from '@/views/ConfirmModal.vue'
 import AlertModal from '@/views/AlertModal.vue'
@@ -167,7 +167,11 @@ async function confirmSubmit() {
     }
     try {
         showSubmitNew.value = false;
-        await submitNewInstitution({ ...newInstitutionFormData.value, userId: authStore.user!.uid });
+        await submitNewGroup({
+            ...newInstitutionFormData.value,
+            userId: authStore.user!.uid,
+            createdAt: new Date().toISOString()
+        });
         showSubmitSuccess.value = true;
         newInstitutionFormData.value = {
             name: '',
@@ -178,7 +182,9 @@ async function confirmSubmit() {
                 actor: false,
                 flagship: false
             },
-            status: 'pending'
+            status: 'pending',
+            description: '',
+            website: ''
         }
     } catch (e) {
         alert("There was an error submitting the request, please try again later.");

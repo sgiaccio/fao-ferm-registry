@@ -31,7 +31,6 @@ const allGroups = ref();
 
 async function refreshUsers() {
     const f = authStore.isAdmin ? fetchAllUsers : fetchMyGroupsUsers;
-    console.log(await f())
     // Sort users by creation date
     users.value = ((await f()) as any).users.sort((a: User, b: User) => {
         try {

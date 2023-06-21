@@ -10,6 +10,7 @@ const groupsCollection = db.collection('groups');
 const registryCollection = db.collection('registry');
 const bestPracticesCollection = db.collection('bestPractices');
 const assignmentRequestsCollection = db.collection('assignementRequests'); // Typo in the name
+const newGroupRequestsCollection = db.collection('newGroupRequests');
 const mailCollection = db.collection('mail');
 
 // These are the roles that can be assigned to users in a group.
@@ -115,10 +116,7 @@ async function checkValidLevels(privileges) {
 
 // Checks if the user is an admin
 function isSuperAdmin(context) {
-    if (!context.auth.token) {
-        return false;
-    }
-    return !!context.auth.token.admin;
+    return context.auth && context.auth.token && context.auth.token.admin;
 }
 
 function getGroupsWhereAdmin(context) {
@@ -168,6 +166,7 @@ exports = module.exports = {
     registryCollection,
     bestPracticesCollection,
     assignmentRequestsCollection,
+    newGroupRequestsCollection,
     mailCollection,
 
     findAsync,

@@ -63,6 +63,8 @@ function numbering(i: number, v: any) {
         return `Unknown area type: ${key}`;
     }
 }
+
+const showDisclaimer = ref(false);
 </script>
 
 <template>
@@ -98,21 +100,37 @@ function numbering(i: number, v: any) {
                 <li>Draw directly on the platform</li>
             </ul>
 
-            <template v-if="store.project.reportingLine === 'GEF'">
-                <p class="mt-4 font-semibold">
-                    Please find the requirements of geospatial data in <a class="text-ferm-blue-dark-800 underline"
-                                                                          href="/gef/Requirements of geospatial data.pdf"
-                                                                          target="_blank">this link</a>
-                </p>
-                <p class="mt-4 font-semibold">
-                    Please find the structure of the feature table to be uploaded in the platform in <a
-                    class="text-ferm-blue-dark-800 underline"
-                    href="/gef/Sample feature table GEF Projects.csv" target="_blank">this link</a>
-                </p>
-            </template>
 
         </template>
         <template #default>
+            <div v-if="store.project.reportingLine === 'GEF'"
+                class="text-sm bg-ferm-gray px-6 py-4 my-6 rounded-md">
+                <p class="font-semibold">
+                    Please find the requirements of geospatial data in <a class="text-ferm-blue-dark-800 underline"
+                       href="/gef/Requirements of geospatial data.pdf"
+                       target="_blank">this link</a>
+                </p>
+                <p class="mt-4 font-semibold">
+                    Please find the structure of the feature table to be uploaded in the platform in <a class="text-ferm-blue-dark-800 underline"
+                       href="/gef/Sample feature table GEF Projects.csv"
+                       target="_blank">this link</a>
+                </p>
+
+                <p @click="() => showDisclaimer = true"
+                   class="mt-4 font-semibold cursor-pointer text-ferm-blue-dark-800 underline uppercase">
+                    Disclaimer
+                </p>
+                <AlertModal v-if="store.project.reportingLine === 'GEF'"
+                            type="info"
+                            :onClose="() => showDisclaimer = false"
+                            :open="showDisclaimer"
+                            title="DISCLAIMER"
+                            buttonText="Close">
+                    <div class="text-left text-sm">
+                        Please be aware that data on the FERM platform is internally converted to EPSG:4326 - WGS 84 Coordinate System. This geographic coordinate system, representing locations as latitude and longitude, may introduce potential distortions in area calculations, particularly over large spatial extents. These distortions are not errors in the provided data but are inherent characteristics of the EPSG:4326 - WGS 84 system. We advise exercising caution when using this data for precise area calculations or analyses, considering these inherent limitations.
+                    </div>
+                </AlertModal>
+            </div>
             <FileUploadInputGroup2 v-if="store.project.reportingLine === 'GEF'"
                                    label="Please upload Restoration Plans/Management Plans"
                                    :folder="store.id!"
@@ -122,11 +140,11 @@ function numbering(i: number, v: any) {
                         management activities and baseline information of the territory, including pictures.</p>
                 </template>
             </FileUploadInputGroup2>
-            <FormGroup
-                :label="'Total area under restoration (ha)' + (store.project.reportingLine === 'GEF' ? ' (achieved area in tabular format)' : '')">
+            <FormGroup :label="'Total area under restoration (ha)' + (store.project.reportingLine === 'GEF' ? ' (achieved area in tabular format)' : '')">
                 <NumberInput :edit="edit"
                              v-model="store.project.project.areaUnderRestoration" />
-                <template v-slot:info v-if="store.project.reportingLine === 'GEF'">
+                <template v-slot:info
+                          v-if="store.project.reportingLine === 'GEF'">
                     <p>Please include the land (in ha) reported in the Restoration Plans/Management Plans (tabular
                         data).</p>
                 </template>

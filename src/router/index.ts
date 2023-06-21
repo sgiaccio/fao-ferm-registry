@@ -119,6 +119,10 @@ const router = createRouter({
                     path: "groupAssignments",
                     name: "groupAssignments",
                     component: () => import('../views/admin/GroupAssignmentRequests.vue')
+                }, {
+                    path: "newGroups",
+                    name: "newGroups",
+                    component: () => import('../views/admin/NewGroupRequestsView.vue')
                 }
             ]
         }, {
