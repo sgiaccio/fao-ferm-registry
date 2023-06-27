@@ -8,11 +8,6 @@ import TabTemplate from "../../TabTemplate.vue";
 import MeanMinMax from './MeanMinMax.vue';
 import LandCover from './LandCover.vue';
 
-// import { iucnEcosystems } from '../../components/project/menus';
-
-// import TreeItem from '../../components/inputs/base/TreeItem.vue';
-
-
 withDefaults(defineProps<{
     edit?: boolean
 }>(), {

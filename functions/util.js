@@ -13,6 +13,8 @@ const assignmentRequestsCollection = db.collection('assignementRequests'); // Ty
 const newGroupRequestsCollection = db.collection('newGroupRequests');
 const mailCollection = db.collection('mail');
 
+// db.settings({ ignoreUndefinedProperties: true });
+
 // These are the roles that can be assigned to users in a group.
 // Possibly add 'restricted'? Restricted users could only edit and view their own data
 const GROUP_ROLES = ['admin', 'editor', 'guest'];

@@ -290,7 +290,7 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                     <!-- Best practices menu -->
                                                     <Menu v-if="project.data.bestPracticesCount"
                                                           as="div"
-                                                          class="relative inline-block text-left">
+                                                          class="relative_ inline-block text-left">
                                                         <div class="sm:mt-0 sm:ml-6 text-sm">
                                                             <MenuButton @click="showBestPractices(project.id)"
                                                                         class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none">
@@ -311,7 +311,7 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                             leave-from-class="transform opacity-100 scale-100"
                                                             leave-to-class="transform opacity-0 scale-95">
                                                             <menu-items
-                                                                class="absolute left-0 z-10 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                                class="absolute z-10 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                                 <div v-if="bestPractices.length"
                                                                      class="py-1">
                                                                     <menu-item v-slot="{ active }"

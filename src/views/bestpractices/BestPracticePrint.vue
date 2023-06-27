@@ -18,18 +18,32 @@ const route = useRoute();
 const { bestPractice } = storeToRefs(store);
 
 onBeforeMount(async () => {
-    alert(route.params.id);
-    store.fetch(route.params.id as string);
+    await store.fetch(route.params.id as string);
 });
 
-watch(bestPractice, bestPractice => {
-    if (bestPractice) {
-        // Use nextTick to wait for the DOM to be updated
-        nextTick(() => {
-            window.print();
-        });
+watch(bestPractice, bp => {
+    if (bp) {
+        nextTick(window.print);
     }
 });
+
+// const thumbnailReady = ref(false);
+
+// watch([bestPractice, thumbnailReady], ([bp, tr]) => {
+//     console.log(bp, tr);
+//     if (bp && tr) {
+//         alert();
+//         // Use nextTick to wait for the DOM to be updated
+//         nextTick(() => {
+//             window.print();
+//         });
+//     }
+// });
+
+// function thumbnailLoaded() {
+//     alert();
+//     thumbnailReady.value = true;
+// }
 </script>
 
 <template>
@@ -37,5 +51,5 @@ watch(bestPractice, bestPractice => {
     <MethodologyView :edit="false" />
     <KeyFactorsView :edit="false" />
     <BenefitsView :edit="false" />
-    <AdditionalResourcesView :edit="false" />
+    <AdditionalResourcesView :edit="false"/>
 </template>

@@ -1,6 +1,6 @@
 [
     {
-      "origin": ["http://localhost:5173", "https://ferm.fao.org"],
+      "origin": ["https://fao-ferm--publish-workflow-iunr37n7.web.app", "https://ferm.fao.org"],
       "method": ["GET"],
       "responseHeader": ["Content-Type"],
       "maxAgeSeconds": 3600

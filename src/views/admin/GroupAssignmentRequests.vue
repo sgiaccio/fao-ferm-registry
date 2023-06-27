@@ -11,7 +11,11 @@ let assignmentRequests = ref([]);
 
 function refresh() {
     getMyGroupsAssigmentRequests().then((requests) => {
-        assignmentRequests.value = requests;
+        assignmentRequests.value = requests.sort((a, b) => {
+            if (a === null) return 1;
+            if (b === null) return -1;
+            return new Date(b.createTime).getTime() - new Date(a.createTime).getTime();
+        })
     });
 }
 

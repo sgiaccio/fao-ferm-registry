@@ -5,20 +5,33 @@ import type { MenuValue, RecursiveMenu } from '../../project/menus';
 
 // import FormGroup from '../FormGroup.vue';
 
-const props = defineProps({
-    uid: null,
-    modelValue: Array as PropType<Array<MenuValue>>,
-    treeData: { type: Object as PropType<RecursiveMenu>, required: true },
-    level: { type: Number, default: 0 },
-    expandLevel: { type: Number, default: 1 },
-    edit: { type: Boolean, default: true },
+const props = withDefaults(defineProps<{
+    uid?: string,
+    modelValue?: Array<MenuValue>,
+    treeData: RecursiveMenu,
+    level?: number,
+    expandLevel?: number,
+    edit?: boolean
+}>(), {
+    level: 0,
+    expandLevel: 1,
+    edit: true
 });
+
+// const props2 = defineProps({
+//     uid: null,
+//     modelValue: Array as PropType<Array<MenuValue>>,
+//     treeData: { type: Object as PropType<RecursiveMenu>, required: true },
+//     level: { type: Number, default: 0 },
+//     expandLevel: { type: Number, default: 1 },
+//     edit: { type: Boolean, default: true },
+// });
 
 const emit = defineEmits(["update:modelValue", "update:others"])
 
 const isOpen = ref(+props.level <= +props.expandLevel)
 const isFolder = computed(() => {
-    return !!(props.treeData?.children && props.treeData.children.length)
+    return !!(props.treeData?.items && props.treeData.items.length)
 });
 
 function toggleFolder() {
@@ -49,12 +62,12 @@ function deleteOption(value: MenuValue) {
 
 let flattenedOptions: any = {}
 function flatten(data: RecursiveMenu) {
-    if (!data.children) {
+    if (!data.items) {
         if (data.value) {
             flattenedOptions[data.value] = data.label;
         }
     } else {
-        data.children.forEach(flatten);
+        data.items.forEach(flatten);
     }
 }
 
@@ -122,7 +135,7 @@ function bubble(val: number[]) {
         <ul class="ml-10"
             v-show="isOpen"
             v-if="isFolder">
-            <TreeItem v-for="child in treeData?.children"
+            <TreeItem v-for="child in treeData?.items"
                       :uid="uid"
                       :modelValue="modelValue"
                       @update:modelValue="bubble"
@@ -134,8 +147,8 @@ function bubble(val: number[]) {
             <!-- <li class="add" @click="addChild">+</li> -->
         </ul>
     </dl>
+    
     <div v-else>
-
         <div class="border border-slate-400 rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
             <div class="ml-2 text-gray-600 dark:text-gray-400"
                  v-if="!props.modelValue?.length">
@@ -162,7 +175,7 @@ function bubble(val: number[]) {
         </div>
         <ul v-if="edit"
             class="dark:text-white cursor-default">
-            <TreeItem v-for="child in treeData?.children"
+            <TreeItem v-for="child in treeData?.items"
                       :uid="uid"
                   :modelValue="modelValue"
                   @update:modelValue="bubble"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 
 import router from '@/router';
 import { useRoute } from 'vue-router';
@@ -97,6 +97,15 @@ async function deleteProject(projectId: string) {
     if (confirm('Are you sure you want to delete this initiative? You will releted the related areas and best practices.'))
         return projectStore.deleteProject(projectId);
 }
+
+function goToEditRoute() {
+    const routeName = route.name;
+    if (route.name === 'initiatives') {
+        router.push({ name: 'projectInfoEdit', params: { id: props.project.id } });
+    } else {
+        router.push({ name: `${String(routeName)}Edit`, params: { id: props.project.id } });
+    }
+}
 </script>
 
 <template>
@@ -108,8 +117,7 @@ async function deleteProject(projectId: string) {
                      @complete="done">
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Are you sure you want to submit the initiative <span
-                    class="font-bold">'{{ project.data.project?.title }}'</span> for review? Please note that by
+                <p>Are you sure you want to submit the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span> for review? Please note that by
                     proceeding:</p>
                 <ol class="mt-2 list-decimal list-inside">
                     <li>An email will be sent to your institution administrators for review. They will have the
@@ -148,8 +156,7 @@ async function deleteProject(projectId: string) {
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
                 <p>
-                    Are you sure you want to publish the initiative <span
-                    class="font-bold">'{{ project.data.project?.title
+                    Are you sure you want to publish the initiative <span class="font-bold">'{{ project.data.project?.title
                     }}'</span>?
                 </p>
             </div>
@@ -177,8 +184,7 @@ async function deleteProject(projectId: string) {
                      @cancel="cancelReject">
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Are you sure you want to reject the initiative <span
-                    class="font-bold">'{{ project.data.project?.title }}'</span>?
+                <p>Are you sure you want to reject the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?
                 </p>
                 <p>If you proceed, please provide constructive feedback to the author regarding the rejection."
                     <textarea v-model="rejectReason"
@@ -200,18 +206,19 @@ async function deleteProject(projectId: string) {
         </template>
     </TwoStagesDialog>
 
+    <!-- need to check if project.id is not null because ProjectView resets the project when leaving the page? -->
     <Menu as="div"
           class="relative inline-block text-left">
         <div>
-            <menu-button
-                :class="[label ? 'inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-6' : 'flex items-center rounded-full text-gray-400 hover:text-gray-600 focus:outline-none']">
+            <menu-button :class="[label ? 'inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-6' : 'flex items-center rounded-full text-gray-400 hover:text-gray-600 focus:outline-none']">
                 <span class="sr-only">Actions</span>
                 <EllipsisVerticalIcon v-if="!label"
                                       class="h-5 w-5"
                                       aria-hidden="true" />
                 <template v-else>
                     {{ label }}
-                    <ChevronDownIcon class="-mr-0.5 h-5 w-5" aria-hidden="true" />
+                    <ChevronDownIcon class="-mr-0.5 h-5 w-5"
+                                     aria-hidden="true" />
                 </template>
             </menu-button>
         </div>
@@ -222,8 +229,7 @@ async function deleteProject(projectId: string) {
                     leave-active-class="transition ease-in duration-75"
                     leave-from-class="transform opacity-100 scale-100"
                     leave-to-class="transform opacity-0 scale-95">
-            <MenuItems
-                class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div v-if="!sections || sections.includes('view')"
                      class="py-1">
                     <menu-item v-if="!excludeViewMenuItem"
@@ -245,49 +251,41 @@ async function deleteProject(projectId: string) {
                     </menu-item>
                 </div>
                 <div class="py-1"
-                     v-if="(!sections || sections.includes('edit') ||  sections.includes('publishing')) && (projectUtils.canEdit(project) || projectUtils.canAddBestPractice(project))">
+                     v-if="(!sections || sections.includes('edit') || sections.includes('publishing')) && (projectUtils.canEdit(project) || projectUtils.canAddBestPractice(project))">
                     <menu-item v-if="projectUtils.canEdit(project) && (!sections || sections.includes('edit'))"
                                v-slot="{ active }">
-                        <router-link
-                            :to="{ name: `${route.name}Edit`, params: { id: project.id } }"
-                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
-                            <pencil-square-icon
-                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                aria-hidden="true" />
+                        <div @click="goToEditRoute"
+                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
+                            <pencil-square-icon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                aria-hidden="true" />
                             Edit
-                        </router-link>
+                        </div>
                     </menu-item>
                     <menu-item v-if="projectUtils.canSubmit(project) && (!sections || sections.includes('publishing'))"
                                v-slot="{ active }">
-                        <div
-                            @click="openSubmitDialog"
-                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">
-                            <document-magnifying-glass-icon
-                                class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                aria-hidden="true" />
+                        <div @click="openSubmitDialog"
+                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">
+                            <document-magnifying-glass-icon class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                            aria-hidden="true" />
                             Submit for review
                         </div>
                     </menu-item>
                     <menu-item v-if="projectUtils.canPublish(project) && (!sections || sections.includes('publishing'))"
                                v-slot="{ active }">
-                        <div
-                            @click="openPublishDialog"
-                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">
-                            <hand-thumb-up-icon
-                                class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                aria-hidden="true" />
+                        <div @click="openPublishDialog"
+                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">
+                            <hand-thumb-up-icon class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                aria-hidden="true" />
                             Publish
                         </div>
                     </menu-item>
 
                     <menu-item v-if="projectUtils.canReject(project) && (!sections || sections.includes('publishing'))"
                                v-slot="{ active }">
-                        <div
-                            @click="openRejectDialog"
-                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">
-                            <hand-thumb-down-icon
-                                class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                aria-hidden="true" />
+                        <div @click="openRejectDialog"
+                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">
+                            <hand-thumb-down-icon class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                  aria-hidden="true" />
                             Reject
                         </div>
                     </menu-item>
@@ -295,9 +293,8 @@ async function deleteProject(projectId: string) {
                 <div v-if="!sections || sections.includes('best-practices')">
                     <menu-item v-if="projectUtils.canAddBestPractice(project)"
                                v-slot="{ active }">
-                        <router-link
-                            :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
-                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
+                        <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
+                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
                             <check-badge-icon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                               aria-hidden="true" />
                             Add Good Practice

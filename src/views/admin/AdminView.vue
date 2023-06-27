@@ -9,10 +9,10 @@ const route = useRoute();
 
 const tabs = [
     { name: 'Users', routeName: 'users', current: false, superAdminOnly: false },
-    { name: 'Groups', routeName: 'groups', current: false, superAdminOnly: true },
+    { name: 'Institutions', routeName: 'groups', current: false, superAdminOnly: true },
     { name: 'Submitted initiatives', routeName: 'submittedInitiatives', current: false, superAdminOnly: false },
     { name: 'Institution assignments requests', routeName: 'groupAssignments', current: false, superAdminOnly: false },
-    { name: 'New groups requests', routeName: 'newGroups', current: false, superAdminOnly: true },
+    { name: 'New institution requests', routeName: 'newGroups', current: false, superAdminOnly: true },
 ]
 
 const store = useAuthStore();
@@ -32,7 +32,7 @@ if (store.user) {
 <template>
     <Navbar />
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-3xl mx-auto mt-6">
+        <div class="max-w-3xl_ mx-auto mt-6">
             <div class="sm:hidden">
                 <label for="tabs"
                        class="sr-only">Select a tab</label>

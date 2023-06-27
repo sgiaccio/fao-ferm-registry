@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { useProjectStore } from '../../stores/project';
+import { useProjectStore } from '@/stores/project';
+import { useMenusStore } from '@/stores/menus';
 
-import { iucnEcosystems } from '../../components/project/menus';
+// import { iucnEcosystems } from '@/components/project/menus';
 
 import TabTemplate from '../TabTemplate.vue';
-import TreeItem from '../../components/inputs/base/TreeItem.vue';
+import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 
 
 const store = useProjectStore();
+const menus = useMenusStore().menus;
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -15,6 +17,17 @@ withDefaults(defineProps<{
     edit: true
 });
 
+function applyToAll() {
+    if (!confirm('Are you sure you want to apply this ecosystem to all areas? Your current selections will be overwritten.')) return;
+
+    const key = Object.keys(store.projectAreas[0])[0];
+    const ecosystems = store.projectAreas[0][key].ecosystems;
+    store.projectAreas.forEach((area, i) => {
+        if (i > 0) {
+            area[key].ecosystems = ecosystems;
+        }
+    });
+}
 </script>
 
 <template>
@@ -32,14 +45,24 @@ withDefaults(defineProps<{
                  class="flex flex-col gap-y-4 pt-6">
                 <div v-for="area, i in store.projectAreas"
                      class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
-                    <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2">
-                        Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
-                              v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}</span>
+                    <div class="flex flex-row my-3">
+                        <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2 flex-grow">
+                            Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
+                                  v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}</span>
+                        </div>
+                        <div>
+                            <button v-if="i === 0"
+                                    type="button"
+                                    class="rounded bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    @click="applyToAll">
+                                Apply to all
+                            </button>
+                        </div>
                     </div>
-                    <TreeItem :edit="edit"
-                              v-model="area[Object.keys(area)[0]].ecosystems"
-                              :treeData="iucnEcosystems"
-                              :expandLevel="0" />
+                    <RecursiveMenu :edit="edit"
+                                   v-model="area[Object.keys(area)[0]].ecosystems"
+                                   :options="menus.iucnEcosystems"
+                                   :expandLevel="0" />
                 </div>
             </div>
             <div v-else-if="edit"

@@ -34,21 +34,21 @@ const yesNo = [
                 <TextareaFormGroup v-model="store.bestPractice.links"
                                    label="5.1 Links"
                                    description="Please provide links to pictures, testimonials or references from local stakeholders, videos, scientific articles and publications, outreach materials, websites and/or social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice."
-                                   :edit=edit />
+                                   :edit="edit" />
                 <SelectFormGroup v-model="store.bestPractice.details"
                                  :options="yesNo"
                                  label="5.2 Additional information on costs and benefits"
                                  :required="true"
                                  description="Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO's Team on Economics of Ecosystem Restoration (TEER)."
-                                 :edit=edit />
+                                 :edit="edit" />
                 <TextareaFormGroup v-model="store.bestPractice.additionalComments"
                                    label="5.3 Additional comments"
                                    description="Feel free to share any additional information regarding the practice."
-                                   :edit=edit />
+                                   :edit="edit" />
                 <ImageUploadFormGroup label="5.4 Please upload a picture of the practice"
                                       bucket-url="gs://fao-ferm-goodpractices"
                                       :folder="`${store.id}/images/`"
-                                      :edit=edit />
+                                      :edit="edit" />
             </template>
         </template>
     </TabTemplate>

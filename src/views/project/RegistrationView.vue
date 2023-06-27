@@ -3,7 +3,8 @@ import { getStorage, ref, uploadBytes, listAll, deleteObject } from "firebase/st
 import * as vue from "vue";
 
 
-import { useProjectStore } from "../../stores/project";
+import { useProjectStore } from "@/stores/project";
+import { useMenusStore } from '@/stores/menus';
 
 import TabTemplate from "../TabTemplate.vue";
 
@@ -19,9 +20,7 @@ import Organization from "@/components/inputs/organizations/Organization.vue";
 import PointOfContact from "@/components/inputs/pointsOfContact/PointOfContact.vue";
 import SelectFormGroup from "@/components/inputs/base/SelectFormGroup.vue";
 
-import { gefCycles } from "@/components/project/menus";
-
-import { objectives, gefFocalAreas } from "@/components/project/menus";
+// import { gefCycles, objectives, gefFocalAreas } from "@/components/project/menus";
 
 
 withDefaults(defineProps<{
@@ -55,6 +54,7 @@ const pointsOfContact = {
 };
 
 const store = useProjectStore();
+const menus = useMenusStore().menus;
 
 const selectedFile = vue.ref<File | null>(null);
 const uploadStatus = vue.ref<"idle" | "uploading" | "uploaded">("idle");
@@ -139,11 +139,11 @@ vue.watch(() => store.id as string, async id => {
             <SelectFormGroup :edit="edit"
                              v-model="store.project.project.gefCycle"
                              label="GEF cycle"
-                             :options="gefCycles" />
+                             :options="menus.gefCycles" />
             <SelectFormGroup :edit="edit"
                              v-model="store.project.project.gefFocalArea"
                              label="GEF focal area"
-                             :options="gefFocalAreas" />
+                             :options="menus.gefFocalAreas" />
         </template>
 
         <TextareaFormGroup :edit="edit"
@@ -260,11 +260,11 @@ vue.watch(() => store.id as string, async id => {
                 <div v-else>File not uploaded</div>
             </template>
         </FormGroup>
-        <MultiSelectFormGroup :edit="edit"
-                              :options="objectives"
+        <!-- <MultiSelectFormGroup :edit="edit"
+                              :options="menus.objectives"
                               v-model="store.project.project.objectives"
                               label="Objectives"
-                              description="Objectives of the initiatives" />
+                              description="Objectives of the initiatives" /> -->
         <MultiInputFormGroup :edit="edit"
                              label="Points of contact"
                              :inputComponents="pointsOfContact"

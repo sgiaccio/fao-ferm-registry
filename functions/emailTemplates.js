@@ -43,12 +43,11 @@ exports.initiativeSubmittedForReview = function(emails, groupName, projectId, pr
               Thank you for your diligent contribution to the excellence of our shared FERM Registry.
             </p>
             
-            <p>
-            Best regards,
-            <br>
-            The FERM team
-            </p>
-            `
+            <p>Best regards,</p>
+                
+            <p>The FERM Team<br>
+            <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+        `
         }
     };
 };
@@ -79,8 +78,10 @@ exports.initiativeSubmittedForReviewSuperAdmins = function(emails, groupName, pr
       <p>Your assistance in this matter ensures the smooth operation and excellence of our shared FERM Registry. Thank you for your continued support and diligence.</p>
       
       <p>Best regards,</p>
-      <p>The FERM team</p>
-      `
+                
+      <p>The FERM Team<br>
+      <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+`
     }
   };
 };
@@ -142,10 +143,10 @@ exports.initiativePublished = function(emails, groupName, projectId, projectTitl
                     community.
                 </p>
             
-                <p>
-                    Best regards,<br>
-                    The FERM Team
-                </p>
+                <p>Best regards,</p>
+                
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
             `
         }
     }
@@ -166,7 +167,9 @@ exports.initiativeRejected = function(emails, groupName, projectId, projectTitle
                 <p>If you have any questions or require further assistance, please don't hesitate to reach out to our support team at <a href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>. We are here to assist you in enhancing the quality and impact of your initiative.</p>
                 <p>Thank you for your understanding and your continued commitment to the FERM Registry. We appreciate your efforts and encourage you to submit future initiatives that align with our platform's guidelines.</p>
                 <p>Best regards,</p>
-                <p>The FERM Team</p>
+                
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
             `
         }
     }
@@ -200,7 +203,9 @@ exports.newGroupRequest = function(emails, name, displayName, type, otherType, p
                 <p>As a superadmin, please go to <a href="${baseUrl}/admin/newGroups">${baseUrl}/admin/newGroups</a> to create the new group.</p>
 
                 <p>Best regards,</p>
-                <p>the FERM team</p>
+                
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
             `
         }
     };
@@ -230,9 +235,10 @@ exports.newGroupApproval = function(email, displayName, institutionName) {
                 ready to assist you. Please don't hesitate to contact us at 
                 <a href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>.</p>
 
-                <p>Best Regards,</p>
-
-                <p>The FERM team</p>
+                <p>Best regards,</p>
+                
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
 
             `
         }
@@ -270,9 +276,10 @@ exports.newGroupRejection = function(email, displayName, institutionName) {
                 <p>We truly appreciate your understanding and your continued support of our collective 
                 restoration efforts. We look forward to your future contributions within our community.</p>
 
-                <p>Best Regards,</p>
-
-                <p>The FERM team<br>
+                <p>Best regards,</p>
+                
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
             `
         }
     };

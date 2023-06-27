@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue';
 
-import { getMyNewGroupRequests, handleGroupAssignmentRequest, approveNewGroupRequest, rejectNewGroupRequest } from '@/firebase/functions';
+import { getMyNewGroupRequests, approveNewGroupRequest, rejectNewGroupRequest } from '@/firebase/functions';
 
 import TabTemplate from '../TabTemplate.vue'
 

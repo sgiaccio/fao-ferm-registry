@@ -1,7 +1,9 @@
 import { useAuthStore } from "../stores/auth"
 import { useUserPrefsStore } from "../stores/userPreferences"
+import { useMenusStore } from "../stores/menus"
 
 import { createRouter, createWebHistory } from "vue-router";
+
 
 // Initiatives tabs are used both for editing and viewing projects, so define them once here
 // Can't set the route name here because they are used twice.
@@ -129,14 +131,20 @@ const router = createRouter({
             path: '/registry',
             name: 'registry',
             component: () => import('../views/RegistryView.vue'),
+            beforeEnter: async (_to, _from) => {
+                const menusStore = useMenusStore();
+                if (!menusStore.loaded) {
+                    await menusStore.fetchMenus();
+                }
+            },
             redirect: { name: 'initiatives' },
             children: [
                 {
                     path: 'newOrganization',
                     name: 'newOrganization',
                     component: () => import('../views/InstitutionAssignmentPage.vue')
-                }, 
-                
+                },
+
                 // Initiatives
                 {
                     path: 'initiatives',

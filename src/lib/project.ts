@@ -2,6 +2,10 @@ import { useAuthStore } from '@/stores/auth';
 
 
 export function getStatus(project) {
+    if (!project.data) {
+        return null
+    }
+
     if (!project.data.status) {
         return 'draft';
     }

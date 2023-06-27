@@ -3,15 +3,9 @@ import { watch } from 'vue';
 import { RouterView } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
-import Navbar from '@/views/Navbar.vue';
-
 import { useAuthStore } from './stores/auth';
 import { useUserPrefsStore } from './stores/userPreferences';
 
-import {useRoute} from 'vue-router'
-
-
-const route = useRoute();
 
 const authStore = useAuthStore();
 const userPrefsStore = useUserPrefsStore();

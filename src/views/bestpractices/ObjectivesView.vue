@@ -3,13 +3,14 @@ import { ref, watch } from 'vue'
 
 import TabTemplate from "../TabTemplate.vue"
 
-import TextFormGroup from "../../components/inputs/base/TextFormGroup.vue";
-import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
-import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
+import TextFormGroup from "@/components/inputs/base/TextFormGroup.vue";
+import TextareaFormGroup from "@/components/inputs/base/TextareaFormGroup.vue";
+import MultiSelectFormGroup from "@/components/inputs/base/MultiSelectFormGroup.vue";
 
-import { objectives, ecosystems, drivers, activities, iucnEcosystems, type MenuItem, type RecursiveMenu } from "../../components/project/menus";
+import type { MenuItem, RecursiveMenu } from "@/components/project/menus";
 
-import { useBestPracticesStore } from '../../stores/bestpractices';
+import { useBestPracticesStore } from '@/stores/bestpractices';
+import { useMenusStore } from '@/stores/menus';
 
 
 withDefaults(defineProps<{
@@ -19,6 +20,7 @@ withDefaults(defineProps<{
 });
 
 const store = useBestPracticesStore();
+const menus = useMenusStore().menus;
 
 // type AOI = {
 //     adminArea: {
@@ -49,38 +51,20 @@ const store = useBestPracticesStore();
 const flattenedActivities: MenuItem[] = [];
 const flattenedIucnEcosystems: MenuItem[] = [];
 
+
 function flatten(data: RecursiveMenu, flattenedArray: MenuItem[]) {
-    if (!data.children) {
-        if (data.value) {
-            flattenedArray.push({ value: data.value, label: data.label });
+    for (const item of data) {
+        if (item.value) { // should always be the case
+            flattenedArray.push({ value: item.value, label: item.label });
         }
-    } else {
-        data.children.forEach(c => { flatten(c, flattenedArray) });
+        if (item.items) {
+            flatten(item.items, flattenedArray);
+        }
     }
 }
 
-flatten(activities, flattenedActivities);
-flatten(iucnEcosystems, flattenedIucnEcosystems);
-
-// (function flatten(data) {
-//     if (!data.children) {
-//         if (data.value) {
-//             flattenedActivities.push({ value: data.value, label: data.label });
-//         }
-//     } else {
-//         data.children.forEach(c => { flatten(c) });
-//     }
-// })(activities);
-
-// (function flatten(data) {
-//     if (!data.children) {
-//         if (data.value) {
-//             flattenedIucnEcosystems.push({ value: data.value, label: data.label });
-//         }
-//     } else {
-//         data.children.forEach(c => { flatten(c) });
-//     }
-// })(iucnEcosystems);
+flatten(menus.activities, flattenedActivities);
+flatten(menus.iucnEcosystems, flattenedIucnEcosystems);
 
 // Build the area menu - collect all the areas from the related project
 let areasMenu = ref([]);
@@ -157,7 +141,7 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
                                :required=true
                                :edit=edit>
                 </TextFormGroup>
-                <MultiSelectFormGroup :options="objectives"
+                <MultiSelectFormGroup :options="menus.objectives"
                                       v-model="store.bestPractice.objectives"
                                       label="1.2 Objectives"
                                       description="Please select the main objectives of the practice."
@@ -172,7 +156,7 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
                                       label="1.4 Areas"
                                       :description="areasMenu.length ? 'Select the areas where the practice was implemented.' : 'No area was selected for the project.'"
                                       :edit=edit />
-                <MultiSelectFormGroup :options="ecosystems"
+                <MultiSelectFormGroup :options="menus.ecosystems"
                                       v-model="store.bestPractice.ecosystems"
                                       label="1.5 Ecosystems"
                                       description="Ecosystems where the practice was applied [Select all that apply]"
@@ -193,7 +177,7 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
                                       :description="areasMenu.length ? 'Select the activities of your restoration initiative to which the practice belongs.' : 'No activity was selected for the project.'"
                                       :required="true"
                                       :edit=edit />
-                <MultiSelectFormGroup :options="drivers"
+                <MultiSelectFormGroup :options="menus.drivers"
                                       v-model="store.bestPractice.drivers"
                                       label="1.9 Drivers"
                                       description="Direct and indirect drivers of degradation addressed by the practice [Select all that apply]."

@@ -76,7 +76,7 @@ const filteredGroups = computed(() => {
     return queryResult.filter(group => {
         return !assignmentRequests.value.approved.includes(group.id)
             && !assignmentRequests.value.pending.includes(group.id)
-            && !assignmentRequests.value.denied.includes(group.id)
+            // && !assignmentRequests.value.denied.includes(group.id)
     }).sort((a, b) => a.name.localeCompare(b.name))
 });
 
@@ -170,7 +170,7 @@ async function confirmSubmit() {
         await submitNewGroup({
             ...newInstitutionFormData.value,
             userId: authStore.user!.uid,
-            createdAt: new Date().toISOString()
+            // createdAt: new Date().toISOString()
         });
         showSubmitSuccess.value = true;
         newInstitutionFormData.value = {

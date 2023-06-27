@@ -162,38 +162,39 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
     const user = await admin.auth().getUserByEmail(email);
 
 
-    // get the previous privileges
-    const previousPrivileges = user.customClaims.privileges || {};
-    // find the differences between the previous privileges and the new privileges
-    const privilegesToAdd = Object.keys(privileges).filter(g => !Object.keys(previousPrivileges).includes(g));
-    const privilegesToRemove = Object.keys(previousPrivileges)
-        .filter(g => !Object.keys(privileges).includes(g));
-    const privilegesToUpdate = Object.keys(previousPrivileges)
-        .filter(g => Object.keys(privileges).includes(g) && previousPrivileges[g] !== privileges[g]);
+    // // get the previous privileges
+    // const previousPrivileges = user.customClaims.privileges || {};
+    // // find the differences between the previous privileges and the new privileges
+    // const privilegesToAdd = Object.keys(privileges).filter(g => !Object.keys(previousPrivileges).includes(g));
+    // const privilegesToRemove = Object.keys(previousPrivileges)
+    //     .filter(g => !Object.keys(privileges).includes(g));
+    // const privilegesToUpdate = Object.keys(previousPrivileges)
+    //     .filter(g => Object.keys(privileges).includes(g) && previousPrivileges[g] !== privileges[g]);
 
-    console.log('privilegesToAdd', privilegesToAdd);
-    console.log('privilegesToRemove', privilegesToRemove);
-    console.log('privilegesToUpdate', privilegesToUpdate);
+    // console.log('privilegesToAdd', privilegesToAdd);
+    // console.log('privilegesToRemove', privilegesToRemove);
+    // console.log('privilegesToUpdate', privilegesToUpdate);
 
-    // send email to user with the changes in privileges
-    const mailDoc = {
-        to: [email],
-        message: {
-            subject: 'Changes in your FERM privileges',
-            html: `
-                <p>Hi,</p>
-                <p>Your privileges in the FERM Registry have been updated.</p>
-                <p>Privileges added: ${privilegesToAdd.join(', ')}</p>
-                <p>Privileges removed: ${privilegesToRemove.join(', ')}</p>
-                <p>Privileges updated: ${privilegesToUpdate.join(', ')}</p>
-                <p>Best regards,</p>
-                <p>the FERM team</p>
-            `
-        }
-    };
+    // // send email to user with the changes in privileges
+    // const mailDoc = {
+    //     to: [email],
+    //     message: {
+    //         subject: 'Changes in your FERM privileges',
+    //         html: `
+    //             <p>Hi,</p>
+    //             <p>Your privileges in the FERM Registry have been updated.</p>
+    //             <p>Privileges added: ${privilegesToAdd.join(', ')}</p>
+    //             <p>Privileges removed: ${privilegesToRemove.join(', ')}</p>
+    //             <p>Privileges updated: ${privilegesToUpdate.join(', ')}</p>
+    //             <p>Best regards,</p>
+    //             <p>The FERM Team<br>
+    //             <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+    //         `
+    //     }
+    // };
 
-    // add mail document to mail collection
-    await util.mailCollection.add(mailDoc);
+    // // add mail document to mail collection
+    // await util.mailCollection.add(mailDoc);
 
     await admin.auth().setCustomUserClaims(user.uid, { privileges, admin: !!_admin });
 
@@ -320,6 +321,7 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
     let mailDoc;
     const groupAdminEmails = await util.getGroupAdminEmails(groupId);
     const groupName = groupDoc.data().name;
+    console.log(groupAdminEmails);
     if (groupAdminEmails.length > 0) {
         // create mail document
         mailDoc = {
@@ -335,7 +337,8 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
                 <p>As an administrator of the group, please go to <a href="https://ferm.fao.org/admin/groupAssignments">https://ferm.fao.org/admin/groupAssignments</a> to accept or reject the request.</p>
         
                 <p>Best regards,</p>
-                <p>the FERM team</p>
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
             `
             }
         };
@@ -353,7 +356,8 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
                 <p>This institution has no administators - as a superadmin please go to <a href="https://ferm.fao.org/admin/groupAssignments">https://ferm.fao.org/admin/groupAssignments</a> to accept or reject the request.</p>
         
                 <p>Best regards,</p>
-                <p>the FERM team</p>
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
             `
             }
         }
@@ -615,12 +619,45 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
         to: [email],
         message: {
             subject: `${groupName} - Membership Request Status`,
-            html: `
-                <p>Hi,</p>
-                <p>This email is to inform you about the status of your membership request to ${groupName}. Your request has been ${newStatus}.</p>
-                <p>Sincerely,</p>
-                <p>the FERM team</p>
+            html: newStatus = 'rejected' ? `
+                <p>Dear ${user.displayName || user.email || 'User'},</p>
+
+                <p>Your request to join ${groupName ? 'the institution, <strong>' + groupName + '</strong>,' : 'our institution'} has been reviewed.</p>
+                
+                <p>At this time, we are unable to accept your request. This decision does not reflect on your commitment to environmental restoration, and we encourage continued participation in related activities.</p>
+                
+                <p>More information about your qualifications or interest in the institution could assist in future decisions. Therefore, you are welcome to provide additional details and resubmit your request if you wish.</p>
+                
+                <p>For any inquiries, or to resubmit your request, please contact <a href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>.</p>
+                
+                <p>Thank you for your understanding.</p>
+                
+                <p>Best regards,</p>
+                
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+            ` : `
+                <p>Dear ${user.displayName || user.email || 'User'},</p>
+
+                <p>Your request to join ${groupName ? 'the institution, <strong>' + groupName + '</strong>,' : 'our institution'} has been reviewed.</p>
+                
+                <p>We are pleased to inform you that your request has been accepted. You are now a member and can participate in related activities.</p>
+                
+                <p>For any inquiries, please contact <a href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>.</p>
+                
+                <p>Thank you.</p>
+                
+                <p>Best regards,</p>
+                
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
             `
+
+            //     <p>Hi,</p>
+            //     <p>This email is to inform you about the status of your membership request to ${groupName}. Your request has been ${newStatus}.</p>
+            //     <p>Sincerely,</p>
+            //     <p>the FERM team</p>
+            // `
         }
     };
 
@@ -650,7 +687,8 @@ exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastNa
                 <p style="font-style: italic;white-space: break-spaces;">${message}</p>
 
                 <p>Best regards,</p>
-                <p>the FERM team</p>
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
             `
         }
     };
@@ -706,4 +744,3 @@ exports.sendNewGroupRequestEmail = groupRequestsWorkflow.sendNewGroupRequestEmai
 exports.getMyNewGroupRequests = groupRequestsWorkflow.getMyNewGroupRequests;
 exports.approveNewGroupRequest = groupRequestsWorkflow.approveNewGroupRequest;
 exports.rejectNewGroupRequest = groupRequestsWorkflow.rejectNewGroupRequest;
-

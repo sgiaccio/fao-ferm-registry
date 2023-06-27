@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { useBestPracticesStore } from '../../stores/bestpractices';
+import { useBestPracticesStore } from '@/stores/bestpractices';
+import { useMenusStore } from '@/stores/menus';
 
 import TabTemplate from "../TabTemplate.vue"
 
-import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
-import MultiInputFormGroup from "../../components/inputs/MultiInputFormGroup.vue";
-import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
-import Constraint from "../../components/inputs/Constraint.vue"
+import TextareaFormGroup from "@/components/inputs/base/TextareaFormGroup.vue";
+import MultiInputFormGroup from "@/components/inputs/MultiInputFormGroup.vue";
+import MultiSelectFormGroup from "@/components/inputs/base/MultiSelectFormGroup.vue";
+import Constraint from "@/components/inputs/Constraint.vue"
 
-import { keyFactors } from "../../components/project/menus";
+// import { keyFactors } from "../../components/project/menus";
 
 
 // type KeyFactors = {
@@ -28,6 +29,7 @@ withDefaults(defineProps<{
 });
 
 const store = useBestPracticesStore();
+const menus = useMenusStore().menus;
 
 const constraintsComponents = {
     constraint: {
@@ -44,7 +46,7 @@ const constraintsComponents = {
         <template #default>
             <template v-if="store.bestPractice">
                 <div>
-                    <MultiSelectFormGroup :options="keyFactors"
+                    <MultiSelectFormGroup :options="menus.keyFactors"
                                           v-model="store.bestPractice.keyFactors"
                                           label="3.1 Key factors"
                                           description="What are the key factors that need to be in place for the successful implementation of the practice."

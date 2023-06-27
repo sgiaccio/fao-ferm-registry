@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, computed } from 'vue';
+import { computed } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
 
 import router from '@/router';
@@ -58,7 +58,8 @@ function gotoPreviousTab() {
                     <label for="tabs"
                            class="sr-only">Select a tab</label>
                     <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-                    <select id="tabs"
+                    <select @change="() => router.push($event.target.value)"
+                            id="tabs"
                             name="tabs"
                             class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                         <option v-for="tab in tabs"

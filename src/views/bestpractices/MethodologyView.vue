@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { useBestPracticesStore } from '../../stores/bestpractices';
+import { useBestPracticesStore } from '@/stores/bestpractices';
+import { useMenusStore } from '@/stores/menus';
 
 import TabTemplate from "../TabTemplate.vue";
 
-import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
-import ImplementationStep from "../../components/inputs/ImplementationStep.vue";
-import MultiInputFormGroup from "../../components/inputs/MultiInputFormGroup.vue";
-import MultiSelectFormGroup from "../../components/inputs/base/MultiSelectFormGroup.vue";
-import RadioFormGroup from "../../components/inputs/base/RadioFormGroup.vue";
+import TextareaFormGroup from "@/components/inputs/base/TextareaFormGroup.vue";
+import ImplementationStep from "@/components/inputs/ImplementationStep.vue";
+import MultiInputFormGroup from "@/components/inputs/MultiInputFormGroup.vue";
+import MultiSelectFormGroup from "@/components/inputs/base/MultiSelectFormGroup.vue";
+import RadioFormGroup from "@/components/inputs/base/RadioFormGroup.vue";
 
-import { engagement, knowledgeTypes, scale, replicability } from "../../components/project/menus";
+// import { engagement, knowledgeTypes, scale, replicability } from "@/components/project/menus";
 
 
 withDefaults(defineProps<{
@@ -19,6 +20,7 @@ withDefaults(defineProps<{
 });
 
 const store = useBestPracticesStore();
+const menus = useMenusStore().menus;
 
 // type Methodology = {
 //     description?: string,
@@ -102,7 +104,7 @@ function enableSpecifyReplicability() {
                                          :required="true"
                                          :edit=edit />
                 </div>
-                <MultiSelectFormGroup :options="engagement"
+                <MultiSelectFormGroup :options="menus.engagement"
                                       v-model="store.bestPractice.engagement"
                                       label="2.3 Stakeholder engagement"
                                       description="Please indicate which stakeholder groups were/are actively involved in the practice."
@@ -112,7 +114,7 @@ function enableSpecifyReplicability() {
                                    label="2.4 Stakeholder's additional information"
                                    description="Please provide additional information on stakeholder's engagement and describe who are the implementers and beneficiaries of the practice."
                                    :edit=edit />
-                <MultiSelectFormGroup :options="knowledgeTypes"
+                <MultiSelectFormGroup :options="menus.knowledgeTypes"
                                       v-model="store.bestPractice.knowledgeTypes"
                                       label="2.5 Types of knowledge"
                                       description="What types of knowledge have been included in the practice?"
@@ -122,14 +124,14 @@ function enableSpecifyReplicability() {
                                    label="2.6 Participatory approaches"
                                    dangerousHtmlDescription="Please describe to what extent the practice has meaningfully fostered engagement and knowledge integration from the stakeholders, right-holders, and under-represented groups (if any) selected above (e.g., local communities, Indigenous peoples, ethnic minorities, women, youth and LGBTIQ+ people). <br>NOTE: If Indigenous Peoples\' traditional knowledge was selected above, please explain how the practice has complied with the right of <a class='text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400' target='_blank' href='https://www.fao.org/indigenous-peoples/our-pillars/fpic/en/'>Free, Prior and Informed Consent.</a>"
                                    :edit=edit />
-                <MultiSelectFormGroup :options="scale"
+                <MultiSelectFormGroup :options="menus.scale"
                                       v-model="store.bestPractice.scale"
                                       label="2.7 Scale"
                                       description="Please indicate the scale(s) at which the practice has been implemented and/or replicated."
                                       :required="true"
                                       :edit=edit />
                 <div>
-                    <RadioFormGroup :options="replicability"
+                    <RadioFormGroup :options="menus.replicability"
                                     v-model="store.bestPractice.replicability"
                                     label="2.8 Replicability"
                                     description="Has the practice been tested and replicated in different contexts (e.g., geographic location, type of ecosystem, different socio-economic groups involved, different locations within a region, etc.)?"

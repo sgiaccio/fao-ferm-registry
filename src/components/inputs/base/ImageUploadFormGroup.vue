@@ -6,8 +6,6 @@ import baseProps from "../formGroupProps"
 import FormGroup from '../FormGroup.vue'
 
 
-// const store = useProjectStore();
-
 const selectedFile = vue.ref<File | null>(null);
 const uploadStatus = vue.ref<'idle' | 'uploading' | 'uploaded'>('idle');
 
@@ -19,9 +17,6 @@ const props = defineProps({
         modelValue: { type: String }
     }
 });
-
-// const emit = defineEmits(['update:modelValue'])
-
 
 async function loadFile(src: string, maxRetries = 5, pause = 2000): Promise<Blob> {
     let tries = 0;
@@ -74,12 +69,12 @@ function uploadFile() {
     const uploadTask = uploadBytes(storageRef, selectedFile.value!);
 
     uploadStatus.value = 'uploading';
-    uploadTask.then(_snapshot => {
+    uploadTask.then(async _snapshot => {
         getFiles();
         selectedFile.value = null;
         uploadStatus.value = 'uploaded';
-        loadThumbnail(5);
-    }).catch(error => {
+        await loadThumbnail(5);
+    }).catch(_error => {
         uploadStatus.value = 'idle';
     });
 }
@@ -107,11 +102,6 @@ function deleteFile() {
             loadThumbnail(5);
         });
 }
-
-// vue.watch(() => store.id as string, async () => {
-//     getFiles();
-// });
-
 </script>
 
 <template>

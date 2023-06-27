@@ -50,11 +50,11 @@ exports.getMyNewGroupRequests = functions.https.onCall(async (_, context) => {
 
     // format date in each request
     return await Promise.all(requestsWithUserDisplayName.map(async request => {
-        const dateFormatted = request.createTime.toDate().toLocaleDateString('en-US', {
+        const dateFormatted = request.createTime ? request.createTime.toDate().toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
-        });
+        }) : null;
         return { ...request, createTime: dateFormatted };
     }));
 });
@@ -83,16 +83,18 @@ exports.approveNewGroupRequest = functions.https.onCall(async (data, context) =>
         const request = requestDoc.data();
 
         // Create the group
+        // set values to null if undefined to avoid Firestore errors
         const groupDoc = await util.groupsCollection.add({
-            name: request.name,
-            type: request.type,
-            otherType: request.otherType,
-            partner: !!request.isa.partner,
-            actor: !!request.isa.actor,
-            flagship: !!request.isa.flagship,
-            description: request.description,
-            website: request.website,
-            createdAt: Firestore.FieldValue.serverTimestamp()
+            name: request.name || null,
+            type: request.type || null,
+            otherType: request.otherType || null,
+            partner: !!request.isa.partner || null,
+            actor: !!request.isa.actor || null,
+            flagship: !!request.isa.flagship || null,
+            description: request.description || null,
+            website: request.website || null,
+            createdAt: Firestore.FieldValue.serverTimestamp(),
+            private: false
         });
 
         // Make the user admin of the new group

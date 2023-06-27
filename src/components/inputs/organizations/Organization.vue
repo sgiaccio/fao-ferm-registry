@@ -2,8 +2,13 @@
 import TextFormGroup from "../base/TextFormGroup.vue"
 import SelectFormGroup from "../base/SelectFormGroup.vue"
 
-import { agencyTypes, agencyRoles } from "../../project/menus";
+// import { agencyTypes, agencyRoles } from "../../project/menus";
 
+import { useMenusStore } from '@/stores/menus';
+import type { Menu } from "@/components/project/menus";
+
+
+const menus = useMenusStore().menus;
 
 withDefaults(defineProps<{
     modelValue: {
@@ -29,12 +34,12 @@ withDefaults(defineProps<{
         <SelectFormGroup
             :edit="edit"
             v-model="modelValue.type"
-            :options="agencyTypes"
+            :options="menus.agencyTypes"
             label="Type"></SelectFormGroup>
         <SelectFormGroup
             :edit="edit"
             v-model="modelValue.role"
-            :options="agencyRoles"
+            :options="menus.agencyRoles"
             label="Role"></SelectFormGroup>
 
     </div>

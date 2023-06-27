@@ -104,7 +104,7 @@ const showDisclaimer = ref(false);
         </template>
         <template #default>
             <div v-if="store.project.reportingLine === 'GEF'"
-                class="text-sm bg-ferm-gray px-6 py-4 my-6 rounded-md">
+                 class="text-sm bg-ferm-gray px-6 py-4 my-6 rounded-md">
                 <p class="font-semibold">
                     Please find the requirements of geospatial data in <a class="text-ferm-blue-dark-800 underline"
                        href="/gef/Requirements of geospatial data.pdf"
@@ -161,5 +161,4 @@ const showDisclaimer = ref(false);
             </div>
         </template>
     </TabTemplate>
-    <!--     <pre class="text-white">{{JSON.stringify(store.projectAreas, null, 2)}}</pre>-->
 </template>

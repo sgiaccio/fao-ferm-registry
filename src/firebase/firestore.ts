@@ -1,6 +1,7 @@
 import { query, serverTimestamp, where, collection, doc, getDocs, setDoc } from 'firebase/firestore/lite';
 import { db } from './index';
 import { snakeToCamel } from '@/lib/util';
+import type { Menu, RecursiveMenu } from '@/components/project/menus';
 
 
 /**
@@ -48,6 +49,7 @@ export async function submitNewGroup(formData: any) {
     const docRef = doc(newGroupRequests);
     await setDoc(docRef, {
         ...formData,
+        private: false,
         createTime: serverTimestamp()
     });
 }
@@ -98,23 +100,30 @@ function memoize<T extends (...args: any[]) => Promise<any>>(fn: T): (...x: Para
 }
 
 export const getGaulLevel0 = memoize(async () => {
-    console.log('This should be logged only once')
     const gaulCollection = collection(db, "gaul");
     const level0AreasDocs = await getDocs(query(gaulCollection));
-    return level0AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name }));
+    return level0AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name })).sort((a, b) => a.label.localeCompare(b.label));
 });
 
 
 export const getGaulLevel1 = memoize(async (admin0: string) => {
-    console.log('This should be logged only once')
     const gaulCollection = collection(db, "gaul", admin0, "children");
     const level1AreasDocs = await getDocs(query(gaulCollection));
-    return level1AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name }));
+    return level1AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name })).sort((a, b) => a.label.localeCompare(b.label));
 });
 
 export const getGaulLevel2 = memoize(async (admin0: string, admin2: string) => {
-    console.log('This should be logged only once')
     const gaulCollection = collection(db, "gaul", admin0, "children", admin2, "children");
     const level2AreasDocs = await getDocs(query(gaulCollection));
-    return level2AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name }));
+    return level2AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name })).sort((a, b) => a.label.localeCompare(b.label));
 });
+
+export async function getMenus(): Promise<{ [key: string]: (Menu | RecursiveMenu) }> {
+    const menusCollection = collection(db, "menus");
+    return (await getDocs(query(menusCollection))).docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().items }), {});
+};
+
+// export const getMenu = memoize(async (id) => {
+//     const menusCollection = collection(db, "menus", id);
+//     return getDocs(query(menusCollection));
+// });

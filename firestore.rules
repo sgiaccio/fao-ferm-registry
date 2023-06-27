@@ -203,5 +203,8 @@ service cloud.firestore {
             allow read: if isSignedIn()
         }
 
+        match /menus/{document=**} {
+            allow read: if isSignedIn()
+        }
     }
 }
