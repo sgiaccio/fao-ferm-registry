@@ -173,7 +173,7 @@ exports.keyFactors = [
     { value: 14, label: "Actions are coordinated among stakeholders, institutions and sectors" }
 ];
 
-exports.positiveOutcomes = [
+exports.outcomes = [
     { value: 1, label: "Protected sacred land or cultural site" },
     { value: 2, label: "Improved recreational opportunities" },
     { value: 3, label: "Ensured land and natural resource tenure" },
@@ -194,7 +194,6 @@ exports.positiveOutcomes = [
     { value: 19, label: "Reduced drought impacts" },
     { value: 0, label: "Other" }
 ];
-
 
 exports.activities = [
     {
@@ -1476,3 +1475,5 @@ exports.gefFocalAreas = [
     { value: 5, label: "International waters" },
     { value: 6, label: "Multifocal" }
 ];
+
+exporst.details = [{ label: "No", value: 0 }, { label: "Yes", value: 1 }];

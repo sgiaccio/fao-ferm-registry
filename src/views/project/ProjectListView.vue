@@ -259,7 +259,7 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                        class="truncate">
                                                     <router-link
                                                         :to="{ name: 'projectInfo', params: { id: project.id } }"
-                                                        :class="[project.data.project?.title ? 'text-indigo-600' : 'italic text-gray-400', 'text-sm font-medium hover:text-indigo-500 project-link']">
+                                                        :class="[project.data.project?.title ? 'text-ferm-blue-dark-800' : 'italic text-gray-400', 'text-sm font-medium hover:text-indigo-500 project-link']">
                                                         {{ project.data.project?.title || 'No title' }}
                                                     </router-link>
                                                 </label>
@@ -350,14 +350,14 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                             </menu-items>
                                                         </transition>
                                                     </Menu>
-                                                    <!-- <div v-else
+                                                    <div v-else
                                                          class="sm:mt-0 sm:ml-6 text-sm">
                                                         <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
                                                                      type="button"
-                                                                     class="inline-flex items-center text-sm font-medium text-indigo-700">
-                                                            New good practice
+                                                                     class="inline-flex items-center text-sm font-normal text-ferm-blue-dark-700">
+                                                            Add good practice
                                                         </router-link>
-                                                    </div> -->
+                                                    </div>
                                                 </div>
 
                                                 <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">

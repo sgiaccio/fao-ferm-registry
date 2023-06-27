@@ -619,7 +619,7 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
         to: [email],
         message: {
             subject: `${groupName} - Membership Request Status`,
-            html: newStatus = 'rejected' ? `
+            html: newStatus === 'rejected' ? `
                 <p>Dear ${user.displayName || user.email || 'User'},</p>
 
                 <p>Your request to join ${groupName ? 'the institution, <strong>' + groupName + '</strong>,' : 'our institution'} has been reviewed.</p>
@@ -660,6 +660,11 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
             // `
         }
     };
+
+    const bcc = await util.getGroupAdminEmails(groupId);
+    if (bcc.length > 0) {
+        mailDoc.bcc = bcc;
+    }
 
     // add mail document to mail collection
     await admin.firestore().collection('mail').add(mailDoc);

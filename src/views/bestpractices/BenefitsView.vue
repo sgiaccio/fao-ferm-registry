@@ -30,7 +30,7 @@ const menus = useMenusStore().menus;
     <TabTemplate title="Benefits and validation">
         <template #default>
             <template v-if="store.bestPractice">
-                <MultiSelectFormGroup :options="menus.positiveOutcomes"
+                <MultiSelectFormGroup :options="menus.outcomes"
                                       v-model="store.bestPractice.outcomes"
                                       label="4.1 Positive impacts"
                                       description="Please select the main ecological and/or cultural and/or socio-economic positive impacts of implementing the practice."

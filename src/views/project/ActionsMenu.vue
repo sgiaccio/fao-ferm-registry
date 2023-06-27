@@ -255,7 +255,7 @@ function goToEditRoute() {
                     <menu-item v-if="projectUtils.canEdit(project) && (!sections || sections.includes('edit'))"
                                v-slot="{ active }">
                         <div @click="goToEditRoute"
-                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
+                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">
                             <pencil-square-icon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                                 aria-hidden="true" />
                             Edit
