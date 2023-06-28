@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 
-import { fbTimestampToString, snakeToCamel } from "@/lib/util";
+import { fbTimestampToString } from "@/lib/util";
 
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import {
     DocumentMagnifyingGlassIcon
 } from "@heroicons/vue/20/solid";
@@ -11,12 +10,10 @@ import {
 import { useAuthStore } from "@/stores/auth";
 import { useProjectStore } from "@/stores/project";
 
-import { fetchAllGroups } from "@/firebase/firestore";
 
-import * as projectUtils from "@/lib/project";
 import ActionsMenu from "@/views/project/ActionsMenu.vue";
 
-import { fetchSubmittedProjects } from "@/firebase/firestore";
+import { fetchSubmittedProjects, fetchAllSubmittedProjects } from "@/firebase/firestore";
 
 
 const projectStore = useProjectStore();
@@ -27,9 +24,12 @@ const authStore = useAuthStore();
 const submittedProjects = ref();
 
 async function fetchProjects() {
-    const groups = authStore.isAdmin ? await fetchAllGroups() : authStore.userGroups;
-    const groupIds = Object.keys(groups);
-    submittedProjects.value = await fetchSubmittedProjects(groupIds);
+    if (authStore.isAdmin) {
+        submittedProjects.value = await fetchAllSubmittedProjects();
+    } else {
+        const groupIds = Object.keys(authStore.userGroups);
+        submittedProjects.value = await fetchSubmittedProjects(groupIds);
+    }
 }
 
 onMounted(async () => {
@@ -63,7 +63,7 @@ onMounted(async () => {
                                     <div class="mt-2 sm:flex sm:justify-between">
                                         <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
                                             <DocumentMagnifyingGlassIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                          aria-hidden="true" />
+                                                                         aria-hidden="true" />
                                             <p>
                                                 Submitted on
                                                 {{ " " }}
@@ -76,9 +76,10 @@ onMounted(async () => {
                                 </div>
 
                                 <div class="self-center pr-4">
-                                    <ActionsMenu :project="project" :sections="['publishing']"
+                                    <ActionsMenu :project="project"
+                                                 :sections="['publishing']"
                                                  @done="fetchProjects"
-                                    label="Publish/Reject"/>
+                                                 label="Publish/Reject" />
                                 </div>
                             </div>
                         </li>

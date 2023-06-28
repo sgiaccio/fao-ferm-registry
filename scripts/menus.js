@@ -1476,4 +1476,4 @@ exports.gefFocalAreas = [
     { value: 6, label: "Multifocal" }
 ];
 
-exporst.details = [{ label: "No", value: 0 }, { label: "Yes", value: 1 }];
+exports.boolean = [{ label: "No", value: 0 }, { label: "Yes", value: 1 }];

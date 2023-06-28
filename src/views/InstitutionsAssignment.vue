@@ -389,15 +389,11 @@ function cancelSubmit() {
         <div class="px-4 py-5 sm:p-6">
             <h3 class="text-3xl font-bold leading-6 text-gray-900 font-akrobat">Join an instituition</h3>
             <div class="mt-6 max-w-xl text-sm text-gray-700">
-                <p>
-                    To request an institution assignment, simply select one from the list provided. Administrators will be notified of your request and can either approve or deny it. You will be informed of their decision regardless of the outcome.
-                </p>
-                <p class="mt-4">
-                    Once an admin assigns you to an institution, you will be able to create new initiatives and make changes to existing ones.
-                </p>
-                <p class="mt-4">
-                    If you don't see your institution listed, you can submit a request to add it. The administrators will then evaluate your request and inform you of the decision.
-                </p>
+                <p>Please select an institution from the dropdown menu <span class="font-bold">only if you are officially affiliated with it</span>. It's not permitted to request to join an institution to which you don't belong.</p>
+                <p class="mt-3">After you make a selection, our administrators will review your request. They may approve or deny it, and you'll be informed of the decision regardless of the outcome.</p>
+                <p class="mt-3">If approved, you'll be authorized to create new initiatives within the institution you're affiliated with.</p>
+                <p class="mt-3">In case the institution you belong to isn't listed, you can request its addition. Click on "Submit new institution" and provide the necessary details. Administrators will review your submission and inform you of their decision.</p>
+                <p class="mt-3">Please ensure you accurately represent your affiliations. Misrepresentation may lead to denial of your request and could limit your participation on our platform.</p>
             </div>
 
             <div class="mt-5 sm:flex sm:items-center">

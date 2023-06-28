@@ -71,7 +71,6 @@ export async function fetchPublicGroups() {
 }
 
 export async function fetchSubmittedProjects(groupIds: string[]) {
-    console.log('groupIds: ' + groupIds)
     if (!groupIds || groupIds.length === 0) {
         return [];
     }
@@ -80,6 +79,12 @@ export async function fetchSubmittedProjects(groupIds: string[]) {
     const projects = await getDocs(query(projectsCollection,
         where("group", "in", groupIds),
         where("status", "==", "submitted")));
+    return projects.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
+}
+
+export async function fetchAllSubmittedProjects() {
+    const projectsCollection = collection(db, "registry");
+    const projects = await getDocs(query(projectsCollection, where("status", "==", "submitted")));
     return projects.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
 }
 
