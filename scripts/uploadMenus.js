@@ -1,8 +1,6 @@
 const admin = require("firebase-admin");
 
 // Load the service account key JSON file:
-const serviceAccount = require("./fao-ferm-firebase-adminsdk-h89r3-6ce07901c9");
-
 const menus = require("./menus");
 
 
@@ -11,6 +9,7 @@ const menus = require("./menus");
 //     projectId: "fao-ferm"
 // });
 
+const serviceAccount = require("./fao-ferm-firebase-adminsdk-h89r3-6ce07901c9");
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });

@@ -678,7 +678,7 @@ exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastNa
 
     // create mail document
     const mailDoc = {
-        to: await util.getSuperAdminEmails(),
+        to: ['FERM-Support@fao.org', ...await util.getSuperAdminEmails()],
         message: {
             subject: `New support request from ${firstName} ${lastName}`,
             html: `

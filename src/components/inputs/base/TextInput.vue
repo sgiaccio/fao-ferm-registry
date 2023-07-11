@@ -1,12 +1,26 @@
 <script setup lang="ts">
 
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
     modelValue: { type: String },
     placeholder: { type: String },
     required: { type: Boolean, default: false },
-    edit: { type: Boolean, default: true }
+    edit: { type: Boolean, default: true },
+    enabled: { type: Boolean, default: true }
+});
+
+const inputRef = ref<HTMLInputElement | null>(null);
+
+watch(() => props.enabled, () => {
+    if (!props.enabled) {
+        emit('update:modelValue', undefined);
+    } else {
+        // focus on the text input
+        console.log(inputRef.value);
+        inputRef.value?.focus();
+        inputRef.value?.select();
+    }
 });
 
 const emit = defineEmits(['update:modelValue'])
@@ -35,12 +49,15 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
                 type="text"
                 class="dark:text-zinc-400 block w-full rounded-md pr-10 focus:outline-none border-gray-300 dark:bg-zinc-900 sm:text-sm transition ease-in-out duration-270 delay-50"
                 :placeholder="placeholder"
-                :class="{ 'border-red-400 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500': showValidation, 'focus:ring-0 dark:border-black dark:focus:border-black': !showValidation }"
+                :class="[showValidation ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500' : 'focus:ring-0 dark:border-black dark:focus:border-black', enabled ? 'cursor-text' : 'cursor-not-allowed',
+                enabled ? 'cursor-text' : 'cursor-not-allowed']"
                 :value="modelValue"
                 @input="onInput"
                 @focusout="focusedOut = true"
                 :aria-invalid="showValidation"
-                aria-describedby="error">
+                aria-describedby="error"
+                :disabled="!enabled"
+                ref="inputRef">
             <div v-if="showValidation" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                 <!-- Heroicon name: mini/exclamation-circle -->
                 <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

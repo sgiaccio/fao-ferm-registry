@@ -197,9 +197,9 @@ exports.outcomes = [
 
 exports.activities = [
     {
-        value: -1, label: "Biophysical", items: [
+        label: "Biophysical", items: [
             {
-                value: -1, label: "Restoration of vegetation cover", items: [
+                value: 1000, label: "Restoration of vegetation cover", items: [
                     { value: 1, label: "Restrictions on forest conversion" },
                     { value: 2, label: "Promotion of sustainable forest management practices" },
                     { value: 3, label: "Fire management" },
@@ -209,30 +209,33 @@ exports.activities = [
                     { value: 7, label: "Grass planting" }
                 ]
             }, {
-                value: -1, label: "Control of invasive species", items: [
+                value: 1001, label: "Control of invasive species", items: [
                     { value: 8, label: "Quarantine measures" },
                     { value: 9, label: "Species control measures (physical/chemical/biological)" }
                 ]
             }, {
-                value: -1, label: "Rehabilitation and depollution", items: [
+                value: 1002, label: "Rehabilitation and depollution", items: [
                     { value: 10, label: "On-site management of mining wastes (soils and water)" },
                     { value: 11, label: "Reclamation of mine site topography" },
                     { value: 12, label: "Conservation and early replacement of topsoil" },
                     { value: 13, label: "Control of point and non-point pollution sources" }
                 ]
             }, {
-                value: -1, label: "Soil and water management", items: [
+                value: 1003, label: "Soil and water management", items: [
                     { value: 14, label: "Reduced tillage" },
                     { value: 15, label: "Improved fertilizer and agrochemical use efficiency" },
                     { value: 16, label: "Improved irrigation and water use efficiency" },
-                    { value: 17, label: "Rainwater and runoff harvesting (e.g. terracing, stone cords, zaï, half-moons)" },
+                    {
+                        value: 17,
+                        label: "Rainwater and runoff harvesting (e.g. terracing, stone cords, zaï, half-moons)"
+                    },
                     { value: 18, label: "Fog collection" },
                     { value: 19, label: "Desalination wastewater treatment" },
                     { value: 20, label: "Wetland construction or rehabilitation" },
                     { value: 21, label: "Amelioration of contaminated soils and sealed soils" }
                 ]
             }, {
-                value: -1, label: "Agricultural/forestry/fishery/aquacultural management", items: [
+                value: 1004, label: "Agricultural/forestry/fishery/aquacultural management", items: [
                     { value: 22, label: "Conservation agriculture" },
                     { value: 23, label: "Integrated crop, livestock and forestry systems" },
                     { value: 24, label: "Agroforestry" },
@@ -246,9 +249,9 @@ exports.activities = [
         ]
     },
     {
-        value: -1, label: "Enabling", items: [
+        label: "Enabling", items: [
             {
-                value: -1, label: "Legal and rights-based instruments", items: [
+                value: 1005, label: "Legal and rights-based instruments", items: [
                     { value: 30, label: "Land-use planning (national, regional, local)" },
                     { value: 31, label: "Social and environmental impact assessments" },
                     { value: 32, label: "Incentives for sustainable land-use practices" },
@@ -258,7 +261,7 @@ exports.activities = [
                     { value: 36, label: "Clarification of natural resource-use rights" }
                 ]
             }, {
-                value: -1, label: "Social and cultural instruments", items: [
+                value: 1006, label: "Social and cultural instruments", items: [
                     { value: 37, label: "Promotion of indigenous and local knowledge-based traditional use" },
                     { value: 38, label: "Participatory natural resource management and governance" },
                     { value: 39, label: "Eco-certification" },
@@ -266,14 +269,14 @@ exports.activities = [
                     { value: 41, label: "Community consultations" }
                 ]
             }, {
-                value: -1, label: "Capacity-building, skills and knowledge development", items: [
+                value: 1007, label: "Capacity-building, skills and knowledge development", items: [
                     { value: 42, label: "On-site trainings" },
                     { value: 43, label: "Online trainings" },
                     { value: 44, label: "Development of guidance and course materials" },
                     { value: 45, label: "Training of trainers" }
                 ]
             }, {
-                value: -1, label: "Integrated landscape planning", items: [
+                value: 1008, label: "Integrated landscape planning", items: [
                     { value: 46, label: "Land/water degradation assessment and mapping" },
                     { value: 47, label: "Integrated planning and management" },
                     { value: 48, label: "Zoning" },
@@ -291,11 +294,9 @@ exports.activities = [
 
 exports.indicators = [
     {
-        value: "goal_1",
         label: "Goal 1. End poverty in all its forms everywhere",
         items: [
             {
-                value: "target_1.1",
                 label: "Target 1.1: By 2030, eradicate extreme poverty for all people everywhere, currently measured as people living on less than $1.25 a day",
                 items: [
                     {
@@ -304,7 +305,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_1.2",
                 label: "Target 1.2: By 2030, reduce at least by half the proportion of men, women and children of all ages living in poverty in all its dimensions according to national definitions",
                 items: [
                     {
@@ -317,7 +317,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_1.4",
                 label: "Target 1.4: By 2030, ensure that all men and women, in particular the poor and the vulnerable, have equal rights to economic resources, as well as access to basic services, ownership and control over land and other forms of property, inheritance, natural resources, appropriate new technology and financial services, including microfinance",
                 items: [
                     {
@@ -333,11 +332,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_2",
         label: "Goal 2. End hunger, achieve food security and improved nutrition and promote sustainable agriculture",
         items: [
             {
-                value: "target_2.1",
                 label: "Target 2.1: By 2030, end hunger and ensure access by all people, in particular the poor and people in vulnerable situations, including infants, to safe, nutritious and sufficient food all year round",
                 items: [
                     {
@@ -350,7 +347,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_2.2",
                 label: "Target 2.2: By 2030, end all forms of malnutrition, including achieving, by 2025, the internationally agreed targets on stunting and wasting in children under 5 years of age, and address the nutritional needs of adolescent girls, pregnant and lactating women and older persons",
                 items: [
                     {
@@ -359,7 +355,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_2.3",
                 label: "Target 2.3: By 2030, double the agricultural productivity and incomes of small-scale food producers, in particular women, indigenous peoples, family farmers, pastoralists and fishers, including through secure and equal access to land, other productive resources and inputs, knowledge, financial services, markets and opportunities for value addition and non-farm employment",
                 items: [
                     {
@@ -372,7 +367,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_2.4",
                 label: "Target 2.4: By 2030, ensure sustainable food production systems and implement resilient agricultural practices that increase productivity and production, that help maintain ecosystems, that strengthen capacity for adaptation to climate change, extreme weather, drought, flooding and other disasters and that progressively improve land and soil quality",
                 items: [
                     {
@@ -425,7 +419,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_2.5",
                 label: "Target 2.5: By 2020, maintain the genetic diversity of seeds, cultivated plants and farmed and domesticated animals and their related wild species, including through soundly managed and diversified seed and plant banks at the national, regional and international levels, and promote access to and fair and equitable sharing of benefits arising from the utilization of genetic resources and associated traditional knowledge, as internationally agreed",
                 items: [
                     {
@@ -434,7 +427,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_2.a",
                 label: "Target 2.a: Increase investment, including through enhanced international cooperation, in rural infrastructure, agricultural research and extension services, technology development and plant and livestock gene banks in order to enhance agricultural productive capacity in developing countries, in particular least developed countries",
                 items: [
                     {
@@ -446,11 +438,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_3",
         label: "Goal 3. Ensure healthy lives and promote well-being for all at all ages",
         items: [
             {
-                value: "target_3.2",
                 label: "Target 3.2: By 2030, end preventable deaths of newborns and children under 5 years of age, with all countries aiming to reduce neonatal mortality to at least as low as 12 per 1,000 live births and under-5 mortality to at least as low as 25 per 1,000 live births",
                 items: [
                     {
@@ -459,7 +449,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_3.3",
                 label: "Target 3.3: By 2030, end the epidemics of AIDS, tuberculosis, malaria and neglected tropical diseases and combat hepatitis, water-borne diseases and other communicable diseases",
                 items: [
                     {
@@ -472,7 +461,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_3.9",
                 label: "Target 3.9: By 2030, substantially reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination",
                 items: [
                     {
@@ -488,11 +476,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_4",
         label: "Goal 4. Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all",
         items: [
             {
-                value: "target_4.1",
                 label: "Target 4.1: By 2030, ensure that all girls and boys complete free, equitable and quality primary and secondary education leading to relevant and effective learning outcomes",
                 items: [
                     {
@@ -501,7 +487,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_4.4",
                 label: "Target 4.4: By 2030, substantially increase the number of youth and adults who have relevant skills, including technical and vocational skills, for employment, decent jobs and entrepreneurship",
                 items: [
                     {
@@ -513,11 +498,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_5",
         label: "Goal 5. Achieve gender equality and empower all women and girls",
         items: [
             {
-                value: "target_5.1",
                 label: "Target 5.1: End all forms of discrimination against all women and girls everywhere",
                 items: [
                     {
@@ -526,7 +509,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_5.2",
                 label: "Target 5.2: Eliminate all forms of violence against all women and girls in the public and private spheres, including trafficking and sexual and other types of exploitation",
                 items: [
                     {
@@ -535,7 +517,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_5.6",
                 label: "Target 5.6: Ensure universal access to sexual and reproductive health and reproductive rights as agreed in accordance with the Programme of Action of the International Conference on Population and Development and the Beijing Platform for Action and the outcome documents of their review conferences",
                 items: [
                     {
@@ -544,7 +525,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_5.a",
                 label: "Target 5.a: Undertake reforms to give women equal rights to economic resources, as well as access to ownership and control over land and other forms of property, financial services, inheritance and natural resources, in accordance with national laws",
                 items: [
                     {
@@ -560,11 +540,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_6",
         label: "Goal 6. Ensure availability and sustainable management of water and sanitation for all",
         items: [
             {
-                value: "target_6.1",
                 label: "Target 6.1: By 2030, achieve universal and equitable access to safe and affordable drinking water for all",
                 items: [
                     {
@@ -573,7 +551,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_6.2",
                 label: "Target 6.2: By 2030, achieve access to adequate and equitable sanitation and hygiene for all and end open defecation, paying special attention to the needs of women and girls and those in vulnerable situations",
                 items: [
                     {
@@ -582,7 +559,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_6.3",
                 label: "Target 6.3: By 2030, improve water quality by reducing pollution, eliminating dumping and minimizing release of hazardous chemicals and materials, halving the proportion of untreated wastewater and substantially increasing recycling and safe reuse globally",
                 items: [
                     {
@@ -591,7 +567,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_6.4",
                 label: "Target 6.4: By 2030, substantially increase water-use efficiency across all sectors and ensure sustainable withdrawals and supply of freshwater to address water scarcity and substantially reduce the number of people suffering from water scarcity",
                 items: [
                     {
@@ -600,7 +575,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_6.5",
                 label: "Target 6.5: By 2030, implement integrated water resources management at all levels, including through transboundary cooperation as appropriate",
                 items: [
                     {
@@ -609,7 +583,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_6.6",
                 label: "Target 6.6: By 2020, protect and restore water-related ecosystems, including mountains, forests, wetlands, rivers, aquifers and lakes",
                 items: [
                     {
@@ -634,7 +607,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_6.a",
                 label: "Target 6.a: By 2030, expand international cooperation and capacity-building support to developing countries in water- and sanitation-related activities and programmes, including water harvesting, desalination, water efficiency, wastewater treatment, recycling and reuse technologies",
                 items: [
                     {
@@ -643,7 +615,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_6.b",
                 label: "Target 6.b: Support and strengthen the participation of local communities in improving water and sanitation management",
                 items: [
                     {
@@ -655,11 +626,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_7",
         label: "Goal 7. Ensure access to affordable, reliable, sustainable and modern energy for all",
         items: [
             {
-                value: "target_7.1",
                 label: "Target 7.1: By 2030, ensure universal access to affordable, reliable and modern energy services",
                 items: [
                     {
@@ -672,7 +641,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_7.2",
                 label: "Target 7.2: By 2030, increase substantially the share of renewable energy in the global energy mix",
                 items: [
                     {
@@ -684,11 +652,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_8",
         label: "Goal 8. Promote sustained, inclusive and sustainable economic growth, full and productive employment and decent work for all",
         items: [
             {
-                value: "target_8.1",
                 label: "Target 8.1: Sustain per capita economic growth in accordance with national circumstances and, in particular, at least 7 per cent gross domestic product growth per annum in the least developed countries",
                 items: [
                     {
@@ -697,7 +663,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_8.3",
                 label: "Target 8.3: Promote development-oriented policies that support productive activities, decent job creation, entrepreneurship, creativity and innovation, and encourage the formalization and growth of micro-, small- and medium-sized enterprises, including through access to financial services",
                 items: [
                     {
@@ -706,7 +671,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_8.5",
                 label: "Target 8.5: By 2030, achieve full and productive employment and decent work for all women and men, including for young people and persons with disabilities, and equal pay for work of equal value",
                 items: [
                     {
@@ -715,7 +679,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_8.7",
                 label: "Target 8.7: Take immediate and effective measures to eradicate forced labour, end modern slavery and human trafficking and secure the prohibition and elimination of the worst forms of child labour, including recruitment and use of child soldiers, and by 2025 end child labour in all its forms",
                 items: [
                     {
@@ -724,7 +687,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_8.8",
                 label: "Target 8.8: Protect labour rights and promote safe and secure working environments for all workers, including migrant workers, in particular women migrants, and those in precarious employment",
                 items: [
                     {
@@ -733,7 +695,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_8.10",
                 label: "Target 8.10: Strengthen the capacity of domestic financial institutions to encourage and expand access to banking, insurance and financial services for all",
                 items: [
                     {
@@ -742,7 +703,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_8.b",
                 label: "Target 8.b: By 2020, develop and operationalize a global strategy for youth employment and implement the Global Jobs Pact of the International Labour Organization",
                 items: [
                     {
@@ -754,11 +714,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_9",
         label: "Goal 9. Build resilient infrastructure, promote inclusive and sustainable industrialization and foster innovation",
         items: [
             {
-                value: "target_9.1",
                 label: "Target 9.1: Develop quality, reliable, sustainable and resilient infrastructure, including regional and trans-border infrastructure, to support economic development and human well-being, with a focus on affordable and equitable access for all",
                 items: [
                     {
@@ -771,7 +729,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_9.c",
                 label: "Target 9.c: Significantly increase access to information and communications technology and strive to provide universal and affordable access to the Internet in least developed countries by 2020",
                 items: [
                     {
@@ -783,11 +740,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_10",
         label: "Goal 10. Reduce inequality within and among countries",
         items: [
             {
-                value: "target_10.2",
                 label: "Target 10.2: By 2030, empower and promote the social, economic and political inclusion of all, irrespective of age, sex, disability, race, ethnicity, origin, religion or economic or other status",
                 items: [
                     {
@@ -796,7 +751,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_10.3",
                 label: "Target 10.3: Ensure equal opportunity and reduce inequalities of outcome, including by eliminating discriminatory laws, policies and practices and promoting appropriate legislation, policies and action in this regard",
                 items: [
                     {
@@ -805,7 +759,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_10.b",
                 label: "Target 10.b: Encourage official development assistance and financial flows, including foreign direct investment, to States where the need is greatest, in particular least developed countries, African countries, small island developing States and landlocked developing countries, in accordance with their national plans and programmes",
                 items: [
                     {
@@ -817,11 +770,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_11",
         label: "Goal 11. Make cities and human settlements inclusive, safe, resilient and sustainable",
         items: [
             {
-                value: "target_11.1",
                 label: "Target 11.1: By 2030, ensure access for all to adequate, safe and affordable housing and basic services and upgrade slums",
                 items: [
                     {
@@ -830,7 +781,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_11.3",
                 label: "Target 11.3: By 2030, enhance inclusive and sustainable urbanization and capacity for participatory, integrated and sustainable human settlement planning and management in all countries",
                 items: [
                     {
@@ -839,7 +789,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_11.4",
                 label: "Target 11.4: Strengthen efforts to protect and safeguard the world's cultural and natural heritage",
                 items: [
                     {
@@ -848,7 +797,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_11.6",
                 label: "Target 11.6: By 2030, reduce the adverse per capita environmental impact of cities, including by paying special attention to air quality and municipal and other waste management",
                 items: [
                     {
@@ -857,7 +805,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_11.a",
                 label: "Target 11.a: Support positive economic, social and environmental links between urban, peri-urban and rural areas by strengthening national and regional development planning",
                 items: [
                     {
@@ -866,7 +813,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_11.b",
                 label: "Target 11.b: By 2020, substantially increase the number of cities and human settlements adopting and implementing integrated policies and plans towards inclusion, resource efficiency, mitigation and adaptation to climate change, resilience to disasters, and develop and implement, in line with the Sendai Framework for Disaster Risk Reduction 2015-2030, holistic disaster risk management at all levels",
                 items: [
                     {
@@ -878,11 +824,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_12",
         label: "Goal 12. Ensure sustainable consumption and production patterns",
         items: [
             {
-                value: "target_12.b",
                 label: "Target 12.b: Develop and implement tools to monitor sustainable development impacts for sustainable tourism that creates jobs and promotes local culture and products",
                 items: [
                     {
@@ -894,11 +838,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_13",
         label: "Goal 13. Take urgent action to combat climate change and its impacts",
         items: [
             {
-                value: "target_13.1",
                 label: "Target 13.1: Strengthen resilience and adaptive capacity to climate-related hazards and natural disasters in all countries",
                 items: [
                     {
@@ -911,7 +853,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_13.2",
                 label: "Target 13.2: Integrate climate change measures into national policies, strategies and planning",
                 items: [
                     {
@@ -927,11 +868,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_14",
         label: "Goal 14. Conserve and sustainably use the oceans, seas and marine resources for sustainable development",
         items: [
             {
-                value: "target_14.1",
                 label: "Target 14.1: By 2025, prevent and significantly reduce marine pollution of all kinds, in particular from land-based activities, including marine debris and nutrient pollution",
                 items: [
                     {
@@ -940,7 +879,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_14.2",
                 label: "Target 14.2: By 2020, sustainably manage and protect marine and coastal ecosystems to avoid significant adverse impacts, including by strengthening their resilience, and take action for their restoration in order to achieve healthy and productive oceans",
                 items: [
                     {
@@ -949,7 +887,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_14.4",
                 label: "Target 14.4: By 2020, effectively regulate harvesting and end overfishing, illegal, unreported and unregulated fishing and destructive fishing practices and implement science-based management plans, in order to restore fish stocks in the shortest time feasible, at least to levels that can produce maximum sustainable yield as determined by their biological characteristics",
                 items: [
                     {
@@ -958,7 +895,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_14.5",
                 label: "Target 14.5: By 2020, conserve at least 10 per cent of coastal and marine areas, consistent with national and international law and based on the best available scientific information",
                 items: [
                     {
@@ -967,7 +903,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_14.b",
                 label: "Target 14.b: Provide access for small-scale artisanal fishers to marine resources and markets",
                 items: [
                     {
@@ -979,11 +914,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_15",
         label: "Goal 15. Protect, restore and promote sustainable use of terrestrial ecosystems, sustainably manage forests, combat desertification, and halt and reverse land degradation and halt biodiversity loss",
         items: [
             {
-                value: "target_15.1",
                 label: "Target 15.1: By 2020, ensure the conservation, restoration and sustainable use of terrestrial and inland freshwater ecosystems and their services, in particular forests, wetlands, mountains and drylands, in line with obligations under international agreements",
                 items: [
                     {
@@ -996,7 +929,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_15.2",
                 label: "Target 15.2: By 2020, promote the implementation of sustainable management of all types of forests, halt deforestation, restore degraded forests and substantially increase afforestation and reforestation globally",
                 items: [
                     {
@@ -1025,7 +957,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_15.3",
                 label: "Target 15.3: By 2030, combat desertification, restore degraded land and soil, including land affected by desertification, drought and floods, and strive to achieve a land degradation-neutral world",
                 items: [
                     {
@@ -1046,7 +977,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_15.4",
                 label: "Target 15.4: By 2030, ensure the conservation of mountain ecosystems, including their biodiversity, in order to enhance their capacity to provide benefits that are essential for sustainable development",
                 items: [
                     {
@@ -1055,7 +985,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_15.5",
                 label: "Target 15.5: Take urgent and significant action to reduce the degradation of natural habitats, halt the loss of biodiversity and, by 2020, protect and prevent the extinction of threatened species",
                 items: [
                     {
@@ -1064,7 +993,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_15.7",
                 label: "Target 15.7: Take urgent action to end poaching and trafficking of protected species of flora and fauna and address both demand and supply of illegal wildlife products",
                 items: [
                     {
@@ -1076,11 +1004,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_16",
         label: "Goal 16. Promote peaceful and inclusive societies for sustainable development, provide access to justice for all and build effective, accountable and inclusive institutions at all levels",
         items: [
             {
-                value: "target_16.2",
                 label: "Target 16.2: End abuse, exploitation, trafficking and all forms of violence against and torture of children",
                 items: [
                     {
@@ -1089,7 +1015,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_16.5",
                 label: "Target 16.5: Substantially reduce corruption and bribery in all their forms",
                 items: [
                     {
@@ -1098,7 +1023,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_16.6",
                 label: "Target 16.6: Develop effective, accountable and transparent institutions at all levels",
                 items: [
                     {
@@ -1107,7 +1031,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_16.7",
                 label: "Target 16.7: Ensure responsive, inclusive, participatory and representative decision-making at all levels",
                 items: [
                     {
@@ -1116,7 +1039,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_16.10",
                 label: "Target 16.10: Ensure public access to information and protect fundamental freedoms, in accordance with national legislation and international agreements",
                 items: [
                     {
@@ -1128,11 +1050,9 @@ exports.indicators = [
         ]
     },
     {
-        value: "goal_17",
         label: "Goal 17. Strengthen the means of implementation and revitalize the Global Partnership for Sustainable Development",
         items: [
             {
-                value: "target_17.11",
                 label: "Target 17.11: Significantly increase the exports of developing countries, in particular with a view to doubling the least developed countries' share of global exports by 2020",
                 items: [
                     {
@@ -1141,7 +1061,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_17.14",
                 label: "Target 17.14: Enhance policy coherence for sustainable development",
                 items: [
                     {
@@ -1150,7 +1069,6 @@ exports.indicators = [
                     }
                 ]
             }, {
-                value: "target_17.19",
                 label: "Target 17.19: By 2030, build on existing initiatives to develop measurements of progress on sustainable development that complement gross domestic product, and support statistical capacity-building in developing countries",
                 items: [
                     {
@@ -1165,7 +1083,7 @@ exports.indicators = [
 
 exports.achieved = [
     { value: 1, label: "Yes" },
-    { value: 3, label: " Partially" },
+    { value: 3, label: "Partially" },
     { value: 2, label: "No" }
 ];
 
@@ -1283,10 +1201,8 @@ exports.tenureStatuses = [
 // GEF SPECIFIC
 
 exports.gefIndicators = [{
-    value: "-1",
     label: "1. Terrestrial protected areas created or under improved management for conservation and sustainable use (hectares)",
     items: [{
-        value: "-1",
         label: "Component Sub-Indicators",
         items: [{
             value: "GEF1.1",
@@ -1297,10 +1213,8 @@ exports.gefIndicators = [{
         }]
     }]
 }, {
-    value: "-1",
     label: "2. Marine protected areas created or under improved management for conservation and sustainable use (hectares)",
     items: [{
-        value: "-1",
         label: "Component Sub-Indicators",
         items: [{
             value: "GEF2.1",
@@ -1311,10 +1225,8 @@ exports.gefIndicators = [{
         }]
     }]
 }, {
-    value: "-1",
     label: "3. Area of land and ecosystems under restoration",
     items: [{
-        value: "-1",
         label: "Component Sub-Indicators",
         items: [{
             value: "GEF3.1",
@@ -1331,10 +1243,8 @@ exports.gefIndicators = [{
         }]
     }]
 }, {
-    value: "-1",
     label: "4. Area of landscapes under improved practices (hectares; excluding protected areas)",
     items: [{
-        value: "-1",
         label: "Component Sub-Indicators",
         items: [{
             value: "GEF4.1",
@@ -1351,10 +1261,8 @@ exports.gefIndicators = [{
         }]
     }]
 }, {
-    value: "-1",
     label: "5. Area of marine habitat under improved practices to benefit biodiversity (hectares; excluding protected areas)",
     items: [{
-        value: "-1",
         label: "Contextual Sub-Indicators",
         items: [{
             value: "GEF5.1",

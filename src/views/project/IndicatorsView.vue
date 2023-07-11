@@ -55,14 +55,14 @@ function applyToAll() {
                                 :value="store.polygonsArea()" />
                 <div v-if="store.projectAreas?.length"
                      class="flex flex-col gap-y-4">
-                    <div v-for="area, i in store.projectAreas"
+                    <div v-for="(area, i) in store.projectAreas"
                          class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
                         <div class="flex flex-row my-3">
                             <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2 flex-grow">
                                 Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
                                       v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}</span>
                             </div>
-                            <div>
+                            <div  v-if="edit">
                                 <button v-if="i === 0"
                                         type="button"
                                         class="rounded bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

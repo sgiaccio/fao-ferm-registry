@@ -321,17 +321,17 @@ onMounted(async () => {
                             </div>
                         </a>
 
-                        <button class="bg-ferm-mustard-dark/70 border-ferm-mustard-dark_ border-4_ rounded-lg px-4 py-4 text-left transition-colors shadow cursor-default backdrop-blur">
+                        <a href="https://ferm-search.fao.org/search" class="bg-ferm-mustard-dark/90 hover:bg-ferm-mustard-light border-ferm-mustard-dark_ border-4_ rounded-lg px-4 py-4 text-left transition-colors shadow backdrop-blur">
                             <div class="flex flex-row gap-x-2">
                                 <div>
                                     <MagnifyingGlassIcon class="w-6 h-6" />
                                 </div>
                                 <div>
                                     <div class="text-xl font-semibold uppercase">Search</div>
-                                    <div class="text-sm mt-3">For good practices on ecosystem restoration (coming soon)</div>
+                                    <div class="text-sm mt-3">For good practices on ecosystem restoration</div>
                                 </div>
                             </div>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
