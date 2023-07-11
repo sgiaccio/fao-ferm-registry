@@ -3,7 +3,7 @@ import { reactive, computed, ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
-import { fetchAllGroups } from '@/firebase/firestore';
+import { fetchAllGroupNames } from '@/firebase/firestore';
 
 
 defineProps<{
@@ -18,7 +18,7 @@ const authStore = useAuthStore();
 const groups = ref({});
 
 onMounted(async () => {
-    const allGroups = await fetchAllGroups();
+    const allGroups = await fetchAllGroupNames();
     const t = authStore.isAdmin ? allGroups : Object.keys(authStore.privileges).reduce((acc, key) => ({...acc, [key]: allGroups[key]}), {})
     groups.value = Object.entries(t).sort((a, b) => a[1].localeCompare(b[1]));
 });

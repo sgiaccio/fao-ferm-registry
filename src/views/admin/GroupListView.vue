@@ -17,7 +17,7 @@ import { fetchAllUsers } from '@/firebase/functions';
 
 import TabTemplate from '../TabTemplate.vue'
 
-import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from '@/stores/auth';
 import { collection, doc, setDoc } from 'firebase/firestore/lite';
 import { fetchAllGroups } from '@/firebase/firestore';
 
@@ -65,7 +65,7 @@ async function addGroup() {
 
     alert('Group added successfully');
     showDialog.value = false;
-    fetchGroups();
+    await fetchGroups();
 }
 </script>
 
@@ -99,15 +99,15 @@ async function addGroup() {
                             </thead>
                             <tbody v-if="allGroups"
                                    class="divide-y divide-gray-200 bg-white">
-                                <tr v-for="[id, name] in Object.entries(allGroups).sort((a, b) => a[1].localeCompare(b[1]))"
+                                <tr v-for="[id, group] in Object.entries(allGroups).sort((a, b) => a[1].name.localeCompare(b[1].name))"
                                 :key="id">
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:pl-6">
-                                    <div class="text-gray-900">{{ name }}</div>
+                                    <div class="text-gray-900">{{ group.name }}</div>
                                     </td>
 
                                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                     <button @click="edit(id)"
-                                            class="text-indigo-600 hover:text-indigo-900">Show<span class="sr-only">, {{ name }}</span></button>
+                                            class="text-indigo-600 hover:text-indigo-900">Show<span class="sr-only">, {{ group.name }}</span></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -121,7 +121,7 @@ async function addGroup() {
 
     <!-- Add group dialog -->
     <TransitionRoot as="template"
-                    :show="!!showDialog">
+                    :show="showDialog">
         <Dialog as="div"
                 class="relative z-10"
                 @close="showDialog = false">
@@ -225,12 +225,15 @@ async function addGroup() {
                                  class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <div class="mt-3 text-center sm:mt-0 sm:text-left">
                                     <DialogTitle as="h3"
-                                                 class="text-lg font-medium leading-6 text-gray-900">{{ allGroups[showGroup.id] }}</DialogTitle>
+                                                 class="text-lg font-medium leading-6 text-gray-900">{{ allGroups[showGroup.id].name }}</DialogTitle>
                                 </div>
+
+                                <div>Description: {{allGroups[showGroup.id].description || 'No description available'}}</div>
+
                                 <!-- empty state -->
                                 <div class="mt-2"
                                      v-if="!showGroup.users.length">
-                                    This group has no users - group id: {{ showGroup.id }}
+                                    This group has no users
                                 </div>
 
                                 <template v-else>

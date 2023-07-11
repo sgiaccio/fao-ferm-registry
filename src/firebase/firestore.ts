@@ -54,20 +54,30 @@ export async function submitNewGroup(formData: any) {
     });
 }
 
-
-export async function fetchAllGroups(): Promise<{ [key: string]: string }> {
+async function getGroups() {
     const groupsCollection = collection(db, "groups");
     const groups = await getDocs(query(groupsCollection));
+    return groups.docs;
+}
+
+export async function fetchAllGroupNames(): Promise<{ [key: string]: string }> {
     // Create an object with group id as key and group name as value
-    return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+    const groupDocs = await getGroups();
+    return groupDocs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+}
+
+export async function fetchAllGroups(): Promise<{ [key: string]: string }> {
+    // Create an object with group id as key and group data as value
+    const groupDocs = await getGroups();
+    return groupDocs.reduce((prev, current) => ({ ...prev, [current.id]: current.data() }), {});
 }
 
 export async function fetchPublicGroups() {
     // hide private groups - for now private groups are only used to hide them from the list of the groups proposed for the user to join
-    const groupsCollection = collection(db, "groups");
-    const groups = await getDocs(query(groupsCollection, where("private", "==", false)));
+    const groupsCollection = collection(db, 'groups');
+    const groups = await getDocs(query(groupsCollection, where('private', '==', false)));
     // Create an object with group id as key and group name as value
-    return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
+    return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data() }), {});
 }
 
 export async function fetchSubmittedProjects(groupIds: string[]) {

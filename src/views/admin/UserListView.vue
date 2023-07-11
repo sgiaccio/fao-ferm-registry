@@ -21,7 +21,7 @@ import { fetchAllUsers, fetchMyGroupsUsers } from '@/firebase/functions';
 import TabTemplate from '../TabTemplate.vue'
 
 import { useAuthStore } from '@/stores/auth';
-import { fetchAllGroups } from '@/firebase/firestore';
+import { fetchAllGroupNames } from '@/firebase/firestore';
 
 
 const authStore = useAuthStore();
@@ -47,7 +47,7 @@ async function refreshUsers() {
 onMounted(async () => {
     try {
         await refreshUsers();
-        const groups = await fetchAllGroups();
+        const groups = await fetchAllGroupNames();
 
         if (authStore.isAdmin) {
             allGroups.value = groups;

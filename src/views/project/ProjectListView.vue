@@ -18,7 +18,7 @@ import { useProjectStore } from '@/stores/project';
 import { useBestPracticesStore } from '@/stores/bestpractices';
 
 import InstitutionsAssignment from '../InstitutionsAssignment.vue';
-import { fetchAllGroups } from '@/firebase/firestore';
+import { fetchAllGroupNames } from '@/firebase/firestore';
 
 import NewProjectDialog from '@/views/project/NewProjectDialog.vue';
 import router from '@/router';
@@ -39,7 +39,7 @@ onMounted(async () => {
     // if (authStore.isAdmin || Object.keys(authStore.userGroups).length) {
     projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true);
     // }
-    userGroups.value = authStore.isAdmin ? await fetchAllGroups() : authStore.userGroups;
+    userGroups.value = authStore.isAdmin ? await fetchAllGroupNames() : authStore.userGroups;
 });
 
 const bestPractices = ref([]);

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue';
 
-import { fetchAllGroups, getUserAssignmentRequests } from '@/firebase/firestore';
+import { fetchAllGroupNames, getUserAssignmentRequests } from '@/firebase/firestore';
 
 import { useAuthStore } from '@/stores/auth';
 
@@ -27,13 +27,11 @@ async function refreshAssignments() {
         approved: requests.filter(r => r.status === 'approved').map(r => r.group),
         denied: requests.filter(r => r.status === 'denied').map(r => r.group)
     }
-
-    console.log(assignmentRequests.value);
 }
 
 onMounted(async () => {
-    refreshAssignments();
-    Object.assign(allGroups, await fetchAllGroups());
+    await refreshAssignments();
+    Object.assign(allGroups, await fetchAllGroupNames());
 });
 
 function getRequestStatus(groupId: string) {

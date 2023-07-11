@@ -7,7 +7,7 @@ import { useUserPrefsStore, type RegistrationData } from '@/stores/userPreferenc
 import router from "@/router";
 
 import AlertModal from "@/views/AlertModal.vue";
-import { fetchAllGroups } from "@/firebase/firestore";
+import { fetchAllGroupNames } from "@/firebase/firestore";
 
 
 const authStore = useAuthStore();
@@ -22,7 +22,7 @@ const groups = reactive<{ [key: string]: string }>({});
 
 // Fetches all groups from the auth store
 onBeforeMount(async () => {
-    Object.assign(groups, await fetchAllGroups())
+    Object.assign(groups, await fetchAllGroupNames())
 });
 
 // The form data is stored in a reactive object.
