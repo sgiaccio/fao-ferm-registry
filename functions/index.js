@@ -313,7 +313,7 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
 
     // Get all group admins
     // Get user's name from the auth system
-    const { displayName } = await admin.auth().getUser(userId);
+    const { displayName, email } = await admin.auth().getUser(userId);
 
     // Get group name from the database
     const groupDoc = await util.groupsCollection.doc(groupId).get();
@@ -330,7 +330,7 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
                 subject: `New assignment request for group ${groupName}`,
                 html: `
                 <p>Hi,</p>
-                <p>User ${displayName || 'anonymous'} has requested to be assigned to your institution ${groupName}:</p>
+                <p>User ${displayName || '<i>anonymous</i>'} (${email}) has requested to be assigned to your institution ${groupName}:</p>
                 
                 <p style="font-style: italic;">${reasons}</p>
         
@@ -349,7 +349,7 @@ exports.sendAssignmentRequestEmail = functions.firestore.document('assignementRe
                 subject: `New assignment request for group ${groupName}`,
                 html: `
                 <p>Hi,</p>
-                <p>User ${displayName || 'anonymous'} has requested to be assigned to the institution ${groupName}:</p>
+                <p>User ${displayName || '<i>anonymous</i>'} (${email}) has requested to be assigned to the institution ${groupName}:</p>
                 
                 <p style="font-style: italic;">${reasons}</p>
         

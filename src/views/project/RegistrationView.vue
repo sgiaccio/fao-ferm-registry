@@ -112,6 +112,16 @@ vue.watch(() => store.id as string, async id => {
         getFiles(id);
     }
 });
+
+function generateYearOptions(start: number, end: number): { value: number; label: string }[] {
+    const length = end - start + 1;
+    return Array.from({ length }, (_, i) => {
+        const year = start + i;
+        return { value: year, label: String(year) };
+    });
+}
+
+const years = generateYearOptions(2000, 2050);
 </script>
 
 
@@ -200,14 +210,24 @@ vue.watch(() => store.id as string, async id => {
             </AreaFormGroup>
         </template>
 
-        <DateFormGroup :edit="edit"
-                       v-model="store.project.project.startingDate"
-                       label="Starting date"
-                       description="Date when the initiative started" />
-        <DateFormGroup :edit="edit"
-                       v-model="store.project.project.endingDate"
-                       label="Ending date"
-                       description="Date when the initiative finished or is expected to finish" />
+<!--        <DateFormGroup :edit="edit"-->
+<!--                       v-model="store.project.project.startingDate"-->
+<!--                       label="Starting date"-->
+<!--                       description="Date when the initiative started" />-->
+<!--        <DateFormGroup :edit="edit"-->
+<!--                       v-model="store.project.project.endingDate"-->
+<!--                       label="Ending date"-->
+<!--                       description="Date when the initiative finished or is expected to finish" />-->
+
+        <SelectFormGroup :edit="edit"
+                         v-model="store.project.project.startingYear"
+                         label="Starting year"
+                         :options="years" />
+        <SelectFormGroup :edit="edit"
+                         v-model="store.project.project.endingYear"
+                         label="Ending year"
+                         :options="years" />
+
         <FormGroup :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
             <div v-if="edit">
                 <div v-if="!fileName">

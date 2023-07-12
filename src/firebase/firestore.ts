@@ -12,8 +12,8 @@ import type { Menu, RecursiveMenu } from '@/components/project/menus';
  * TODO: check if the user is already a member of the group
  * TODO: check if the user has already requested to join the group
 */
-export async function requestGroupAssignment(uid: string, groupId: string, reasons: string) {
-    if (!uid || !groupId || !reasons) {
+export async function requestGroupAssignment(uid: string, groupId: string, reasons: string, email: string) {
+    if (!uid || !groupId || !reasons || !email) {
         throw new Error("Missing uid or groupId or reasons");
     }
 
@@ -21,10 +21,11 @@ export async function requestGroupAssignment(uid: string, groupId: string, reaso
     const docRef = doc(usersCollection);
     await setDoc(docRef, {
         userId: uid,
-        groupId: groupId,
+        email,
+        groupId,
         // TODO status should be set in the backend. Checking that it's 'pending' in firestore.rules anyway
+        reasons,
         status: 'pending',
-        reasons: reasons,
         createTime: serverTimestamp(),
     });
 }

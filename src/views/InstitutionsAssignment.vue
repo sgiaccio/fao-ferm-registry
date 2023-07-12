@@ -10,7 +10,7 @@ import {
     ComboboxOptions
 } from '@headlessui/vue';
 
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from '@/stores/auth';
 // import { useProjectStore } from '../../stores/project';
 
 import {
@@ -96,9 +96,8 @@ const showAssignmentSuccess = ref(false);
 async function requestAssignment() {
     // showConfirmDialog.value = false;
     try {
-        // await requestGroupAssignment(authStore.user!.uid, selectedGroup.value.id, reasons.value);
-        // uid: string, groupId: string, userName: string, email: string, reasons: string
-        await requestGroupAssignment(authStore.user!.uid, selectedGroup.value.id, reasons.value);
+        const email = authStore.user!.email;
+        await requestGroupAssignment(authStore.user!.uid, selectedGroup.value.id, reasons.value, email);
         showAssignmentSuccess.value = true;
     } catch (e) {
         console.error(e);

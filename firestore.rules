@@ -181,11 +181,12 @@ service cloud.firestore {
 
         // TODO tests
         match /assignementRequests/{document=**} {
-            allow read: if true // TODO fix the rule below
+            allow read: if isSignedIn() // TODO fix the rule below
             // allow read: if debug(isAdmin()) || getRole(debug(resource.data.groupId)) == 'admin' || (isSignedIn() && request.auth.uid == resource.data.userId)
             allow create: if request.resource.data.userId == request.auth.uid
                 && request.resource.data.status == 'pending'
                 && request.resource.data.groupId != null
+                && request.resource.data.email == request.auth.token.email
                 && exists(/databases/$(database)/documents/groups/$(request.resource.data.groupId))
             allow update: if false
             allow delete: if false

@@ -36,7 +36,7 @@ function rejectAssignment(requestId: string) {
         refresh();
     }).catch((err) => {
         alert(err.message);
-    });;
+    });
 }
 </script>
   
@@ -55,9 +55,11 @@ function rejectAssignment(requestId: string) {
                                         <th scope="col"
                                             class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Institution</th>
                                         <th scope="col"
+                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Reason</th>
+                                        <th scope="col"
                                             class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
                                         <th scope="col"
-                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Requested on</th>
+                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
                                         <th scope="col"
                                             class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                                             <span class="sr-only">Edit</span>
@@ -67,8 +69,9 @@ function rejectAssignment(requestId: string) {
                                 <tbody class="divide-y divide-gray-200 bg-white">
                                     <tr v-for="item in assignmentRequests"
                                         :key="item.userName">
-                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ item.userName }}</td>
-                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ item.groupName }}</td>
+                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ item.userName }} <br> <a class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-700" href="mailto:{{item.email}}">{{item.email}}</a></td>
+                                        <td class="break-words px-3 py-4 text-sm text-gray-500">{{ item.groupName }}</td>
+                                        <td class="break-words px-3 py-4 text-sm text-gray-500">{{ item.reasons }}</td>
                                         <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ item.status }}</td>
                                         <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ item.createTime }}</td>
                                         <!--  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ person.email }}</td>
