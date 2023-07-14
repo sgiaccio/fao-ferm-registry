@@ -106,43 +106,6 @@ function bubble(val: number[]) {
         <ul v-for="(option, i) in options"
             :class="level ? 'ml-10' : ''">
             <li>
-                <!--                <div v-if="option.items"-->
-                <!--                     class="flex items-start">-->
-                <!--                    <div class="flex">-->
-                <!--                        <svg v-if="option.items"-->
-                <!--                             @click="toggle(i)"-->
-                <!--                             xmlns="http://www.w3.org/2000/svg"-->
-                <!--                             viewBox="0 0 20 20"-->
-                <!--                             fill="currentColor"-->
-                <!--                             class="w-5 h-5 self-center inline-block cursor-pointer">-->
-                <!--                            <path v-if="!isOpen[i]"-->
-                <!--                                  fill-rule="evenodd"-->
-                <!--                                  d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"-->
-                <!--                                  clip-rule="evenodd" />-->
-                <!--                            <path v-else-->
-                <!--                                  fill-rule="evenodd"-->
-                <!--                                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"-->
-                <!--                                  clip-rule="evenodd" />-->
-                <!--                        </svg>-->
-                <!--                    </div>-->
-                <!--                    <div class="font-bold">{{ option.label }}</div>-->
-                <!--                </div>-->
-                <!--                <div v-else-->
-                <!--                     class="relative flex items-start"> &lt;!&ndash; was v-else-if="treeData.value", why? &ndash;&gt;-->
-                <!--                    <div class="flex h-5 items-center">-->
-                <!--                        <input :id="`${uid}_${option.value}`"-->
-                <!--                               @change="check(($event.target as HTMLInputElement).checked, option.value!)"-->
-                <!--                               aria-describedby="comments-description"-->
-                <!--                               name="`${uid}_${treeData?.value}`"-->
-                <!--                               type="checkbox"-->
-                <!--                               :checked="(modelValue || []).includes(option.value)"-->
-                <!--                               class="cursor-pointer h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">-->
-                <!--                    </div>-->
-                <!--                    <div class="ml-3 text-sm">-->
-                <!--                        <label :for="`${uid}_${option.value}`"-->
-                <!--                               class="font-normal dark:text-zinc-300 cursor-pointer">{{ option.label }}</label>-->
-                <!--                    </div>-->
-                <!--                </div>-->
                 <div class="flex items-start">
                     <div v-if="option.items">
                         <div class="flex">
@@ -185,12 +148,14 @@ function bubble(val: number[]) {
                         {{ option.label }}
                     </div>
                 </div>
-                <RecursiveMenu v-if="option.items && isOpen[i]"
-                               :modelValue="modelValue"
-                               @update:modelValue="bubble"
-                               :options="option.items"
-                               :level="level + 1"
-                               :edit="edit" />
+                <div v-show="isOpen[i]">
+                    <RecursiveMenu v-if="option.items"
+                                   :modelValue="modelValue"
+                                   @update:modelValue="bubble"
+                                   :options="option.items"
+                                   :level="level + 1"
+                                   :edit="edit" />
+                </div>
             </li>
         </ul>
     </template>

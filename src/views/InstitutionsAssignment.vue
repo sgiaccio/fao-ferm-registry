@@ -214,14 +214,14 @@ function cancelSubmit() {
 
 <template>
     <!-- Group assignment confirmation modal -->
-    <ConfirmModal :title="`Join ${selectedGroup?.name}`"
+    <ConfirmModal :title="`Join ${selectedGroup?.group.name}`"
                   :onConfirm="() => { confirmAssignment() }"
                   :onCancel="() => { cancelAssignment() }"
                   :okButtonEnabled="selectedGroup !== null && reasons !== ''"
                   :open="showConfirmDialog"
                   ok-button-text="Join">
         <p class="text-sm text-gray-700">Please provide your reasons for joining <span
-            class="font-bold">{{ selectedGroup?.name }}</span>; your response will be sent to the administrator for
+            class="font-bold">{{ selectedGroup?.group.name }}</span>; your response will be sent to the administrator for
             review.</p>
         <div>
             <div class="mt-2">

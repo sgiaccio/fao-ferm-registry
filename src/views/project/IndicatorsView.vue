@@ -40,7 +40,7 @@ function applyToAll() {
             <!-- hide if not GEF -->
             <div v-if="store.project.reportingLine !== 'GEF'"
                  class="pt-6 pb-6">
-                <h1 class="font-akrobat text-2xl dark:text-zinc-300 font-bold">SDG indicators</h1>
+                <h1 class="text-2xl dark:text-zinc-300 font-bold mb-3">SDG indicators</h1>
                 <RecursiveMenu :edit="edit"
                                v-model="store.project.indicators"
                                :options="menus.indicators"
@@ -50,7 +50,7 @@ function applyToAll() {
 
             <div class="pt-8"
                  v-if="store.project.reportingLine === 'GEF'">
-                <h1 class="font-akrobat text-2xl dark:text-zinc-300 font-bold">GEF indicators</h1>
+                <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">GEF indicators</h1>
                 <LabelFormGroup label="Total area under restoration (achieved area spatially explicit)"
                                 :value="store.polygonsArea()" />
                 <div v-if="store.projectAreas?.length"

@@ -27,8 +27,7 @@ coverage
 *.sln
 *.sw?
 
-emulator_data_2/
-emulator_data_3/
+emulator_data*/
 firestore-coverage.html
 .firebase
 stats.json
