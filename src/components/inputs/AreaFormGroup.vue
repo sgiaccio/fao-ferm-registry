@@ -51,7 +51,7 @@ function updateUnits(newUnits) {
                 <SelectInput
                     :modelValue="modelValue.units"
                     @update:modelValue="updateUnits"
-                    :options="[{value: 'ha', label: 'Hectare'}, {value: 'km2', label: 'Square km'}, {value: 'ac', label: 'Acre'}]"
+                    :options="[{value: 'ha', label: 'Hectare'}, {value: 'km2', label: 'Square km'}, {value: 'ac', label: 'Acre'}, {value: 'km', label: 'Kilometres'}]"
                     :edit="edit" />
                 <span class="text-gray-300 text-sm">Units</span>
             </div>

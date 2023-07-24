@@ -15,7 +15,6 @@ admin.initializeApp({
 
 let db = admin.firestore();
 
-// Renames 'update-time' to 'updateTime' in all documents in the 'registry' collection. Deletes the 'update-time' field.
 db.collection('registry').orderBy('updateTime', 'desc').get().then(snapshot => {
     console.log(snapshot.size);
     snapshot.forEach(doc => {

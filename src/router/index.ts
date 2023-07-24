@@ -168,7 +168,7 @@ const router = createRouter({
                             path: 'edit',
                             name: 'editInitiative',
                             component: () => import('../views/project/ProjectEditView.vue'),
-                            children: projectTabs.map(tab => ({ ...tab, name: tab.name + 'Edit' }))
+                            children: projectTabs.map(tab => ({ ...tab, name: `${tab.name}Edit` }))
                         },
                     ]
                 },
@@ -196,7 +196,7 @@ const router = createRouter({
                             path: 'edit',
                             name: 'editBestPractice',
                             component: () => import('../views/bestpractices/BestPracticeEditView.vue'),
-                            children: bestPracticeTabs.map(tab => ({ ...tab, name: tab.name + 'Edit' }))
+                            children: bestPracticeTabs.map(tab => ({ ...tab, name: `${tab.name}Edit` }))
                         },
                     ]
                 }
@@ -205,9 +205,11 @@ const router = createRouter({
             path: '/support',
             name: 'support',
             component: () => import('../views/SupportView.vue'),
+            meta: { public: true }
         }, {
             path: '/:pathMatch(.*)',
-            component: () => import('../views/NotFoundView.vue')
+            component: () => import('../views/NotFoundView.vue'),
+            meta: { public: true }
         }
     ],
 });
