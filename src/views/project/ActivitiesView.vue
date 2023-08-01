@@ -63,7 +63,7 @@ function toggleOtherActivitiesInput(i: number) {
                             }}</span>
                         </div>
                         <div v-if="edit">
-                            <button v-if="i === 0"
+                            <button v-if="i === 0 && store.projectAreas.length > 1"
                                     type="button"
                                     class="rounded bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                     @click="applyToAll">

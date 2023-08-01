@@ -6,11 +6,13 @@
         "source": "/loadAreaJson",
         "function": "load_area_json",
         "region": "europe-west3"
-      },{
+      },
+      {
         "source": "/loadShapefileMultiple",
         "function": "load_shapefile_multiple",
         "region": "europe-west3"
-      }, {
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
@@ -39,7 +41,11 @@
     },
     "functions": {
       "port": 5001
-    }
+    },
+    "pubsub": {
+      "port": 8085
+    },
+    "singleProjectMode": true
   },
   "firestore": {
     "rules": "firestore.rules",

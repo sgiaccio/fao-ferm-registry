@@ -1,7 +1,9 @@
 {
   "projects": {
     "staging": "fao-ferm2-review",
-    "prod": "fao-ferm"
+    "prod": "fao-ferm",
+    "default": "fao-ferm",
+    "dev": "fao-ferm2-review"
   },
   "targets": {},
   "etags": {}

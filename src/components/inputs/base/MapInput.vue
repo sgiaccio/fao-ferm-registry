@@ -139,7 +139,6 @@ watch(areaUploaded, (uploaded) => {
         m.removeInteraction(snap);
 
         if (!props.modelValue.area) {
-            console.log('fetching area')
             fetchPolygonArea();
         }
     } else {
@@ -158,8 +157,8 @@ function fetchPolygonArea() {
                 'Authorization': `Bearer ${authStore.user.accessToken}`
             }
         }).then(response => response.json()).then(area => {
-        emit('update:modelValue', { ...props.modelValue, area: (area * 0.0001).toFixed(2) });
-    });
+            emit('update:modelValue', { ...props.modelValue, area: (1e-4 * area).toFixed(2) });
+        });
 }
 </script>
 

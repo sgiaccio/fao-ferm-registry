@@ -68,7 +68,6 @@ export const useProjectStore = defineStore({
                 delete this.project.aoi
                 this.projectAreas = [];
             } else {
-                // TODO else fetch AOIs from separate collection
                 const areasRef = doc(areaCollection, projectId);
                 this.projectAreas = (await getDoc(areasRef)).data()?.areas || [];
             }
@@ -361,7 +360,7 @@ export const useProjectStore = defineStore({
                 getValue({})
                 const areas = this.projectAreas
                     .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
-                    .map((a: any) => +((getValue(a) as { area: number }).area || 0)); // TODO types
+                    .map((a: any) => +((getValue(a) as { area: number }).area || 0));
                 return areas.reduce((a: number, b: number) => a + b, 0);
             } catch (e) {
                 console.log('Error calculating polygons area', e);

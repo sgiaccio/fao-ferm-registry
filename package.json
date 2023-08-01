@@ -13,6 +13,7 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "changeToProd": "firebase use prod",
+    "changeToDev": "firebase use dev",
     "changeToStaging": "firebase use staging",
     "loadMenus": "node scripts/uploadMenus.js"
   },

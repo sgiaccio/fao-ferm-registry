@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const firestore = require('@google-cloud/firestore');
+const functions = require("firebase-functions");
 
 // Initialize admin SDK
 admin.initializeApp();
@@ -161,6 +162,16 @@ function isGroupEditor(context, project) {
     return groupsWhereEditor.includes(project.group);
 }
 
+async function isProjectPublic(projectId) {
+    const projectSnapshot = await registryCollection.doc(projectId).get();
+    if (!projectSnapshot.exists) {
+        throw new Error("Project does not exist");
+    }
+    const project = projectSnapshot.data();
+
+    return !!project.status && project.status === 'public';
+}
+
 exports = module.exports = {
     db,
     usersCollection,
@@ -188,5 +199,7 @@ exports = module.exports = {
     isGroupEditor,
     isValidGroup,
     checkValidGroups,
-    checkValidLevels
+    checkValidLevels,
+
+    isProjectPublic
 };

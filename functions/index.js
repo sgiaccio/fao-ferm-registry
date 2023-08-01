@@ -671,6 +671,43 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
 });
 
 
+// exports.deleteProject = functions.https.onCall(async ({ projectId }, context) => {
+//     // Check arguments
+//     if (!projectId) {
+//         throw new functions.https.HttpsError('invalid-argument', 'Missing arguments');
+//     }
+//
+//     // get the project document from Firestore
+//     const projectRef = await util.registryCollection.doc(projectId).get();
+//     // check that the project exists
+//     if (!projectRef.exists) {
+//         throw new functions.https.HttpsError("not-found", "Project not found");
+//     }
+//
+//
+//     const isGroupAdmin = util.isGroupAdmin(context, project);
+//     const authorized = util.isSuperAdmin(context) || isGroupAdmin;
+//     if (!authorized) {
+//         throw new functions.https.HttpsError("permission-denied", "User is not a super admin nor a group admin");
+//     }
+//
+//
+//     // Check if the project exists
+//     const projectDoc = await util.projectsCollection.doc(projectId).get();
+//     const project = projectDoc.data();
+//     if (!project) {
+//         throw new functions.https.HttpsError('not-found', 'Project not found');
+//     }
+//
+//     // Delete the project and the areas subcollection in batch
+//     const batch = admin.firestore().batch();
+//     batch.delete(util.projectsCollection.doc(projectId));
+//     const areasQuery = await util.projectsCollection.doc(projectId).collection('areas').get();
+//     areasQuery.forEach(areaDoc => batch.delete(areaDoc.ref));
+//
+//     await batch.commit();
+// });
+
 exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastName, email, message }, _context) => {
     if (!firstName || !lastName || !email || !message) {
         throw new functions.https.HttpsError('invalid-argument', 'Missing arguments');
@@ -719,6 +756,7 @@ exports.updateBestPracticesCount = functions.firestore.document('bestPractices/{
     // count the number of good practices for the project
     const bestPractices = await util.bestPracticesCollection.where('projectId', '==', projectId).count().get();
     const bestPracticesCount = bestPractices.data().count;
+
     console.log('Updating best practices count for project', projectId, 'to', bestPracticesCount);
 
     // update the good practices count in the registry document
@@ -749,3 +787,15 @@ exports.sendNewGroupRequestEmail = groupRequestsWorkflow.sendNewGroupRequestEmai
 exports.getMyNewGroupRequests = groupRequestsWorkflow.getMyNewGroupRequests;
 exports.approveNewGroupRequest = groupRequestsWorkflow.approveNewGroupRequest;
 exports.rejectNewGroupRequest = groupRequestsWorkflow.rejectNewGroupRequest;
+
+
+/************************************************
+ *
+ * AREAS AND ZONAL STATISTICS
+ *
+ * **********************************************/
+
+const areas = require('./areas');
+exports.getPolygonZonalStats = areas.getPolygonZonalStats;
+exports.deleteDanglingAreaRecords = areas.deleteDanglingAreaRecords;
+// exports.deleteAllProjectAreas = areas.deleteAllProjectAreas;
