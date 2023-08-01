@@ -1,24 +1,23 @@
 <script setup lang="ts">
-import { getStorage, ref, uploadBytes, listAll, deleteObject } from "firebase/storage";
-import * as vue from "vue";
+import { getStorage, ref, uploadBytes, listAll, deleteObject } from 'firebase/storage';
+import * as vue from 'vue';
 
 
-import { useProjectStore } from "@/stores/project";
+import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
 
-import TabTemplate from "../TabTemplate.vue";
+import TabTemplate from '../TabTemplate.vue';
 
-import FormGroup from "@/components/inputs/FormGroup.vue";
-import TextFormGroup from "@/components/inputs/base/TextFormGroup.vue";
-import DateFormGroup from "@/components/inputs/base/DateFormGroup.vue";
-import TextareaFormGroup from "@/components/inputs/base/TextareaFormGroup.vue";
-import KeywordsInputGroup from "@/components/inputs/KeywordsInputGroup.vue";
-import MultiSelectFormGroup from "@/components/inputs/base/MultiSelectFormGroup.vue";
-import AreaFormGroup from "@/components/inputs/AreaFormGroup.vue";
-import MultiInputFormGroup from "@/components/inputs/MultiInputFormGroup.vue";
-import Organization from "@/components/inputs/organizations/Organization.vue";
-import PointOfContact from "@/components/inputs/pointsOfContact/PointOfContact.vue";
-import SelectFormGroup from "@/components/inputs/base/SelectFormGroup.vue";
+import FormGroup from '@/components/inputs/FormGroup.vue';
+import TextFormGroup from '@/components/inputs/base/TextFormGroup.vue';
+import TextareaFormGroup from '@/components/inputs/base/TextareaFormGroup.vue';
+import KeywordsInputGroup from '@/components/inputs/KeywordsInputGroup.vue';
+import MultiSelectFormGroup from '@/components/inputs/base/MultiSelectFormGroup.vue';
+import AreaFormGroup from '@/components/inputs/AreaFormGroup.vue';
+import MultiInputFormGroup from '@/components/inputs/MultiInputFormGroup.vue';
+import Organization from '@/components/inputs/organizations/Organization.vue';
+import PointOfContact from '@/components/inputs/pointsOfContact/PointOfContact.vue';
+import SelectFormGroup from '@/components/inputs/base/SelectFormGroup.vue';
 
 // import { gefCycles, objectives, gefFocalAreas } from "@/components/project/menus";
 
@@ -41,7 +40,7 @@ const organizations = {
     organization: {
         component: Organization,
         newData: {},
-        addItemLabel: "Add organization"
+        addItemLabel: 'Add organization'
     }
 };
 
@@ -49,7 +48,7 @@ const pointsOfContact = {
     poc: {
         component: PointOfContact,
         newData: {},
-        addItemLabel: "Add point of contact"
+        addItemLabel: 'Add point of contact'
     }
 };
 
@@ -57,7 +56,7 @@ const store = useProjectStore();
 const menus = useMenusStore().menus;
 
 const selectedFile = vue.ref<File | null>(null);
-const uploadStatus = vue.ref<"idle" | "uploading" | "uploaded">("idle");
+const uploadStatus = vue.ref<'idle' | 'uploading' | 'uploaded'>('idle');
 
 function setSelectedFile(event: Event) {
     selectedFile.value = (event.target as HTMLInputElement).files![0];
@@ -68,23 +67,23 @@ const storage = getStorage();
 function uploadFile(projectId: string | null) {
     if (projectId === null) return;
 
-    if (uploadStatus.value !== "idle") return;
+    if (uploadStatus.value !== 'idle') return;
 
     const storageRef = ref(storage, `${projectId}/documents/${selectedFile.value!.name}`);
     const uploadTask = uploadBytes(storageRef, selectedFile.value!);
 
-    uploadStatus.value = "uploading";
+    uploadStatus.value = 'uploading';
     uploadTask.then(snapshot => {
         getFiles(projectId);
         selectedFile.value = null;
-        uploadStatus.value = "uploaded";
+        uploadStatus.value = 'uploaded';
     }).catch(error => {
-        uploadStatus.value = "idle";
+        uploadStatus.value = 'idle';
     });
 }
 
 async function listFiles(projectId: string) {
-    const dirRef = ref(storage, projectId + "/documents/");
+    const dirRef = ref(storage, projectId + '/documents/');
     return listAll(dirRef);
 }
 
@@ -103,7 +102,7 @@ function deleteFile(projectId: string | null, fileName: string) {
     deleteObject(fRef).then(() => {
         getFiles(projectId);
     }).catch((error) => {
-        alert("Error deleting the file");
+        alert('Error deleting the file');
     });
 }
 
@@ -150,10 +149,10 @@ const years = generateYearOptions(2000, 2050);
                              v-model="store.project.project.gefCycle"
                              label="GEF cycle"
                              :options="menus.gefCycles" />
-            <SelectFormGroup :edit="edit"
-                             v-model="store.project.project.gefFocalArea"
-                             label="GEF focal area"
-                             :options="menus.gefFocalAreas" />
+            <MultiSelectFormGroup :edit="edit"
+                                  v-model="store.project.project.gefFocalAreas"
+                                  label="GEF standalone projects (focal areas)"
+                                  :options="menus.gefFocalAreas" />
         </template>
 
         <TextareaFormGroup :edit="edit"
@@ -189,7 +188,8 @@ const years = generateYearOptions(2000, 2050);
                            v-model="store.project.project.targetAreaDesignPhase"
                            description="Area of land committed in design phase">
                 <template v-slot:info>
-                    <p>Please include the land (in ha) committed in <span class="font-bold">project design phase</span> (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                    <p>Please include the land (in ha) committed in <span class="font-bold">project design phase</span>
+                        (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
                 </template>
             </AreaFormGroup>
             <AreaFormGroup :edit="edit"
@@ -197,7 +197,8 @@ const years = generateYearOptions(2000, 2050);
                            v-model="store.project.project.targetAreaReviewPhase"
                            description="Area of land committed in mid-term review phase">
                 <template v-slot:info>
-                    <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span> (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                    <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span>
+                        (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
                 </template>
             </AreaFormGroup>
             <AreaFormGroup :edit="edit"
@@ -205,19 +206,20 @@ const years = generateYearOptions(2000, 2050);
                            v-model="store.project.project.targetAreaEvaluationPhase"
                            description="Area of land committed in terminal evaluation phase">
                 <template v-slot:info>
-                    <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span> (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                    <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span>
+                        (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
                 </template>
             </AreaFormGroup>
         </template>
 
-<!--        <DateFormGroup :edit="edit"-->
-<!--                       v-model="store.project.project.startingDate"-->
-<!--                       label="Starting date"-->
-<!--                       description="Date when the initiative started" />-->
-<!--        <DateFormGroup :edit="edit"-->
-<!--                       v-model="store.project.project.endingDate"-->
-<!--                       label="Ending date"-->
-<!--                       description="Date when the initiative finished or is expected to finish" />-->
+        <!--        <DateFormGroup :edit="edit"-->
+        <!--                       v-model="store.project.project.startingDate"-->
+        <!--                       label="Starting date"-->
+        <!--                       description="Date when the initiative started" />-->
+        <!--        <DateFormGroup :edit="edit"-->
+        <!--                       v-model="store.project.project.endingDate"-->
+        <!--                       label="Ending date"-->
+        <!--                       description="Date when the initiative finished or is expected to finish" />-->
 
         <SelectFormGroup :edit="edit"
                          v-model="store.project.project.startingYear"
@@ -228,7 +230,8 @@ const years = generateYearOptions(2000, 2050);
                          label="Ending year"
                          :options="years" />
 
-        <FormGroup :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
+        <FormGroup
+            :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
             <div v-if="edit">
                 <div v-if="!fileName">
                     <label for="file"
@@ -273,7 +276,8 @@ const years = generateYearOptions(2000, 2050);
                 </div>
 
                 <div class="dark:text-white"
-                     v-else>Initiative file: {{ fileName }} <span @click="deleteFile(store.id, fileName!)">[delete]</span></div>
+                     v-else>Initiative file: {{ fileName }} <span
+                    @click="deleteFile(store.id, fileName!)">[delete]</span></div>
             </div>
             <template v-else>
                 <div v-if="selectedFile">Initiative file: {{ fileName }}</div>
@@ -299,5 +303,5 @@ const years = generateYearOptions(2000, 2050);
                              v-model="store.project.project.organizations" />
     </TabTemplate>
     <!-- <DynamicHeading level=2>Title</DynamicHeading> -->
-    <!-- <pre class="text-white">{{JSON.stringify(data, null, 2)}}</pre> -->
+    <!-- <pre class="text-black text-xs">{{ JSON.stringify(store.project.project, null, 2) }}</pre> -->
 </template>
