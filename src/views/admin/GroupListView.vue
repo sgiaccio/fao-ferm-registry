@@ -13,7 +13,7 @@ import {
 } from '@headlessui/vue'
 
 import { db } from '@/firebase';
-import { fetchAllUsers } from '@/firebase/functions';
+import { getAllUsers } from '@/firebase/functions';
 
 import TabTemplate from '../TabTemplate.vue'
 
@@ -34,7 +34,7 @@ onMounted(async () => {
 
 // Returns all users in the given group
 async function edit(groupId: string) {
-    const users = ((await fetchAllUsers()) as any).users;
+    const users = ((await getAllUsers()) as any).users;
     const groupUsers = users.filter((u: any) => {
         const privileges = u.customClaims?.privileges;
         return privileges && privileges[groupId];

@@ -17,12 +17,12 @@ import { useAuthStore } from '@/stores/auth';
 import { useProjectStore } from '@/stores/project';
 import { useBestPracticesStore } from '@/stores/bestpractices';
 
-import InstitutionsAssignment from '../InstitutionsAssignment.vue';
 import { fetchAllGroupNames } from '@/firebase/firestore';
 
-import NewProjectDialog from '@/views/project/NewProjectDialog.vue';
 import router from '@/router';
 
+import InstitutionsAssignment from '../InstitutionsAssignment.vue';
+import NewProjectDialog from '@/views/project/NewProjectDialog.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
 import * as projectUtils from '@/lib/project';
@@ -33,13 +33,19 @@ const projectStore = useProjectStore();
 const authStore = useAuthStore();
 const bestPracticesStore = useBestPracticesStore();
 
-const userGroups = ref();
+const userGroups = ref([]);
+const users = ref([]);
 
 onMounted(async () => {
-    // if (authStore.isAdmin || Object.keys(authStore.userGroups).length) {
-    projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true);
-    // }
-    userGroups.value = authStore.isAdmin ? await fetchAllGroupNames() : authStore.userGroups;
+    try {
+        await Promise.all([
+            projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true),
+            // get all groups if admin, otherwise get only the groups the user is part of
+            await (async () => userGroups.value = authStore.isAdmin ? await fetchAllGroupNames() : authStore.userGroups)()
+        ]);
+    } catch (e) {
+        console.error(e);
+    }
 });
 
 const bestPractices = ref([]);
@@ -267,6 +273,15 @@ async function checkTermsAndConditionsAndShowDialog() {
                                             <div class="mt-2 sm:flex sm:justify-between">
                                                 <div class="sm:flex">
                                                     <p class="flex items-center text-sm text-gray-500">
+                                                        {{ project.data.created_by_name }}
+                                                        &middot;
+                                                        {{ userGroups[project.data.group] }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 sm:flex sm:justify-between">
+                                                <div class="sm:flex">
+                                                    <p class="flex items-center text-sm text-gray-500">
                                                         <template v-if="projectUtils.getStatus(project) === 'draft'">
                                                             <Cog6ToothIcon
                                                                 class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
@@ -352,9 +367,10 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                     </Menu>
                                                     <div v-else
                                                          class="sm:mt-0 sm:ml-6 text-sm">
-                                                        <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
-                                                                     type="button"
-                                                                     class="inline-flex items-center text-sm font-normal text-ferm-blue-dark-700">
+                                                        <router-link
+                                                            :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
+                                                            type="button"
+                                                            class="inline-flex items-center text-sm font-normal text-ferm-blue-dark-700">
                                                             Add good practice
                                                         </router-link>
                                                     </div>

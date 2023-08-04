@@ -7,7 +7,7 @@ export async function getMyGroupsAssigmentRequests() {
 
     return result.data;
 }
-    
+
 export async function handleGroupAssignmentRequest(requestId: string, newStatus: 'accepted' | 'rejected') {
     const f = httpsCallable(functions, 'handleGroupAssignmentRequest');
     const result = await f({ requestId, status: newStatus });
@@ -45,19 +45,28 @@ export async function handleSupportRequest(firstName: string, lastName: string, 
     return f({ firstName, lastName, email, message });
 }
 
-export async function fetchAllUsers() {
+export async function getAllUsers() {
     const functions = getFunctions();
     const listAllUsers = httpsCallable(functions, 'listAllUsers');
     const result = await listAllUsers();
     return result.data;
 }
-  
-export async function fetchMyGroupsUsers() {
+
+export async function getAdminGroupsUsers() {
+    debugger;
+    alert('getAdminGroupsUsers');
     const functions = getFunctions();
-    const listMyGroupsUsers = httpsCallable(functions, 'listMyGroupsUsers');
-    const result = await listMyGroupsUsers();
+    const listAdminGroupsUsers = httpsCallable(functions, 'listAdminGroupsUsers');
+    const result = await listAdminGroupsUsers();
     return result.data;
 }
+
+// export async function getMyGroupsUsers() {
+//     const functions = getFunctions();
+//     const listMyGroupsUsers = httpsCallable(functions, 'listMyGroupsUsers');
+//     const result = await listMyGroupsUsers();
+//     return result.data;
+// }
 
 export async function submitForReview(projectId: string) {
     const functions = getFunctions();

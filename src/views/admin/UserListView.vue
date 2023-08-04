@@ -16,7 +16,7 @@ import {
 } from '@headlessui/vue'
 
 import { functions } from '@/firebase';
-import { fetchAllUsers, fetchMyGroupsUsers } from '@/firebase/functions';
+import { getAllUsers, getAdminGroupsUsers } from '@/firebase/functions';
 
 import TabTemplate from '../TabTemplate.vue'
 
@@ -30,7 +30,7 @@ const users = ref();
 const allGroups = ref();
 
 async function refreshUsers() {
-    const f = authStore.isAdmin ? fetchAllUsers : fetchMyGroupsUsers;
+    const f = authStore.isAdmin ? getAllUsers : getAdminGroupsUsers;
     // Sort users by creation date
     users.value = ((await f()) as any).users.sort((a: User, b: User) => {
         try {
