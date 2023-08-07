@@ -77,13 +77,6 @@ async function fetchPolygonFromDatabase(client, id) {
  * @returns {Promise<any>}
  */
 async function fetchData(earthMapApiKey, polygon, stats) {
-    functions.logger.log(JSON.stringify({
-        id: "IUCN_Ecosystems",
-        feature: {
-            type: "Feature",
-            geometry: polygon  // Use the fetched polygon
-        }
-    }, null, 2));
     try {
         const response = await axios.post("https://earthmap.org/api/statistics", {
             id: stats,

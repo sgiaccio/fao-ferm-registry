@@ -77,7 +77,7 @@ async function addGroup() {
                     <div>
                         <button type="button"
                                 @click="showDialog = true"
-                                class="rounded-md bg-indigo-600 py-2.5 px-3.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mb-6">Add group</button>
+                                class="rounded-md bg-indigo-600 py-2.5 px-3.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mb-6">Add institution</button>
                     </div>
 
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
@@ -148,7 +148,7 @@ async function addGroup() {
                             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <div class="mt-3 text-center sm:mt-0 sm:text-left">
                                     <DialogTitle as="h3"
-                                                 class="text-lg font-medium leading-6 text-gray-900">Add group</DialogTitle>
+                                                 class="text-lg font-medium leading-6 text-gray-900">Add Institution</DialogTitle>
                                 </div>
                                 <div>
                                     <label for="group"

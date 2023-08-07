@@ -57,9 +57,7 @@ service cloud.firestore {
                     || isOneOfRoles(request.resource, ["admin", "editor"])
                 )
 
-            allow read: if "public" in resource.data && resource.data.public == true
-                || (
-                    isAdmin()
+            allow read: if isAdmin()
                     // user is the creator of the resource
                     // commented ouy because he shouldn't be able to read it if he is not in the group
                     // || request.auth.uid == resource.data.created_by
@@ -69,7 +67,6 @@ service cloud.firestore {
 
                     // has any group privileges (admin, editor or guest)
                     || isOneOfRoles(resource, ["admin", "editor", "guest"])
-                )
 
             allow update: if (isAdmin()
                 // User is group editor and the user is the creator of the resource
@@ -80,10 +77,10 @@ service cloud.firestore {
                 // Or user is group admin
                 || isOneOfRoles(resource, ["admin"])
             )
-
-                // No one can change the created by value directly - need to use the change created by functions
+                // No one can change the created_by and created_by_name values directly - need to use the change created by functions
                 // created_by is in fact owner
                 && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['created_by'])
+                && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['created_by_name'])
                 // No one can change the group value directly - need to use the change group functions
                 && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['group'])
                 // No one can change the status value directly - need to use the change status functions

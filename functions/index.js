@@ -787,6 +787,39 @@ exports.updateBestPracticesCount = functions.firestore.document("bestPractices/{
     await util.registryCollection.doc(projectId).update({ bestPracticesCount });
 });
 
+async function updatedCreatedByName(createdBy, projectId, snapshot) {
+    try {
+        // get the user's name from the auth system
+        const { displayName } = await admin.auth().getUser(createdBy);
+        functions.logger.info("Updating created_by_name for project", projectId, "to", displayName);
+
+        // update the created_by_name field in the project document
+        if (displayName) {
+            await util.registryCollection.doc(snapshot.id).update({ created_by_name: displayName });
+        } else {
+            functions.logger.warn("No displayName found for user:", createdBy);
+        }
+    } catch (error) {
+        functions.logger.error("Error getting user:", createdBy, error);
+    }
+}
+
+exports.addProjectCreatedByName = functions.firestore.document("registry/{projectId}").onCreate(async (snapshot, context) => {
+    const { created_by: createdBy } = snapshot.data();
+    await updatedCreatedByName(createdBy, context.params.projectId, snapshot);
+});
+
+exports.updateProjectCreatedByName = functions.firestore.document("registry/{projectId}").onUpdate(async (change, context) => {
+    const { created_by: oldCreatedBy } = change.before.data();
+    const { created_by: newCreatedBy } = change.after.data();
+
+    if (oldCreatedBy === newCreatedBy) {
+        functions.logger.info("created_by didn't change, not updating created_by_name");
+    } else {
+        await updatedCreatedByName(newCreatedBy, context.params.projectId, change.after);
+    }
+});
+
 
 /************************************************
  *

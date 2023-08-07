@@ -336,7 +336,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
 
                                     <div class="mt-4 text-lg font-semibold"
                                          v-if="!Object.keys(userToEdit.privileges || []).length">
-                                        No group assigned
+                                        No institution assigned
                                     </div>
                                     <div class="mt-2">
                                         <div class="px-6 lg:px-8">
@@ -347,7 +347,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                                             <thead>
                                                                 <tr>
                                                                     <th scope="col"
-                                                                        class="whitespace-nowrap py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Group</th>
+                                                                        class="whitespace-nowrap py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Institution</th>
                                                                     <th scope="col"
                                                                         class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Level</th>
                                                                     <th scope="col"
@@ -376,10 +376,10 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                 </div>
 
                                 <div class="mt-6 py-3 px-4 bg-gray-100 border border-1 border-gray-300 rounded-lg">
-                                    <h1 class="text-lg font-semibold">Add group:</h1>
+                                    <h1 class="text-lg font-semibold">Assign to institution</h1>
                                     <div class="mt-3">
                                         <label for="group"
-                                               class="block text-sm font-medium text-gray-700">Group</label>
+                                               class="block text-sm font-medium text-gray-700">Institution</label>
                                         <select v-model="selectedGroup"
                                                 id="group"
                                                 name="group"
@@ -501,7 +501,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
 
                                     <div class="mt-6 text-lg font-semibold"
                                          v-if="!Object.keys(userToAdd.privileges || []).length">
-                                        No group assigned
+                                        No institution assigned
                                     </div>
                                     <div class="mt-2">
                                         <div class="px-6 lg:px-8">
@@ -512,7 +512,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                                             <thead>
                                                                 <tr>
                                                                     <th scope="col"
-                                                                        class="whitespace-nowrap py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Group</th>
+                                                                        class="whitespace-nowrap py-3.5 pl-6 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Institution</th>
                                                                     <th scope="col"
                                                                         class="whitespace-nowrap px-2 py-3.5 text-left text-sm font-semibold text-gray-900">Level</th>
                                                                     <th scope="col"
@@ -541,10 +541,10 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                 </div>
 
                                 <div class="mt-6 py-3 px-4 bg-gray-100 border border-1 border-gray-300 rounded-lg">
-                                    <h1 class="text-lg font-semibold">Add group:</h1>
+                                    <h1 class="text-lg font-semibold">Assign to institution</h1>
                                     <div class="mt-3">
                                         <label for="group"
-                                               class="block text-sm font-medium text-gray-700">Group</label>
+                                               class="block text-sm font-medium text-gray-700">Institution</label>
                                         <select v-model="selectedGroup"
                                                 id="group"
                                                 name="group"
