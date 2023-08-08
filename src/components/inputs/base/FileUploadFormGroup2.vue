@@ -141,7 +141,8 @@ async function deleteFromStorage(name: string, path: string) {
             />
         </div>
 
-        <div v-if="uploadedFiles.length" class="overflow-hidden bg-white shadow sm:rounded-md text-sm border">
+        <div v-if="uploadedFiles.length"
+             class="overflow-hidden bg-white shadow sm:rounded-md text-sm border max-h-36 overflow-y-auto">
             <ul role="list" class="divide-y divide-gray-200">
                 <li v-for="file in uploadedFiles"
                     :key="file.name"
