@@ -123,14 +123,13 @@ function deleteProjectAreas() {
                  class="text-sm bg-ferm-gray px-6 py-4 my-6 rounded-md">
                 <p class="font-semibold">
                     Please find the requirements of geospatial data in <a class="text-ferm-blue-dark-800 underline"
-                                                                          href="/gef/Requirements of geospatial data.pdf"
-                                                                          target="_blank">this link</a>
+                       href="/gef/Requirements of geospatial data.pdf"
+                       target="_blank">this link</a>
                 </p>
                 <p class="mt-4 font-semibold">
-                    Please find the structure of the feature table to be uploaded in the platform in <a
-                    class="text-ferm-blue-dark-800 underline"
-                    href="/gef/Sample feature table GEF Projects.csv"
-                    target="_blank">this link</a>
+                    Please find the structure of the feature table to be uploaded in the platform in <a class="text-ferm-blue-dark-800 underline"
+                       href="/gef/Sample feature table GEF Projects.csv"
+                       target="_blank">this link</a>
                 </p>
 
                 <p @click="() => showDisclaimer = true"
@@ -159,28 +158,33 @@ function deleteProjectAreas() {
                     </div>
                 </AlertModal>
             </div>
-            <FileUploadInputGroup2 v-if="store.project.reportingLine === 'GEF'"
-                                   label="Please upload Restoration Plans/Management Plans"
-                                   :folder="store.id!"
-                                   :edit="edit">
-                <template v-slot:info>
-                    <p>Please upload the Restoration Plans/ Management plans with the description of restoration / land
-                        management activities and baseline information of the territory, including pictures.</p>
-                </template>
-            </FileUploadInputGroup2>
-            <FormGroup
-                :label="store.project.reportingLine === 'GEF' ? 'Total area of land achieved (tabular format)' : 'Total area under restoration (ha)'">
+
+            <template v-if="store.project.reportingLine === 'GEF'">
+                <FileUploadInputGroup2 label="Please upload Restoration Plans/Management Plans"
+                                       :folder="store.id!"
+                                       :edit="edit">
+                    <template v-slot:info>
+                        <p>Please upload the Restoration Plans/ Management plans with the description of restoration / land
+                            management activities and baseline information of the territory, including pictures.</p>
+                    </template>
+                </FileUploadInputGroup2>
+
+                <FormGroup label="Total area of land achieved (tabular format)">
+                    <NumberInput :edit="edit"
+                                 v-model="store.project.project.areaAchieved" />
+                    <template v-slot:info>
+                        <p>Please include the land (in ha) reported in the Restoration Plans/Management Plans (tabular data).</p>
+                    </template>
+                </FormGroup>
+                <LabelFormGroup label="Total area of land achieved (spatially explicit format)"
+                                :value="store.polygonsArea().toFixed(2)" />
+            </template>
+            <FormGroup v-else
+                       label="Total area under restoration (ha)">
                 <NumberInput :edit="edit"
                              v-model="store.project.project.areaUnderRestoration" />
-                <template v-slot:info
-                          v-if="store.project.reportingLine === 'GEF'">
-                    <p>Please include the land (in ha) reported in the Restoration Plans/Management Plans (tabular
-                        data).</p>
-                </template>
             </FormGroup>
-            <LabelFormGroup v-if="store.project.reportingLine === 'GEF'"
-                            label="Total area of land achieved (spatially explicit format)"
-                            :value="store.polygonsArea().toFixed(2)" />
+
             <div class="py-6">
                 <MultiInput :edit="edit"
                             :numbering="(n, v) => numbering(n, v)"
@@ -194,9 +198,11 @@ function deleteProjectAreas() {
                 <!--                    Delete all areas-->
                 <!--                </button>-->
                 <button v-if="store.projectAreas.length > 0 && edit"
-                        @click="() => { showDeleteAreasConfirm = true }" type="button"
+                        @click="() => { showDeleteAreasConfirm = true }"
+                        type="button"
                         class="mt-6 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
-                    <TrashIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
+                    <TrashIcon class="-ml-0.5 h-5 w-5"
+                               aria-hidden="true" />
                     Delete all areas
                 </button>
 
