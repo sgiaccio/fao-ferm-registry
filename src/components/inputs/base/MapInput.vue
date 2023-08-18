@@ -4,8 +4,10 @@ import { ref, onMounted, watch, computed } from 'vue';
 import View from 'ol/View';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
+// import OSM from 'ol/source/OSM';
+import BingMaps from 'ol/source/BingMaps.js';
 import { Draw, Modify, Snap } from 'ol/interaction';
+import { Style, Fill, Stroke } from 'ol/style.js';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { GeoJSON } from 'ol/format';
@@ -46,7 +48,18 @@ const projectStore = useProjectStore();
 const mapRoot = ref(null);
 
 const vectorSource = new VectorSource();
-const vectorLayer = new VectorLayer({ source: vectorSource });
+const vectorLayer = new VectorLayer({
+    source: vectorSource,
+    style: new Style({
+        fill: new Fill({
+            color: 'rgba(0,0,0,0)' // Transparent fill
+        }),
+        stroke: new Stroke({
+            color: '#ffcc33',
+            width: 2
+        })
+    })
+});
 
 function getGeoJson() {
     const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
@@ -108,7 +121,18 @@ onMounted(async () => {
     m = new Map({
         target: mapRoot.value,
         layers: [
-            new TileLayer({ source: new OSM() }),
+            // new TileLayer({ source: new OSM() }),
+            new TileLayer({
+                visible: true,
+                preload: Infinity,
+                source: new BingMaps({
+                    key: import.meta.env.VITE_BING_KEY,
+                    imagerySet: 'AerialWithLabelsOnDemand'
+                    // use maxZoom 19 to see stretched tiles instead of the BingMaps
+                    // "no photos at this zoom level" tiles
+                    // maxZoom: 19
+                })
+            }),
             vectorLayer
         ],
         view: new View({
@@ -157,8 +181,8 @@ function fetchPolygonArea() {
                 'Authorization': `Bearer ${authStore.user.accessToken}`
             }
         }).then(response => response.json()).then(area => {
-            emit('update:modelValue', { ...props.modelValue, area: parseFloat((1e-4 * area).toFixed(2)) });
-        });
+        emit('update:modelValue', { ...props.modelValue, area: parseFloat((1e-4 * area)) });
+    });
 }
 </script>
 
