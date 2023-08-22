@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import baseProps from './formGroupProps';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import AlertModal from '@/views/AlertModal.vue';
 
 import { QuestionMarkCircleIcon } from '@heroicons/vue/24/outline';
@@ -11,6 +11,25 @@ const props = defineProps(baseProps);
 const emit = defineEmits(['focusout']);
 
 const showAlertModal = ref(false);
+
+const labelWithoutLastWord = computed(() => {
+    if (!props.label) {
+        return '';
+    }
+
+    const words = props.label.split(' ');
+    words.pop();
+    return words.join(' ');
+});
+
+const lastWord = computed(() => {
+    if (!props.label) {
+        return '';
+    }
+
+    const words = props.label.split(' ');
+    return words[words.length - 1];
+});
 </script>
 
 <template>
@@ -27,25 +46,25 @@ const showAlertModal = ref(false);
     <fieldset @focusout="emit('focusout')">
         <div class="sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start py-5 sm:content-center">
             <legend class="block text-sm font-bold text-gray-700 dark:text-zinc-300 sm:mt-px">
-                {{ label }}
-                <template v-if="$slots.info">
-                    <QuestionMarkCircleIcon @click="() => showAlertModal = true"
-                                            class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
-                </template>
+                {{ labelWithoutLastWord }}
+                <span class="whitespace-nowrap">
+                    {{ lastWord }}
+                    <template v-if="$slots.info">
+                        <QuestionMarkCircleIcon @click="() => showAlertModal = true"
+                                                class="w-6 h-6 inline-block text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                    </template>
+                </span>
             </legend>
             <div class="sm:col-span-3">
-                <p
-                    v-if="description"
-                    class="font-semibold mb-3 text-sm text-gray-500 dark:text-gray-400">
+                <p v-if="description"
+                   class="font-semibold mb-3 text-sm text-gray-500 dark:text-gray-400">
                     {{ description }}
                 </p>
-                <p
-                    v-else-if="dangerousHtmlDescription"
-                    v-html="dangerousHtmlDescription"
-                    class="font-semibold mb-3 text-sm text-gray-500 dark:text-gray-400" />
+                <p v-else-if="dangerousHtmlDescription"
+                   v-html="dangerousHtmlDescription"
+                   class="font-semibold mb-3 text-sm text-gray-500 dark:text-gray-400" />
                 <slot></slot>
             </div>
         </div>
     </fieldset>
-
 </template>

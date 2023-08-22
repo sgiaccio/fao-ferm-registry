@@ -8,10 +8,12 @@ const props = withDefaults(defineProps<{
     options?: RecursiveMenu,
     level?: number,
     expandLevel?: number,
+    showSelection?: boolean,
     edit?: boolean
 }>(), {
     level: 0,
     expandLevel: 0,
+    showSelection: true,
     edit: true
 });
 
@@ -49,8 +51,8 @@ function bubble(val: MenuValue) {
 </script>
 
 <template>
-    <!-- <div>{{modelValue ? flattenedOptions[modelValue] : 'None selected'}}</div> -->
-    <div v-if="!level"
+    <div v-if="!level && showSelection || !edit">{{modelValue ? flattenedOptions[modelValue] : 'None selected'}}</div>
+    <!-- <div v-if="!level && showSelection || !edit"
          class="border border-slate-400 rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
         <div class="ml-2 text-gray-600 dark:text-gray-400"
              v-if="!modelValue">
@@ -63,7 +65,7 @@ function bubble(val: MenuValue) {
                 {{ flattenedOptions[modelValue] }}
             </span>
         </div>
-    </div>
+    </div> -->
     <template v-if="edit">
         <ul v-for="option, i in options"
             :class="level ? 'ml-10' : ''">
@@ -95,30 +97,16 @@ function bubble(val: MenuValue) {
                 </div>
                 <div v-else
                      class="relative flex items-start"> <!-- was v-else-if="treeData.value", why? -->
-                    <!-- <div class="flex items-start"> -->
-                    <!-- <input :id="`${uid}_${option.value}`"
-                               @change="check(($event.target as HTMLInputElement).checked, option.value!)"
-                               aria-describedby="comments-description"
-                               name="`${uid}_${treeData?.value}`"
-                               type="checkbox"
-                               :checked="(modelValue || []).includes(option.value)"
-                               class="cursor-pointer h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"> -->
                     <div class="flex items-center">
                         <input :id="`${uid}_${option.value}`"
                                :name="uid"
                                type="radio"
                                @change="check(($event.target as HTMLInputElement).checked, option.value!)"
-                               :checked="(modelValue === option.value)"
+                               :checked="('' + modelValue === '' + option.value)"
                                class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                         <label :for="`${uid}_${option.value}`"
                                class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ option.label }}</label>
                     </div>
-
-                    <!-- </div> -->
-                    <!-- <div class="ml-3 text-sm">
-                        <label :for="`${uid}_${option.value}`"
-                               class="font-normal dark:text-zinc-300 cursor-pointer">{{ option.label }}</label>
-                    </div> -->
                 </div>
             </li>
             <div v-show="isOpen[i]">

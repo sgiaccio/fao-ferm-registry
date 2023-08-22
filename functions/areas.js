@@ -2,7 +2,7 @@ const functions = require("firebase-functions");
 const { Pool } = require("pg");
 const axios = require("axios");
 
-const { db, isProjectPublic, isSuperAdmin, isGroupAdmin, isGroupEditor } = require("./util");
+const { db  } = require("./util");
 const { defineString } = require("firebase-functions/params");
 
 

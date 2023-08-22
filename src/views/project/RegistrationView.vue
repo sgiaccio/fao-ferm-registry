@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getStorage, ref, uploadBytes, listAll, deleteObject } from 'firebase/storage';
-import * as vue from 'vue';
 
+import * as vue from 'vue';
 
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
@@ -18,6 +18,8 @@ import MultiInputFormGroup from '@/components/inputs/MultiInputFormGroup.vue';
 import Organization from '@/components/inputs/organizations/Organization.vue';
 import PointOfContact from '@/components/inputs/pointsOfContact/PointOfContact.vue';
 import SelectFormGroup from '@/components/inputs/base/SelectFormGroup.vue';
+import RecursiveRadio from '@/components/inputs/base/RecursiveRadio.vue';
+import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
 
 // import { gefCycles, objectives, gefFocalAreas } from "@/components/project/menus";
 
@@ -112,6 +114,60 @@ vue.watch(() => store.id as string, async id => {
     }
 });
 
+const gefPrograms = vue.ref<any>(null);
+
+import { watch } from 'vue';
+
+// Handle deletion based on gefType
+function handleDeletionByGefType(gefType: string | null) {
+    if (gefType === 'program') {
+        delete store.project.project.gefFocalAreas;
+    } else if (gefType === 'project') {
+        delete store.project.project.gefProgram;
+    } else {
+        delete store.project.project.gefProgram;
+        delete store.project.project.gefFocalAreas;
+    }
+}
+
+// Set gefPrograms based on gefCycle
+function setGefPrograms(gefCycle: number | null) {
+    // keep compatibility with old data where gefCycle was a string
+    const cycle = gefCycle ? +gefCycle : null;
+    delete store.project.project.gefProgram;
+    switch (cycle) {
+        case 6:
+            gefPrograms.value = menus.gef6Programs;
+            break;
+        case 7:
+            gefPrograms.value = menus.gef7Programs;
+            break;
+        case 8:
+            gefPrograms.value = menus.gef8Programs;
+            break;
+        default:
+            gefPrograms.value = null;
+            break;
+    }
+}
+
+// Watch gefType
+watch(() => store.project.project.gefInvestmentType, gefType => {
+    handleDeletionByGefType(gefType);
+    if (gefType === 'program') {
+        setGefPrograms(store.project.project.gefCycle);
+    } else {
+        setGefPrograms(null);
+    }
+}, { immediate: true });
+
+// Watch gefCycle
+watch(() => store.project.project.gefCycle, gefCycle => {
+    if (store.project.project.gefInvestmentType === 'program') {
+        setGefPrograms(gefCycle);
+    }
+}, { immediate: true });
+
 function generateYearOptions(start: number, end: number): { value: number; label: string }[] {
     const length = end - start + 1;
     return Array.from({ length }, (_, i) => {
@@ -145,14 +201,30 @@ const years = generateYearOptions(2000, 2050);
                            v-model="store.project.project.gefFaoSymbol"
                            label="GEF/FAO Symbol" />
 
-            <SelectFormGroup :edit="edit"
-                             v-model="store.project.project.gefCycle"
-                             label="GEF cycle"
-                             :options="menus.gefCycles" />
-            <MultiSelectFormGroup :edit="edit"
+            <FormGroup label="GEF investment type">
+                <RecursiveRadio v-model="store.project.project.gefInvestmentType"
+                                :options="menus.gefInvestmentTypes"
+                                :showSelection="false"
+                                :edit="edit" />
+            </FormGroup>
+            <FormGroup label="GEF cycle">
+                <RecursiveRadio v-model="store.project.project.gefCycle"
+                                :options="menus.gefCycles"
+                                :showSelection="false"
+                                :edit="edit" />
+            </FormGroup>
+            <MultiSelectFormGroup v-if="store.project.project.gefInvestmentType === 'project'"
+                                  :edit="edit"
                                   v-model="store.project.project.gefFocalAreas"
                                   label="GEF standalone projects (focal areas)"
                                   :options="menus.gefFocalAreas" />
+            <RecursiveRadioFormGroup v-if="store.project.project.gefInvestmentType === 'program'"
+                                     label="GEF programmes"
+                                     v-model="store.project.project.gefProgram"
+                                     :options="gefPrograms"
+                                     :showSelection="false"
+                                     :edit="edit" />
+            <!-- <pre>{{ JSON.stringify(gefPrograms, null, 2) }}</pre> -->
         </template>
 
         <TextareaFormGroup :edit="edit"
@@ -230,8 +302,7 @@ const years = generateYearOptions(2000, 2050);
                          label="Ending year"
                          :options="years" />
 
-        <FormGroup
-            :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
+        <FormGroup :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
             <div v-if="edit">
                 <div v-if="!fileName">
                     <label for="file"
@@ -276,8 +347,7 @@ const years = generateYearOptions(2000, 2050);
                 </div>
 
                 <div class="dark:text-white"
-                     v-else>Initiative file: {{ fileName }} <span
-                    @click="deleteFile(store.id, fileName!)">[delete]</span></div>
+                     v-else>Initiative file: {{ fileName }} <span @click="deleteFile(store.id, fileName!)">[delete]</span></div>
             </div>
             <template v-else>
                 <div v-if="selectedFile">Initiative file: {{ fileName }}</div>

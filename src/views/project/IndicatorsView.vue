@@ -84,7 +84,7 @@ function applyToAll() {
                  v-if="store.project.reportingLine === 'GEF'">
                 <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">GEF indicators</h1>
                 <LabelFormGroup label="Total area under restoration (achieved area spatially explicit)"
-                                :value="store.polygonsArea()" />
+                                :value="store.polygonsArea().toFixed(2)" />
 
                 <!-- Area by indicator -->
                 <div v-if="store.project.reportingLine === 'GEF'"
