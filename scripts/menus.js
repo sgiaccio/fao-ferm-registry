@@ -1384,4 +1384,28 @@ exports.gefFocalAreas = [
     { value: 6, label: "Multifocal" }
 ];
 
-exports.boolean = [{ label: "No", value: 0 }, { label: "Yes", value: 1 }];
+exports.gefInvestmentTypes = [
+    { value: "project", label: "Project" },
+    { value: "program", label: "Program" }
+];
+
+exports.gef6Programs = [
+    { value: "6.1", label: "The Restoration Initiative" }
+];
+
+exports.gef7Programs = [
+    { value: "7.1", label: "Food Systems, Land Use and Restoration" },
+    { value: "7.2", label: "Drylands Sustainable Landscapes" },
+];
+
+exports.gef8Programs = [
+    { value: 8.1, label: "Amazon, Congo, and Critical Forest Biomes" },
+    { value: 8.2, label: "Blue and Green Islands" },
+    { value: 8.3, label: "Ecosystem Restoration" },
+    { value: 8.4, label: "Food Systems" }
+];
+
+exports.boolean = [
+    { label: "No", value: 0 },
+    { label: "Yes", value: 1 }
+];

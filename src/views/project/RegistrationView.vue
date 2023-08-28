@@ -116,7 +116,7 @@ vue.watch(() => store.id as string, async id => {
 
 const gefPrograms = vue.ref<any>(null);
 
-import { watch } from 'vue';
+import { computed, watch } from 'vue';
 
 // Handle deletion based on gefType
 function handleDeletionByGefType(gefType: string | null) {
@@ -151,20 +151,23 @@ function setGefPrograms(gefCycle: number | null) {
     }
 }
 
+const gefInvestmentType = computed(() => store.project?.project?.gefInvestmentType);
+const gefCycle = computed(() => store.project?.project?.gefCycle);
+
 // Watch gefType
-watch(() => store.project.project.gefInvestmentType, gefType => {
-    handleDeletionByGefType(gefType);
-    if (gefType === 'program') {
-        setGefPrograms(store.project.project.gefCycle);
+watch(gefInvestmentType, type => {
+    handleDeletionByGefType(type);
+    if (type === 'program') {
+        setGefPrograms(gefCycle.value);
     } else {
         setGefPrograms(null);
     }
 }, { immediate: true });
 
 // Watch gefCycle
-watch(() => store.project.project.gefCycle, gefCycle => {
-    if (store.project.project.gefInvestmentType === 'program') {
-        setGefPrograms(gefCycle);
+watch(gefCycle, cycle => {
+    if (gefInvestmentType.value === 'program') {
+        setGefPrograms(cycle);
     }
 }, { immediate: true });
 

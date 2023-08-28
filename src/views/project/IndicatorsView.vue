@@ -4,6 +4,8 @@ import { computed } from 'vue';
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
 
+import { getRecursiveMenuLabel } from '@/lib/util';
+
 import TabTemplate from '../TabTemplate.vue';
 
 // import { indicators, gefIndicators } from '@/components/project/menus';
@@ -21,28 +23,37 @@ withDefaults(defineProps<{
     edit: true
 });
 
-// Area by GEF indicator
+// Define a computed property to calculate area by indicator
 const areaByIndicator = computed(() => {
-    return Object.entries(store.projectAreas.reduce((acc: { [indicator: string]: number }, area) => {
-        const { gefIndicator, area: areaValue } = Object.values(area)[0] as any;
-        return gefIndicator ? {
-            ...acc,
-            [gefIndicator]: (acc[gefIndicator] || 0) + (+areaValue || 0)
-        } : acc;
-    }, {})).sort((a, b) => a[0] > b[0] ? 1 : -1);
+    // Use the reduce function to accumulate areas by their respective indicators
+    return Object.entries(
+        store.projectAreas.reduce((acc: { [indicator: string]: number }, area) => {
+            // Destructure the first value of the area object to get the gefIndicator and areaValue
+            const { gefIndicator, area: areaValue } = Object.values(area)[0] as any;
+
+            // If the gefIndicator exists, accumulate the areaValue for that indicator
+            // Otherwise, return the accumulator as is
+            return gefIndicator ? {
+                ...acc,
+                [gefIndicator]: (acc[gefIndicator] || 0) + (+areaValue || 0)
+            } : acc;
+        }, {})
+    )
+    // Sort the resulting entries by indicator name in ascending order
+    .sort((a, b) => a[0] > b[0] ? 1 : -1);
 });
 
-function getGefIndicatorLabel(indicator: string | number, indicators = menus.gefIndicators): string {
-    const label = indicators.find(i => i.value === indicator)?.label;
-    if (label) return label;
-    for (const i of indicators) {
-        if (i.items) {
-            const label = getGefIndicatorLabel(indicator, i.items);
-            if (label) return label;
-        }
-    }
-    return '';
-}
+// function getGefIndicatorLabel(indicator: string | number, indicators = menus.gefIndicators): string {
+//     const label = indicators.find(i => i.value === indicator)?.label;
+//     if (label) return label;
+//     for (const i of indicators) {
+//         if (i.items) {
+//             const label = getGefIndicatorLabel(indicator, i.items);
+//             if (label) return label;
+//         }
+//     }
+//     return '';
+// }
 
 function applyToAll() {
     if (!confirm('Are you sure you want to apply this indicator to all areas? Your current selections will be overwritten.')) return;
@@ -91,11 +102,11 @@ function applyToAll() {
                      class="mb-6">
                     <!-- <h3 class="text-xl font-semibold leading-6 text-gray-900">Area by indicator</h3> -->
                     <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                        <div v-for="[indicator, area] in areaByIndicator"
+                        <div v-for="[indicator, area] in store.areaByGefIndicator()"
                              :key="indicator"
                              class="overflow-hidden rounded-lg bg-gray-100 px-4 py-5 shadow sm:p-6 flex flex-col">
                             <dt class="flex-grow text-sm font-medium text-gray-500">
-                                {{ getGefIndicatorLabel(indicator) }}
+                                {{ getRecursiveMenuLabel(indicator, menus.gefIndicators) }}
                             </dt>
                             <dd class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">
                                 {{ area.toFixed(2) }} Ha

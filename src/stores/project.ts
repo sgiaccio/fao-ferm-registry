@@ -160,7 +160,7 @@ export const useProjectStore = defineStore({
             }
             // fetch the project again
             const docRef = doc(db, 'registry', projectId);
-            
+
             // replace the project in the list
             this.projects[index] = { id: projectId, data: snakeToCamel((await getDoc(docRef)).data()) };
 
@@ -253,6 +253,27 @@ export const useProjectStore = defineStore({
         //         p.nBestPractices = querySnapshot2.size;
         //     }));
         // },
+        areaByGefIndicator() {
+            // Use the reduce function to accumulate areas by their respective indicators
+            return Object.entries(
+                this.projectAreas.reduce((acc: { [indicator: string]: number }, area) => {
+                    // Destructure the first value of the area object to get the gefIndicator and areaValue
+                    const { gefIndicator, area: areaValue } = Object.values(area)[0] as any;
+
+                    // If the gefIndicator exists, accumulate the areaValue for that indicator
+                    // Otherwise, return the accumulator as is
+                    return gefIndicator ? {
+                        ...acc,
+                        [gefIndicator]: (acc[gefIndicator] || 0) + (+areaValue || 0)
+                    } : acc;
+                }, {}))
+                // Sort the resulting entries by indicator name in ascending order
+                .sort((a, b) => {
+                    if (a[0] > b[0]) return 1;
+                    if (a[0] < b[0]) return -1;
+                    return 0;
+                });
+        },
         createEmptyProject(groupId: string) {
             const projectRef = doc(projectsCollection);
             this.id = projectRef.id
@@ -359,7 +380,7 @@ export const useProjectStore = defineStore({
             try {
                 getValue({})
                 const areas = this.projectAreas
-                    .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
+                    // .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
                     .map((a: any) => +((getValue(a) as { area: number }).area || 0));
                 return areas.reduce((a: number, b: number) => a + b, 0);
             } catch (e) {

@@ -21,8 +21,8 @@ const tabs = [
     { name: 'Area', path: 'area' },
     { name: 'Ecosystems', path: 'ecosystems' },
     // { name: 'Characteristics', path: 'characteristics' },
-    { name: 'Activities', path: 'activities' },
     { name: 'Indicators', path: 'indicators' },
+    { name: 'Activities', path: 'activities' },
     { name: 'Monitoring & Results', path: 'results' }
 ];
 

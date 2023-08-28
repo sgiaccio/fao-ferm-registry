@@ -1,3 +1,5 @@
+import type { RecursiveMenu } from "@/components/project/menus";
+
 export function fbTimestampToString(ts: any) {
     return ts.toDate().toLocaleDateString('default');
 }
@@ -51,4 +53,36 @@ export function camelToSnake(o: any) {
         }
     }
     return newO;
+}
+
+export function getRecursiveMenuLabel(value: string | number, menu: RecursiveMenu): string {
+    const label = menu.find(i => i.value === value)?.label;
+    if (label) return label;
+    for (const i of menu) {
+        if (i.items) {
+            const label = getRecursiveMenuLabel(value, i.items);
+            if (label) return label;
+        }
+    }
+    return '';
+}
+
+export function formatNumber(n: number, limitPrecision: boolean = false): string {
+    // Check for null, undefined, or non-number values
+    if (n === null || n === undefined || typeof n !== 'number') {
+        console.log('formatNumber: not a valid number', n);
+        return 'n/a';
+    }
+
+    // Determine the number of decimal places based on the value of n
+    let maximumFractionDigits;
+    if (limitPrecision && n >= 100) {
+        maximumFractionDigits = 0;
+    } else if (limitPrecision && n >= 1) {
+        maximumFractionDigits = 1;
+    } else {
+        maximumFractionDigits = 2;
+    }
+
+    return n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: maximumFractionDigits });
 }

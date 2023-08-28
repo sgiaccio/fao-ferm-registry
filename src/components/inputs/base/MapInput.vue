@@ -47,19 +47,18 @@ const projectStore = useProjectStore();
 
 const mapRoot = ref(null);
 
+// const style = new Style({
+//     fill: new Fill({
+//         color: 'rgba(0,0,0,0)' // Transparent fill
+//     }),
+//     stroke: new Stroke({
+//         color: '#ffcc33',
+//         width: 2
+//     })
+// });
+
 const vectorSource = new VectorSource();
-const vectorLayer = new VectorLayer({
-    source: vectorSource,
-    style: new Style({
-        fill: new Fill({
-            color: 'rgba(0,0,0,0)' // Transparent fill
-        }),
-        stroke: new Stroke({
-            color: '#ffcc33',
-            width: 2
-        })
-    })
-});
+const vectorLayer = new VectorLayer({ source: vectorSource });
 
 function getGeoJson() {
     const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
@@ -87,31 +86,31 @@ async function postGeoJson() {
             },
             body: `project_id=${projectStore.id}&geojson=${encodeURIComponent(geoJson)}`
         }).then(response => {
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(text);
-            });
-        }
-        return response.text();
-    }).then(uuids => {
-        const uuidsArr: string[] = JSON.parse(uuids);
-        uploadStatus.value = 'uploaded';
-        emit('update:modelValue', { ...props.modelValue, uuid: uuidsArr[0] });
-        alert(`Area uploaded with UUID ${uuidsArr[0]}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
-    }).catch(_error => {
-        alert('Error uploading the JSON file');
-        uploadStatus.value = 'idle';
-    });
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            }
+            return response.text();
+        }).then(uuids => {
+            const uuidsArr: string[] = JSON.parse(uuids);
+            uploadStatus.value = 'uploaded';
+            emit('update:modelValue', { ...props.modelValue, uuid: uuidsArr[0] });
+            alert(`Area uploaded with UUID ${uuidsArr[0]}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
+        }).catch(_error => {
+            alert('Error uploading the JSON file');
+            uploadStatus.value = 'idle';
+        });
 }
 
 async function fetchGeoJson() {
     return fetch(
         `https://europe-west3-fao-ferm.cloudfunctions.net/get_area_json?area_uuid=${props.modelValue.uuid}&project_id=${projectStore.id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${authStore.user.accessToken}`
-            }
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${authStore.user.accessToken}`
         }
+    }
     ).then(response => response.json());
 }
 
@@ -176,11 +175,11 @@ function fetchPolygonArea() {
     // Calls the get_polygon_area cloud function with area_uuid as argument and returns the area in hectares
     fetch(
         `https://europe-west3-fao-ferm.cloudfunctions.net/get_polygon_area?area_uuid=${props.modelValue.uuid}&project_id=${projectStore.id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${authStore.user.accessToken}`
-            }
-        }).then(response => response.json()).then(area => {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${authStore.user.accessToken}`
+        }
+    }).then(response => response.json()).then(area => {
         emit('update:modelValue', { ...props.modelValue, area: parseFloat((1e-4 * area)) });
     });
 }
@@ -202,8 +201,8 @@ function fetchPolygonArea() {
                         @click="fetchPolygonArea()"
                         :disabled="!areaUploaded"
                         :class="[areaUploaded ? 'hover:bg-gray-50' : 'bg-gray-100 text-gray-500',
-                         'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 ' +
-                          'text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 ml-5']">
+                        'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 ' +
+                        'text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 ml-5']">
                     <CalculatorIcon class="-ml-0.5 h-5 w-5 text-gray-400"
                                     aria-hidden="true" />
                     Calculate area
