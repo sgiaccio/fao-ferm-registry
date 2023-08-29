@@ -53,8 +53,6 @@ export async function getAllUsers() {
 }
 
 export async function getAdminGroupsUsers() {
-    debugger;
-    alert('getAdminGroupsUsers');
     const functions = getFunctions();
     const listAdminGroupsUsers = httpsCallable(functions, 'listAdminGroupsUsers');
     const result = await listAdminGroupsUsers();

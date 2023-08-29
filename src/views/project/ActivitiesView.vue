@@ -74,7 +74,7 @@ function toggleOtherActivitiesInput(i: number) {
 
                     <!-- Only show restoration type and tenure status if not GEF or if GEF3 -->
 
-                    <template v-if="store.project.reportingLine !== 'GEF' || !area[Object.keys(area)[0]].gefIndicator?.startsWith('GEF3')">
+                    <template v-if="store.project.reportingLine !== 'GEF' || area[Object.keys(area)[0]].gefIndicator?.startsWith('GEF3')">
                         <SelectFormGroup :edit="edit"
                                          v-model="area[Object.keys(area)[0]].restorationType"
                                          label="Restoration type"
@@ -84,11 +84,6 @@ function toggleOtherActivitiesInput(i: number) {
                                          label="Tenure status"
                                          :options="menus.tenureStatuses"></SelectFormGroup>
                     </template>
-
-                    <!--p v-if="store.project.reportingLine === 'GEF' && area[Object.keys(area)[0]].gefIndicator?.startsWith('GEF3')"
-                       class="text-gray-500 text-sm mb-2">
-                        Restoration type and Tenure status are not applicable to GEF3 projects anad programmes.
-                    </p-->
 
                     <h1 class="text-2xl dark:text-zinc-300 font-bold mb-2">Activities</h1>
                     <RecursiveMenu :edit="edit"

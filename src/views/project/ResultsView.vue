@@ -58,8 +58,8 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
                                 :labels="chartLabels"
                                 unit="Ha"
                                 :targetValue="getLastTargetArea()" />
-                    <p class="mt-4">Your project has achieved {{ formatNumber(store.polygonsArea() / getLastTargetArea() * 100, true) }}% of your total committed land.</p>
-                    <p class="mt-2">{{ formatNumber(areaForGefIndicator3 / getLastTargetArea() * 100, true) }}% of this land is under restoration (GEF core indicator 3).</p>
+                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has achieved {{ formatNumber(store.polygonsArea() / getLastTargetArea() * 100, true) }}% of your total committed land.</p>
+                    <p class="mt-2 text-center">{{ formatNumber(areaForGefIndicator3 / getLastTargetArea() * 100, true) }}% of this land is under restoration (GEF core indicator 3).</p>
                 </div>
 
                 <div class="shadow-lg rounded border divide-y">

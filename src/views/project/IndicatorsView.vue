@@ -38,7 +38,7 @@ function applyToAll() {
 // Delete restorationType and tenureStatus for GEF3 indicators. This should be done in the store, but will be done here for now.
 watch(() => store.projectAreas, areas => areas.forEach(area => {
     const areaValue = Object.values(area)[0];
-    if (areaValue.gefIndicator?.startsWith('GEF3')) {
+    if (!areaValue.gefIndicator?.startsWith('GEF3')) {
         delete areaValue.restorationType;
         delete areaValue.tenureStatus;
     }
