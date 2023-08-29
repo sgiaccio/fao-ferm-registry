@@ -37,16 +37,6 @@ async function print() {
 
 <template>
     <div class="w-full pb-8 flex gap-x-6">
-        <div v-if="store.loaded && store.canEdit()"
-             class="shrink">
-            <button @click="edit"
-                    type="button"
-                    class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500">
-                <PencilSquareIcon class="-ml-0.5 h-5 w-5"
-                                  aria-hidden="true" />
-                Edit
-            </button>
-        </div>
         <div class="shrink">
             <button @click="previous"
                     :disabled="first"

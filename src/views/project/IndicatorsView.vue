@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { watch } from 'vue';
 
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
@@ -23,38 +23,6 @@ withDefaults(defineProps<{
     edit: true
 });
 
-// Define a computed property to calculate area by indicator
-const areaByIndicator = computed(() => {
-    // Use the reduce function to accumulate areas by their respective indicators
-    return Object.entries(
-        store.projectAreas.reduce((acc: { [indicator: string]: number }, area) => {
-            // Destructure the first value of the area object to get the gefIndicator and areaValue
-            const { gefIndicator, area: areaValue } = Object.values(area)[0] as any;
-
-            // If the gefIndicator exists, accumulate the areaValue for that indicator
-            // Otherwise, return the accumulator as is
-            return gefIndicator ? {
-                ...acc,
-                [gefIndicator]: (acc[gefIndicator] || 0) + (+areaValue || 0)
-            } : acc;
-        }, {})
-    )
-    // Sort the resulting entries by indicator name in ascending order
-    .sort((a, b) => a[0] > b[0] ? 1 : -1);
-});
-
-// function getGefIndicatorLabel(indicator: string | number, indicators = menus.gefIndicators): string {
-//     const label = indicators.find(i => i.value === indicator)?.label;
-//     if (label) return label;
-//     for (const i of indicators) {
-//         if (i.items) {
-//             const label = getGefIndicatorLabel(indicator, i.items);
-//             if (label) return label;
-//         }
-//     }
-//     return '';
-// }
-
 function applyToAll() {
     if (!confirm('Are you sure you want to apply this indicator to all areas? Your current selections will be overwritten.')) return;
 
@@ -66,6 +34,15 @@ function applyToAll() {
         }
     });
 }
+
+// Delete restorationType and tenureStatus for GEF3 indicators. This should be done in the store, but will be done here for now.
+watch(() => store.projectAreas, areas => areas.forEach(area => {
+    const areaValue = Object.values(area)[0];
+    if (areaValue.gefIndicator?.startsWith('GEF3')) {
+        delete areaValue.restorationType;
+        delete areaValue.tenureStatus;
+    }
+}), { deep: true });
 </script>
 
 <template>
@@ -94,8 +71,8 @@ function applyToAll() {
             <div class="pt-8"
                  v-if="store.project.reportingLine === 'GEF'">
                 <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">GEF indicators</h1>
-                <LabelFormGroup label="Total area under restoration (achieved area spatially explicit)"
-                                :value="store.polygonsArea().toFixed(2)" />
+                <LabelFormGroup label="Total area of land achieved (spatially explicit format)"
+                                :value="`${store.polygonsArea().toFixed(2)} Ha`" />
 
                 <!-- Area by indicator -->
                 <div v-if="store.project.reportingLine === 'GEF'"
@@ -122,8 +99,8 @@ function applyToAll() {
                         <div class="flex flex-row my-3">
                             <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2 flex-grow">
                                 Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
-                                                      v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
-                                }}</span>
+                                      v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
+                                      }}</span>
                             </div>
                             <div v-if="edit">
                                 <button v-if="i === 0 && store.projectAreas.length > 1"
@@ -137,10 +114,6 @@ function applyToAll() {
                         <RecursiveRadio v-model="area[Object.keys(area)[0]].gefIndicator"
                                         :options="menus.gefIndicators"
                                         :edit="edit" />
-                        <!-- <TreeItem :edit="edit"
-                                  v-model="area[Object.keys(area)[0]].gefIndicators"
-                                  :treeData="gefIndicators"
-                                  :expandLevel="0" /> -->
                     </div>
                 </div>
                 <div v-else-if="edit"

@@ -29,7 +29,6 @@ function handleTooltip(path: Selection<SVGElementTagNameMap[keyof SVGElementTagN
     setTimeout(() => {
         function createTooltipHandler(value: number, label: string) {
             return function(event: MouseEvent) {
-                console.log('Mouseover triggered');  // Debugging log
                 select(tooltip.value)
                     .style('opacity', 1)
                     .style('left', (event.pageX + 15) + 'px')
@@ -40,7 +39,6 @@ function handleTooltip(path: Selection<SVGElementTagNameMap[keyof SVGElementTagN
 
         path.on('mouseover', createTooltipHandler(value, props.labels[index]))
             .on('mouseout', function() {
-                console.log('Mouseout triggered');  // Debugging log
                 select(tooltip.value).style('opacity', 0);
             });
     }, duration);

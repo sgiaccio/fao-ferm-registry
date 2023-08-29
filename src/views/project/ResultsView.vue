@@ -51,40 +51,59 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
                 Under development
             </div>
             <div v-else-if="chartValues.length > 0 && getLastTargetArea()"
-                 class="flex flex-col gap-6 pt-10 pb-20 text-xs">
-                <div class="shadow rounded px-4 py-3 text-base border bg-slate-50">
+                 class="flex flex-col gap-6 pt-10 pb-20">
+                <div class="shadow-lg rounded px-4 py-3 text-base border">
                     <SnailChart v-if="chartValues.length > 0 && getLastTargetArea()"
-                                 :values="chartValues"
-                                 :labels="chartLabels"
-                                 unit="Ha"
-                                 :targetValue="getLastTargetArea()" />
-                    <p class="font-bold mt-4">Your project has achieved {{ formatNumber(store.polygonsArea() / getLastTargetArea() * 100, true) }}% of your total committed land.</p>
-                    <p class="mt-2 font-bold">{{ formatNumber(areaForGefIndicator3 / getLastTargetArea() * 100, true) }}% of this land is under restoration (GEF core indicator 3).</p>
+                                :values="chartValues"
+                                :labels="chartLabels"
+                                unit="Ha"
+                                :targetValue="getLastTargetArea()" />
+                    <p class="mt-4">Your project has achieved {{ formatNumber(store.polygonsArea() / getLastTargetArea() * 100, true) }}% of your total committed land.</p>
+                    <p class="mt-2">{{ formatNumber(areaForGefIndicator3 / getLastTargetArea() * 100, true) }}% of this land is under restoration (GEF core indicator 3).</p>
                 </div>
-                <div class="shadow rounded px-4 py-3 border bg-slate-50">
-                    <div class="grid grid-cols-6 gap-4">
-                        <div class="col-span-2"></div>
-                        <div class="col-span-4 font-bold text-lg">Area of land committed in last project phase</div>
-                        <div class="col-span-2 font-bold">Target area in last project phase</div>
-                        <div class="col-span-2">{{ formatNumber(getLastTargetArea(), true) }}</div>
-                        <div class="col-span-2">Ha</div>
+
+                <div class="shadow-lg rounded border divide-y">
+                    <div class="px-4 py-5 sm:px-6 bg-ferm-green-light/70 rounded-t">
+                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Area of land committed in last project phase</h3>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-green-light/20">
+                        <div class="col-span-2">Target area in last project phase</div>
+                        <div class="col-span-1">{{ formatNumber(getLastTargetArea(), true) }} Ha</div>
                     </div>
                 </div>
-                <div class="shadow rounded px-4 py-3 border bg-slate-50">
-                    <div class="grid grid-cols-6 gap-4">
-                        <div class="col-span-2"></div>
-                        <div class="col-span-4 font-bold text-lg">Total area of land achieved during project implementation</div>
-                        <div class="col-span-2 font-bold">Total area of land achieved (tabular format)</div>
-                        <div class="col-span-2">{{ formatNumber(store.project.project.areaAchieved, true) }}</div>
-                        <div class="col-span-2">Ha</div>
-                        <div class="col-span-2 font-bold">Total area of land achieved (spatially explicit format)</div>
-                        <div class="col-span-2">{{ formatNumber(store.polygonsArea(), true) }}</div>
-                        <div class="col-span-2">Ha</div>
+
+                <div class="shadow-lg rounded border divide-y">
+                    <div class="px-4 py-5 sm:px-6 bg-ferm-mustard-light/70 rounded-t">
+                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved during project implementation</h3>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-mustard-light/20">
+                        <div class="col-span-2">Total area of land achieved (tabular format)</div>
+                        <div class="col-span-1">{{ formatNumber(store.project.project.areaAchieved, true) }} Ha</div>
+                        <div class="col-span-2">Total area of land achieved (spatially explicit format)</div>
+                        <div class="col-span-1">{{ formatNumber(store.polygonsArea(), true) }} Ha</div>
                     </div>
                 </div>
-                <div class="shadow rounded px-4 py-3 border bg-slate-50">
+
+                <div class="shadow-lg rounded border divide-y">
+                    <div class="px-4 py-5 sm:px-6 bg-ferm-blue-light/70 rounded-t">
+                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved per GEF CORE Indicator 1&#8209;5</h3>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-blue-light/20">
+                        <template v-for="[indicator, area] in areaByGefIndicator">
+                            <div class="col-span-2">{{ getRecursiveMenuLabel(indicator, menus.gefIndicators) }}</div>
+                            <div class="col-span-1">{{ formatNumber(area, true) }} Ha</div>
+                        </template>
+                    </div>
+                </div>
+
+
+
+                <!-- <div class="shadow rounded px-4 py-3 border bg-slate-50">
                     <div class="grid grid-cols-6 gap-4">
-                        <div class="col-span-2"><!--Total area of land achieved--></div>
+                        <div class="col-span-2"><!- -Total area of land achieved- -></div>
                         <div class="col-span-4 font-bold text-lg">Total area of land achieved per GEF CORE Indicator 1&#8209;5</div>
                         <template v-for="[indicator, area] in areaByGefIndicator">
                             <div class="col-span-2 font-bold">{{ getRecursiveMenuLabel(indicator, menus.gefIndicators) }}</div>
@@ -92,7 +111,7 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
                             <div class="col-span-2">Ha</div>
                         </template>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div v-else
                  class="flex flex-col gap-6 pt-6 pb-20 font-bold text-xl">

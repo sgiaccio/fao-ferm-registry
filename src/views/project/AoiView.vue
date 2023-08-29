@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { QuestionMarkCircleIcon } from '@heroicons/vue/24/outline';
+import { TrashIcon } from '@heroicons/vue/20/solid';
+
 import { useProjectStore } from '@/stores/project';
 
 import TabTemplate from '../TabTemplate.vue';
@@ -10,15 +13,10 @@ import MapInput from '../../components/inputs/base/MapInput.vue';
 import AdminArea from '../../components/inputs/AdminArea.vue';
 import MapUpload from '../../components/inputs/base/MapUpload.vue';
 import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
-
 import FormGroup from '../../components/inputs/FormGroup.vue';
 import NumberInput from '../../components/inputs/base/NumberInput.vue';
-
 import FileUploadInputGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
-
-import { QuestionMarkCircleIcon } from '@heroicons/vue/24/outline';
-import { TrashIcon } from '@heroicons/vue/20/solid';
 
 import AlertModal from '@/views/AlertModal.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';

@@ -22,7 +22,7 @@ import { db } from '../firebase';
 import { snakeToCamel } from '../lib/util'
 
 import { useAuthStore } from './auth';
-
+import { watchEffect } from 'vue'
 
 const projectsCollection = collection(db, 'registry')
 const areaCollection = collection(db, 'areas')
@@ -311,36 +311,6 @@ export const useProjectStore = defineStore({
 
             await this.fetchProject(projectRef.id);
         },
-        canEdit() {
-            const authStore = useAuthStore();
-
-            // super admins can edit any project
-            // if (authStore.isAdmin) {
-            //     return true;
-            // }
-
-            // if the project is not a draft, it cannot be edited
-            if (!this.project.status || this.project.status !== 'draft') {
-                return false;
-            }
-
-            if (authStore.isAdmin) {
-                return true;
-            }
-
-            // if the user is admin, he can edit any project if it is a draft
-            const level = authStore.privileges[this.project.group];
-            if (level === 'admin') {
-                return true;
-            }
-
-            // if the user is editor, he can edit the project if it is a draft and he is the owner
-            if (level === 'editor' && this.project.created_by === authStore.user.uid) {
-                return true
-            }
-
-            return false;
-        },
         async save() {
             const authStore = useAuthStore();
 
@@ -408,5 +378,17 @@ export const useProjectStore = defineStore({
             await batch.commit();
             // return this.fetchGroupOwnedProjects();
         }
-    }
+    },
 });
+
+// const store = useProjectStore();
+// // Watch for changes in the project and update the projectAreas variable
+// store.$subscribe((mutation, state) => {
+//     console.log('mutation', mutation);
+//     console.log('state', state);
+//     const events = mutation.events;
+//     if (events?.key === 'gefIndicator' && events?.newValue.startsWith('GEF3')) {
+//         delete events?.target.tenureStatus
+//         delete events?.target.restorationType
+//     }
+// });

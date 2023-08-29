@@ -59,8 +59,8 @@ function toggleOtherActivitiesInput(i: number) {
                     <div class="flex flex-row my-3">
                         <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2 flex-grow">
                             Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
-                                                  v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
-                            }}</span>
+                                  v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
+                                  }}</span>
                         </div>
                         <div v-if="edit">
                             <button v-if="i === 0 && store.projectAreas.length > 1"
@@ -71,19 +71,29 @@ function toggleOtherActivitiesInput(i: number) {
                             </button>
                         </div>
                     </div>
-                    <SelectFormGroup :edit="edit"
-                                     v-model="area[Object.keys(area)[0]].restorationType"
-                                     label="Restoration type"
-                                     :options="menus.restorationTypes"></SelectFormGroup>
-                    <SelectFormGroup :edit="edit"
-                                     v-model="area[Object.keys(area)[0]].tenureStatus"
-                                     label="Tenure status"
-                                     :options="menus.tenureStatuses"></SelectFormGroup>
+
+                    <!-- Only show restoration type and tenure status if not GEF or if GEF3 -->
+
+                    <template v-if="store.project.reportingLine !== 'GEF' || !area[Object.keys(area)[0]].gefIndicator?.startsWith('GEF3')">
+                        <SelectFormGroup :edit="edit"
+                                         v-model="area[Object.keys(area)[0]].restorationType"
+                                         label="Restoration type"
+                                         :options="menus.restorationTypes"></SelectFormGroup>
+                        <SelectFormGroup :edit="edit"
+                                         v-model="area[Object.keys(area)[0]].tenureStatus"
+                                         label="Tenure status"
+                                         :options="menus.tenureStatuses"></SelectFormGroup>
+                    </template>
+
+                    <!--p v-if="store.project.reportingLine === 'GEF' && area[Object.keys(area)[0]].gefIndicator?.startsWith('GEF3')"
+                       class="text-gray-500 text-sm mb-2">
+                        Restoration type and Tenure status are not applicable to GEF3 projects anad programmes.
+                    </p-->
+
                     <h1 class="text-2xl dark:text-zinc-300 font-bold mb-2">Activities</h1>
                     <RecursiveMenu :edit="edit"
                                    v-model="area[Object.keys(area)[0]].activities"
                                    :options="menus.activities" />
-
 
                     <div v-if="edit"
                          class="flex flex-row items-center mt-1 w-full">
@@ -102,10 +112,9 @@ function toggleOtherActivitiesInput(i: number) {
                             </div>
                         </div>
                         <div class="flex-grow">
-                            <TextInput
-                                :enabled="otherActivitiesInputEnabled[i]"
-                                :edit="edit"
-                                v-model="area[Object.keys(area)[0]].activitiesOther" />
+                            <TextInput :enabled="otherActivitiesInputEnabled[i]"
+                                       :edit="edit"
+                                       v-model="area[Object.keys(area)[0]].activitiesOther" />
                         </div>
                     </div>
                     <div v-else>
@@ -127,5 +136,5 @@ function toggleOtherActivitiesInput(i: number) {
             </div>
         </template>
     </TabTemplate>
-<!--    <pre class="text-white">{{ JSON.stringify(store.projectAreas, null, 2) }}</pre>-->
+    <!--    <pre class="text-white">{{ JSON.stringify(store.projectAreas, null, 2) }}</pre>-->
 </template>
