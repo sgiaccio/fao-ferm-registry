@@ -551,12 +551,15 @@ exports.getMyGroupsAssigmentRequests = functions.https.onCall(async (_, context)
     // add group name and format date to each request
     return await Promise.all(requestsWithUserDisplayName.map(async request => {
         const groupDoc = await util.groupsCollection.doc(request.groupId).get();
-        const groupName = groupDoc.data().name;
         const dateFormatted = request.createTime.toDate().toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric"
         });
+        if (!groupDoc.exists) {
+            return { ...request, createTime: dateFormatted, groupNotExisting: true, groupName: "Group not existing" };
+        }
+        const groupName = groupDoc.data().name;
         return { ...request, groupName, createTime: dateFormatted };
     }));
 });
@@ -854,5 +857,6 @@ exports.rejectNewGroupRequest = groupRequestsWorkflow.rejectNewGroupRequest;
 
 const areas = require("./areas");
 exports.getPolygonZonalStats = areas.getPolygonZonalStats;
+// exports.getAllAreaPolygons = areas.getAllAreaPolygons;
 exports.deleteDanglingAreaRecords = areas.deleteDanglingAreaRecords;
 // exports.deleteAllProjectAreas = areas.deleteAllProjectAreas;
