@@ -134,11 +134,6 @@ function deleteProjectAreas() {
                    class="mt-4 font-semibold cursor-pointer text-ferm-blue-dark-800 underline uppercase">
                     Disclaimer
                 </p>
-                <div class="text-left text-sm">
-                    Are you sure you want to delete all project areas? This action will only remove areas
-                    temporarily in your current session. To permanently apply this change, you must save the
-                    project afterwards.
-                </div>
                 <AlertModal v-if="store.project.reportingLine === 'GEF'"
                             type="info"
                             :onClose="() => showDisclaimer = false"

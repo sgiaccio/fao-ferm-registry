@@ -23,7 +23,8 @@ function getColorFromScheme(index: number) {
 }
 
 const _values = [...props.values]
-const _labels = [...props.labels];
+const _labels = ref([...props.labels]);
+const _colors = ref<string[]>([]);
 
 function handleTooltip(path: Selection<SVGElementTagNameMap[keyof SVGElementTagNameMap], unknown, null, undefined>, value: number, index: number, duration: number) {
     setTimeout(() => {
@@ -37,7 +38,7 @@ function handleTooltip(path: Selection<SVGElementTagNameMap[keyof SVGElementTagN
             };
         }
 
-        path.on('mouseover', createTooltipHandler(value, props.labels[index]))
+        path.on('mouseover', createTooltipHandler(value, _labels.value[index]))
             .on('mouseout', function() {
                 select(tooltip.value).style('opacity', 0);
             });
@@ -45,7 +46,7 @@ function handleTooltip(path: Selection<SVGElementTagNameMap[keyof SVGElementTagN
 }
 
 onMounted(() => {
-    const colors = _values.map((_, index) => getColorFromScheme(index));
+    _colors.value = _values.map((_, index) => getColorFromScheme(index));
     const maxSize = props.size;
     const spiralInnerRadius = props.size / 2;
     const totalArea = _values.reduce((total, value) => total + value, 0);
@@ -55,8 +56,8 @@ onMounted(() => {
 
     if (totalArea < props.targetValue) {
         _values.push(props.targetValue - totalArea);
-        _labels.push('Not achieved');
-        colors.push('#aaa');
+        _labels.value.push('Not achieved');
+        _colors.value.push('#aaa');
     }
 
     const totalAngle = isDisc ? (2 * Math.PI) : totalArea / props.targetValue * (2 * Math.PI);
@@ -116,7 +117,7 @@ onMounted(() => {
         }
 
         const path = svg.append('path')
-            .attr('fill', colors[index]);
+            .attr('fill', _colors.value[index]);
 
         // Animation
         interval((elapsed) => {
@@ -159,11 +160,11 @@ onMounted(() => {
     <div class="flex justify-between">
         <div ref="chart"></div>
         <div class="flex flex-col space-y-2 p-4">
-            <div v-for="(label, index) in props.labels"
+            <div v-for="(label, index) in _labels"
                  :key="index"
                  class="flex items-center space-x-2">
                 <span class="w-5 h-5 rounded-full shadow flex-none"
-                      :style="{ backgroundColor: getColorFromScheme(index) }"></span>
+                      :style="{ backgroundColor: _colors[index] }"></span>
                 <span class="break-words">{{ label }}</span>
             </div>
         </div>
