@@ -359,24 +359,27 @@ export const useProjectStore = defineStore({
             }
         },
         async deleteProject(projectId: string) {
+            debugger;
             const batch = writeBatch(db);
 
             // Delete project
             const projectRef = doc(db, 'registry', projectId);
             batch.delete(projectRef);
 
-            // Delete areas
-            const areasRef = doc(db, 'areas', projectId);
-            batch.delete(areasRef);
+            // Areas are deletedby a cloud functino triggered when a project is deleted
+            // // Delete areas
+            // const areasRef = doc(db, 'areas', projectId);
+            // batch.delete(areasRef);
 
+            // Do not delete good practices anymore
             // Delete best practices
             // TODO repetition from bestpractices store
-            const q = query(bestPracticesCollection, where('projectId', '==', projectId));
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach(doc => { batch.delete(doc.ref) });
+            // const q = query(bestPracticesCollection, where('projectId', '==', projectId));
+            // const querySnapshot = await getDocs(q);
+            // querySnapshot.forEach(doc => { batch.delete(doc.ref) });
 
             await batch.commit();
-            // return this.fetchGroupOwnedProjects();
+            // await this.fetchGroupOwnedProjects();
         }
     },
 });

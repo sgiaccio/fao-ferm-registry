@@ -94,8 +94,9 @@ function cancelReject() {
 }
 
 async function deleteProject(projectId: string) {
-    if (confirm('Are you sure you want to delete this initiative? You will releted the related areas and best practices.'))
+    if (confirm('Are you sure you want to delete this initiative? You will releted the related areas.')) {
         return projectStore.deleteProject(projectId);
+    }
 }
 
 function goToEditRoute() {
