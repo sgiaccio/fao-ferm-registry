@@ -178,7 +178,7 @@ const router = createRouter({
                     path: 'good-practices',
                     component: () => import('../views/bestpractices/BestPracticeListView.vue')
                 }, {
-                    path: 'good-practices/:id',
+                    path: 'good-practices/:projectId/:id',
                     component: () => import('../views/bestpractices/BestPracticeView.vue'),
                     children: [
                         {

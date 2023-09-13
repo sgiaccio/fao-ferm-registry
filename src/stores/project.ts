@@ -22,11 +22,10 @@ import { db } from '../firebase';
 import { snakeToCamel } from '../lib/util'
 
 import { useAuthStore } from './auth';
-import { watchEffect } from 'vue'
+
 
 const projectsCollection = collection(db, 'registry')
 const areaCollection = collection(db, 'areas')
-const bestPracticesCollection = collection(db, 'bestPractices');
 
 export const useProjectStore = defineStore({
     id: 'project',

@@ -21,7 +21,7 @@ defineProps<{
 }>();
 
 onBeforeMount(async () => {
-    await store.fetch(route.params.id as string);
+    await store.fetch(route.params.projectId as string, route.params.id as string);
     canSubmit.value = await store.canSetStatus('submitted');
 });
 
@@ -35,7 +35,8 @@ async function submit() {
             await store.submit(store.id!);
             alert('The Good Practice was submitted for review.');
         } catch (e) {
-            alert(`Error updating status: ${e}.`)
+            console.error(e);
+            alert(`Error submitting Good Practice: ${e}`);
         }
         router.push({ name: 'initiatives' });
     }

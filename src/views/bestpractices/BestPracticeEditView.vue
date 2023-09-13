@@ -21,13 +21,12 @@ const store = useBestPracticesStore();
 const route = useRoute();
 
 onBeforeMount(async () => {
+    const projectId = route.params.projectId as string;
+    const bestPracticeId = route.params.id as string;
     if (route.params.id === 'new') {
-        if (!route.query.projectId) {
-            throw Error('Didn\'t get project id in request query');
-        }
-        store.createEmpty(route.query.projectId as string);
+        store.createEmpty(projectId as string);
     } else {
-        await store.fetch(route.params.id as string);
+        await store.fetch(projectId as string, bestPracticeId);
     }
 });
 

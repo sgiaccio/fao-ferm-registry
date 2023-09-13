@@ -49,7 +49,9 @@ const multiInputComponents = {
 
 const store = useProjectStore();
 
-const showInfoModal = ref(false);
+const showUploadInfoModal = ref(false);
+const showDrawInfoModal = ref(false);
+const showAdminAreaInfoModal = ref(false);
 
 function numbering(i: number, v: any) {
     const key = Object.keys(v)[0];
@@ -78,13 +80,33 @@ function deleteProjectAreas() {
 <template>
     <AlertModal v-if="store.project.reportingLine === 'GEF'"
                 type="info"
-                :onClose="() => showInfoModal = false"
-                :open="showInfoModal"
+                :onClose="() => showUploadInfoModal = false"
+                :open="showUploadInfoModal"
                 title="Upload polygons/vector"
                 buttonText="Close">
         <div class="text-left text-sm">
             Please upload a shapefile with the land (in ha) reported in the geographic information system (spatially
             explicit data) if available. Otherwise please include the coordinates of project location.
+        </div>
+    </AlertModal>
+    <AlertModal v-if="store.project.reportingLine === 'GEF'"
+                type="info"
+                :onClose="() => showDrawInfoModal = false"
+                :open="showDrawInfoModal"
+                title="Draw directly on the platform"
+                buttonText="Close">
+        <div class="text-left text-sm">
+            Please use the drawer feature to draw the land directly on the platform. The calculator function will calculate the land (in ha).
+        </div>
+    </AlertModal>
+    <AlertModal v-if="store.project.reportingLine === 'GEF'"
+                type="info"
+                :onClose="() => showAdminAreaInfoModal = false"
+                :open="showAdminAreaInfoModal"
+                title="Select administrative areas"
+                buttonText="Close">
+        <div class="text-left text-sm">
+            Please select the administrative area where your project is working and enter the full land (in ha) of the administrative area or enter the land (in ha) within an administrative area where your project is working
         </div>
     </AlertModal>
     <ConfirmModal :on-confirm="deleteProjectAreas"
@@ -106,14 +128,22 @@ function deleteProjectAreas() {
             <ul class="list-disc list-inside">
                 <li>
                     Select administrative areas
+                    <QuestionMarkCircleIcon v-if="store.project.reportingLine === 'GEF'"
+                                            @click="() => { showAdminAreaInfoModal = true }"
+                                            class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
                 </li>
-                <li v-if="store.project.reportingLine === 'GEF'">
+                <li>
                     Upload polygons/vector
-                    <QuestionMarkCircleIcon @click="() => showInfoModal = true"
+                    <QuestionMarkCircleIcon v-if="store.project.reportingLine === 'GEF'"
+                                            @click="() => { showUploadInfoModal = true }"
                                             class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
 
                 </li>
-                <li>Draw directly on the platform</li>
+                <li>Draw directly on the platform
+                    <QuestionMarkCircleIcon v-if="store.project.reportingLine === 'GEF'"
+                                            @click="() => { showDrawInfoModal = true }"
+                                            class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                </li>
             </ul>
         </template>
         <template #default>

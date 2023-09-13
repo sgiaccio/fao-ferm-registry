@@ -332,7 +332,7 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                                     <menu-item v-slot="{ active }"
                                                                                v-for="bp in bestPractices">
                                                                         <router-link
-                                                                            :to="`/registry/good-practices/${bp.id}/objectives`"
+                                                                            :to="`/registry/good-practices/${project.id}/${bp.id}/objectives`"
                                                                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'px-4 py-2 text-sm block']">
                                                                             <div class="flex flex-row">
                                                                                 <div>
@@ -368,7 +368,7 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                     <div v-else
                                                          class="sm:mt-0 sm:ml-6 text-sm">
                                                         <router-link
-                                                            :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
+                                                            :to="{ name: 'goodPracticesObjectivesEdit', params: { projectId: project.id, id: 'new' }}"
                                                             type="button"
                                                             class="inline-flex items-center text-sm font-normal text-ferm-blue-dark-700">
                                                             Add good practice

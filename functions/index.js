@@ -776,18 +776,30 @@ exports.handleSupportRequest = functions.https.onCall(async ({ firstName, lastNa
 // functions.firestore.document('newGroupRequests/{requestId}').onCreate
 
 // Cloud functions that updates the number of good practices in the registry document when a good practice is created or deleted
-exports.updateBestPracticesCount = functions.firestore.document("bestPractices/{goodPracticeId}").onWrite(async (change, _context) => {
-    // get the project id from the good practice document
-    const { projectId } = change.after.data();
+exports.updateBestPracticesCount = functions.firestore.document("registry/{projectId}/bestPractices/{goodPracticeId}").onWrite(async (_change, context) => {
+    const projectId = context.params.projectId;
 
     // count the number of good practices for the project
-    const bestPractices = await util.bestPracticesCollection.where("projectId", "==", projectId).count().get();
-    const bestPracticesCount = bestPractices.data().count;
+    const bestPracticesRef = admin.firestore().collection('registry').doc(projectId).collection('bestPractices');
+    const snapshot = await bestPracticesRef.get();
+    const bestPracticesCount = snapshot.docs.length;
 
     console.log("Updating best practices count for project", projectId, "to", bestPracticesCount);
 
     // update the good practices count in the registry document
-    await util.registryCollection.doc(projectId).update({ bestPracticesCount });
+    await admin.firestore().collection('registry').doc(projectId).update({ bestPracticesCount });
+
+    // // get the project id from the good practice document
+    // const { projectId } = change.after.data();
+
+    // // count the number of good practices for the project
+    // const bestPractices = await util.bestPracticesCollection.where("projectId", "==", projectId).count().get();
+    // const bestPracticesCount = bestPractices.data().count;
+
+    // console.log("Updating best practices count for project", projectId, "to", bestPracticesCount);
+
+    // // update the good practices count in the registry document
+    // await util.registryCollection.doc(projectId).update({ bestPracticesCount });
 });
 
 async function updatedCreatedByName(createdBy, projectId, snapshot) {

@@ -47,10 +47,10 @@ const bpConsentAccepted = ref(false);
 
 onMounted(() => {
     const id = route.params.id;
+    const projectId = route.params.projectId;
     if (id === 'new') {
         let nextRoute = {
-            path: '/registry/good-practices/new/edit/objectives',
-            query: { projectId: route.query.projectId }
+            path: `/registry/good-practices/${projectId}/new/edit/objectives`,
         }
         router.push(nextRoute);
     }

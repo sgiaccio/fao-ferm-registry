@@ -120,8 +120,8 @@ async function cancel() {
             class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
             @click="toggleJson">
             JSON
-        </button>
-        <pre v-if="showJson"
+        </button> -->
+        <!-- <pre v-if="true"
              class="text-xs font-medium text-amber-700 dark:text-amber-600">
             {{ JSON.stringify(store.project, null, 2) }}
         </pre> -->

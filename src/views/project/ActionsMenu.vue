@@ -30,9 +30,6 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 
 import TwoStagesDialog from '@/components/TwoStagesDialog.vue';
 
-import AlertModal from '@/views/AlertModal.vue';
-import ConfirmModal from '@/views/ConfirmModal.vue';
-
 
 const props = withDefaults(defineProps<{
     project: any,
@@ -294,7 +291,7 @@ function goToEditRoute() {
                 <div v-if="!sections || sections.includes('best-practices')">
                     <menu-item v-if="projectUtils.canAddBestPractice(project)"
                                v-slot="{ active }">
-                        <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { id: 'new' }, query: { projectId: project.id } }"
+                        <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { projectId: project.id, id: 'new' }, query: { projectId: project.id } }"
                                      :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
                             <check-badge-icon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                               aria-hidden="true" />

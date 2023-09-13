@@ -8,18 +8,13 @@ import {
 } from "@heroicons/vue/20/solid";
 
 import { useAuthStore } from "@/stores/auth";
-import { useProjectStore } from "@/stores/project";
-
 
 import ActionsMenu from "@/views/project/ActionsMenu.vue";
 
 import { fetchSubmittedProjects, fetchAllSubmittedProjects } from "@/firebase/firestore";
 
 
-const projectStore = useProjectStore();
 const authStore = useAuthStore();
-
-// const userGroups = ref();
 
 const submittedProjects = ref();
 
