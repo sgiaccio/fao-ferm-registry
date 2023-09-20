@@ -4,7 +4,7 @@ import { ref, reactive, watch } from 'vue';
 import { handleSupportRequest } from '@/firebase/functions';
 
 import Footer from '@/views/Footer.vue';
-import ShittyDivider from '@/views/ShittyDivider.vue';
+import WavyDivider from '@/views/WavyDivider.vue';
 import AlertModal from '@/views/AlertModal.vue';
 
 
@@ -69,7 +69,7 @@ const onCloseError = () => {
     <div class="relative isolate bg-gray-900">
         <img src="/seashore.jpg"
              class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-50">
-        <shitty-divider class="absolute -left-1 bottom-0" />
+        <wavy-divider class="absolute -left-1 bottom-0" />
         <div class="px-4 sm:px-12 pt-12">
             <!-- Logos -->
             <div class="relative w-full pl-10 flex">

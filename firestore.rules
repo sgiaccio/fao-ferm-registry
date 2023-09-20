@@ -37,7 +37,8 @@ service cloud.firestore {
         }
 
         // Project registry documents
-        match /registry/{document=**} {
+        match /registry/{projectId} {
+            // allow create: if isSignedIn()
             allow create: if isSignedIn()
                 // && request.auth.token != null
 
@@ -80,7 +81,7 @@ service cloud.firestore {
                 // No one can change the created_by and created_by_name values directly - need to use the change created by functions
                 // created_by is in fact owner
                 && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['created_by'])
-                && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['created_by_name'])
+                // && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['created_by_name'])
                 // No one can change the group value directly - need to use the change group functions
                 && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['group'])
                 // No one can change the status value directly - need to use the change status functions
@@ -94,63 +95,119 @@ service cloud.firestore {
 
                 // User is group admin
                 || isOneOfRoles(resource, ["admin"])
+
+            // bestPractices subcollection
+            match /bestPractices/{bpId} {
+                allow create: if isSignedIn()
+                    && request.auth.token != null
+                    && request.resource.data.created_by == request.auth.uid
+                    && (
+                        isAdmin()
+                        || debug(projectId !=  null) && isOneOfRoles(debug(get(/databases/$(database)/documents/registry/$(projectId))), ["admin", "editor"])
+                    )
+                    && (!('status' in request.resource.data) || request.resource.data.status == 'draft');
+                allow read: if isAdmin()
+                    || isOneOfRoles(get(/databases/$(database)/documents/registry/$(projectId)), ["admin", "editor", "guest"]);
+                allow update: if isSignedIn()
+                    && request.auth.token != null
+                    // // Best practice is not published
+                    // && (!('status' in resource.data) || resource.data.status != 'published')
+                    // createTime, submittedTime, and publishedTime are not changed
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createTime', 'submittedTime', 'publishedTime', 'created_by'])
+                    && (
+                        // Superadmins can update without further restrictions
+                        isAdmin()
+                        || (
+                            // status is draft and new status is draft or submitted
+                            (!('status' in resource.data) || resource.data.status == 'draft')
+                            && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'submitted'])
+                            && (
+                                // User is admin in the related project group
+                                isOneOfRoles(get(/databases/$(database)/documents/registry/$(projectId)), ["admin"])
+                                // Or user is editor of the related project group and the user is the creator of the resource
+                                || (
+                                    isOneOfRoles(get(/databases/$(database)/documents/registry/$(projectId)), ["editor"])
+                                    && resource.data.created_by == request.auth.uid
+                                )
+                            )
+                        )
+                    );
+                allow delete: if isSignedIn()
+                    && request.auth.token != null
+
+                    // Best practice is not published
+                    && (!('status' in resource.data) || resource.data.status != 'published')
+                    && (
+                        isAdmin()
+
+                        // User is admin in the related project group
+                        || isOneOfRoles(get(/databases/$(database)/documents/registry/$(projectId)), ["admin"])
+
+                        // User is editor of the related project group
+                        || isOneOfRoles(get(/databases/$(database)/documents/registry/$(projectId)), ["editor"]) && resource.data.created_by == request.auth.uid
+                        // and the best practice is in draft status
+                        && (!('status' in resource.data) || resource.data.status == 'draft')
+                    )
+
+                }
+    
         }
 
         // Best practice documents
-        match /bestPractices/{document=**} {
-            allow read: if isAdmin()
-                || isOneOfRoles(get(/databases/$(database)/documents/registry/$(resource.data.projectId)), ["admin", "editor", "guest"])
+        // match /bestPractices/{document=**} {
+        //     allow read: if isAdmin()
+        //         || isOneOfRoles(get(/databases/$(database)/documents/registry/$(resource.data.projectId)), ["admin", "editor", "guest"])
 
-            allow create: if isSignedIn()
-                && request.auth.token != null
-                // && request.auth.uid == request.resource.data.created_by
-                && (
-                    isAdmin()
-                    // User is admin or editor in the related project group
-                    || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin", "editor"])
-                )
-                // The document status is draft or not defined
-                && (!('status' in request.resource.data) || request.resource.data.status == 'draft')
-            allow update: if isSignedIn()
-                && request.auth.token != null
+        //     allow create: if isSignedIn()
+        //         && request.auth.token != null
+        //         // && request.auth.uid == request.resource.data.created_by
+        //         && (
+        //             isAdmin()
+        //             // User is admin or editor in the related project group
+        //             || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin", "editor"])
+        //         )
+        //         // The document status is draft or not defined
+        //         && (!('status' in request.resource.data) || request.resource.data.status == 'draft')
+        //     allow update: if isSignedIn()
+        //         && request.auth.token != null
 
-                // Best practice is not published
-                && (!('status' in resource.data) || resource.data.status != 'published')
-                && (
-                    isAdmin()
+        //         // Best practice is not published
+        //         && (!('status' in resource.data) || resource.data.status != 'published')
+        //         && (
+        //             isAdmin()
 
-                    // User is admin in the related project group
-                    || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin"])
+        //             // User is admin in the related project group
+        //             || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin"])
 
-                    // User is editor of the related project group
-                    || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["editor"])
+        //             // User is editor of the related project group
+        //             || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["editor"])
 
-                    // and the best practice is in draft status
-                    && (!('status' in resource.data) || resource.data.status == 'draft')
+        //             // and the best practice is in draft status
+        //             && (!('status' in resource.data) || resource.data.status == 'draft')
 
-                    // and the best practice new status is draft or submitted
-                    && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'submitted'])
+        //             // and the best practice new status is draft or submitted
+        //             && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'submitted'])
 
-                    // and createTime, submittedTime, and publishedTime are not changed - TODO tests
-                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createTime', 'submittedTime', 'publishedTime'])
-                )
-            allow delete: if isSignedIn()
-                && request.auth.token != null
+        //             // and createTime, submittedTime, and publishedTime are not changed - TODO tests
+        //             && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createTime', 'submittedTime', 'publishedTime'])
+        //         )
+        //     allow delete: if isSignedIn()
+        //         && request.auth.token != null
 
-                // Best practice is not published
-                && (!('status' in resource.data) || resource.data.status != 'published')
-                && (
-                    isAdmin()
+        //         // Best practice is not published
+        //         && (!('status' in resource.data) || resource.data.status != 'published')
+        //         && (
+        //             isAdmin()
 
-                    // User is admin in the related project group
-                    || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin"])
+        //             // User is admin in the related project group
+        //             || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["admin"])
 
-                    // User is editor of the related project group
-                    || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["editor"])
-                    // and the best practice is in draft status
-                    && (!('status' in resource.data) || resource.data.status == 'draft')
-                )
-        }
+        //             // User is editor of the related project group
+        //             || isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.data.projectId)), ["editor"])
+        //             // and the best practice is in draft status
+        //             && (!('status' in resource.data) || resource.data.status == 'draft')
+        //         )
+        // }
 
         // Project areas documents
         match /areas/{document=**} {

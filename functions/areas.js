@@ -78,7 +78,7 @@ async function fetchPolygonFromDatabase(client, id) {
  */
 async function fetchData(earthMapApiKey, polygon, stats) {
     try {
-        const response = await axios.post("https://earthmap.org/api/statistics", {
+        const response = await axios.post("https://dev.earthmap.org/api/statistics", {
             id: stats,
             feature: {
                 type: "Feature",
@@ -103,17 +103,17 @@ exports.getPolygonZonalStats = functions
     // .runWith({ secrets: [dbUser, dbHost, dbDatabase, dbPassword, earthMapApiKey] })
     .https
     .onCall(async ({ polygonId, stats }, context) => {
-        const client = getDatabaseClient({
-            user: dbUser,
-            host: dbHost,
-            database: dbDatabase,
-            password: dbPassword
-        });
-
         // Check if the user is logged in
         if (!context.auth) {
             throw new functions.https.HttpsError("unauthenticated", "User must be authenticated to fetch polygon data.");
         }
+
+        const client = await getDatabaseClient({
+            user: dbUser.value(),
+            host: dbHost.value(),
+            database: dbDatabase.value(),
+            password: dbPassword.value()
+        });
 
         try {
             // Fetch the polygon from the database. If it doesn't exist, throw an error.

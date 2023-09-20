@@ -8,7 +8,7 @@ import {
 
 import { ArrowSmallRightIcon, GlobeAltIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/solid'
 
-import ShittyDivider from '@/views/ShittyDivider.vue';
+import WavyDivider from '@/views/WavyDivider.vue';
 import Footer from '@/views/Footer.vue'
 
 const points = [
@@ -269,7 +269,7 @@ onMounted(async () => {
             <div class="overflow-hidden bg-none relative">
                 <img src="/seashore.jpg"
                      class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-50">
-                <shitty-divider class="absolute -left-1 bottom-0" />
+                <wavy-divider class="absolute -left-1 bottom-0" />
                 <div class="px-4 sm:px-12 pt-12 pb-28">
                     <!-- Logos -->
                     <div class="relative w-full pl-10 flex mb-10">

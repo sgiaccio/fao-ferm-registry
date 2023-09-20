@@ -87,13 +87,12 @@ export async function rejectProject(projectId: string, reason: string) {
     return result.data;
 }
 
-// export async function getPolygonZonalStats(polygonId: string, stats: string) {
-//     const functions = getFunctions();
-//     const getPolygonZonalStats = httpsCallable(functions, 'getPolygonZonalStats');
-//     const result = await getPolygonZonalStats({ polygonId, stats });
-//     console.log(result.data); // DEBUG
-//     return result.data;
-// }
+export async function getPolygonZonalStats(polygonId: string, stats: string) {
+    const functions = getFunctions();
+    const getPolygonZonalStats = httpsCallable(functions, 'getPolygonZonalStats');
+    const result = await getPolygonZonalStats({ polygonId, stats });
+    return result.data;
+}
 
 // export async function deleteAllProjectAreas(projectId: string) {
 //     const functions = getFunctions();
