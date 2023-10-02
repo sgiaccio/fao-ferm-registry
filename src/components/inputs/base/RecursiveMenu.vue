@@ -111,7 +111,7 @@ const filteredOptions = computed<RecursiveMenu>(() => {
             </div>
         </div>
     </div>
-    <input v-if="!level"
+    <input v-if="!level && edit"
            type="text"
            class="w-80 text-sm font-bold text-gray-600 rounded-full border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mb-2 mt-2"
            placeholder="Search"

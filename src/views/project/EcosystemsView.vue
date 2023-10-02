@@ -102,7 +102,7 @@ const areaBiomesLoadingStatus = reactive<Status[]>(new Array(store.projectAreas.
 
 
 const realms = [
-    { value: 'T', label: 'Terrestrial', color: '#1f77b4', borderColor: '#0d4d8a' },
+    { value: 'T', label: 'Terrestrial realm', color: '#1f77b4', borderColor: '#0d4d8a' },
     { value: 'M', label: 'Marine realm', color: '#ff7f0e', borderColor: '#cc6608' },
     { value: 'F', label: 'Freshwater realm', color: '#2ca02c', borderColor: '#1e6a1e' },
     { value: 'S', label: 'Subterranean realm', color: '#d62728', borderColor: '#9a1c1c' },
