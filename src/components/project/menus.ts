@@ -14,6 +14,41 @@ interface RecursiveMenuItem {
 
 export type RecursiveMenu = Array<RecursiveMenuItem>;
 
+export function filterByLabel(data: RecursiveMenu, searchString: string): RecursiveMenu {
+    // Initialize an empty array to hold the filtered results
+    let filteredData: RecursiveMenu = [];
+
+    // Iterate through each item in the provided data array
+    for (const item of data) {
+        // Initialize an empty object to potentially hold filtered items and sub-items
+        let filteredItem: RecursiveMenuItem = {};
+
+        // Check if the label contains the search string
+        if (item.label?.toLowerCase().includes(searchString.toLowerCase())) {
+            filteredItem = { ...item }; // Clone the item if it matches
+            filteredItem.label = item.label.replace(new RegExp(`(${searchString})`, 'gi'), '<span class="bg-yellow-300">$1</span>');
+        }
+
+        // Recursively apply the filter to sub-items, if they exist
+        if (Array.isArray(item.items)) {
+            const filteredSubItems = filterByLabel(item.items, searchString);
+            if (filteredSubItems.length > 0) {
+                filteredItem.items = filteredSubItems;
+                if (!filteredItem.label) {
+                    // Inherit label from original item if not already set
+                    filteredItem.label = item.label;
+                }
+            }
+        }
+
+        // Only include non-empty filtered items in the final result
+        if (filteredItem.label || filteredItem.items) {
+            filteredData.push(filteredItem);
+        }
+    }
+
+    return filteredData;
+}
 
 // export const objectives: Menu = [
 //     { value: 1, label: "Reforest degraded lands" },

@@ -1101,84 +1101,84 @@ exports.achieved = [
 // ];
 
 exports.iucnEcosystems = [{
-    label: " Terrestrial",
+    label: "T - Terrestrial realm",
     items: [{
-        value: "T1", label: "T1 Tropical-subtropical forests biome"
+        value: "T1", label: "T1 - Tropical-subtropical forests biome"
     }, {
-        value: "T2", label: "T2 Temperate-boreal forests and woodlands biome"
+        value: "T2", label: "T2 - Temperate-boreal forests and woodlands biome"
     }, {
-        value: "T3", label: "T3 Shrublands and shrubby woodlands biome"
+        value: "T3", label: "T3 - Shrublands and shrubby woodlands biome"
     }, {
-        value: "T4", label: "T4 Savannas and grasslands biome"
+        value: "T4", label: "T4 - Savannas and grasslands biome"
     }, {
-        value: "T5", label: "T5 Deserts and semi-deserts biome"
+        value: "T5", label: "T5 - Deserts and semi-deserts biome"
     }, {
-        value: "T6", label: "T6 Polar/alpine (cryogenic) biome"
+        value: "T6", label: "T6 - Polar/alpine (cryogenic) biome"
     }, {
-        value: "T7", label: "T7 Intensive land-use biome"
+        value: "T7", label: "T7 - Intensive land-use biome"
     }]
 }, {
-    label: " Marine",
+    label: "M - Marine realm",
     items: [{
-        value: "M1", label: "M1 Marine shelf biome"
+        value: "M1", label: "M1 - Marine shelf biome"
     }, {
-        value: "M2", label: "M2 Pelagic ocean waters biome"
+        value: "M2", label: "M2 - Pelagic ocean waters biome"
     }, {
-        value: "M3", label: "M3 Deep sea floors biome"
+        value: "M3", label: "M3 - Deep sea floors biome"
     }, {
-        value: "M4", label: "M4 Anthropogenic marine biome"
+        value: "M4", label: "M4 - Anthropogenic marine biome"
     }]
 }, {
-    label: " Freshwater",
+    label: "F - Freshwater realm",
     items: [{
-        value: "F1", label: "F1 Rivers and streams biome"
+        value: "F1", label: "F1 - Rivers and streams biome"
     }, {
-        value: "F2", label: "F2 Lakes biome"
+        value: "F2", label: "F2 - Lakes biome"
     }, {
-        value: "F3", label: "F3 Artificial wetlands biome"
+        value: "F3", label: "F3 - Artificial wetlands biome"
     }]
 }, {
-    label: " Subterranean",
+    label: "S - Subterranean realm",
     items: [{
-        value: "S1", label: "S1 Subterranean lithic biome"
+        value: "S1", label: "S1 - Subterranean lithic biome"
     }, {
-        value: "S2", label: "S2 Anthropogenic subterranean voids biome"
+        value: "S2", label: "S2 - Anthropogenic subterranean voids biome"
     }]
 }, {
-    label: " Marine-Terrestrial",
+    label: "MT - Marine-Terrestrial realm",
     items: [{
-        value: "MT1", label: "MT1 Shorelines biome"
+        value: "MT1", label: "MT1 - Shorelines biome"
     }, {
-        value: "MT2", label: "MT2 Supralittoral coastal biome"
+        value: "MT2", label: "MT2 - Supralittoral coastal biome"
     }, {
-        value: "MT3", label: "MT3 Anthropogenic shorelines biome"
+        value: "MT3", label: "MT3 - Anthropogenic shorelines biome"
     }]
 }, {
-    label: " Subterranean-Freshwater",
+    label: "SF - Subterranean-Freshwater realm",
     items: [{
-        value: "SF1", label: "SF1 Subterranean freshwaters biome"
+        value: "SF1", label: "SF1 - Subterranean freshwaters biome"
     }, {
-        value: "SF2", label: "SF2 Anthropogenic subterranean freshwaters biome"
+        value: "SF2", label: "SF2 - Anthropogenic subterranean freshwaters biome"
     }]
 }, {
-    label: " Freshwater-Marine",
+    label: "FM - Freshwater-Marine realm",
     items: [{
-        value: "FM1", label: "FM1 Semi-confined transitional waters biome"
+        value: "FM1", label: "FM1 - Semi-confined transitional waters biome"
     }]
 }, {
-    label: " Marine-Freshwater-Terrestrial",
+    label: "MFT - Marine-Freshwater-Terrestrial realm",
     items: [{
-        value: "MFT1", label: "MFT1 Brackish tidal biome"
+        value: "MFT1", label: "MFT1 - Brackish tidal biome"
     }]
 }, {
-    label: " Subterranean-Marine",
+    label: "SM - Subterranean-Marine realm",
     items: [{
-        value: "SM1", label: "SM1 Subterranean tidal biome"
+        value: "SM1", label: "SM1 - Subterranean tidal biome"
     }]
 }, {
-    label: " Terrestrial-Freshwater",
+    label: "TF - Terrestrial-Freshwater realm",
     items: [{
-        value: "TF1", label: "TF1 Palustrine wetlands biome"
+        value: "TF1", label: "TF1 - Palustrine wetlands biome"
     }]
 }];
 
@@ -1407,4 +1407,17 @@ exports.gef8Programs = [
 exports.boolean = [
     { label: "No", value: 0 },
     { label: "Yes", value: 1 }
+];
+
+exports.restorationStatus = [
+    { value: 1, label: "In preparation" },
+    { value: 2, label: "In progress" },
+    {
+        label: "Post-completion monitoring", items: [
+            { value: 301, label: "Restored" },
+            { value: 302, label: "Under restoration" },
+            { value: 303, label: "Degrading or degraded" },
+            { value: 304, label: "Unknown - No longer being monitored" }
+        ]
+    }
 ];

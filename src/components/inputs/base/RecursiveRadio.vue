@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { filterByLabel } from '@/components/project/menus';
 import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = withDefaults(defineProps<{
     uid?: string,
@@ -48,10 +49,22 @@ const uid = props.uid || Math.ceil(Math.random() * 1e9) // TODO
 function bubble(val: MenuValue) {
     emit("update:modelValue", val);
 }
+
+const searchString = ref('');
+
+const filteredOptions = computed<RecursiveMenu>(() => {
+    if (!searchString.value) return props.options;
+    return filterByLabel(props.options, searchString.value);
+});
 </script>
 
 <template>
-    <div v-if="!level && showSelection || !edit">{{modelValue ? flattenedOptions[modelValue] : 'None selected'}}</div>
+    <div v-if="!level && showSelection || !edit">{{ modelValue ? flattenedOptions[modelValue] : 'None selected' }}</div>
+    <input v-if="!level"
+           type="text"
+           class="w-80 text-sm font-bold text-gray-600 rounded-full border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mb-2 mt-2"
+           placeholder="Search"
+           v-model="searchString" />
     <!-- <div v-if="!level && showSelection || !edit"
          class="border border-slate-400 rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
         <div class="ml-2 text-gray-600 dark:text-gray-400"
@@ -67,7 +80,7 @@ function bubble(val: MenuValue) {
         </div>
     </div> -->
     <template v-if="edit">
-        <ul v-for="option, i in options"
+        <ul v-for="option, i in filteredOptions"
             :class="level ? 'ml-10' : ''">
             <li>
                 <div v-if="option.items"
@@ -91,7 +104,8 @@ function bubble(val: MenuValue) {
                     </div>
                     <div>
                         <span class="font-bold cursor-pointer"
-                              @click="toggle(i)">{{ option.label }}
+                              @click="toggle(i)">
+                            <span v-html="option.label"></span>
                         </span>
                     </div>
                 </div>
@@ -105,7 +119,9 @@ function bubble(val: MenuValue) {
                                :checked="('' + modelValue === '' + option.value)"
                                class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
                         <label :for="`${uid}_${option.value}`"
-                               class="ml-3 block text-sm font-medium leading-6 text-gray-900">{{ option.label }}</label>
+                               class="ml-3 block text-sm leading-6 text-gray-900">
+                            <span v-html="option.label"></span>
+                        </label>
                     </div>
                 </div>
             </li>

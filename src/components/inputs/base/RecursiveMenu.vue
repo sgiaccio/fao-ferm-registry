@@ -1,19 +1,22 @@
 <script setup lang="ts">
+import { filterByLabel } from '@/components/project/menus';
 import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 
 const props = withDefaults(defineProps<{
     uid?: string,
     modelValue?: Array<MenuValue>,
-    options?: RecursiveMenu,
+    options: RecursiveMenu,
     level?: number,
     expandLevel?: number,
-    edit?: boolean
+    edit?: boolean,
+    showSelectedValues?: boolean
 }>(), {
     level: 0,
     expandLevel: 0,
-    edit: true
+    edit: true,
+    showSelectedValues: true
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -55,7 +58,7 @@ function deleteOption(value: MenuValue) {
 function check(checked: boolean, value: MenuValue) {
     if (checked) {
         if (!props.modelValue?.includes(value)) {
-            const tempModel = props.modelValue ? [...props.modelValue, value] : [value]; // TODO - Deep copy?
+            const tempModel = props.modelValue ? [...props.modelValue, value] : [value];
             emit('update:modelValue', tempModel.sort(sortCheckedValues));
         }
     } else {
@@ -73,11 +76,17 @@ function bubble(val: number[]) {
     emit('update:modelValue', val && val.length ? val : undefined);
 }
 
+const searchString = ref('');
+
+const filteredOptions = computed<RecursiveMenu>(() => {
+    if (!searchString.value) return props.options;
+    return filterByLabel(props.options, searchString.value);
+});
 </script>
 
 <template>
-    <div v-if="!level">
-        <div class="border border-slate-400 rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
+    <div v-if="!level && showSelectedValues">
+        <div class="border border-slate-400 shadow-sm rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
             <div class="ml-2 text-gray-600 dark:text-gray-400"
                  v-if="!props.modelValue?.length">
                 <template v-if="edit">Please select from the list below</template>
@@ -102,8 +111,13 @@ function bubble(val: number[]) {
             </div>
         </div>
     </div>
+    <input v-if="!level"
+           type="text"
+           class="w-80 text-sm font-bold text-gray-600 rounded-full border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mb-2 mt-2"
+           placeholder="Search"
+           v-model="searchString" />
     <template v-if="edit">
-        <ul v-for="(option, i) in options"
+        <ul v-for="(option, i) in filteredOptions"
             :class="level ? 'ml-10' : ''">
             <li>
                 <div class="flex items-start">
@@ -139,13 +153,15 @@ function bubble(val: number[]) {
                         </div>
                         <div class="ml-2.5 text-sm">
                             <label :for="`${uid}_${option.value}`"
-                                   class="font-normal dark:text-zinc-300 cursor-pointer">{{ option.label }}</label>
+                                   class="font-normal dark:text-zinc-300 cursor-pointer">
+                                   <span v-html="option.label"></span>
+                            </label>
                         </div>
                     </div>
                     <div v-else
                          class="ml-2.5 text-sm dark:text-zinc-300 font-bold cursor-pointer"
                          @click="toggle(i)">
-                        {{ option.label }}
+                         <span v-html="option.label"></span>
                     </div>
                 </div>
                 <div v-show="isOpen[i]">
