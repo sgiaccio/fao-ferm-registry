@@ -10,12 +10,16 @@ const props = withDefaults(defineProps<{
     level?: number,
     expandLevel?: number,
     showSelection?: boolean,
-    edit?: boolean
+    edit?: boolean,
+    showSearchInput?: boolean
+    expandable?: boolean
 }>(), {
     level: 0,
     expandLevel: 0,
     showSelection: true,
-    edit: true
+    edit: true,
+    showSearchInput: true,
+    expandable: true
 });
 
 const emit = defineEmits(["update:modelValue"])
@@ -25,7 +29,7 @@ function flatten(data: RecursiveMenu) {
     for (const item of data) {
         if (item.items) {
             flatten(item.items);
-        } else if (item.value) { // check: can value be falsy?
+        } else if (item.value !== undefined) {
             flattenedOptions[item.value] = item.label;
         }
     }
@@ -35,8 +39,9 @@ if (props.level === 0 && props.options) {
     flatten(props.options);
 }
 
-const isOpen = ref<boolean[]>(new Array(props.options?.length).fill(+props.level < +props.expandLevel));
+const isOpen = ref<boolean[]>(new Array(props.options?.length).fill(+props.level < +props.expandLevel || !props.expandable));
 function toggle(i: number) {
+    if (!props.expandable) return;
     isOpen.value[i] = !isOpen.value[i];
 }
 
@@ -59,8 +64,8 @@ const filteredOptions = computed<RecursiveMenu>(() => {
 </script>
 
 <template>
-    <div v-if="!level && showSelection || !edit">{{ modelValue ? flattenedOptions[modelValue] : 'None selected' }}</div>
-    <input v-if="!level && edit"
+    <div v-if="!level && showSelection || !edit">{{ modelValue !== undefined ? flattenedOptions[modelValue] : 'None selected' }}</div>
+    <input v-if="!level && edit && showSearchInput"
            type="text"
            class="w-80 text-sm font-bold text-gray-600 rounded-full border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mb-2 mt-2"
            placeholder="Search"
@@ -86,12 +91,12 @@ const filteredOptions = computed<RecursiveMenu>(() => {
                 <div v-if="option.items"
                      class="flex items-start">
                     <div class="flex">
-                        <svg v-if="option.items"
+                        <svg v-if="expandable"
                              @click="toggle(i)"
                              xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 20 20"
                              fill="currentColor"
-                             class="w-5 h-5 self-center inline-block cursor-pointer">
+                             class="w-5 h-5 self-center inline-block cursor-pointer text-black dark:text-gray-200">
                             <path v-if="!isOpen[i]"
                                   fill-rule="evenodd"
                                   d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
@@ -101,11 +106,18 @@ const filteredOptions = computed<RecursiveMenu>(() => {
                                   d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
                                   clip-rule="evenodd" />
                         </svg>
+                        <div v-else
+                             class="w-5 h-5" />
                     </div>
-                    <div>
-                        <span class="font-bold cursor-pointer"
+                    <div class="ml-2">
+                        <span :class="[expandable ? 'cursor-pointer' : 'cursor-default', 'text-gray-900 dark:text-gray-400 text-sm']"
                               @click="toggle(i)">
-                            <span v-html="option.label"></span>
+                            <span v-if="option.dangerousHtmlLabel"
+                                  v-html="option.dangerousHtmlLabel"></span>
+                            <span v-else
+                                  class="font-bold">
+                                {{ option.label }}
+                            </span>
                         </span>
                     </div>
                 </div>
@@ -117,10 +129,12 @@ const filteredOptions = computed<RecursiveMenu>(() => {
                                type="radio"
                                @change="check(($event.target as HTMLInputElement).checked, option.value!)"
                                :checked="('' + modelValue === '' + option.value)"
-                               class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                               class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600 cursor-pointer" />
                         <label :for="`${uid}_${option.value}`"
-                               class="ml-3 block text-sm leading-6 text-gray-900">
-                            <span v-html="option.label"></span>
+                               class="ml-3 block text-sm leading-6 text-gray-900 dark:text-gray-400 cursor-pointer">
+                            <span v-if="option.dangerousHtmlLabel"
+                                  v-html="option.dangerousHtmlLabel"></span>
+                            <template v-else>{{ option.label }}</template>
                         </label>
                     </div>
                 </div>

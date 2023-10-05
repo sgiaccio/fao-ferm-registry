@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { parserOptions } from "@vue/compiler-dom";
 import { ref, computed, type PropType } from "vue";
 
 import type { Menu, MenuValue } from '../../project/menus'

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { parserOptions } from "@vue/compiler-dom";
 import { ref, computed, type PropType } from "vue";
 
 import type { Menu } from '../../project/menus'
@@ -18,7 +17,6 @@ const emit = defineEmits(['update:modelValue']);
 const showValidation = ref(false);
 
 function onInput(event: Event) {
-    console.log((event.target as HTMLInputElement).id); // DEBUG
     let value: string = (event.target as HTMLInputElement).id;
     emit('update:modelValue', value !== "" ? value : undefined);
 

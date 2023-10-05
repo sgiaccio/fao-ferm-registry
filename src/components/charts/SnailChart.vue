@@ -71,7 +71,7 @@ onMounted(() => {
         .innerRadius(d => d[1])
         .outerRadius(d => d[1] + lineWidth);
 
-    const increment = (2 * Math.PI) / totalArea * (totalArea / props.targetValue);
+    const increment = (2 * Math.PI) / props.targetValue;
 
     const predictedRadius = 2 * (spiralInnerRadius + (isDisc ? 0 : (totalAngle / (2 * Math.PI) * spiralPitch)) + lineWidth);
 

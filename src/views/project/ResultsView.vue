@@ -47,12 +47,13 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
         </template> -->
         <template #default>
             <div v-if="store.project.reportingLine !== 'GEF'"
-                 class="font-semibold pt-10 pb-20 text-3xl text-center">
+                 class="font-semibold text-3xl text-center">
                 Under development
             </div>
             <div v-else-if="chartValues.length > 0 && getLastTargetArea()"
-                 class="flex flex-col gap-6 pt-10 pb-20">
-                <div class="shadow-lg rounded px-4 py-3 text-base border">
+                 class="flex flex-col gap-6">
+                <div v-if="store.project.project.areaAchievedMatch === 1"
+                     class="shadow-lg rounded px-4 py-3 text-base border">
                     <SnailChart v-if="chartValues.length > 0 && getLastTargetArea()"
                                 :values="chartValues"
                                 :labels="chartLabels"
@@ -60,6 +61,12 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
                                 :targetValue="getLastTargetArea()" />
                     <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has achieved {{ formatNumber(store.polygonsArea() / getLastTargetArea() * 100, true) }}% of your total committed land.</p>
                     <p class="mt-2 text-center">{{ formatNumber(areaForGefIndicator3 / getLastTargetArea() * 100, true) }}% of this land is under restoration (GEF core indicator 3).</p>
+                </div>
+                <div v-else
+                     class="shadow-lg rounded px-4 py-3 text-base border">
+                    <SnailChart :values="[]"
+                                :labels="[]"
+                                :targetValue="getLastTargetArea()" />
                 </div>
 
                 <div class="shadow-lg rounded border divide-y">
@@ -114,7 +121,7 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
                 </div> -->
             </div>
             <div v-else
-                 class="flex flex-col gap-6 pt-6 pb-20 font-bold text-xl">
+                 class="flex flex-col gap-6 pt-6 font-bold text-xl">
                 Not enough data to show results
             </div>
         </template>

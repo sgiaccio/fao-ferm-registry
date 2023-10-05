@@ -11,6 +11,9 @@ defineProps({
 
 <template>
     <FormGroup :label="label">
-        {{value}}
+        <span class="text-black dark:text-white">{{value}}</span>
+        <template v-slot:info v-if="$slots.info">
+            <slot name="info" />
+        </template>
     </FormGroup>
 </template>

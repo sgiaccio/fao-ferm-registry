@@ -129,7 +129,7 @@ async function deleteFromStorage(name: string, path: string) {
              @dragleave="dragLeave"
              @drop="handleDrop"
              @click="openFileDialog"
-             class="w-full h-32 mb-6 border-2 border-dashed border-gray-400 flex items-center justify-center cursor-pointer font-bold text-center"
+             class="w-full h-32 mb-6 border-2 border-dashed border-gray-400 flex items-center justify-center cursor-pointer font-bold text-center hover:bg-ferm-blue-dark-200 rounded-lg"
              :class="isDragging ? 'bg-ferm-blue-dark-200' : ''">
             Drop {{ uploadedFiles && uploadedFiles.length ? 'more' : '' }} files here or click to upload
             <input

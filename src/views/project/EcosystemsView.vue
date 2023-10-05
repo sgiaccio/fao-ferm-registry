@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch, nextTick } from 'vue';
+import { computed, reactive, watch } from 'vue';
 
 import { ListBulletIcon, ExclamationTriangleIcon, CheckCircleIcon } from '@heroicons/vue/20/solid';
 
@@ -336,11 +336,11 @@ function deleteOption(area: any, biome: string) {
                          class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs">
                         <div v-for="realm in groupedBiomesByArea[i]"
                              :style="`background-color: ${realms.find(r => r.value === realm.realm)?.color};border-color: ${realms.find(r => r.value === realm.realm)?.borderColor};`"
-                             class="rounded-xl px-3 py-3 font-sm flex flex-col gap-y-2 border-2">
+                             class="rounded-lg px-3 py-3 font-sm flex flex-col gap-y-2 border-2">
                             <span class="text-sm font-bold text-white">{{ (realms.find(r => r.value === realm.realm))?.label }}</span>
                             <div class="flex flex-col gap-y-2">
                                 <div v-for="biome in (realm.biomes)"
-                                     class="text-gray-800 m-0 flex rounded-lg pl-2.5 pr-1 bg-white min-h-7 p-1 border border-stone-800 justify-between items-center">
+                                     class="text-gray-800 m-0 flex rounded-md pl-2.5 pr-1 bg-white min-h-7 p-1 border border-stone-800 justify-between items-center">
                                     {{ findBiomeLabel(biome) }}
                                     <div v-if="edit">
                                         <svg @click="deleteOption(area, biome)"

@@ -14,7 +14,9 @@ defineProps({
     ...{
         options: { type: Array as PropType<RecursiveMenu> },
         modelValue: [ String, Number ],
-        showSelection: { type: Boolean, default: true }
+        showSelection: { type: Boolean, default: true },
+        showSearchInput: { type: Boolean, default: true },
+        expandable: { type: Boolean, default: true }
     }
 });
 
@@ -35,6 +37,8 @@ function valueChanged(value: string) {
             :options="options"
             :model-value="modelValue"
             :showSelection="showSelection"
-            @update:modelValue="valueChanged" />
+            @update:modelValue="valueChanged"
+            :showSearchInput="showSearchInput"
+            :expandable="expandable" />
     </FormGroup>
 </template>

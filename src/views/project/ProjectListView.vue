@@ -169,16 +169,7 @@ async function checkTermsAndConditionsAndShowDialog() {
             <h1 class="mt-12 font-akrobat text-4xl text-gray-800 dark:text-white mb-8 font-extrabold uppercase">
                 Initiatives</h1>
 
-            <p class="dark:text-white">Restoration projects, programs and initiatives at all spatial scales, from
-                individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global
-                goals for
-                sustaining life on Earth. The FERM registry allows you to consistently and transparently monitor,
-                report, and share
-                information on restoration initiatives good practices. The information published in the FERM
-                Registry will be used to officially report on hectares under restoration during the United Nations
-                Decade on Ecosystem
-                Restoration and for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework
-                Target 2.</p>
+            <p class="dark:text-white">Restoration projects, programs, and initiatives at all spatial scales, from individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for sustaining life on Earth. The FERM registry allows you to monitor consistently and transparently, report, and share information on restoration initiatives and good practices. The information published in the FERM Registry will be used to officially report on areas under restoration during the United Nations Decade on Ecosystem Restoration and for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework Target 2.</p>
             <!-- If the user is not an admin and not part of any group, show a message -->
             <!-- <div v-if="true" -->
             <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"

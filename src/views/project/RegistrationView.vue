@@ -18,8 +18,8 @@ import MultiInputFormGroup from '@/components/inputs/MultiInputFormGroup.vue';
 import Organization from '@/components/inputs/organizations/Organization.vue';
 import PointOfContact from '@/components/inputs/pointsOfContact/PointOfContact.vue';
 import SelectFormGroup from '@/components/inputs/base/SelectFormGroup.vue';
-import RecursiveRadio from '@/components/inputs/base/RecursiveRadio.vue';
 import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
+import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
 
 // import { gefCycles, objectives, gefFocalAreas } from "@/components/project/menus";
 
@@ -193,187 +193,190 @@ const years = generateYearOptions(2000, 2050);
                 responsible organisms.
             </p>
         </template>
-        <TextFormGroup :edit="edit"
-                       v-model="store.project.project.title"
-                       label="Title"
-                       description="Title of the initiative as stated in the official initiative document" />
+        <div class="divide-y divide-slate-100 dark:divide-slate-900 border-2 border-slate-200 dark:border-slate-900 rounded-md shadow-sm mt-4 mb-6 overflow-hidden">
+            <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                           :edit="edit"
+                           v-model="store.project.project.title"
+                           label="Title"
+                           description="Title of the initiative as stated in the official initiative document" />
 
-        <!-- Enable this when the reporting line is GEF -->
-        <template v-if="store.project.reportingLine === 'GEF'">
-            <TextFormGroup :edit="edit"
-                           v-model="store.project.project.gefFaoSymbol"
-                           label="GEF/FAO Symbol" />
-
-            <FormGroup label="GEF investment type">
+            <!-- Enable this when the reporting line is GEF -->
+            <template v-if="store.project.reportingLine === 'GEF'">
+                <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                               :edit="edit"
+                               v-model="store.project.project.gefFaoSymbol"
+                               label="GEF/FAO Symbol" />
+                <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                           label="GEF investment type">
+                    <SmallCardsFormGroup v-model="store.project.project.gefInvestmentType"
+                                         :options="menus.gefInvestmentTypes"
+                                         :edit="edit" />
+                </FormGroup>
+                <!-- <FormGroup label="GEF investment type">
                 <RecursiveRadio v-model="store.project.project.gefInvestmentType"
                                 :options="menus.gefInvestmentTypes"
                                 :showSelection="false"
-                                :edit="edit" />
-            </FormGroup>
-            <FormGroup label="GEF cycle">
-                <RecursiveRadio v-model="store.project.project.gefCycle"
+                                :edit="edit"
+                                :showSearchInput="false" />
+            </FormGroup> -->
+                <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                           label="GEF cycle">
+                    <!-- <RecursiveRadio v-model="store.project.project.gefCycle"
                                 :options="menus.gefCycles"
                                 :showSelection="false"
-                                :edit="edit" />
-            </FormGroup>
-            <MultiSelectFormGroup v-if="store.project.project.gefInvestmentType === 'project'"
-                                  :edit="edit"
-                                  v-model="store.project.project.gefFocalAreas"
-                                  label="GEF standalone projects (focal areas)"
-                                  :options="menus.gefFocalAreas" />
-            <RecursiveRadioFormGroup v-if="store.project.project.gefInvestmentType === 'program'"
-                                     label="GEF programmes"
-                                     v-model="store.project.project.gefProgram"
-                                     :options="gefPrograms"
-                                     :showSelection="false"
-                                     :edit="edit" />
-            <!-- <pre>{{ JSON.stringify(gefPrograms, null, 2) }}</pre> -->
-        </template>
+                                :edit="edit"
+                                :showSearchInput="false" /> -->
+                    <SmallCardsFormGroup v-model="store.project.project.gefCycle"
+                                         :options="menus.gefCycles"
+                                         :edit="edit" />
+                </FormGroup>
+                <MultiSelectFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                                      v-if="store.project.project.gefInvestmentType === 'project'"
+                                      :edit="edit"
+                                      v-model="store.project.project.gefFocalAreas"
+                                      label="GEF standalone projects (focal areas)"
+                                      :options="menus.gefFocalAreas" />
+                <RecursiveRadioFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                                         v-if="store.project.project.gefInvestmentType === 'program'"
+                                         label="GEF programmes"
+                                         v-model="store.project.project.gefProgram"
+                                         :options="gefPrograms"
+                                         :showSelection="false"
+                                         :show-search-input="false"
+                                         :edit="edit" />
+            </template>
 
-        <TextareaFormGroup :edit="edit"
-                           v-model="store.project.project.description"
-                           label="Description"
-                           description="Short description of the initiative" />
-        <!-- TODO Short description of the initiative (max xx characters) -->
-        <TextFormGroup :edit="edit"
-                       v-model="store.project.project.website"
-                       label="Website"
-                       description="Website of the initiative"
-                       placeholder="www.example.com" />
+            <TextareaFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                               :edit="edit"
+                               v-model="store.project.project.description"
+                               label="Description"
+                               description="Short description of the initiative" />
+            <!-- TODO Short description of the initiative (max xx characters) -->
+            <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                           :edit="edit"
+                           v-model="store.project.project.website"
+                           label="Website"
+                           description="Website of the initiative"
+                           placeholder="www.example.com" />
 
-        <!-- Disable this when the reporting line is GEF -->
-        <AreaFormGroup v-if="store.project.reportingLine !== 'GEF'"
-                       :edit="edit"
-                       label="Target area"
-                       v-model="store.project.project.targetArea"
-                       description="Area of the restoration target">
-        </AreaFormGroup>
+            <!-- Disable this when the reporting line is GEF -->
+            <AreaFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                           v-if="store.project.reportingLine !== 'GEF'"
+                           :edit="edit"
+                           label="Target area"
+                           v-model="store.project.project.targetArea"
+                           description="Area of the restoration target">
+            </AreaFormGroup>
 
-        <!--
+            <!--
         <template v-if="store.project.reportingLine === 'GEF'" v-slot:info >
             <p>Please include the land (in ha) committed in project design phase and updated in MTR/TE (sum of GEF 7 Indicators 1-5)</p>
         </template>
         -->
 
+            <!--        <DateFormGroup :edit="edit"-->
+            <!--                       v-model="store.project.project.startingDate"-->
+            <!--                       label="Starting date"-->
+            <!--                       description="Date when the initiative started" />-->
+            <!--        <DateFormGroup :edit="edit"-->
+            <!--                       v-model="store.project.project.endingDate"-->
+            <!--                       label="Ending date"-->
+            <!--                       description="Date when the initiative finished or is expected to finish" />-->
 
-        <!-- Enable this when the reporting line is GEF -->
-        <template v-if="store.project.reportingLine === 'GEF'">
-            <AreaFormGroup :edit="edit"
-                           label="Target area in design phase"
-                           v-model="store.project.project.targetAreaDesignPhase"
-                           description="Area of land committed in design phase">
-                <template v-slot:info>
-                    <p>Please include the land (in ha) committed in <span class="font-bold">project design phase</span>
-                        (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
-                </template>
-            </AreaFormGroup>
-            <AreaFormGroup :edit="edit"
-                           label="Target area in mid-term review phase"
-                           v-model="store.project.project.targetAreaReviewPhase"
-                           description="Area of land committed in mid-term review phase">
-                <template v-slot:info>
-                    <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span>
-                        (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
-                </template>
-            </AreaFormGroup>
-            <AreaFormGroup :edit="edit"
-                           label="Target area in terminal evaluation phase"
-                           v-model="store.project.project.targetAreaEvaluationPhase"
-                           description="Area of land committed in terminal evaluation phase">
-                <template v-slot:info>
-                    <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span>
-                        (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
-                </template>
-            </AreaFormGroup>
-        </template>
+            <SelectFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                             :edit="edit"
+                             v-model="store.project.project.startingYear"
+                             label="Starting year"
+                             :options="years" />
+            <SelectFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                             :edit="edit"
+                             v-model="store.project.project.endingYear"
+                             label="Ending year"
+                             :options="years" />
+            <RecursiveRadioFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                                     label="Restoration status"
+                                     v-model="store.project.project.restorationStatus"
+                                     :options="menus.restorationStatuses"
+                                     :showSelection="false"
+                                     :show-search-input="false"
+                                     :expandable="false"
+                                     :edit="edit" />
 
-        <!--        <DateFormGroup :edit="edit"-->
-        <!--                       v-model="store.project.project.startingDate"-->
-        <!--                       label="Starting date"-->
-        <!--                       description="Date when the initiative started" />-->
-        <!--        <DateFormGroup :edit="edit"-->
-        <!--                       v-model="store.project.project.endingDate"-->
-        <!--                       label="Ending date"-->
-        <!--                       description="Date when the initiative finished or is expected to finish" />-->
 
-        <SelectFormGroup :edit="edit"
-                         v-model="store.project.project.startingYear"
-                         label="Starting year"
-                         :options="years" />
-        <SelectFormGroup :edit="edit"
-                         v-model="store.project.project.endingYear"
-                         label="Ending year"
-                         :options="years" />
+            <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                       :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
+                <div v-if="edit">
+                    <div v-if="!fileName">
+                        <label for="file"
+                               class="block text-sm font-medium text-gray-700" />
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                            <div class="flex-grow focus-within:z-10">
+                                <input type="file"
+                                       name="file"
+                                       class="pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
+                                       @change="setSelectedFile">
+                            </div>
+                            <button type="button"
+                                    class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none"
+                                    :class="['idle' === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
+                                    @click="uploadFile(store.id)">
+                                <svg v-if="uploadStatus === 'idle'"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     :class="[selectedFile ? 'text-red-600 animate-pulse' : 'text-gray-400', 'h-5 w-5']"
+                                     viewBox="0 0 20 20"
+                                     fill="currentColor"
+                                     d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                                     clip-rule="evenodd">
+                                    <path fill-rule="evenodd"
+                                          d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                                          clip-rule="evenodd"></path>
 
-        <FormGroup :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
-            <div v-if="edit">
-                <div v-if="!fileName">
-                    <label for="file"
-                           class="block text-sm font-medium text-gray-700" />
-                    <div class="mt-1 flex rounded-md shadow-sm">
-                        <div class="flex-grow focus-within:z-10">
-                            <input type="file"
-                                   name="file"
-                                   class="pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
-                                   @change="setSelectedFile">
+                                </svg>
+                                <svg v-else
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     viewBox="0 0 20 20"
+                                     fill="currentColor"
+                                     class="w-5 h-5 animate-spin">
+                                    <path fill-rule="evenodd"
+                                          d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
+                                          clip-rule="evenodd" />
+                                </svg>
+                            </button>
                         </div>
-                        <button type="button"
-                                class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none"
-                                :class="['idle' === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
-                                @click="uploadFile(store.id)">
-                            <svg v-if="uploadStatus === 'idle'"
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 :class="[selectedFile ? 'text-red-600 animate-pulse' : 'text-gray-400', 'h-5 w-5']"
-                                 viewBox="0 0 20 20"
-                                 fill="currentColor"
-                                 d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                                 clip-rule="evenodd">
-                                <path fill-rule="evenodd"
-                                      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                                      clip-rule="evenodd"></path>
+                        <div v-if="selectedFile"
+                             class="text-red-500 text-sm">Remember to click the upload button before saving.
+                        </div>
+                    </div>
 
-                            </svg>
-                            <svg v-else
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 viewBox="0 0 20 20"
-                                 fill="currentColor"
-                                 class="w-5 h-5 animate-spin">
-                                <path fill-rule="evenodd"
-                                      d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
-                                      clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div v-if="selectedFile"
-                         class="text-red-500 text-sm">Remember to click the upload button before saving.
-                    </div>
+                    <div class="dark:text-white"
+                         v-else>Initiative file: {{ fileName }} <span @click="deleteFile(store.id, fileName!)">[delete]</span></div>
                 </div>
-
-                <div class="dark:text-white"
-                     v-else>Initiative file: {{ fileName }} <span @click="deleteFile(store.id, fileName!)">[delete]</span></div>
-            </div>
-            <template v-else>
-                <div v-if="selectedFile">Initiative file: {{ fileName }}</div>
-                <div v-else>File not uploaded</div>
-            </template>
-        </FormGroup>
-        <!-- <MultiSelectFormGroup :edit="edit"
+                <template v-else>
+                    <div v-if="selectedFile">Initiative file: {{ fileName }}</div>
+                    <div v-else>File not uploaded</div>
+                </template>
+            </FormGroup>
+            <!-- <MultiSelectFormGroup :edit="edit"
                               :options="menus.objectives"
                               v-model="store.project.project.objectives"
                               label="Objectives"
                               description="Objectives of the initiatives" /> -->
-        <MultiInputFormGroup :edit="edit"
-                             label="Points of contact"
-                             :inputComponents="pointsOfContact"
-                             v-model="store.project.project.pointsOfContact" />
-        <KeywordsInputGroup :edit="edit"
-                            v-model="store.project.project.keywords"
-                            label="Keywords" />
-        <MultiInputFormGroup :edit="edit"
-                             label="Organizations"
-                             description="Organizations that implement the project/initiative"
-                             :inputComponents="organizations"
-                             v-model="store.project.project.organizations" />
+            <MultiInputFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700 "
+                                 :edit="edit"
+                                 label="Points of contact"
+                                 :inputComponents="pointsOfContact"
+                                 v-model="store.project.project.pointsOfContact" />
+            <KeywordsInputGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                                :edit="edit"
+                                v-model="store.project.project.keywords"
+                                label="Keywords" />
+            <MultiInputFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700 "
+                                 :edit="edit"
+                                 label="Organizations"
+                                 description="Organizations that implement the project/initiative"
+                                 :inputComponents="organizations"
+                                 v-model="store.project.project.organizations" />
+        </div>
     </TabTemplate>
     <!-- <DynamicHeading level=2>Title</DynamicHeading> -->
     <!-- <pre class="text-black text-xs">{{ JSON.stringify(store.project.project, null, 2) }}</pre> -->

@@ -96,7 +96,7 @@ const errorMessages = computed(() => {
 </script>
 
 <template>
-    <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 dark:border-stone-700 dark:divide-stone-700">
+    <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 dark:border-stone-700 dark:divide-stone-700 bg-white dark:bg-stone-800">
         <component
             v-for="([k, d]) in dialogs" class="p-3"
             :is="d.addDialog"
