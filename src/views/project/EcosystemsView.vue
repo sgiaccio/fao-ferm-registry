@@ -250,9 +250,53 @@ function findBiomeLabel(biome: string, biomes: any = menus.iucnEcosystems): stri
 // }
 
 function deleteOption(area: any, biome: string) {
+    alert();
     console.log(area);
     const areaValue = getAreaValue(area);
     areaValue.ecosystems = areaValue.ecosystems?.filter((e: string) => e !== biome);
+}
+
+
+// function handleBeforeLeave(el) {
+//   console.log("Before leave:", el);
+//   console.log("Opacity before leave:", window.getComputedStyle(el).opacity);
+// }
+// function handleLeave(el, done) {
+//   console.log('handleLeave called');
+//   console.log('done:', done);
+//   setTimeout(() => {
+//     console.log('Calling done after 0.5s');
+//     done();
+//   }, 500);
+// }
+function handleBeforeLeave(el) {
+    // Ensure the parent is relative
+    el.parentNode.style.position = 'relative';
+
+    const rect = el.getBoundingClientRect();
+    const parentRect = el.parentNode.getBoundingClientRect();
+
+    // Adjust for any scrolling and parent's position
+    const top = rect.top - parentRect.top + el.parentNode.scrollTop;
+    const left = rect.left - parentRect.left + el.parentNode.scrollLeft;
+
+    el.style.width = `${rect.width}px`; // set the width explicitly
+    el.style.height = `${rect.height}px`; // set the height explicitly
+    el.style.position = "absolute";
+    el.style.top = top + 'px';
+    el.style.left = left + 'px';
+}
+
+function handleLeave(el, done) {
+    // Start the leave transition by setting opacity to 0
+    el.style.opacity = 0;
+    // Wait for 3s before calling the 'done' callback
+    setTimeout(() => done(), 300);
+}
+
+function handleAfterLeave(el) {
+    console.log("After leave:", el);
+    // No need to check opacity as the element should be gone
 }
 
 </script>
@@ -274,7 +318,7 @@ function deleteOption(area: any, biome: string) {
             </p>
         </template>
         <template #default>
-            <div v-if="store.projectAreas?.length"
+            <div v-if="true"
                  class="flex flex-col gap-y-4 pt-6 mb-6">
                 <!-- <div class="flex-shrink justify-self-end ml-auto">
                     <button v-if="anyPolygonArea && edit"
@@ -332,11 +376,18 @@ function deleteOption(area: any, biome: string) {
                             </button>
                         </template>
                     </div>
-                    <div v-if="getAreaValue(area).ecosystems?.length"
-                         class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs">
+                    <TransitionGroup v-if="getAreaValue(area).ecosystems?.length"
+                                     name="list"
+                                     tag="div"
+                                     class="grid grid-cols-3 gap-3 mb-4 text-xs"
+                                     @before-leave="handleBeforeLeave"
+                                     @leave="handleLeave"
+                                     @after-leave="handleAfterLeave">
                         <div v-for="realm in groupedBiomesByArea[i]"
+                             :key="realm.realm"
                              :style="`background-color: ${realms.find(r => r.value === realm.realm)?.color};border-color: ${realms.find(r => r.value === realm.realm)?.borderColor};`"
-                             class="rounded-lg px-3 py-3 font-sm flex flex-col gap-y-2 border-2">
+                             class="basis-1/3 rounded-lg px-3 py-3 font-sm flex flex-col gap-y-2 border-2">
+
                             <span class="text-sm font-bold text-white">{{ (realms.find(r => r.value === realm.realm))?.label }}</span>
                             <div class="flex flex-col gap-y-2">
                                 <div v-for="biome in (realm.biomes)"
@@ -356,8 +407,7 @@ function deleteOption(area: any, biome: string) {
                                 </div>
                             </div>
                         </div>
-                    </div>
-
+                    </TransitionGroup>
                     <RecursiveMenu :edit="edit"
                                    v-model="area[Object.keys(area)[0]].ecosystems"
                                    :options="menus.iucnEcosystems"
@@ -378,3 +428,36 @@ function deleteOption(area: any, biome: string) {
     </TabTemplate>
 </template>
 
+
+<style scoped>
+/* For moving elements */
+.list-move {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* For entering elements */
+.list-enter-active {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.list-enter-from {
+    opacity: 0;
+}
+
+.list-enter-to {
+    opacity: 1;
+}
+
+/* For leaving elements */
+.list-leave-active {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.list-leave-from {
+    opacity: 1;
+}
+
+.list-leave-to {
+    opacity: 0;
+}
+</style>
