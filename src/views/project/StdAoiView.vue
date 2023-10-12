@@ -7,13 +7,14 @@ import { useProjectStore } from '@/stores/project';
 
 import TabTemplate from '../TabTemplate.vue';
 
-import MultiInput from '../../components/inputs/MultiInput.vue';
-import MapInput from '../../components/inputs/base/MapInput.vue';
-import AdminArea from '../../components/inputs/AdminArea.vue';
-import MapUpload from '../../components/inputs/base/MapUpload.vue';
+import MultiInput from '@/components/inputs/MultiInput.vue';
+import MapInput from '@/components/inputs/base/MapInput.vue';
+import AdminArea from '@/components/inputs/AdminArea.vue';
+import MapUpload from '@/components/inputs/base/MapUpload.vue';
 import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
-import FormGroup from '../../components/inputs/FormGroup.vue';
-import NumberInput from '../../components/inputs/base/NumberInput.vue';
+import FormGroup from '@/components/inputs/FormGroup.vue';
+import NumberInput from '@/components/inputs/base/NumberInput.vue';
+import AreaFormGroup from '@/components/inputs/AreaFormGroup.vue';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
@@ -98,6 +99,14 @@ function deleteProjectAreas() {
             </ul>
         </template>
         <template #default>
+            <AreaFormGroup :edit="edit"
+                           label="Committed area to restore"
+                           v-model="store.project.project.targetArea"
+                           description="Area of the restoration target">
+                <template v-slot:info>
+                    Includes pledges, targets, aspirations, or commitments of area to restore. This parameter will not be counted as area under restoration but will serve as a reference to monitor restoration progress.
+                </template>
+            </AreaFormGroup>
             <FormGroup label="Total area under restoration (ha)">
                 <NumberInput :edit="edit"
                              v-model="store.project.project.areaUnderRestoration" />
@@ -108,12 +117,6 @@ function deleteProjectAreas() {
                             :inputComponents="multiInputComponents"
                             v-model="store.projectAreas"
                             deleteConfirmMessage="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted." />
-                <!--                <button v-if="store.projectAreas.length > 0 && edit"-->
-                <!--                        @click="deleteProjectAreas()" type="button"-->
-                <!--                        class="mt-6 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">-->
-                <!--                    <TrashIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />-->
-                <!--                    Delete all areas-->
-                <!--                </button>-->
                 <button v-if="store.projectAreas.length > 0 && edit"
                         @click="() => { showDeleteAreasConfirm = true }"
                         type="button"

@@ -1409,15 +1409,13 @@ exports.boolean = [
     { label: "Yes", value: 1 }
 ];
 
-exports.restorationStatus = [
-    { value: 1, label: "In preparation" },
-    { value: 2, label: "In progress" },
-    {
-        label: "Post-completion monitoring", items: [
-            { value: 301, label: "Restored" },
-            { value: 302, label: "Under restoration" },
-            { value: 303, label: "Degrading or degraded" },
-            { value: 304, label: "Unknown - No longer being monitored" }
-        ]
-    }
-];
+exports.restorationStatuses = [{
+    value: 1,
+    label: "In preparation"
+}, {
+    value: 2,
+    label: "In progress"
+}, {
+    value: 3,
+    label: "Post-completion monitoring",
+}];

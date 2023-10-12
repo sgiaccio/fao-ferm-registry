@@ -3,6 +3,9 @@ import { filterByLabel } from '@/components/project/menus';
 import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
 import { ref, computed } from 'vue';
 
+// import { InformationCircleIcon } from '@heroicons/vue/20/solid';
+
+
 const props = withDefaults(defineProps<{
     uid?: string,
     modelValue?: MenuValue,
@@ -112,6 +115,7 @@ const filteredOptions = computed<RecursiveMenu>(() => {
                     <div class="ml-2">
                         <span :class="[expandable ? 'cursor-pointer' : 'cursor-default', 'text-gray-900 dark:text-gray-400 text-sm']"
                               @click="toggle(i)">
+
                             <span v-if="option.dangerousHtmlLabel"
                                   v-html="option.dangerousHtmlLabel"></span>
                             <span v-else
@@ -119,6 +123,11 @@ const filteredOptions = computed<RecursiveMenu>(() => {
                                 {{ option.label }}
                             </span>
                         </span>
+                        <!-- @nbsp;
+                        <template v-if="true">
+                            <InformationCircleIcon @click="() => { }"
+                                                    class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
+                        </template> -->
                     </div>
                 </div>
                 <div v-else
@@ -136,6 +145,11 @@ const filteredOptions = computed<RecursiveMenu>(() => {
                                   v-html="option.dangerousHtmlLabel"></span>
                             <template v-else>{{ option.label }}</template>
                         </label>
+                        <!-- &nbsp;
+                        <template v-if="true">
+                            <InformationCircleIcon @click="() => showInfo"
+                                                    class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
+                        </template> -->
                     </div>
                 </div>
             </li>

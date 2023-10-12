@@ -3,7 +3,7 @@ import baseProps from './formGroupProps';
 import { ref, computed } from 'vue';
 import AlertModal from '@/views/AlertModal.vue';
 
-import { QuestionMarkCircleIcon } from '@heroicons/vue/24/outline';
+import { InformationCircleIcon } from '@heroicons/vue/20/solid';
 
 
 const props = defineProps(baseProps);
@@ -51,8 +51,8 @@ const lastWord = computed(() => {
                     <span class="whitespace-nowrap">
                         {{ lastWord }}
                         <template v-if="$slots.info">
-                            <QuestionMarkCircleIcon @click="() => showAlertModal = true"
-                                                    class="w-6 h-6 inline-block text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                            <InformationCircleIcon @click="() => showAlertModal = true"
+                                                    class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
                         </template>
                     </span>
                 </legend>

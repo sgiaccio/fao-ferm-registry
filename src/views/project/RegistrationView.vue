@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getStorage, ref, uploadBytes, listAll, deleteObject } from 'firebase/storage';
 
-import * as vue from 'vue';
+import { ref as vueRef, watch, computed } from 'vue';
 
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
@@ -13,7 +13,6 @@ import TextFormGroup from '@/components/inputs/base/TextFormGroup.vue';
 import TextareaFormGroup from '@/components/inputs/base/TextareaFormGroup.vue';
 import KeywordsInputGroup from '@/components/inputs/KeywordsInputGroup.vue';
 import MultiSelectFormGroup from '@/components/inputs/base/MultiSelectFormGroup.vue';
-import AreaFormGroup from '@/components/inputs/AreaFormGroup.vue';
 import MultiInputFormGroup from '@/components/inputs/MultiInputFormGroup.vue';
 import Organization from '@/components/inputs/organizations/Organization.vue';
 import PointOfContact from '@/components/inputs/pointsOfContact/PointOfContact.vue';
@@ -57,8 +56,8 @@ const pointsOfContact = {
 const store = useProjectStore();
 const menus = useMenusStore().menus;
 
-const selectedFile = vue.ref<File | null>(null);
-const uploadStatus = vue.ref<'idle' | 'uploading' | 'uploaded'>('idle');
+const selectedFile = vueRef<File | null>(null);
+const uploadStatus = vueRef<'idle' | 'uploading' | 'uploaded'>('idle');
 
 function setSelectedFile(event: Event) {
     selectedFile.value = (event.target as HTMLInputElement).files![0];
@@ -89,7 +88,7 @@ async function listFiles(projectId: string) {
     return listAll(dirRef);
 }
 
-const fileName = vue.ref<string | null>();
+const fileName = vueRef<string | null>();
 
 async function getFiles(id: string) {
     const fList = await listFiles(id);
@@ -108,15 +107,13 @@ function deleteFile(projectId: string | null, fileName: string) {
     });
 }
 
-vue.watch(() => store.id as string, async id => {
+watch(() => store.id as string, async id => {
     if (id) {
         getFiles(id);
     }
 });
 
-const gefPrograms = vue.ref<any>(null);
-
-import { computed, watch } from 'vue';
+const gefPrograms = vueRef<any>(null);
 
 // Handle deletion based on gefType
 function handleDeletionByGefType(gefType: string | null) {
@@ -180,17 +177,26 @@ function generateYearOptions(start: number, end: number): { value: number; label
 }
 
 const years = generateYearOptions(2000, 2050);
+
+const selectedItemInRestorationStatusInfo = vueRef<string>("1");
+watch(() => store.project.project.restorationStatus, newValue => {
+    if (newValue) {
+        selectedItemInRestorationStatusInfo.value = '' + newValue;
+    } else {
+        selectedItemInRestorationStatusInfo.value = '1';
+    }
+}, { immediate: true });
 </script>
 
 
 <template>
     <TabTemplate title="General">
         <template #description>
-            <p>
-                In this tab, basic information about your initiative is needed. The title and a summary of the aims and
-                expected results of the initiative can be provided in the description section. You also need to provide
-                further information such as when the initiative is expected to start and end, sources of funding and
-                responsible organisms.
+            <p v-if="store.project.reportingLine === 'GEF'">
+                In this tab, you can provide basic information about your initiative. The title and a summary of the aims and expected results of the initiative can be provided in the description section. Further information can be provided such as when the initiative is expected to start and end, web links or documentation that you find relevant, responsible organisms and the contact person who can provide further technical details of the initiative.
+            </p>
+            <p v-else>
+                In this tab, you can provide basic information about your restoration initiative. The title and a summary of the aims and expected results of the initiative can be provided in the description section. Further information can be provided such as when the initiative is expected to start and end, the restoration status, web links or documentation that you find relevant, responsible organisms and the contact person who can provide further technical details of the restoration initiative.
             </p>
         </template>
         <div class="divide-y divide-slate-100 dark:divide-slate-900 border-2 border-slate-200 dark:border-slate-900 rounded-md shadow-sm mt-4 mb-6 overflow-hidden">
@@ -250,7 +256,11 @@ const years = generateYearOptions(2000, 2050);
                                :edit="edit"
                                v-model="store.project.project.description"
                                label="Description"
-                               description="Short description of the initiative" />
+                               description="Short description of the initiative">
+                <template v-slot:info>
+                    <p>Provide a short context of the initiative in terms of actors and partners leading it, a short background, main restoration activities that will be implemented, expected results of the initiative.</p>
+                </template>
+            </TextareaFormGroup>
             <!-- TODO Short description of the initiative (max xx characters) -->
             <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                            :edit="edit"
@@ -259,14 +269,6 @@ const years = generateYearOptions(2000, 2050);
                            description="Website of the initiative"
                            placeholder="www.example.com" />
 
-            <!-- Disable this when the reporting line is GEF -->
-            <AreaFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
-                           v-if="store.project.reportingLine !== 'GEF'"
-                           :edit="edit"
-                           label="Target area"
-                           v-model="store.project.project.targetArea"
-                           description="Area of the restoration target">
-            </AreaFormGroup>
 
             <!--
         <template v-if="store.project.reportingLine === 'GEF'" v-slot:info >
@@ -293,14 +295,48 @@ const years = generateYearOptions(2000, 2050);
                              v-model="store.project.project.endingYear"
                              label="Ending year"
                              :options="years" />
-            <RecursiveRadioFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+
+            <RecursiveRadioFormGroup v-if="store.project.reportingLine !== 'GEF'"
+                                     class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                                      label="Restoration status"
                                      v-model="store.project.project.restorationStatus"
                                      :options="menus.restorationStatuses"
                                      :showSelection="false"
                                      :show-search-input="false"
                                      :expandable="false"
-                                     :edit="edit" />
+                                     :edit="edit">
+                <template v-slot:info>
+                    <p>Provides an indication of whether the restoration area can be counted towards a reporting period. Restoration status is broken down into four components and an area specifies one of the components to represent its status. Each restoration status is characterized by a temporal component, which includes the start year of the restoration activities and end year, if applicable.
+                    </p>
+
+                    <p class="mt-2">
+                        References:
+                        <br>
+                        <a href="https://www.post-2020indicators.org/metadata/headline/2-2"
+                           target="_blank"
+                           class="text-blue-700 underline">
+                            https://www.post-2020indicators.org/metadata/headline/2-2
+                        </a>
+                    </p>
+
+                    <select v-model="selectedItemInRestorationStatusInfo"
+                            class="mt-6 mb-3 block w-full font-bold rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                        <option value="1">In preparation</option>
+                        <option value="2">In progress</option>
+                        <option value="3">Post-completion monitoring</option>
+                    </select>
+
+                    <p v-if="selectedItemInRestorationStatusInfo === '1'">
+                        It is considered that the initiative is enabled, has been launched, has the necessary funds committed or the restoration areas has been officially gazetted. Still the the activities have not started in the field and the effect of restoration may not yet be measurable.
+                    </p>
+                    <p v-if="selectedItemInRestorationStatusInfo === '2'">
+                        Restoration activities have started in the site and depending on the time that the activities have been ongoing, impacts may start to be measurable.
+                    </p>
+                    <p v-if="selectedItemInRestorationStatusInfo === '3'">
+                        Restoration activities have finished and the focus is now on monitoring results. It is acknowledged that an area will not be restored as soon as activities are completed, therefore, post-completion assessments on the restoration status shall be made periodically.
+                    </p>
+                </template>
+            </RecursiveRadioFormGroup>
 
 
             <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"

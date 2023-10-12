@@ -13,7 +13,7 @@ defineProps({
     ...baseProps,
     ...{
         options: { type: Array as PropType<RecursiveMenu> },
-        modelValue: [ String, Number ],
+        modelValue: [String, Number],
         showSelection: { type: Boolean, default: true },
         showSearchInput: { type: Boolean, default: true },
         expandable: { type: Boolean, default: true }
@@ -32,13 +32,16 @@ function valueChanged(value: string) {
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
-        <RecursiveRadio
-            :edit="edit"
-            :options="options"
-            :model-value="modelValue"
-            :showSelection="showSelection"
-            @update:modelValue="valueChanged"
-            :showSearchInput="showSearchInput"
-            :expandable="expandable" />
+        <RecursiveRadio :edit="edit"
+                        :options="options"
+                        :model-value="modelValue"
+                        :showSelection="showSelection"
+                        @update:modelValue="valueChanged"
+                        :showSearchInput="showSearchInput"
+                        :expandable="expandable" />
+        <template v-slot:info
+                  v-if="$slots.info">
+            <slot name="info" />
+        </template>
     </FormGroup>
 </template>
