@@ -872,3 +872,12 @@ exports.getPolygonZonalStats = areas.getPolygonZonalStats;
 // exports.getAllAreaPolygons = areas.getAllAreaPolygons;
 exports.deleteDanglingAreaRecords = areas.deleteDanglingAreaRecords;
 // exports.deleteAllProjectAreas = areas.deleteAllProjectAreas;
+
+
+/************************************************
+ *
+ * GOOD PRACTICES
+ *
+ * **********************************************/
+const goodPractices = require("./goodPractices");
+exports.updateBpIdFieldOnWrite = goodPractices.updateBpIdFieldOnWrite;

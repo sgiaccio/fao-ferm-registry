@@ -17,7 +17,6 @@ import FormGroup from '../../components/inputs/FormGroup.vue';
 import NumberInput from '../../components/inputs/base/NumberInput.vue';
 import FileUploadInputGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
-import AreaFormGroup from '@/components/inputs/AreaFormGroup.vue';
 import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
 
 import AlertModal from '@/views/AlertModal.vue';
@@ -118,7 +117,7 @@ function deleteProjectAreas() {
         Are you sure you want to delete all project areas? This action will only remove areas temporarily in your
         current session. <span class="font-bold">To permanently apply this change, you must save the project afterwards</span>. Proceed?
     </ConfirmModal>
-    <TabTemplate title="Area">
+    <TabTemplate title="Area & Ecosystems">
         <template #description>
             <p>
                 In this tab information on the project areas is needed. The <a href="#">methodology</a>
@@ -167,16 +166,37 @@ function deleteProjectAreas() {
                     The sum of committed land in GEF Core Indicators 1-5 shall be included
                     in project design phase, at mid-term review phase (MT) and at
                     terminal evaluation (TE) phase.</p>
-                <AreaFormGroup :edit="edit"
-                               label="Target area in design phase"
-                               v-model="store.project.project.targetAreaDesignPhase"
-                               description="Area of land committed in design phase">
+
+                <FormGroup :edit="edit"
+                           label="Target area in design phase"
+                           description="Area of land committed in design phase">
+                    <NumberInput :edit="edit"
+                                 v-model="store.project.project.targetAreaDesignPhase" />
                     <template v-slot:info>
                         <p>Please include the land (in ha) committed in <span class="font-bold">project design phase</span>
                             (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
                     </template>
-                </AreaFormGroup>
-                <AreaFormGroup v-if="edit || store.project.project.targetAreaReviewPhase"
+                </FormGroup>
+                <!-- <NumberFormGroup :edit="edit"
+                                 label="Target area in design phase"
+                                 v-model="store.project.project.targetAreaDesignPhase"
+                                 description="Area of land committed in design phase">
+                    <template v-slot:info>
+                        <p>Please include the land (in ha) committed in <span class="font-bold">project design phase</span>
+                            (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                    </template>
+                </NumberFormGroup> -->
+                <FormGroup :edit="edit || store.project.project.targetAreaReviewPhase"
+                           label="Target area in mid-term review phase"
+                           description="Area of land committed in mid-term review phase">
+                    <NumberInput :edit="edit"
+                                 v-model="store.project.project.targetAreaReviewPhase" />
+                    <template v-slot:info>
+                        <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span>
+                            (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                    </template>
+                </FormGroup>
+                <!-- <AreaFormGroup v-if="edit || store.project.project.targetAreaReviewPhase"
                                :edit="edit"
                                label="Target area in mid-term review phase"
                                v-model="store.project.project.targetAreaReviewPhase"
@@ -185,8 +205,19 @@ function deleteProjectAreas() {
                         <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span>
                             (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
                     </template>
-                </AreaFormGroup>
-                <AreaFormGroup v-if="edit || store.project.project.targetAreaEvaluationPhase"
+                </AreaFormGroup> -->
+
+                <FormGroup :edit="edit || store.project.project.targetAreaEvaluationPhase"
+                           label="Target area in terminal evaluation phase"
+                           description="Area of land committed in terminal evaluation phase">
+                    <NumberInput :edit="edit"
+                                 v-model="store.project.project.targetAreaEvaluationPhase" />
+                    <template v-slot:info>
+                        <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span>
+                            (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                    </template>
+                </FormGroup>
+                <!-- <AreaFormGroup v-if="edit || store.project.project.targetAreaEvaluationPhase"
                                :edit="edit"
                                label="Target area in terminal evaluation phase"
                                v-model="store.project.project.targetAreaEvaluationPhase"
@@ -195,7 +226,7 @@ function deleteProjectAreas() {
                         <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span>
                             (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
                     </template>
-                </AreaFormGroup>
+                </AreaFormGroup> -->
             </div>
 
             <div class="border-2 rounded-xl my-4 px-5 bg-teal-50 dark:bg-teal-900 shadow-md border-gray-300">

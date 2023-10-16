@@ -50,6 +50,11 @@ export function filterByLabel(data: RecursiveMenu, searchString: string): Recurs
     return filteredData;
 }
 
+export function getMenuSelectedLabel(value: MenuValue, menu: RecursiveMenu): string {
+    const selected = menu.find(u => u.value === value);
+    return selected ? selected.label || ('' + value) : 'No units selected';
+};
+
 // export const objectives: Menu = [
 //     { value: 1, label: "Reforest degraded lands" },
 //     { value: 2, label: "Improve soil health" },

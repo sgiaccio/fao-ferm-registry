@@ -179,15 +179,16 @@ function generateYearOptions(start: number, end: number): { value: number; label
 const years = generateYearOptions(2000, 2050);
 
 const selectedItemInRestorationStatusInfo = vueRef<string>("1");
-watch(() => store.project.project.restorationStatus, newValue => {
-    if (newValue) {
-        selectedItemInRestorationStatusInfo.value = '' + newValue;
-    } else {
-        selectedItemInRestorationStatusInfo.value = '1';
+watch(() => store.project?.project.restorationStatus, newValue => {
+    if (store.project) {
+        if (newValue) {
+            selectedItemInRestorationStatusInfo.value = '' + newValue;
+        } else {
+            selectedItemInRestorationStatusInfo.value = '1';
+        }
     }
 }, { immediate: true });
 </script>
-
 
 <template>
     <TabTemplate title="General">

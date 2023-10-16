@@ -10,7 +10,7 @@ import SelectInput from './base/SelectInput.vue';
 const props = defineProps({
     ...baseProps,
     ...{
-        modelValue: { type: Object as PropType<{value: any, units: string}>, default: {} },
+        modelValue: { type: Object as PropType<{ value: any, units: string }>, default: {} },
     }
 });
 
@@ -41,22 +41,21 @@ function updateUnits(newUnits) {
                :dangerousHtmlDescription="dangerousHtmlDescription">
         <div class="flex gap-8">
             <div class="flex flex-col gap-1">
-                <NumberInput
-                    :modelValue="modelValue.value"
-                    @update:modelValue="updateArea"
-                    :edit="edit" />
+                <NumberInput :modelValue="modelValue.value"
+                             @update:modelValue="updateArea"
+                             :edit="edit" />
                 <span class="text-gray-300 text-sm">Area</span>
             </div>
             <div class="flex flex-col gap-1">
-                <SelectInput
-                    :modelValue="modelValue.units"
-                    @update:modelValue="updateUnits"
-                    :options="[{value: 'ha', label: 'Hectares'}, {value: 'km2', label: 'Square km'}, {value: 'ac', label: 'Acres'}, {value: 'km', label: 'Kilometres'}]"
-                    :edit="edit" />
+                <SelectInput :modelValue="modelValue.units"
+                             @update:modelValue="updateUnits"
+                             :options="[{ value: 'ha', label: 'Hectares' }, { value: 'km2', label: 'Square km' }, { value: 'km', label: 'Kilometres' }]"
+                             :edit="edit" />
                 <span class="text-gray-300 text-sm">Units</span>
             </div>
         </div>
-        <template v-slot:info v-if="$slots.info">
+        <template v-slot:info
+                  v-if="$slots.info">
             <slot name="info" />
         </template>
     </FormGroup>

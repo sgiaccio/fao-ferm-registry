@@ -7,7 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 // import OSM from 'ol/source/OSM';
 import BingMaps from 'ol/source/BingMaps.js';
 import { Draw, Modify, Snap } from 'ol/interaction';
-import { Style, Fill, Stroke } from 'ol/style.js';
+// import { Style, Fill, Stroke } from 'ol/style.js';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { GeoJSON } from 'ol/format';
@@ -16,12 +16,15 @@ import 'ol/ol.css';
 
 import { useAuthStore } from '@/stores/auth';
 import { useProjectStore } from '@/stores/project';
+import { useMenusStore } from '@/stores/menus';
 
 import FormGroup from '../FormGroup.vue';
 import TextInput from './TextInput.vue';
 
 import { CalculatorIcon } from '@heroicons/vue/20/solid';
 import NumberInput from '@/components/inputs/base/NumberInput.vue';
+
+import { getMenuSelectedLabel } from '@/components/project/menus';
 
 
 const props = withDefaults(defineProps<{
@@ -44,6 +47,7 @@ const emit = defineEmits(['update:modelValue']);
 
 const authStore = useAuthStore();
 const projectStore = useProjectStore();
+const menus = useMenusStore().menus;
 
 const mapRoot = ref(null);
 
@@ -190,7 +194,7 @@ function fetchPolygonArea() {
         <TextInput :edit="edit"
                    v-model="modelValue.siteName" />
     </FormGroup>
-    <FormGroup label="Area [ha]">
+    <FormGroup :label="`Area [${getMenuSelectedLabel(projectStore.project.project.areaUnits, menus.units)}]`">
         <template v-if="edit">
             <div class="mt-2 flex rounded-md shadow-sm">
                 <div class="relative flex flex-grow items-stretch focus-within:z-10">
@@ -212,10 +216,16 @@ function fetchPolygonArea() {
         <div v-else>{{ modelValue.area }}</div>
     </FormGroup>
     <div class="mt-4 w-full h-96 border-2 border-gray-300 dark:border-gray-700"
-         ref="mapRoot" />
+         ref="mapRoot" id="caz" />
     <button v-if="!areaUploaded && edit"
             class="mt-4 inline-flex items-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-default']"
             @click="postGeoJson()">Upload
     </button>
 </template>
+
+<style>
+#caz div canvas{
+    /* border-radius: 10px; */
+}
+</style>

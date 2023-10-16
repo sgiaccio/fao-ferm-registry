@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
+
 import FormGroup from './FormGroup.vue';
 import SelectInput from './base/SelectInput.vue';
+
 import { getGaulLevel0, getGaulLevel1, getGaulLevel2 } from '@/firebase/firestore';
 
+import { useMenusStore } from '@/stores/menus';
+import { useProjectStore } from '@/stores/project';
+
+import { getMenuSelectedLabel } from '@/components/project/menus';
+
+
+const store = useProjectStore();
+const menus = useMenusStore().menus;
 
 // type AdminArea = {
 //     code?: string,
@@ -127,7 +137,7 @@ watch(admin2, val => {
 
             <div>
                 <legend class="block text-sm font-medium leading-6 text-gray-900">
-                    Area [ha]
+                    Area [{{getMenuSelectedLabel(store.project.project.areaUnits, menus.units)}}]
                 </legend>
                 <template v-if="edit">
                     <div class="mt-2 flex rounded-md shadow-sm">
@@ -135,7 +145,7 @@ watch(admin2, val => {
                             <input type="number"
                                    v-model="modelValue.area"
                                    name="area"
-                                   class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                     </div>
                 </template>

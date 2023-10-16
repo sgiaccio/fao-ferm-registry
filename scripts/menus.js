@@ -1419,3 +1419,9 @@ exports.restorationStatuses = [{
     value: 3,
     label: "Post-completion monitoring",
 }];
+
+exports.units = [
+    { value: 'ha', label: 'Hectares' },
+    { value: 'km2', label: 'Square km' },
+    { value: 'km', label: 'Linear km' }
+];

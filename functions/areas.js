@@ -2,7 +2,7 @@ const functions = require("firebase-functions");
 const { Pool } = require("pg");
 const axios = require("axios");
 
-const { db  } = require("./util");
+const { db } = require("./util");
 const { defineString } = require("firebase-functions/params");
 
 
@@ -117,7 +117,7 @@ exports.getPolygonZonalStats = functions
 
         try {
             // Fetch the polygon from the database. If it doesn't exist, throw an error.
-            functions.logger.log("Fetching polygon for ID:", polygonId, "..." );
+            functions.logger.log("Fetching polygon for ID:", polygonId, "...");
             const polygon = await fetchPolygonFromDatabase(client, polygonId);
             if (!polygon) {
                 throw new functions.https.HttpsError("not-found", "Polygon not found");
