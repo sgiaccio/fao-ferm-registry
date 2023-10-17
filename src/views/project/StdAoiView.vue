@@ -97,10 +97,9 @@ function deleteProjectAreas() {
     <TabTemplate title="Area & Ecosystems">
         <template #description>
             <p>
-                Identification of geographic areas of ecosystem restoration is key for geospatial applications. One
-                initiative implements ecosystem restoration in one or more geographic areas. initiatives can identify
-                one or more initiative areas. Identification of activities, indicators, characterization and results
-                will be provided for each area. Geographic areas can be identified based on different options:
+                Identification of geographic areas under ecosystem restoration is key for geospatial applications and is essential to keep track of effective restoration, being the main objective of Target 2 of the Kunming-Montreal Global Biodiversity Framework (<a class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 dark:hover:text-ferm-blue-dark-200"
+                   href="https://www.cbd.int/gbf/targets/2/"
+                   target="_blank">Target 2</a>). One initiative can implement ecosystem restoration in one or more geographic areas. Activities, indicators, ecosystem characterization and results will be provided for each area. Geographic areas can be identified based on different options:
             </p>
             <ul class="list-disc list-inside">
                 <li>
@@ -108,7 +107,6 @@ function deleteProjectAreas() {
                 </li>
                 <li>
                     Upload polygons/vector
-
                 </li>
                 <li>
                     Draw directly on the platform

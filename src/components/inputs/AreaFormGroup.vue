@@ -26,6 +26,7 @@ function updateArea(newValue) {
     else
         emit('update:modelValue', undefined);
 }
+
 function updateUnits(newUnits) {
     units.value = newUnits;
     if (newUnits && area.value)

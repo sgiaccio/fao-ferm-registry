@@ -22,9 +22,9 @@ const menus = useMenusStore().menus;
 
 function getLastTargetArea() {
     const registration = store.project.project;
-    const targetAreaDesignPhase = registration.targetAreaDesignPhase?.value;
-    const targetAreaReviewPhase = registration.targetAreaReviewPhase?.value;
-    const targetAreaEvaluationPhase = registration.targetAreaEvaluationPhase?.value;
+    const targetAreaDesignPhase = registration.targetAreaDesignPhase;
+    const targetAreaReviewPhase = registration.targetAreaReviewPhase;
+    const targetAreaEvaluationPhase = registration.targetAreaEvaluationPhase;
 
     return targetAreaEvaluationPhase || targetAreaReviewPhase || targetAreaDesignPhase;
 }

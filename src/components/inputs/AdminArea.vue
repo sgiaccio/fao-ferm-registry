@@ -115,7 +115,7 @@ watch(admin2, val => {
     <FormGroup label="Administrative area">
         <div class="flex flex-col gap-y-3">
             <div>
-                <legend class="block text-sm font-medium leading-6 text-gray-900">
+                <legend class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">
                     Site name
                 </legend>
                 <template v-if="edit">
@@ -136,7 +136,7 @@ watch(admin2, val => {
             </FormGroup> -->
 
             <div>
-                <legend class="block text-sm font-medium leading-6 text-gray-900">
+                <legend class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">
                     Area [{{getMenuSelectedLabel(store.project.project.areaUnits, menus.units)}}]
                 </legend>
                 <template v-if="edit">
@@ -156,7 +156,7 @@ watch(admin2, val => {
                              v-model="modelValue.area" />
             </FormGroup> -->
 
-            <div class="block text-sm font-medium leading-6 text-gray-900">Administrative area</div>
+            <div class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Administrative area</div>
             <SelectInput :edit="edit"
                          v-model="admin0"
                          :options="admin0Menu"

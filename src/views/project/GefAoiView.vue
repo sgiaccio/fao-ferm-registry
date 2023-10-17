@@ -168,7 +168,7 @@ function deleteProjectAreas() {
                     terminal evaluation (TE) phase.</p>
 
                 <FormGroup :edit="edit"
-                           label="Target area in design phase"
+                           label="Target area in design phase [Hectares]"
                            description="Area of land committed in design phase">
                     <NumberInput :edit="edit"
                                  v-model="store.project.project.targetAreaDesignPhase" />
@@ -187,7 +187,7 @@ function deleteProjectAreas() {
                     </template>
                 </NumberFormGroup> -->
                 <FormGroup :edit="edit || store.project.project.targetAreaReviewPhase"
-                           label="Target area in mid-term review phase"
+                           label="Target area in mid-term review phase [Hectares]"
                            description="Area of land committed in mid-term review phase">
                     <NumberInput :edit="edit"
                                  v-model="store.project.project.targetAreaReviewPhase" />
@@ -208,7 +208,7 @@ function deleteProjectAreas() {
                 </AreaFormGroup> -->
 
                 <FormGroup :edit="edit || store.project.project.targetAreaEvaluationPhase"
-                           label="Target area in terminal evaluation phase"
+                           label="Target area in terminal evaluation phase [Hectares]"
                            description="Area of land committed in terminal evaluation phase">
                     <NumberInput :edit="edit"
                                  v-model="store.project.project.targetAreaEvaluationPhase" />

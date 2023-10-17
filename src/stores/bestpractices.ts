@@ -127,7 +127,7 @@ export const useBestPracticesStore = defineStore({
                     this.bestPracticeAreaIdxs = this.projectAreas.map((area: any, index: number) => {
                         const obj: any = Object.values(area)[0];
                         return this.id && obj.bestPractices?.[this.id] ? index : null;
-                    }).filter(Boolean);
+                    }).filter((i: any) => i !== null);
                 }
             } else {
                 console.error(`No document found with projectId ${projectId} and bestPracticeId ${bestPracticeId}`);

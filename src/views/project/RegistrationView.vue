@@ -176,7 +176,7 @@ function generateYearOptions(start: number, end: number): { value: number; label
     });
 }
 
-const years = generateYearOptions(2000, 2050);
+const years = generateYearOptions(1950, 2050);
 
 const selectedItemInRestorationStatusInfo = vueRef<string>("1");
 watch(() => store.project?.project.restorationStatus, newValue => {
