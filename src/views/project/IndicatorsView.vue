@@ -56,7 +56,7 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
                     Details on GEF Core Indicators can be found under this
                     <a href="https://www.thegef.org/sites/default/files/documents/2022-09/Results_Framework_Guidelines_2022_06_30.pdf"
                        target="_blank"
-                       class="text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300">link</a>.
+                       class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200">link</a>.
                 </p>
             </template>
             <template v-else>
