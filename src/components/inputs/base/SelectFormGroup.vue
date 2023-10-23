@@ -14,7 +14,7 @@ defineProps({
     ...{
         options: { type: Array as PropType<Menu> },
         placeholder: { type: String },
-        modelValue: [ String, Number ],
+        modelValue: [String, Number],
         required: { type: Boolean, default: false }
     }
 });
@@ -31,11 +31,14 @@ function valueChanged(value: string) {
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
-        <SelectInput
-            :edit="edit"
-            :options="options"
-            :model-value="modelValue"
-            @update:modelValue="valueChanged"
-            :required="required" />
+        <SelectInput :edit="edit"
+                     :options="options"
+                     :model-value="modelValue"
+                     @update:modelValue="valueChanged"
+                     :required="required" />
+        <template v-slot:info
+                  v-if="$slots.info">
+            <slot name="info" />
+        </template>
     </FormGroup>
 </template>

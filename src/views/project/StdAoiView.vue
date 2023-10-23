@@ -22,6 +22,7 @@ import ConfirmModal from '@/views/ConfirmModal.vue';
 
 import { getMenuSelectedLabel } from '@/components/project/menus';
 
+
 const store = useProjectStore();
 const menus = useMenusStore().menus;
 

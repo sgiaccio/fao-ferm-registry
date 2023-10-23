@@ -120,9 +120,7 @@ function deleteProjectAreas() {
     <TabTemplate title="Area & Ecosystems">
         <template #description>
             <p>
-                In this tab information on the project areas is needed. The <a href="#">methodology</a>
-                proposed to report and monitor the achievement of GEF commitments
-                including restoration (in ha of land), in FERM is through GEF Core Indicators.
+                In this tab information on the project areas and ecosystems is needed in tabular and in geospatial form. You will need to provide details on committed land under GEF Core Indicators 1-5, and information on Restoration Plans/Management Plans with the extension of the area of intervention as well as the geospatial information of the areas including ecosystems covered.
             </p>
         </template>
         <template #default>

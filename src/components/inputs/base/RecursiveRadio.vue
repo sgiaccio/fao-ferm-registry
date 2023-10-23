@@ -2,8 +2,9 @@
 import { filterByLabel } from '@/components/project/menus';
 import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
 import { ref, computed } from 'vue';
+import AlertModal from '@/views/AlertModal.vue';
 
-// import { InformationCircleIcon } from '@heroicons/vue/20/solid';
+import { InformationCircleIcon } from '@heroicons/vue/20/solid';
 
 
 const props = withDefaults(defineProps<{
@@ -14,14 +15,14 @@ const props = withDefaults(defineProps<{
     expandLevel?: number,
     showSelection?: boolean,
     edit?: boolean,
-    showSearchInput?: boolean
     expandable?: boolean
+    searchable?: boolean
 }>(), {
     level: 0,
     expandLevel: 0,
     showSelection: true,
     edit: true,
-    showSearchInput: true,
+    searchable: true,
     expandable: true
 });
 
@@ -64,11 +65,27 @@ const filteredOptions = computed<RecursiveMenu>(() => {
     if (!searchString.value) return props.options;
     return filterByLabel(props.options, searchString.value);
 });
+
+const infoTitle = ref<string | null>(null);
+const infoText = ref<string | null>(null);
+function showAlertModal(title: string, info: string) {
+    infoTitle.value = title
+    infoText.value = info;
+}
 </script>
 
 <template>
+    <AlertModal type="info"
+                :onClose="() => infoText = null"
+                :open="!!infoText"
+                :title="infoTitle"
+                buttonText="Close">
+        <div class="text-left text-sm space-y-4 [&_a]:text-ferm-blue-dark-600"
+             v-html="infoText" />
+    </AlertModal>
+
     <div v-if="!level && showSelection || !edit">{{ modelValue !== undefined ? flattenedOptions[modelValue] : 'None selected' }}</div>
-    <input v-if="!level && edit && showSearchInput"
+    <input v-if="!level && edit && searchable"
            type="text"
            class="w-80 text-sm font-bold text-gray-600 rounded-full border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mb-2 mt-2"
            placeholder="Search"
@@ -123,11 +140,11 @@ const filteredOptions = computed<RecursiveMenu>(() => {
                                 {{ option.label }}
                             </span>
                         </span>
-                        <!-- @nbsp;
-                        <template v-if="true">
-                            <InformationCircleIcon @click="() => { }"
-                                                    class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
-                        </template> -->
+                        <template v-if="option.info">
+                            @nbsp;
+                            <InformationCircleIcon @click="() => showAlertModal(option.dangerousHtmlLabel || option.label, option.info)"
+                                                   class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
+                        </template>
                     </div>
                 </div>
                 <div v-else
@@ -145,11 +162,11 @@ const filteredOptions = computed<RecursiveMenu>(() => {
                                   v-html="option.dangerousHtmlLabel"></span>
                             <template v-else>{{ option.label }}</template>
                         </label>
-                        <!-- &nbsp;
-                        <template v-if="true">
-                            <InformationCircleIcon @click="() => showInfo"
-                                                    class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
-                        </template> -->
+                        <template v-if="option.info">
+                            &nbsp;
+                            <InformationCircleIcon @click="() => showAlertModal(option.dangerousHtmlLabel || option.label, option.info)"
+                                                   class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
+                        </template>
                     </div>
                 </div>
             </li>

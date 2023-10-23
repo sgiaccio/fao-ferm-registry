@@ -224,7 +224,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                 :options="menus.gefInvestmentTypes"
                                 :showSelection="false"
                                 :edit="edit"
-                                :showSearchInput="false" />
+                                :searchable="false" />
             </FormGroup> -->
                 <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                            label="GEF cycle">
@@ -232,7 +232,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                 :options="menus.gefCycles"
                                 :showSelection="false"
                                 :edit="edit"
-                                :showSearchInput="false" /> -->
+                                :searchable="false" /> -->
                     <SmallCardsFormGroup v-model="store.project.project.gefCycle"
                                          :options="menus.gefCycles"
                                          :edit="edit" />
@@ -259,7 +259,8 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                label="Description"
                                description="Short description of the initiative">
                 <template v-slot:info>
-                    <p>Provide a short context of the initiative in terms of actors and partners leading it, a short background, main restoration activities that will be implemented, expected results of the initiative.</p>
+                    <p v-if="store.project.reportingLine === 'GEF'">Provide a short context of the initiative in terms of actors and partners leading it, a short background, main management or restoration activities that will be implemented, expected results of the initiative.</p>
+                    <p v-else>Provide a short context of the initiative in terms of actors and partners leading it, a short background, main restoration activities that will be implemented, expected results of the initiative.</p>
                 </template>
             </TextareaFormGroup>
             <!-- TODO Short description of the initiative (max xx characters) -->

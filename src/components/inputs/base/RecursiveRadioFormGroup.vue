@@ -15,7 +15,7 @@ defineProps({
         options: { type: Array as PropType<RecursiveMenu> },
         modelValue: [String, Number],
         showSelection: { type: Boolean, default: true },
-        showSearchInput: { type: Boolean, default: true },
+        searchable: { type: Boolean, default: true },
         expandable: { type: Boolean, default: true }
     }
 });
@@ -37,7 +37,7 @@ function valueChanged(value: string) {
                         :model-value="modelValue"
                         :showSelection="showSelection"
                         @update:modelValue="valueChanged"
-                        :showSearchInput="showSearchInput"
+                        :searchable="searchable"
                         :expandable="expandable" />
         <template v-slot:info
                   v-if="$slots.info">

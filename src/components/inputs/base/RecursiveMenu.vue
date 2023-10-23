@@ -11,12 +11,14 @@ const props = withDefaults(defineProps<{
     level?: number,
     expandLevel?: number,
     edit?: boolean,
-    showSelectedValues?: boolean
+    showSelection?: boolean,
+    searchable?: boolean
 }>(), {
     level: 0,
     expandLevel: 0,
     edit: true,
-    showSelectedValues: true
+    showSelection: true,
+    searchable: true,
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -85,7 +87,7 @@ const filteredOptions = computed<RecursiveMenu>(() => {
 </script>
 
 <template>
-    <div v-if="!level && showSelectedValues">
+    <div v-if="!level && showSelection">
         <div class="border border-slate-400 shadow-sm rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
             <div class="ml-2 text-gray-600 dark:text-gray-400"
                  v-if="!props.modelValue?.length">
@@ -111,7 +113,7 @@ const filteredOptions = computed<RecursiveMenu>(() => {
             </div>
         </div>
     </div>
-    <input v-if="!level && edit"
+    <input v-if="!level && edit && searchable"
            type="text"
            class="w-80 text-sm font-bold text-gray-600 rounded-full border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mb-2 mt-2"
            placeholder="Search"

@@ -7,7 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 // import OSM from 'ol/source/OSM';
 import BingMaps from 'ol/source/BingMaps.js';
 import { Draw, Modify, Snap } from 'ol/interaction';
-// import { Style, Fill, Stroke } from 'ol/style.js';
+import { Style, Fill, Stroke } from 'ol/style.js';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { GeoJSON } from 'ol/format';
@@ -51,18 +51,26 @@ const menus = useMenusStore().menus;
 
 const mapRoot = ref(null);
 
-// const style = new Style({
-//     fill: new Fill({
-//         color: 'rgba(0,0,0,0)' // Transparent fill
-//     }),
-//     stroke: new Stroke({
-//         color: '#ffcc33',
-//         width: 2
-//     })
-// });
+const style = new Style({
+    fill: new Fill({
+        color: 'rgba(0,0,0,0)' // Transparent fill
+    }),
+    stroke: new Stroke({
+        color: '#ffcc33',
+        width: 2
+    })
+});
+
+const drawStyle = {
+    'circle-radius': 5,
+    'circle-fill-color': '#ffcc33',
+    'circle-stroke-color': 'white',
+    'stroke-color': '#ffcc33',
+    'stroke-width': 2
+};
 
 const vectorSource = new VectorSource();
-const vectorLayer = new VectorLayer({ source: vectorSource });
+const vectorLayer = new VectorLayer({ source: vectorSource, style });
 
 function getGeoJson() {
     const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
@@ -71,8 +79,12 @@ function getGeoJson() {
 
 const areaUploaded = computed(() => !!props.modelValue?.uuid);
 
-const draw = new Draw({ source: vectorSource, type: 'Polygon' });
-const modify = new Modify({ source: vectorSource });
+const draw = new Draw({
+    source: vectorSource,
+    type: 'Polygon',
+    style: drawStyle
+});
+const modify = new Modify({ source: vectorSource, style: drawStyle });
 const snap = new Snap({ source: vectorSource });
 
 async function postGeoJson() {
@@ -154,7 +166,7 @@ onMounted(async () => {
         const olGeoJsonObj = new GeoJSON({ dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
         const source = new VectorSource({ features: olGeoJsonObj.readFeatures(geoJson) });
         m.removeLayer(vectorLayer);
-        m.addLayer(new VectorLayer({ source }));
+        m.addLayer(new VectorLayer({ source, style }));
         m.getView().fit(source.getExtent());
     }
 });
@@ -216,16 +228,11 @@ function fetchPolygonArea() {
         <div v-else>{{ modelValue.area }}</div>
     </FormGroup>
     <div class="mt-4 w-full h-96 border-2 border-gray-300 dark:border-gray-700"
-         ref="mapRoot" id="caz" />
+         ref="mapRoot"
+         id="caz" />
     <button v-if="!areaUploaded && edit"
             class="mt-4 inline-flex items-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-default']"
             @click="postGeoJson()">Upload
     </button>
 </template>
-
-<style>
-#caz div canvas{
-    /* border-radius: 10px; */
-}
-</style>

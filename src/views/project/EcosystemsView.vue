@@ -250,7 +250,6 @@ function findBiomeLabel(biome: string, biomes: any = menus.iucnEcosystems): stri
 // }
 
 function deleteOption(area: any, biome: string) {
-    alert();
     console.log(area);
     const areaValue = getAreaValue(area);
     areaValue.ecosystems = areaValue.ecosystems?.filter((e: string) => e !== biome);
@@ -412,7 +411,7 @@ function handleAfterLeave(el) {
                                    v-model="area[Object.keys(area)[0]].ecosystems"
                                    :options="menus.iucnEcosystems"
                                    :expandLevel="0"
-                                   :showSelectedValues="false" />
+                                   :showSelection="false" />
                 </div>
             </div>
             <div v-else-if="edit"
