@@ -88,15 +88,6 @@ const router = createRouter({
             name: "login",
             component: () => import('../views/LoginView.vue'),
             meta: { public: true }
-        }, {
-            path: "/signup",
-            name: "signup",
-            component: () => import('../views/SignUpView.vue'),
-            meta: { public: true }
-        }, {
-            path: "/registration",
-            name: "registration",
-            component: () => import('../views/UserRegistrationView.vue')
         },
 
         // Administration
