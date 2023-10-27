@@ -1183,14 +1183,22 @@ exports.iucnEcosystems = [{
 }];
 
 exports.restorationTypes = [
-    { value: 1, label: "Ecological restoration" },
-    { value: 2, label: "Rehabilitation" }
+    {
+        value: 1,
+        label: "Ecological restoration",
+        info: "<p>Ecological restoration is a type of ecosystem restoration. According to CBD (2016), it is defined as: \"The process of managing or assisting the recovery of an ecosystem that has been degraded, damaged or destroyed as a means of sustaining ecosystem resilience and conserving biodiversity.\"</p><p>The Society for Ecological Restoration (SER) defines ecological restoration as: \"The process of assisting the recovery of an ecosystem that has been degraded, damaged, or destroyed. (Ecosystem restoration is sometimes used inter-changeably with ecological restoration, but ecological restoration always addresses biodiversity conservation and ecological integrity, whereas some approaches to ecosystem restoration may focus solely on the delivery of ecosystem services.)\" (Gann et al., 2019). </p><p>The CBD Secretariat and SER have provided a glossary to help distinguish different versions of restoration and explain how they intersect (CBD Secretariat and SER, 2019).​</p><p>References: ​<br>CBD Secretariat and SER. (2019). A companion to the Short-Term Action Plan on Ecosystem Restoration - Resources, cases studies, and biodiversity considerations in the context of restoration science and practice. Montreal, Canada.CMS. (2020). UNEP/CMS/Resolution 12.26 (Rev.COP13). Available at: CDB 2016. <a href=\"https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf\" target=\"_blank\">https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf</a></p><p>Gann, G.D., McDonald, T., Walder, B., Aronson, J., Nelson, C.R., Jonson J., &hellip; & Dixon, K.W. (2019). International principles and standards for the practice of ecological restoration. Restoration Ecology. 27 (S1): S1-S46., 27(S1), S1-S46.</p>"
+    },
+    {
+        value: 2,
+        label: "Rehabilitation",
+        info: "<p>The Society for Ecological Restoration (SER) defines rehabilitation as: \"Management actions that aim to reinstate a level of ecosystem functioning on degraded sites, where the goal is renewed and ongoing provision of ecosystem services rather than the biodiversity and integrity of a designated native reference ecosystem\" (Gann et al., 2019).</p><p>Rehabilitation is a type of ecosystem restoration. Ecosystem rehabilitation is focused on restoring and improving functions within transformed ecosystems, while ecological restoration is focused on restoration to a natural state.</p><p>References:<br>Gann, G.D., McDonald, T., Walder, B., Aronson, J., Nelson, C.R., Jonson J., &hellip; & Dixon, K.W. (2019). International principles and standards for the practice of ecological restoration. Restoration Ecology. 27 (S1): S1-S46., 27(S1), S1-S46.</p>"
+    }
 ];
 
 exports.tenureStatuses = [
     { value: 1, label: "Communal" },
     { value: 2, label: "Government" },
-    { value: 3, label: "Indigenous" },
+    { value: 3, label: "Indigenous as Indigenous and Traditional Territories (ITTs)" },
     { value: 4, label: "Jointly owned" },
     { value: 5, label: "Private" },
     { value: 6, label: "Other" },

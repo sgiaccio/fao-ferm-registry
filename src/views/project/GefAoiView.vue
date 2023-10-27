@@ -13,6 +13,7 @@ import MapInput from '../../components/inputs/base/MapInput.vue';
 import AdminArea from '../../components/inputs/AdminArea.vue';
 import MapUpload from '../../components/inputs/base/MapUpload.vue';
 import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
+import KmlKmzUploadDialog from './KmlKmzUploadDialog.vue';
 import FormGroup from '../../components/inputs/FormGroup.vue';
 import NumberInput from '../../components/inputs/base/NumberInput.vue';
 import FileUploadInputGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
@@ -47,6 +48,12 @@ const multiInputComponents = {
         newData: {},
         addItemLabel: 'Upload shapefile',
         addDialog: ShapefileUploadDialog
+    },
+    uploadKml: {
+        component: MapUpload,
+        newData: {},
+        addItemLabel: 'Upload KML/KMZ/geojson',
+        addDialog: KmlKmzUploadDialog
     }
 };
 
@@ -65,6 +72,8 @@ function numbering(i: number, v: any) {
     } else if (key === 'upload') {
         const value = v[key];
         return `Area ${value.shapeId || i + 1}`;
+    } else if (key === 'uploadKml') { // this is actually kml, kmz, geojson
+        return `Area ${i + 1}`;
     } else {
         return `Unknown area type: ${key}`;
     }
@@ -269,7 +278,7 @@ function deleteProjectAreas() {
                        class="mt-4 font-semibold cursor-pointer text-ferm-blue-dark-800 underline uppercase">
                         Disclaimer
                     </p>
-                    <p class="mt-4">Areas can be identified based on ditterent options:
+                    <p class="mt-4">Areas can be identified based on different options:
                     <ul class="list-disc list-inside">
 
                         <li>

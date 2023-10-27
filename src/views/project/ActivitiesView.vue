@@ -48,7 +48,7 @@ function toggleOtherActivitiesInput(i: number) {
 <template>
     <TabTemplate title="Activities">
         <template #description>
-            <p v-if="store.project.reportingLine !== 'GEF'">Activities describe what is being implemented on the ground in order to achieve sustainable management or restoration objectives. Activities are adapted from the Glossary of restoration interventions of The Economics of Ecosystem Restoration (TEER) initiative (<a href="https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/"
+            <p v-if="store.project.reportingLine === 'GEF'">Activities describe what is being implemented on the ground in order to achieve sustainable management or restoration objectives. Activities are adapted from the Glossary of restoration interventions of The Economics of Ecosystem Restoration (TEER) initiative (<a href="https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/"
                    target="_blank"
                    class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200">https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/</a>). They are divided into two main categories (biophysical and enabling) and secondary categories according to the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES) Assessment Report on Land Degradation and Restoration (<a href="https://www.ipbes.net/assessment-reports/ldr"
                    target="_blank"

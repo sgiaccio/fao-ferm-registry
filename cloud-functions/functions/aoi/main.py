@@ -1,34 +1,46 @@
+from logging import getLogger
+from tempfile import TemporaryDirectory
+
 from functools import wraps
 from flask import abort, g
+# from fastkml import kml
 
 import os
 import shutil
 import traceback
 from glob import glob
-from tempfile import TemporaryDirectory, TemporaryFile
+from tempfile import TemporaryDirectory, NamedTemporaryFile
 from uuid import uuid1
 import json
+
 import time
 
-from google.cloud import storage
-
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import BadRequest
+
 import fiona
-# from fiona.crs import to_string
+
 from shapely import wkt
-from shapely.geometry import shape
+from shapely.geometry import shape, GeometryCollection
 from shapely.ops import transform
 
 import pyproj
 from pyproj.exceptions import CRSError
 
 import psycopg2
+
 from zipfile import ZipFile, BadZipFile
 
+from google.cloud import storage
 from firebase_admin import auth, firestore, initialize_app
 
 
+fiona.drvsupport.supported_drivers['KML'] = 'rw'
+
+logger = getLogger(__name__)
+
 initialize_app()
+
 
 # To deploy:
 # gcloud functions deploy load_shapefile_multiple --region=${REGION} \
@@ -44,6 +56,12 @@ initialize_app()
 #     --set-env-vars DB_USER=foo,DB_PASS=bar,DB_NAME=boo,INSTANCE_UNIX_SOCKET=vaf
 #
 # gcloud functions deploy load_area_json --region=${REGION} \
+#     --source=./ --runtime=python39 \
+#     --stage-bucket=fao-ferm-functions-staging \
+#     --trigger-http --allow-unauthenticated \
+#     --set-env-vars DB_USER=foo,DB_PASS=bar,DB_NAME=boo,INSTANCE_UNIX_SOCKET=vaf
+#
+# gcloud functions deploy load_kml_kmz --region=europe-west3 \
 #     --source=./ --runtime=python39 \
 #     --stage-bucket=fao-ferm-functions-staging \
 #     --trigger-http --allow-unauthenticated \
@@ -105,7 +123,7 @@ def authenticated(fn):
                     raise ValueError(f'User not allowed')
         except Exception as e:
             # If an exception occured above, reject the request
-            print(traceback.format_exc())
+            logger.error(traceback.format_exc())
             return abort(401, f'Invalid Credentials: {e}', {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'GET, POST',
@@ -157,9 +175,12 @@ def flat_unzip(file, dest_dir):
                 files.append(target_path)
     return files
 
-def _insert_into_postgis(project_id, shp_file_path, bucket_path, orig_filename):
+def _insert_into_postgis(project_id, shp_file_path, bucket_path, orig_filename, dissolve=False):
     cursor = conn.cursor()
+
     uuid_list = []
+    geometries = []
+
     try:
         with fiona.open(shp_file_path) as source:
             p_in = pyproj.Proj(source.crs)
@@ -167,19 +188,32 @@ def _insert_into_postgis(project_id, shp_file_path, bucket_path, orig_filename):
                 p_in, # source coordinate system
                 pyproj.Proj(init='epsg:4326')) # destination coordinate system
 
+            # Read and transform the geometries to EPSG:4326
             for record in source:
-                uuid = uuid1()
                 geometry_type = record['geometry']['type']
-                assert geometry_type in ['Point', 'MultiPoint', 'Polygon', 'MultiPolygon', '3D Point', '3D MultiPoint', '3D Polygon', '3D MultiPolygon'], 'Invalid geometry type: %s' % geometry_type
+                assert geometry_type in ['Point', 'MultiPoint', 'Polygon', 'MultiPolygon', '3D Point', '3D MultiPoint', '3D Polygon', '3D MultiPolygon', 'LineString'], 'Invalid geometry type: %s' % geometry_type
 
-                polygon = shape(record['geometry'])
-
+                geometry = shape(record['geometry'])
                 # Reproject the polygon
-                polygon4326 = transform(project.transform, polygon)  # apply projection
+                geometry4326 = transform(project.transform, geometry)  # apply projection
+                geometries.append(geometry4326)
 
-                cursor.execute("INSERT INTO project_areas (source, project_id, area_uuid, geom, bucket_path, orig_filename) VALUES ('shapefile', %s, %s, ST_Force2D(ST_GeomFromText(%s, 4326)), %s, %s)", (project_id, str(uuid), wkt.dumps(polygon4326), bucket_path, orig_filename))
+        if dissolve:
+            uuid = uuid1()
+
+            geometry_collection = GeometryCollection(geometries)
+            cursor.execute("INSERT INTO project_areas (source, project_id, area_uuid, geom, bucket_path, orig_filename) VALUES ('shapefile', %s, %s, ST_Force2D(ST_GeomFromText(%s, 4326)), %s, %s)",
+                            (project_id, str(uuid), wkt.dumps(geometry_collection), bucket_path, orig_filename))
+            
+            uuid_list.append(str(uuid))
+        else:
+            for geom in geometries:
+                uuid = uuid1()
+    
+                cursor.execute("INSERT INTO project_areas (source, project_id, area_uuid, geom, bucket_path, orig_filename) VALUES ('shapefile', %s, %s, ST_Force2D(ST_GeomFromText(%s, 4326)), %s, %s)", (project_id, str(uuid), wkt.dumps(geom), bucket_path, orig_filename))
 
                 uuid_list.append(str(uuid))
+            
         conn.commit()
         return uuid_list
     except CRSError as e:
@@ -211,8 +245,7 @@ def upload_blob(bucket_name, source_file, destination_blob_name):
     blob.upload_from_file(source_file, rewind=True)
     # blob.upload_from_filename(source_file_name)
 
-@authenticated
-def load_shapefile_multiple(request):
+def load_geometries(request, file_handler, dissolve=False):
     if request.method == 'OPTIONS':
         # Allows GET requests from any origin with the Content-Type
         # header and caches preflight response for an 3600s
@@ -222,65 +255,97 @@ def load_shapefile_multiple(request):
             'Access-Control-Allow-Headers': 'Content-Type,Authorization',
             'Access-Control-Max-Age': '3600'
         })
+    tmp_dir = None
     try:
-        project_id = request.form.to_dict()['project_id'] # TODO don't have time
-        
         # Create a temporary directory where to store zip file and expanded ones
         tmp_dir = TemporaryDirectory()
+        project_id, temp_zipfile, temp_zipfile_path, orig_filename = _handle_upload(request, tmp_dir)
+        bucket_dst_path = _upload_to_bucket(project_id, temp_zipfile, orig_filename)
 
-        temp_zipfile = TemporaryFile(dir=tmp_dir.name, suffix='zip')
-
-        # with open(tmp, 'wo') as temp_zipfile: #TemporaryFile(dir=tmp_dir.name, suffix='zip') as temp_zipfile:
-        file = request.files['file']
-        orig_filename = file.filename
-        file.save(temp_zipfile)
-
-        bucket_subdir = time.strftime("%Y%m%d-%H%M%S")
-        dst_path = '%s/%s/%s' % (project_id, bucket_subdir, secure_filename(orig_filename))
-        try:
-            upload_blob(dst_bucket, temp_zipfile, dst_path)
-        except Exception as e:
-            dst_path = None
-            print('coultn\'t save original file in bucket')
-            print(e)
-
-        # Find the .shp file
-        flat_unzip(temp_zipfile, tmp_dir.name)
-        target_pattern = os.path.join(tmp_dir.name, '*.shp')
-        file_paths = glob(target_pattern)
-        assert len(file_paths) == 1, 'zip file should contain one and only one shapefile'
-        shp_file_path = file_paths[0]
-        uuids = _insert_into_postgis(project_id, shp_file_path, dst_path, orig_filename)
-
+        shp_file_path = file_handler(tmp_dir, temp_zipfile, temp_zipfile_path)
+        # shp_file_path = _unzip_and_find_shapefile(tmp_dir, temp_zipfile)
+        uuids = _insert_into_postgis(project_id, shp_file_path, bucket_dst_path, orig_filename, dissolve)
         # Get the areas of the inserted polygons
-        cursor = conn.cursor()
-        cursor.execute("SELECT area_uuid, ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s", [tuple(uuids), str(project_id)])   
-        areas = cursor.fetchall()
-        cursor.close()
+        areas = _fetch_areas(project_id, uuids)
 
         print('Areas inserted: %s' % len(areas))
 
         # return the uuids
         # return (json.dumps(uuids), 200, { 'Access-Control-Allow-Origin': '*' })
-        
         # return the areas
         return (json.dumps(areas), 200, { 'Access-Control-Allow-Origin': '*' })
 
-
     except AssertionError as error:
-        print(traceback.format_exc())
-        return (str(error), 400, { 'Access-Control-Allow-Origin': '*' } )
-    except BadZipFile as error:
-        print(traceback.format_exc())
-        return ('Uploaded file is not a valid zip file', 400, { 'Access-Control-Allow-Origin': '*' } )
+        logger.error(traceback.format_exc())
+        return (str(error), 400, {'Access-Control-Allow-Origin': '*'})
+    except FileHandlerError as error:
+        logger.error(traceback.format_exc())
+        return (str(error), 400, {'Access-Control-Allow-Origin': '*'})
     except CRSError as error:
-        print(traceback.format_exc())
-        return ('Unknown projection', 400, { 'Access-Control-Allow-Origin': '*' } )
+        logger.error(traceback.format_exc())
+        return ('Unknown projection', 400, {'Access-Control-Allow-Origin': '*'})
+    except BadRequest as error:
+        logger.error(traceback.format_exc())
+        return (str(error), 400, {'Access-Control-Allow-Origin': '*'})
     except Exception as error:
-        print(traceback.format_exc())
-        return ('Internal server error: %s' % str(error), 400, { 'Access-Control-Allow-Origin': '*' } )
+        logger.error(traceback.format_exc())
+        return ('Internal server error', 500, {'Access-Control-Allow-Origin': '*'})
     finally:
-        tmp_dir.cleanup()
+        if tmp_dir:
+            tmp_dir.cleanup()
+
+def _fetch_areas(project_id, uuids):
+    cursor = conn.cursor()
+    cursor.execute("SELECT area_uuid, ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s", [tuple(uuids), str(project_id)])   
+    areas = cursor.fetchall()
+    cursor.close()
+    return areas
+
+# Define a custom exception for file handling errors
+class FileHandlerError(Exception):
+    pass
+
+def _unzip_and_find_shapefile(tmp_dir, temp_zipfile, _):
+    try:
+        flat_unzip(temp_zipfile, tmp_dir.name)
+        target_pattern = os.path.join(tmp_dir.name, '*.shp')
+        file_paths = glob(target_pattern)
+        assert len(file_paths) == 1, 'zip file should contain one and only one shapefile'
+        return file_paths[0]
+    except BadZipFile:
+        raise FileHandlerError("An error occurred while handling the file.")
+
+def _upload_to_bucket(project_id, temp_zipfile, orig_filename):
+    bucket_subdir = time.strftime("%Y%m%d-%H%M%S")
+    dst_path = '%s/%s/%s' % (project_id, bucket_subdir, secure_filename(orig_filename))
+    try:
+        upload_blob(dst_bucket, temp_zipfile, dst_path)
+    except Exception as e:
+        dst_path = None
+        logger.error('Couldn\'t save original file in bucket: %s' % e)
+        logger.error(traceback.format_exc())
+    return dst_path
+
+def _handle_upload(request, tmp_dir):
+    form_data = request.form.to_dict()
+    project_id = form_data.get('project_id')
+    if not project_id:
+        raise BadRequest("Missing project_id")
+
+    file = request.files.get('file')
+    if not file:
+        raise BadRequest("Missing file")
+
+    orig_filename = file.filename
+    _, file_extension = os.path.splitext(orig_filename)  # Extract file extension
+
+    temp_file = NamedTemporaryFile(dir=tmp_dir.name, suffix=file_extension, delete=False)
+    temp_file_path = temp_file.name  # Get the full path of the temporary file
+
+    file.save(temp_file)
+    temp_file.seek(0)  # Move file pointer to the beginning
+
+    return project_id, temp_file, temp_file_path, orig_filename
 
 @authenticated
 def get_polygon_area(request):
@@ -376,3 +441,62 @@ def get_area_json(request):
         return (str(error), 400, { 'Access-Control-Allow-Origin': '*' })
     finally:
         cursor.close()
+
+# load_shapefile = lambda request: load_geometries(request, _unzip_and_find_shapefile, False)
+do_not_process = lambda _1, _2, temp_zipfile_path: temp_zipfile_path
+
+@authenticated
+def load_shapefile(request):
+    return load_geometries(request, _unzip_and_find_shapefile, False)
+
+@authenticated
+def load_kml_kmz(request):
+    return load_geometries(request, do_not_process, True)
+
+
+# load_kml_kmz = lambda request: load_geometries(request, do_not_process, True)
+
+# @authenticated
+# def load_kml_kmz(request):
+#     if request.method == 'OPTIONS':
+#         # Allows GET requests from any origin with the Content-Type
+#         # header and caches preflight response for an 3600s
+#         return ('', 204, {
+#             'Access-Control-Allow-Origin': '*',
+#             'Access-Control-Allow-Methods': 'GET',
+#             'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+#             'Access-Control-Max-Age': '3600'
+#         })
+#     tmp_dir = None
+#     try:
+#         # Create a temporary directory where to store zip file and expanded ones
+#         tmp_dir = TemporaryDirectory()
+#         project_id, temp_file, temp_file_path, orig_filename = _handle_upload(request, tmp_dir)
+#         bucket_dst_path = _upload_to_bucket(project_id, temp_file, orig_filename)
+
+#         uuids = _insert_into_postgis(project_id, temp_file_path, bucket_dst_path, orig_filename)
+#         # Get the areas of the inserted polygons
+#         areas = _fetch_areas(project_id, uuids)
+
+#         print('Areas inserted: %s' % len(areas))
+
+#         # return the uuids
+#         # return (json.dumps(uuids), 200, { 'Access-Control-Allow-Origin': '*' })
+#         # return the areas
+#         return (json.dumps(areas), 200, { 'Access-Control-Allow-Origin': '*' })
+
+#     except AssertionError as error:
+#         logger.error(traceback.format_exc())
+#         return (str(error), 400, {'Access-Control-Allow-Origin': '*'})
+#     except BadZipFile as error:
+#         logger.error(traceback.format_exc())
+#         return ('Uploaded file is not a valid zip file', 400, {'Access-Control-Allow-Origin': '*'})
+#     except CRSError as error:
+#         logger.error(traceback.format_exc())
+#         return ('Unknown projection', 400, {'Access-Control-Allow-Origin': '*'})
+#     except Exception as error:
+#         logger.error(traceback.format_exc())
+#         return ('Internal server error', 500, {'Access-Control-Allow-Origin': '*'})
+#     finally:
+#         if tmp_dir:
+#             tmp_dir.cleanup()

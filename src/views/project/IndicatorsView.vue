@@ -52,7 +52,7 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
                 <p>
                     Indicators are selected to monitor project progress. The methodology proposed to report and monitor the achievement of GEF commitments including restoration (in ha of land) in FERM is through GEF Core Indicators.
                 </p>
-                <p class="pt-4">
+                <p>
                     Details on GEF Core Indicators can be found under this
                     <a href="https://www.thegef.org/sites/default/files/documents/2022-09/Results_Framework_Guidelines_2022_06_30.pdf"
                        target="_blank"
