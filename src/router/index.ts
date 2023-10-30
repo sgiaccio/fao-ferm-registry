@@ -80,6 +80,10 @@ const router = createRouter({
             name: "home",
             component: () => import('../views/HomeView.vue'),
             meta: { public: true }
+        }, {
+            path: "/registration",
+            name: "registration",
+            component: () => import('../views/UserRegistrationView.vue')
         },
 
         // Authentication and registration
