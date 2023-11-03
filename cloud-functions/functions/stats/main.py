@@ -122,6 +122,7 @@ def _get_area_multipolygon(area_uuid, project_id):
 
         cursor.execute("SELECT geom FROM project_areas WHERE area_uuid = %s AND project_id = %s", [str(area_uuid), str(project_id)])
         area = cursor.fetchone()[0]
+        # print(wkb.loads(area, hex=True)) # DEBUG
         cursor.close()
         return wkb.loads(area, hex=True);
         # return unary_union([shape(wkt.loads(polygon['geom'])) for polygon in source])
@@ -132,6 +133,30 @@ def _get_area_multipolygon(area_uuid, project_id):
     # Create a multipolygon by merging all features - needed for zonal statistics
 
 
+def create_ee_geometry(geojson):
+    geom_type = geojson['type']
+    coords = geojson.get('coordinates', None)
+    
+    if geom_type == 'GeometryCollection':
+        geometries = geojson['geometries']
+        ee_geometries = [create_ee_geometry(g) for g in geometries]
+        features = [ee.Feature(geometry) for geometry in ee_geometries]
+        return ee.FeatureCollection(features)
+    elif geom_type == 'Point':
+        return ee.Geometry.Point(coords)
+    elif geom_type == 'Polygon':
+        return ee.Geometry.Polygon(coords)
+    elif geom_type == 'MultiPolygon':
+        return ee.Geometry.MultiPolygon(coords)
+    elif geom_type == 'LineString':
+        return ee.Geometry.LineString(coords)
+    elif geom_type == 'MultiLineString':
+        return ee.Geometry.MultiLineString(coords)
+    elif geom_type == 'MultiPoint':
+        return ee.Geometry.MultiPoint(coords)
+    else:
+        raise ValueError(f"Unsupported geometry type: {geom_type}")
+
 def _get_geometry(polygon=None, adm2_code=None):
     
     if not any([polygon, adm2_code]):
@@ -139,9 +164,10 @@ def _get_geometry(polygon=None, adm2_code=None):
     
     if polygon:
         
-        # decode geojson
-        # decoded_polygon = json.loads(polygon)
-        return ee.Geometry.MultiPolygon(polygon["coordinates"])
+        # # decode geojson
+        # # decoded_polygon = json.loads(polygon)
+        # return ee.Geometry.MultiPolygon(polygon["coordinates"])
+        return create_ee_geometry(polygon)
     
     return (
         ee.FeatureCollection("FAO/GAUL/2015/level2")

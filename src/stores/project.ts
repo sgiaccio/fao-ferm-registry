@@ -344,10 +344,9 @@ export const useProjectStore = defineStore({
             this.resetProjectState();
         },
         polygonsArea() {
-            const getType = (area: any) => Object.keys(area)[0];
+            // const getType = (area: any) => Object.keys(area)[0];
             const getValue = (area: any) => Object.values(area)[0];
             try {
-                getValue({})
                 const areas = this.projectAreas
                     // .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
                     .map((a: any) => +((getValue(a) as { area: number }).area || 0));

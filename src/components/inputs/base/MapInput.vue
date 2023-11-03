@@ -7,7 +7,7 @@ import TileLayer from 'ol/layer/Tile';
 // import OSM from 'ol/source/OSM';
 import BingMaps from 'ol/source/BingMaps.js';
 import { Draw, Modify, Snap } from 'ol/interaction';
-import { Style, Fill, Stroke } from 'ol/style.js';
+import { Style, Fill, Stroke, Circle } from 'ol/style.js';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { GeoJSON } from 'ol/format';
@@ -58,6 +58,16 @@ const style = new Style({
     stroke: new Stroke({
         color: '#ffcc33',
         width: 2
+    }),
+    image: new Circle({
+        radius: 5,
+        fill: new Fill({
+            color: '#ffcc33'
+        }),
+        stroke: new Stroke({
+            color: 'white',
+            width: 2
+        })
     })
 });
 
@@ -196,7 +206,7 @@ function fetchPolygonArea() {
             'Authorization': `Bearer ${authStore.user.accessToken}`
         }
     }).then(response => response.json()).then(area => {
-        emit('update:modelValue', { ...props.modelValue, area: parseFloat((1e-4 * area)) });
+        emit('update:modelValue', { ...props.modelValue, area: parseInt((1e-4 * area)) });
     });
 }
 </script>

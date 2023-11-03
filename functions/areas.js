@@ -142,6 +142,92 @@ exports.getPolygonZonalStats = functions
         }
     });
 
+// Periodically create a shapefile with public records from the registry collection
+// exports.updateBpIdFieldOnWrite = functions.firestore
+// Don't know what I did here.
+//     .document('registry/{document}/bestPractices/{bestPracticeId}')
+//     .onUpdate(async (change, context) => {
+//         functions.logger.info("Creating a shapefile of public project polygons...");
+
+//         // Get only records where the status is "public"
+//         const registrySnapshot = await db.collection("registry")
+//             .where("status", "==", "public")
+//             .get();
+
+//         // Get all the polygon areas from the areas collection in firestore
+//         const areasSnapshot = await db.collection("areas").get();
+
+//         // get all the area uuids from the areas collection in firestore
+//         const areasSnapshot = await db.collection("areas").get();
+//         const validUUIDPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+//         const areaUuids = areasSnapshot.docs
+//             .flatMap(doc => doc.data().areas) // Use flatMap to flatten the array while mapping
+//             .filter(area => ["upload", "draw"].includes(Object.keys(area)[0])) // Only keep objects with "upload" or "draw" keys
+//             .map(area => (Object.values(area)[0] || {}).uuid) // Extract the UUID from the object value
+//             .filter(uuid => uuid && validUUIDPattern.test(uuid)); // Ensure truthy and valid UUIDs
+
+//         const client = await getDatabaseClient({
+//             user: dbUser.value(),
+//             host: dbHost.value(),
+//             database: dbDatabase.value(),
+//             password: dbPassword.value()
+//         });
+
+//         try {
+//             // Delete all project_areas records that are not in the areaUuids array
+//             const deleteQuery = `
+//             DELETE FROM project_areas
+//             WHERE area_uuid != ALL($1::uuid[])
+//             AND created_at < NOW() - INTERVAL '14 days';`;
+//             const deleteResult = await client.query(deleteQuery, [areaUuids]);
+
+//             const deletedRowCount = deleteResult.rowCount;
+//             if (deletedRowCount === 0) {
+//                 functions.logger.info("No areas to delete from postgres db.");
+//             } else {
+//                 functions.logger.info(`Deleted ${deletedRowCount} areas from postgres db.`);
+//             }
+//         } catch (error) {
+//             functions.logger.error("Error deleting areas from postgres:", error);
+//             throw new Error("Error deleting areas from postgres: " + error.message);
+//         } finally {
+//             client.release();
+//         }
+//     });
+
+// exports.deleteAllProjectAreas = functions.https.onCall(async ({ projectId }, context) => {
+//     if (!projectId) {
+//         throw new functions.https.HttpsError("invalid-argument", "projectId is required.");
+//     }
+//
+//     // Ensure the user is authenticated
+//     if (!context.auth) {
+//         throw new functions.https.HttpsError("unauthenticated", "User must be authenticated to delete areas.");
+//     }
+//
+//     // Ensure that the related project is not published
+//     if (await isProjectPublic(projectId)) {
+//         throw new functions.https.HttpsError("permission-denied", "Cannot delete areas of a published project.");
+//     }
+//
+//     // Ensure the user is a superadmin, he is a group admin, or he is a group member and the author of the area
+//     if (!isSuperAdmin(context) && !isGroupAdmin(context, projectId) && !isGroupEditor(context, projectId)) {
+//         throw new functions.https.HttpsError("permission-denied", "User must be a superadmin, a group admin, or a group editor to delete areas.");
+//     }
+//
+//     // Fetch the area with the ID matching projectId
+//     const areaDoc = await db.collection("areas").doc(projectId).get();
+//
+//     if (!areaDoc.exists) {
+//         return { message: "No areas to delete." };
+//     }
+//
+//     // Delete the document
+//     await areaDoc.ref.delete();
+//
+//     return { message: `Deleted area with ID: ${projectId}` };
+// });
+
 // Periodically delete dangling project_areas records from the PostgreSQL database
 exports.deleteDanglingAreaRecords = functions
     // .runWith({ secrets: [dbUser, dbHost, dbDatabase, dbPassword] })
@@ -187,35 +273,3 @@ exports.deleteDanglingAreaRecords = functions
         }
     });
 
-// exports.deleteAllProjectAreas = functions.https.onCall(async ({ projectId }, context) => {
-//     if (!projectId) {
-//         throw new functions.https.HttpsError("invalid-argument", "projectId is required.");
-//     }
-//
-//     // Ensure the user is authenticated
-//     if (!context.auth) {
-//         throw new functions.https.HttpsError("unauthenticated", "User must be authenticated to delete areas.");
-//     }
-//
-//     // Ensure that the related project is not published
-//     if (await isProjectPublic(projectId)) {
-//         throw new functions.https.HttpsError("permission-denied", "Cannot delete areas of a published project.");
-//     }
-//
-//     // Ensure the user is a superadmin, he is a group admin, or he is a group member and the author of the area
-//     if (!isSuperAdmin(context) && !isGroupAdmin(context, projectId) && !isGroupEditor(context, projectId)) {
-//         throw new functions.https.HttpsError("permission-denied", "User must be a superadmin, a group admin, or a group editor to delete areas.");
-//     }
-//
-//     // Fetch the area with the ID matching projectId
-//     const areaDoc = await db.collection("areas").doc(projectId).get();
-//
-//     if (!areaDoc.exists) {
-//         return { message: "No areas to delete." };
-//     }
-//
-//     // Delete the document
-//     await areaDoc.ref.delete();
-//
-//     return { message: `Deleted area with ID: ${projectId}` };
-// });

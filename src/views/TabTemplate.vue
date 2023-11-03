@@ -11,7 +11,7 @@ withDefaults(defineProps<{
 
 <template>
     <div class="mb-6">
-        <h1 class="bg-ferm-blue-light-200 text-black py-3 md:py-5 rounded-md text-center tracking-wide text-3xl dark:bg-ferm-blue-dark-900 dark:text-white font-akrobat uppercase font-bold">{{ title }}</h1>
+        <h1 class="bg-ferm-blue-light-200 text-black py-3 md:py-5 rounded-md text-center text-3xl dark:bg-ferm-blue-dark-900 dark:text-white uppercase font-bold">{{ title }}</h1>
         <div v-if="$slots.description"
              class="md:leading-relaxed text-base bg-ferm-blue-light-100 dark:bg-ferm-blue-dark-800 dark:text-white px-6 py-4 mt-4 md:mt-6 rounded-md shadow-sm">
             <slot name="description"></slot>

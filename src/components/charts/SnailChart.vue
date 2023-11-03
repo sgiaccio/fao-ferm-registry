@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { ref, onMounted } from 'vue';
 import { select, areaRadial, interval, schemeTableau10 } from 'd3';
-import { formatNumber } from '@/lib/util';
+import { roundToPrecisionAsString } from '@/lib/util';
 
 const props = withDefaults(defineProps<{
     values: number[];
@@ -26,20 +26,20 @@ const _values = [...props.values]
 const _labels = ref([...props.labels]);
 const _colors = ref<string[]>([]);
 
-function handleTooltip(path: Selection<SVGElementTagNameMap[keyof SVGElementTagNameMap], unknown, null, undefined>, value: number, index: number, duration: number) {
+function handleTooltip(path: any, value: number, index: number, duration: number) {
     setTimeout(() => {
         function createTooltipHandler(value: number, label: string) {
-            return function(event: MouseEvent) {
+            return function (event: MouseEvent) {
                 select(tooltip.value)
                     .style('opacity', 1)
                     .style('left', (event.pageX + 15) + 'px')
                     .style('top', (event.pageY + 15) + 'px')
-                    .html(`${label}<br/>${formatNumber(value)} ${props.unit}`);
+                    .html(`${label}<br/>${roundToPrecisionAsString(value, 2)} ${props.unit}`);
             };
         }
 
         path.on('mouseover', createTooltipHandler(value, _labels.value[index]))
-            .on('mouseout', function() {
+            .on('mouseout', function () {
                 select(tooltip.value).style('opacity', 0);
             });
     }, duration);
@@ -51,7 +51,7 @@ onMounted(() => {
     const spiralInnerRadius = props.size / 2;
     const totalArea = _values.reduce((total, value) => total + value, 0);
 
-    let percentImplemented = formatNumber(totalArea / props.targetValue * 100);
+    let percentImplemented = roundToPrecisionAsString(totalArea / props.targetValue * 100, 2);
     const isDisc = totalArea <= props.targetValue;
 
     if (totalArea < props.targetValue) {
@@ -99,7 +99,7 @@ onMounted(() => {
     const duration = 700;  // Duration of the animation in milliseconds
     let currentAngle = 0;
     _values.forEach((value, index) => {
-        const spiralData = [];
+        const spiralData: any[] = [];
 
         // Generate data for the spiral as before
         for (let i = 0; i < value; i++) {

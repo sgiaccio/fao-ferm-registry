@@ -26,7 +26,11 @@ export function filterByLabel(data: RecursiveMenu, searchString: string): Recurs
         // Check if the label contains the search string
         if (item.label?.toLowerCase().includes(searchString.toLowerCase())) {
             filteredItem = { ...item }; // Clone the item if it matches
-            filteredItem.label = item.label.replace(new RegExp(`(${searchString})`, 'gi'), '<span class="bg-yellow-300 dark:bg-yellow-800">$1</span>');
+            if (item.dangerousHtmlLabel) {
+                filteredItem.dangerousHtmlLabel = item.dangerousHtmlLabel.replace(new RegExp(`(${searchString})`, 'gi'), '<span class="bg-yellow-300 dark:bg-yellow-800">$1</span>');
+            } else {
+                filteredItem.label = item.label.replace(new RegExp(`(${searchString})`, 'gi'), '<span class="bg-yellow-300 dark:bg-yellow-800">$1</span>');
+            }
         }
 
         // Recursively apply the filter to sub-items, if they exist

@@ -359,7 +359,7 @@ def get_polygon_area(request):
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) FROM project_areas WHERE area_uuid = %s", [str(area_uuid)])
-        area = cursor.fetchone()[0]
+        area = round(cursor.fetchone()[0])
         return (str(area), 200, { 'Access-Control-Allow-Origin': '*' })
     except Exception as error:
         print(traceback.format_exc())

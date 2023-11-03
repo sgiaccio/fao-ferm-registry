@@ -67,22 +67,35 @@ export function getRecursiveMenuLabel(value: string | number, menu: RecursiveMen
     return '';
 }
 
-export function formatNumber(n: number, limitPrecision: boolean = false): string {
-    // Check for null, undefined, or non-number values
-    if (n === null || n === undefined || typeof n !== 'number') {
-        console.log('formatNumber: not a valid number', n);
-        return 'n/a';
+// export function formatNumber(n: number, limitPrecision: boolean = false): string {
+//     // Check for null, undefined, or non-number values
+//     if (n === null || n === undefined || typeof n !== 'number') {
+//         console.log('formatNumber: not a valid number', n);
+//         return 'n/a';
+//     }
+
+//     // Determine the number of decimal places based on the value of n
+//     let maximumFractionDigits;
+//     if (limitPrecision && n >= 100) {
+//         maximumFractionDigits = 0;
+//     } else if (limitPrecision && n >= 1) {
+//         maximumFractionDigits = 1;
+//     } else {
+//         maximumFractionDigits = 2;
+//     }
+
+//     return n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: maximumFractionDigits });
+// }
+
+export function roundToPrecisionAsString(number: number, precision: number) {
+    let result = number.toFixed(precision);
+
+    if (result.indexOf('.') > -1) {
+        result = result.replace(/0+$/, '');
+        if (result.endsWith('.')) {
+            result = result.substring(0, result.length - 1);
+        }
     }
 
-    // Determine the number of decimal places based on the value of n
-    let maximumFractionDigits;
-    if (limitPrecision && n >= 100) {
-        maximumFractionDigits = 0;
-    } else if (limitPrecision && n >= 1) {
-        maximumFractionDigits = 1;
-    } else {
-        maximumFractionDigits = 2;
-    }
-
-    return n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: maximumFractionDigits });
+    return result;
 }

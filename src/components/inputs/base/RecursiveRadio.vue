@@ -134,11 +134,10 @@ function showAlertModal(title: string, info: string) {
                               @click="toggle(i)">
 
                             <span v-if="option.dangerousHtmlLabel"
-                                  v-html="option.dangerousHtmlLabel"></span>
+                                  v-html="option.dangerousHtmlLabel" />
                             <span v-else
-                                  class="font-bold">
-                                {{ option.label }}
-                            </span>
+                                  class="font-bold"
+                                  v-html="option.label" />
                         </span>
                         <template v-if="option.info">
                             @nbsp;
@@ -159,8 +158,9 @@ function showAlertModal(title: string, info: string) {
                         <label :for="`${uid}_${option.value}`"
                                class="ml-3 block text-sm leading-6 text-gray-900 dark:text-gray-400 cursor-pointer">
                             <span v-if="option.dangerousHtmlLabel"
-                                  v-html="option.dangerousHtmlLabel"></span>
-                            <template v-else>{{ option.label }}</template>
+                                  v-html="option.dangerousHtmlLabel" />
+                            <span v-else
+                                  v-html="option.label" />
                         </label>
                         <template v-if="option.info">
                             &nbsp;

@@ -13,6 +13,8 @@ import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
 import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 import RecursiveRadio from '@/components/inputs/base/RecursiveRadio.vue';
 
+import { roundToPrecisionAsString } from '@/lib/util';
+
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
@@ -87,7 +89,7 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
                  v-if="store.project.reportingLine === 'GEF'">
                 <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">GEF indicators</h1>
                 <LabelFormGroup label="Total area of land achieved (spatially explicit format)"
-                                :value="`${store.polygonsArea().toFixed(2)} Ha`" />
+                                :value="`${roundToPrecisionAsString(store.polygonsArea(), 2)} Ha`" />
 
                 <!-- Area by indicator -->
                 <div v-if="store.project.reportingLine === 'GEF'"

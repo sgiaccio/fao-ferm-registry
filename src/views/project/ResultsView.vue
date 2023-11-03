@@ -6,7 +6,7 @@ import { getRecursiveMenuLabel } from '@/lib/util';
 
 import TabTemplate from '../TabTemplate.vue';
 
-import { formatNumber } from '@/lib/util';
+import { roundToPrecisionAsString } from '@/lib/util';
 
 import SnailChart from '@/components/charts/SnailChart.vue';
 
@@ -59,8 +59,8 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
                                 :labels="chartLabels"
                                 unit="Ha"
                                 :targetValue="getLastTargetArea()" />
-                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has achieved {{ formatNumber(store.polygonsArea() / getLastTargetArea() * 100, true) }}% of your total committed land.</p>
-                    <p class="mt-2 text-center">{{ formatNumber(areaForGefIndicator3 / getLastTargetArea() * 100, true) }}% of this land is under restoration (GEF core indicator 3).</p>
+                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has achieved {{ roundToPrecisionAsString(store.polygonsArea() / getLastTargetArea() * 100, 2) }}% of your total committed land.</p>
+                    <p class="mt-2 text-center">{{ roundToPrecisionAsString(areaForGefIndicator3 / getLastTargetArea() * 100, 2) }}% of this land is under restoration (GEF core indicator 3).</p>
                 </div>
                 <div v-else
                      class="shadow-lg rounded px-4 py-3 text-base border">
@@ -76,7 +76,7 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
 
                     <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-green-light/20">
                         <div class="col-span-2">Target area in last project phase</div>
-                        <div class="col-span-1">{{ formatNumber(getLastTargetArea(), true) }} Ha</div>
+                        <div class="col-span-1">{{ roundToPrecisionAsString(getLastTargetArea(), 2) }} Ha</div>
                     </div>
                 </div>
 
@@ -87,9 +87,9 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
 
                     <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-mustard-light/20">
                         <div class="col-span-2">Total area of land achieved (tabular format)</div>
-                        <div class="col-span-1">{{ formatNumber(store.project.project.areaAchieved, true) }} Ha</div>
+                        <div class="col-span-1">{{ roundToPrecisionAsString(store.project.project.areaAchieved, 2) }} Ha</div>
                         <div class="col-span-2">Total area of land achieved (spatially explicit format)</div>
-                        <div class="col-span-1">{{ formatNumber(store.polygonsArea(), true) }} Ha</div>
+                        <div class="col-span-1">{{ roundToPrecisionAsString(store.polygonsArea(), 2) }} Ha</div>
                     </div>
                 </div>
 
@@ -101,7 +101,7 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
                     <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-blue-light/20">
                         <template v-for="[indicator, area] in areaByGefIndicator">
                             <div class="col-span-2">{{ getRecursiveMenuLabel(indicator, menus.gefIndicators) }}</div>
-                            <div class="col-span-1">{{ formatNumber(area, true) }} Ha</div>
+                            <div class="col-span-1">{{ roundToPrecisionAsString(area, 2) }} Ha</div>
                         </template>
                     </div>
                 </div>

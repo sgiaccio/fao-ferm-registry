@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { filterByLabel } from '@/components/project/menus';
 import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
-import { computed, ref } from 'vue';
+import { computed, ref, watch, nextTick, onMounted } from 'vue';
 
 
 const props = withDefaults(defineProps<{
@@ -29,6 +29,11 @@ function toggle(i: number) {
     isOpen.value[i] = !isOpen.value[i];
 }
 
+function open(i: number) {
+    console.log('open', i);
+    isOpen.value[i] = true;
+}
+
 function sortCheckedValues(a: any, b: any) {
     if ((a as String) > (b as String)) return 1;
     else if ((a as String) < (b as String)) return -1;
@@ -52,8 +57,13 @@ function flatten(data: RecursiveMenu) {
     }
 }
 
+const doNotPreventScroll = ref(false);
 function deleteOption(value: MenuValue) {
     if (!props.modelValue) return;
+    doNotPreventScroll.value = true;
+    nextTick(() => {
+        doNotPreventScroll.value = false;
+    });
     emit('update:modelValue', props.modelValue.filter(v => v !== value).sort(sortCheckedValues));
 }
 
@@ -79,15 +89,47 @@ function bubble(val: number[]) {
 }
 
 const searchString = ref('');
-
 const filteredOptions = computed<RecursiveMenu>(() => {
     if (!searchString.value) return props.options;
     return filterByLabel(props.options, searchString.value);
 });
+
+// Prevent the page from scrolling when the list height changes
+const listHeight = ref(0);
+onMounted(() => {
+    const elem = document.querySelector('#selection_overview');
+    if (!elem) return;
+    listHeight.value = elem.offsetHeight;
+});
+
+const updateScrollPosition = () => {
+    const elem = document.querySelector('#selection_overview');
+    if (!elem) return;
+
+    const currentScrollPosition = window.scrollY;
+    const newHeight = elem.offsetHeight;
+
+    window.scrollTo(0, currentScrollPosition + (newHeight - listHeight.value));
+
+    // Update the old list height with the new height for the next change
+    listHeight.value = newHeight;
+};
+
+watch(() => props.modelValue, (newValue, oldValue) => {
+    if (!oldValue) oldValue = [];
+    if (!newValue) newValue = [];
+    if (props.level) return;
+    if (newValue.length !== oldValue.length && !doNotPreventScroll.value) {
+        nextTick(() => {
+            updateScrollPosition();
+        });
+    }
+});
 </script>
 
 <template>
-    <div v-if="!level && showSelection">
+    <div v-if="!level && showSelection"
+         id="selection_overview">
         <div class="border border-slate-400 shadow-sm rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
             <div class="ml-2 text-gray-600 dark:text-gray-400"
                  v-if="!props.modelValue?.length">
@@ -156,14 +198,14 @@ const filteredOptions = computed<RecursiveMenu>(() => {
                         <div class="ml-2.5 text-sm">
                             <label :for="`${uid}_${option.value}`"
                                    class="font-normal dark:text-zinc-300 cursor-pointer">
-                                   <span v-html="option.label"></span>
+                                <span v-html="option.dangerousHtmlLabel || option.label" />
                             </label>
                         </div>
                     </div>
                     <div v-else
                          class="ml-2.5 text-sm dark:text-zinc-300 font-bold cursor-pointer"
                          @click="toggle(i)">
-                         <span v-html="option.label"></span>
+                        <span v-html="option.dangerousHtmlLabel || option.label" />
                     </div>
                 </div>
                 <div v-show="isOpen[i]">

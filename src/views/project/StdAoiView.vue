@@ -95,7 +95,7 @@ function deleteProjectAreas() {
         Are you sure you want to delete all project areas? This action will only remove areas temporarily in your
         current session. <span class="font-bold">To permanently apply this change, you must save the project afterwards</span>. Proceed?
     </ConfirmModal>
-    <TabTemplate title="Area & Ecosystems">
+    <TabTemplate title="Area">
         <template #description>
             <p>
                 Identification of geographic areas under ecosystem restoration is key for geospatial applications and is essential to keep track of effective restoration, being the main objective of Target 2 of the Kunming-Montreal Global Biodiversity Framework (<a class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 dark:hover:text-ferm-blue-dark-200"
@@ -144,6 +144,25 @@ function deleteProjectAreas() {
             <FormGroup :label="`Total area under restoration [${getMenuSelectedLabel(store.project.project.areaUnits, menus.units)}]`">
                 <NumberInput :edit="edit"
                              v-model="store.project.project.areaUnderRestoration" />
+                <template v-slot:info>
+                    <p>
+                        The number expressed in this box describes the area where restoration is happening. Area under restoration is defined as:
+                    </p>
+                    <p class="pt-2">
+                        The area (in hectares) where functionality (ability to provide ecosystem goods and services) [and biodiversity] has been improved by restoration (not only area of direct intervention) (IUCN, 2022).
+                    </p>
+                    <p class="pt-2">
+                        References: IUCN (2022).
+                        <br>
+                        The Restoration Barometer: a guide for governments.
+                        <br>
+                        Gland, Switzerland: IUCN.
+                        <br>
+                        <a href="https://restorationbarometer.org/wp-content/uploads/2022/02/Barometer_Guide-Doc_16.pdf"
+                           target="_blank"
+                           class="text-ferm-blue-dark-700 hover:text-ferm-blue-dark-600">https://restorationbarometer.org/wp-content/uploads/2022/02/Barometer_Guide-Doc_16.pdf</a>
+                    </p>
+                </template>
             </FormGroup>
             <div class="py-6">
                 <MultiInput :edit="edit"

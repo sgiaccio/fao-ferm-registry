@@ -14,7 +14,8 @@ const progress = ref(0);
 const props = defineProps({
     ...baseProps,
     ...{
-        folder: { type: String, required: true }
+        folder: { type: String, required: true },
+        multiple: { type: Boolean, default: true },
     }
 });
 
@@ -108,6 +109,7 @@ const openFileDialog = () => {
 };
 
 async function deleteFromStorage(name: string, path: string) {
+    if (!props.edit) return;
     if (confirm(`Are you sure you want to delete ${name}?`)) {
         try {
             await deleteFile(path);
@@ -123,7 +125,7 @@ async function deleteFromStorage(name: string, path: string) {
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
-        <div v-if="edit"
+        <div v-if="edit && (multiple || uploadedFiles.length === 0)"
              @dragover.prevent
              @dragenter="dragEnter"
              @dragleave="dragLeave"
@@ -131,19 +133,18 @@ async function deleteFromStorage(name: string, path: string) {
              @click="openFileDialog"
              class="w-full h-32 mb-6 border-2 border-dashed border-gray-400 flex items-center justify-center cursor-pointer font-bold text-center hover:bg-ferm-blue-dark-200 rounded-lg"
              :class="isDragging ? 'bg-ferm-blue-dark-200' : ''">
-            Drop {{ uploadedFiles && uploadedFiles.length ? 'more' : '' }} files here or click to upload
-            <input
-                ref="fileInput"
-                type="file"
-                multiple
-                class="hidden"
-                @change="handleFiles"
-            />
+            Drop {{ uploadedFiles && uploadedFiles.length ? 'more' : '' }} file{{ multiple ? 's' : '' }} here or click to upload
+            <input ref="fileInput"
+                   type="file"
+                   :multiple="multiple"
+                   class="hidden"
+                   @change="handleFiles" />
         </div>
 
         <div v-if="uploadedFiles.length"
              class="overflow-hidden bg-white shadow sm:rounded-md text-sm border max-h-36 overflow-y-auto">
-            <ul role="list" class="divide-y divide-gray-200">
+            <ul role="list"
+                class="divide-y divide-gray-200">
                 <li v-for="file in uploadedFiles"
                     :key="file.name"
                     class="px-3 py-2 sm:px-6">
@@ -151,11 +152,12 @@ async function deleteFromStorage(name: string, path: string) {
                         <div class="flex-grow">
                             {{ file.name }}
                         </div>
-                        <div class="mr-3 cursor-pointer"
+                        <div :class="['cursor-pointer', edit ? 'mr-3' : '']"
                              @click="() => download(file.path, file.name)">
                             <ArrowDownTrayIcon class="inline left-auto w-5 h-5 hover:text-ferm-blue-dark-800" />
                         </div>
-                        <div class="cursor-pointer"
+                        <div v-if="edit"
+                             class="cursor-pointer"
                              @click="() => deleteFromStorage(file.name, file.path)">
                             <TrashIcon class="inline left-auto w-5 h-5 text-ferm-red-dark hover:text-ferm-red-light" />
                         </div>
@@ -166,7 +168,8 @@ async function deleteFromStorage(name: string, path: string) {
         <div v-else-if="!edit">
             <p class="text-gray-400 italic">No files uploaded yet</p>
         </div>
-        <template v-slot:info v-if="$slots.info">
+        <template v-slot:info
+                  v-if="$slots.info">
             <slot name="info" />
         </template>
     </FormGroup>

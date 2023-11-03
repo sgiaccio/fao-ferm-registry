@@ -19,6 +19,7 @@ import PointOfContact from '@/components/inputs/pointsOfContact/PointOfContact.v
 import SelectFormGroup from '@/components/inputs/base/SelectFormGroup.vue';
 import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
 import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
+import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 
 // import { gefCycles, objectives, gefFocalAreas } from "@/components/project/menus";
 
@@ -131,7 +132,7 @@ function handleDeletionByGefType(gefType: string | null) {
 function setGefPrograms(gefCycle: number | null) {
     // keep compatibility with old data where gefCycle was a string
     const cycle = gefCycle ? +gefCycle : null;
-    delete store.project.project.gefProgram;
+    // delete store.project.project.gefProgram;
     switch (cycle) {
         case 6:
             gefPrograms.value = menus.gef6Programs;
@@ -152,8 +153,11 @@ const gefInvestmentType = computed(() => store.project?.project?.gefInvestmentTy
 const gefCycle = computed(() => store.project?.project?.gefCycle);
 
 // Watch gefType
-watch(gefInvestmentType, type => {
-    handleDeletionByGefType(type);
+watch(gefInvestmentType, (type, oldType) => {
+    if (oldType) {
+        handleDeletionByGefType(oldType);
+    }
+    // handleDeletionByGefType(type);
     if (type === 'program') {
         setGefPrograms(gefCycle.value);
     } else {
@@ -162,7 +166,10 @@ watch(gefInvestmentType, type => {
 }, { immediate: true });
 
 // Watch gefCycle
-watch(gefCycle, cycle => {
+watch(gefCycle, (cycle, oldCycle) => {
+    if (oldCycle) {
+        delete store.project.project.gefProgram;
+    }
     if (gefInvestmentType.value === 'program') {
         setGefPrograms(cycle);
     }
@@ -249,7 +256,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                          v-model="store.project.project.gefProgram"
                                          :options="gefPrograms"
                                          :showSelection="false"
-                                         :show-search-input="false"
+                                         :searchable="false"
                                          :edit="edit" />
             </template>
 
@@ -304,7 +311,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                      v-model="store.project.project.restorationStatus"
                                      :options="menus.restorationStatuses"
                                      :showSelection="false"
-                                     :show-search-input="false"
+                                     :searchable="false"
                                      :expandable="false"
                                      :edit="edit">
                 <template v-slot:info>
@@ -339,9 +346,13 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                     </p>
                 </template>
             </RecursiveRadioFormGroup>
-
-
-            <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+            <FileUploadFormGroup2 :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'"
+                                  :folder="`${store.id!}/documents`"
+                                  :multiple="false"
+                                  class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                                  :edit="edit">
+            </FileUploadFormGroup2>
+            <!-- <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                        :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
                 <div v-if="edit">
                     <div v-if="!fileName">
@@ -393,7 +404,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                     <div v-if="selectedFile">Initiative file: {{ fileName }}</div>
                     <div v-else>File not uploaded</div>
                 </template>
-            </FormGroup>
+            </FormGroup> -->
             <!-- <MultiSelectFormGroup :edit="edit"
                               :options="menus.objectives"
                               v-model="store.project.project.objectives"

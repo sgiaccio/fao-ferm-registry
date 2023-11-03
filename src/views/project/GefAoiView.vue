@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { QuestionMarkCircleIcon } from '@heroicons/vue/24/outline';
+import { InformationCircleIcon } from '@heroicons/vue/24/outline';
 import { TrashIcon } from '@heroicons/vue/20/solid';
 
 import { useProjectStore } from '@/stores/project';
@@ -16,7 +16,7 @@ import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
 import KmlKmzUploadDialog from './KmlKmzUploadDialog.vue';
 import FormGroup from '../../components/inputs/FormGroup.vue';
 import NumberInput from '../../components/inputs/base/NumberInput.vue';
-import FileUploadInputGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
+import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
 import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
 
@@ -24,6 +24,10 @@ import AlertModal from '@/views/AlertModal.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
 import { useMenusStore } from '@/stores/menus';
+
+import { roundToPrecisionAsString } from '@/lib/util';
+
+
 const menus = useMenusStore().menus;
 
 withDefaults(defineProps<{
@@ -126,7 +130,7 @@ function deleteProjectAreas() {
         Are you sure you want to delete all project areas? This action will only remove areas temporarily in your
         current session. <span class="font-bold">To permanently apply this change, you must save the project afterwards</span>. Proceed?
     </ConfirmModal>
-    <TabTemplate title="Area & Ecosystems">
+    <TabTemplate title="Area">
         <template #description>
             <p>
                 In this tab information on the project areas and ecosystems is needed in tabular and in geospatial form. You will need to provide details on committed land under GEF Core Indicators 1-5, and information on Restoration Plans/Management Plans with the extension of the area of intervention as well as the geospatial information of the areas including ecosystems covered.
@@ -170,7 +174,7 @@ function deleteProjectAreas() {
             <!-- Enable this when the reporting line is GEF -->
             <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 dark:bg-amber-900 shadow-md border-gray-300">
                 <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data).</span>
-                    The sum of committed land in GEF Core Indicators 1-5 shall be included
+                    The sum of committed land in GEF Core Indicators 1&mdash;5 shall be included
                     in project design phase, at mid-term review phase (MT) and at
                     terminal evaluation (TE) phase.</p>
 
@@ -247,18 +251,18 @@ function deleteProjectAreas() {
                         <p>Please include the land (in ha) reported in the Restoration Plans/Management Plans (tabular data).</p>
                     </template>
                 </FormGroup>
-                <FileUploadInputGroup2 label="Please upload Restoration Plans/Management Plans"
-                                       :folder="store.id!"
-                                       :edit="edit">
+                <FileUploadFormGroup2 label="Please upload Restoration Plans/Management Plans"
+                                      :folder="store.id!"
+                                      :edit="edit">
                     <template v-slot:info>
                         <p>Please upload the Restoration Plans/ Management plans with the description of restoration / land
                             management activities and baseline information of the territory, including pictures.</p>
                     </template>
-                </FileUploadInputGroup2>
+                </FileUploadFormGroup2>
                 <RecursiveRadioFormGroup :edit="edit"
                                          dangerousHtmlDescription="Do the areas of intervention described in the Restoration Plans/Management Plans coincide with the areas of intervention uploaded in the <span class='text-black'>Geographic Areas?</span>"
                                          :options="menus.boolean"
-                                         :show-search-input="false"
+                                         :searchable="false"
                                          v-model="store.project.project.areaAchievedMatch"
                                          :show-selection="false" />
             </div>
@@ -283,24 +287,24 @@ function deleteProjectAreas() {
 
                         <li>
                             Select administrative areas
-                            <QuestionMarkCircleIcon @click="() => { showAdminAreaInfoModal = true }"
-                                                    class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                            <InformationCircleIcon @click="() => { showAdminAreaInfoModal = true }"
+                                                   class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
                         </li>
                         <li>
                             Upload polygons/vector
-                            <QuestionMarkCircleIcon @click="() => { showUploadInfoModal = true }"
-                                                    class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                            <InformationCircleIcon @click="() => { showUploadInfoModal = true }"
+                                                   class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
 
                         </li>
                         <li>Draw directly on the platform
-                            <QuestionMarkCircleIcon @click="() => { showDrawInfoModal = true }"
-                                                    class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                            <InformationCircleIcon @click="() => { showDrawInfoModal = true }"
+                                                   class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
                         </li>
                     </ul>
                     </p>
                 </div>
                 <LabelFormGroup label="Total area of land achieved (spatially explicit format)"
-                                :value="store.polygonsArea().toFixed(2)">
+                                :value="roundToPrecisionAsString(store.polygonsArea(), 2)">
                     <template v-slot:info>
                         <p>The total of the land (in ha) will be computed by the
                             plattorm based on spatially explicit information provided.</p>

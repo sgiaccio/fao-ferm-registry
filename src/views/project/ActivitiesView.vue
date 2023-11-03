@@ -7,7 +7,6 @@ import { useMenusStore } from '@/stores/menus';
 import TabTemplate from '../TabTemplate.vue';
 import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
-import SelectFormGroup from '@/components/inputs/base/SelectFormGroup.vue';
 import TextInput from '@/components/inputs/base/TextInput.vue';
 import { ref } from 'vue';
 
@@ -31,9 +30,10 @@ function applyToAll() {
     const tenureStatus = value.tenureStatus;
     store.projectAreas.forEach((area, i) => {
         if (i > 0) {
-            area[key].restorationType = restorationType;
-            area[key].tenureStatus = tenureStatus;
-            area[key].activities = activities;
+            const key2 = Object.keys(area)[0];
+            area[key2].restorationType = restorationType;
+            area[key2].tenureStatus = tenureStatus;
+            area[key2].activities = [...activities];
         }
     });
 }

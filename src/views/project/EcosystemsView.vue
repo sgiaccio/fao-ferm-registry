@@ -349,7 +349,7 @@ function handleAfterLeave(el) {
                                   }}</span>
                         </div>
                         <template v-if="edit">
-                            <button v-if="['upload', 'draw'].includes(getAreaType(area))"
+                            <button v-if="['upload', 'draw', 'uploadKml'].includes(getAreaType(area))"
                                     type="button"
                                     :disabled="areaBiomesLoadingStatus[i] === 'loading' || areaBiomesLoadingStatus[i] === 'success'"
                                     @click="() => getAreaBiomeStats(i)"
