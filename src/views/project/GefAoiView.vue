@@ -130,7 +130,7 @@ function deleteProjectAreas() {
         Are you sure you want to delete all project areas? This action will only remove areas temporarily in your
         current session. <span class="font-bold">To permanently apply this change, you must save the project afterwards</span>. Proceed?
     </ConfirmModal>
-    <TabTemplate title="Area">
+    <TabTemplate title="Area & ecosystems">
         <template #description>
             <p>
                 In this tab information on the project areas and ecosystems is needed in tabular and in geospatial form. You will need to provide details on committed land under GEF Core Indicators 1-5, and information on Restoration Plans/Management Plans with the extension of the area of intervention as well as the geospatial information of the areas including ecosystems covered.

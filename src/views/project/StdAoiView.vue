@@ -95,7 +95,7 @@ function deleteProjectAreas() {
         Are you sure you want to delete all project areas? This action will only remove areas temporarily in your
         current session. <span class="font-bold">To permanently apply this change, you must save the project afterwards</span>. Proceed?
     </ConfirmModal>
-    <TabTemplate title="Area">
+    <TabTemplate title="Area & ecosystems">
         <template #description>
             <p>
                 Identification of geographic areas under ecosystem restoration is key for geospatial applications and is essential to keep track of effective restoration, being the main objective of Target 2 of the Kunming-Montreal Global Biodiversity Framework (<a class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 dark:hover:text-ferm-blue-dark-200"

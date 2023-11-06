@@ -23,6 +23,8 @@ import {
 import ConfirmModal from '@/views/ConfirmModal.vue';
 import AlertModal from '@/views/AlertModal.vue';
 
+import router from '@/router';
+
 
 const props = withDefaults(defineProps<{
     onFinished?: () => void
@@ -151,7 +153,6 @@ function validateNewInstitution() {
 }
 
 const isDisabled = computed(() => {
-    console.log('validate');
     return !validateNewInstitution();
 });
 
@@ -220,8 +221,7 @@ function cancelSubmit() {
                   :okButtonEnabled="selectedGroup !== null && reasons !== ''"
                   :open="showConfirmDialog"
                   ok-button-text="Join">
-        <p class="text-sm text-gray-700">Please provide your reasons for joining <span
-            class="font-bold">{{ selectedGroup?.group.name }}</span>; your response will be sent to the administrator for
+        <p class="text-sm text-gray-700">Please provide your reasons for joining <span class="font-bold">{{ selectedGroup?.group.name }}</span>; your response will be sent to the administrator for
             review.</p>
         <div>
             <div class="mt-2">
@@ -264,8 +264,7 @@ function cancelSubmit() {
         <p class="text-sm text-gray-700">Please submit your institution for inclusion in the registry.</p>
         <div class="mt-2">
             <label for="institution"
-                   class="block text-sm font-medium leading-6 text-gray-900">Name <span
-                class="text-red-600">*</span></label>
+                   class="block text-sm font-medium leading-6 text-gray-900">Name <span class="text-red-600">*</span></label>
             <div class="mt-2">
                 <input v-model="newInstitutionFormData.name"
                        id="institution"
@@ -277,8 +276,7 @@ function cancelSubmit() {
         </div>
         <div class="mt-2">
             <label for="institutionType"
-                   class="block text-sm font-medium leading-6 text-gray-900">Type <span
-                class="text-red-600">*</span></label>
+                   class="block text-sm font-medium leading-6 text-gray-900">Type <span class="text-red-600">*</span></label>
             <select v-model="newInstitutionFormData.type"
                     id="institutionType"
                     name="institutionType"
@@ -301,7 +299,7 @@ function cancelSubmit() {
             <label for="institutionTypeOther"
                    :class="[newInstitutionFormData.type === 'Other' ? 'text-gray-900' : 'text-gray-400', 'block text-sm font-medium leading-6']">Please
                 specify type <span v-if="newInstitutionFormData.type === 'Other'"
-                                   class="text-red-600">*</span></label>
+                      class="text-red-600">*</span></label>
             <div class="mt-2">
                 <input v-model="newInstitutionFormData.otherType"
                        ref="otherTypeRef"
@@ -363,8 +361,7 @@ function cancelSubmit() {
         </div>
         <div class="pt-4">
             <label for="description"
-                   class="block text-sm font-medium leading-6 text-gray-900">Description <span
-                class="text-red-600">*</span></label>
+                   class="block text-sm font-medium leading-6 text-gray-900">Description <span class="text-red-600">*</span></label>
             <div class="mt-2">
                 <textarea v-model="newInstitutionFormData.description"
                           id="description"
@@ -418,12 +415,10 @@ function cancelSubmit() {
                 <Combobox as="div"
                           v-model="selectedGroup">
                     <div class="relative">
-                        <ComboboxInput
-                            class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            @change="query = $event.target.value"
-                            :display-value="(group) => group?.group.name" />
-                        <ComboboxButton
-                            class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                        <ComboboxInput class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                       @change="query = $event.target.value"
+                                       :display-value="(group) => group?.group.name" />
+                        <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                             <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
                                                aria-hidden="true" />
                         </ComboboxButton>
@@ -495,7 +490,12 @@ function cancelSubmit() {
                         :class="[selectedGroup ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400', 'mt-3 inline-flex w-full items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']">
                     Join
                 </button>
-                <div class="sm:flex-grow sm:justify-items-end sm:text-right">
+                <div class="sm:justify-items-end sm:text-right flex-grow">
+                    <button v-if="Object.keys(authStore.userGroups).length || authStore.isAdmin"
+                            @click.prevent="router.push({ name: 'initiatives' })"
+                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Cancel
+                    </button>
                     <button @click.prevent="submitNewInstitutionRequest"
                             :class="['mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']">
                         Submit new institution
@@ -505,7 +505,7 @@ function cancelSubmit() {
 
             <div v-if="selectedGroup && selectedGroup.group.description"
                  class="mt-6 text-sm border border-gray-400 rounded-md px-3 py-2 dark:text-black">
-                <h1 class="font-bold mb-1">{{selectedGroup.group.name}}</h1>
+                <h1 class="font-bold mb-1">{{ selectedGroup.group.name }}</h1>
                 <span class="italic">{{ selectedGroup.group.description }}</span>
             </div>
         </div>

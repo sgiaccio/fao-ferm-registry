@@ -23,6 +23,8 @@ import { snakeToCamel } from '../lib/util'
 
 import { useAuthStore } from './auth';
 
+import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
+
 
 const projectsCollection = collection(db, 'registry')
 const areaCollection = collection(db, 'areas')
@@ -63,13 +65,23 @@ export const useProjectStore = defineStore({
             // This is needed before data is transformed to the detached AOI version
             // Detach areas if present (has not been edited) and store them in a separate variable
             if (this.project.aoi) {
-                this.projectAreas = this.project.aoi
-                delete this.project.aoi
-                this.projectAreas = [];
+                this.projectAreas = this.project.aoi;
+                delete this.project.aoi;
+                // this.projectAreas = [];
             } else {
                 const areasRef = doc(areaCollection, projectId);
                 this.projectAreas = (await getDoc(areasRef)).data()?.areas || [];
             }
+
+            // map aurora indicators to their ids
+            // TODO - this is a temporary solution to save the aurora indicators
+            this.projectAreas.forEach((area: any) => {
+                // Get the aurora indicators from the area
+                const [_, areaValue]: [string, any] = Object.entries(area)[0];
+                if (areaValue.auroraIndicators) {
+                    areaValue.auroraIndicators = areaValue.auroraIndicators.map((indicator: any) => indicator.id);
+                }
+            });
 
             this.id = projectId;
 
@@ -334,8 +346,30 @@ export const useProjectStore = defineStore({
             batch.set(projectRef, projectToBeSaved);
 
             // Save areas in a separate collection
+
+            // TODO - this is a temporary solution to save the aurora indicators
+            const projectAreasToBeSaved: any = [];
+            for (const area of this.projectAreas) {
+                // Get the aurora indicators from the area
+                const [areaType, areaValue]: [string, any] = Object.entries(area)[0];
+                const newAreaValue = { ...areaValue };
+
+                // replace the aurora indicator ids with the full objects from the goalJsonData
+                const auroraIndicatorIds = newAreaValue.auroraIndicators;
+                if (auroraIndicatorIds && auroraIndicatorIds.length > 0) {
+                    newAreaValue.auroraIndicators = auroraIndicatorIds.map((id: number) => {
+                        const indicator = goalJsonData.find((i: any) => i.id === id);
+                        return indicator;
+                    });
+                }
+                // Remove the auroraIndicators property from the area as they are not stored in the database
+                // delete newAreaValue.auroraIndicatorIds;
+
+                projectAreasToBeSaved.push({ [areaType]: newAreaValue });
+            }
+
             const areasRef = doc(areaCollection, projectRef.id);
-            batch.set(areasRef, { areas: this.projectAreas });
+            batch.set(areasRef, { areas: projectAreasToBeSaved });
 
             await batch.commit();
         },

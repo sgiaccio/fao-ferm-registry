@@ -84,9 +84,10 @@ function toggleOtherActivitiesInput(i: number) {
                         </div>
                     </div>
 
-                    <!-- Only show restoration type and tenure status if not GEF or if GEF3 -->
 
-                    <template v-if="store.project.reportingLine !== 'GEF' || area[Object.keys(area)[0]].gefIndicator?.startsWith('GEF3')">
+                    <!-- Only show restoration type and tenure status if not GEF or if GEF3 -->
+                    <!-- This was moved to RegistrationView -->
+                    <!-- <template v-if="store.project.reportingLine !== 'GEF' || area[Object.keys(area)[0]].gefIndicator?.startsWith('GEF3')">
                         <RecursiveRadioFormGroup :edit="edit"
                                                  v-model="area[Object.keys(area)[0]].restorationType"
                                                  :label="store.project.reportingLine === 'GEF' ? 'Intervention/restoration type' : 'Restoration type'"
@@ -123,7 +124,7 @@ function toggleOtherActivitiesInput(i: number) {
                                 </p>
                             </template>
                         </RecursiveRadioFormGroup>
-                    </template>
+                    </template> -->
 
                     <h1 class="text-2xl dark:text-zinc-300 font-bold mb-2">Activities</h1>
                     <RecursiveMenu :edit="edit"

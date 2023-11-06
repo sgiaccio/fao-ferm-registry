@@ -84,7 +84,7 @@ function showAlertModal(title: string, info: string) {
              v-html="infoText" />
     </AlertModal>
 
-    <div v-if="!level && showSelection || !edit">{{ modelValue !== undefined ? flattenedOptions[modelValue] : 'None selected' }}</div>
+    <div v-if="!level && showSelection || !edit" class="font-bold border px-2 py-1 bg-blue-50 border-blue-500 rounded-md">{{ modelValue !== undefined ? flattenedOptions[modelValue] : 'None selected' }}</div>
     <input v-if="!level && edit && searchable"
            type="text"
            class="w-80 text-sm font-bold text-gray-600 rounded-full border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mb-2 mt-2"

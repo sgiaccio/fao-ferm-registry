@@ -23,7 +23,7 @@ const tabs = [
     { name: 'Characteristics', path: 'characteristics' },
     { name: 'Activities', path: 'activities' },
     { name: 'Indicators', path: 'indicators' },
-    { name: 'Monitoring & Results', path: 'results' }
+    { name: 'Results', path: 'results' }
 ];
 
 const currentRouteIdx = computed(() => tabs.findIndex(tab => route.path.endsWith(tab.path)));

@@ -154,9 +154,8 @@ async function checkTermsAndConditionsAndShowDialog() {
             </ul>
             <p class="mt-3">By clicking "Accept", you agree to these terms and conditions.</p>
 
-            <p class="mt-3">For any further questions regarding these terms, please contact us at <a
-                class="font-bold underline"
-                href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>.</p>
+            <p class="mt-3">For any further questions regarding these terms, please contact us at <a class="font-bold underline"
+                   href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>.</p>
         </div>
     </ConfirmModal>
 
@@ -179,55 +178,58 @@ async function checkTermsAndConditionsAndShowDialog() {
 
             <!-- If the user is an admin or part of a group, show the initiatives -->
             <template v-else>
-                <div class="flex mt-6">
+                <div class="flex mt-6 space-x-4">
                     <!-- Search -->
-                    <Menu as="div"
-                          class="relative inline-block text-left">
-                        <div>
-                            <MenuButton
-                                class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                                Filter by institution
-                                <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
-                                                 aria-hidden="true" />
-                            </MenuButton>
-                        </div>
-                        <transition v-if="userGroups"
-                                    enter-active-class="transition ease-out duration-100"
-                                    enter-from-class="transform opacity-0 scale-95"
-                                    enter-to-class="transform opacity-100 scale-100"
-                                    leave-active-class="transition ease-in duration-75"
-                                    leave-from-class="transform opacity-100 scale-100"
-                                    leave-to-class="transform opacity-0 scale-95">
-                            <menu-items
-                                class="absolute left-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                <div class="py-1">
-                                    <menu-item v-slot="{ active }">
-                                        <span
-                                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-12 py-2 text-sm', 'cursor-default']"
-                                            @click="filterGroup = null">
-                                            All
-                                        </span>
-                                    </menu-item>
-                                    <menu-item
-                                        v-for="[id, name] in Object.entries(userGroups).sort((a, b) => a[1].localeCompare(b[1]))"
-                                        v-slot="{ active }">
-                                        <div @click="filterGroup = id"
-                                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm', 'cursor-default flex flex-row']">
-                                            <div class="w-5 mr-3">
-                                                <PencilSquareIcon
-                                                    v-if="['admin', 'editor'].includes(getAccessLevel(id))"
-                                                    class="h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                    aria-hidden="true" />
+                    <div class="flex-grow">
+                        <Menu as="div"
+                              class="relative inline-block text-left">
+                            <div>
+                                <MenuButton class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
+                                    Filter by institution
+                                    <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
+                                                     aria-hidden="true" />
+                                </MenuButton>
+                            </div>
+                            <transition v-if="userGroups"
+                                        enter-active-class="transition ease-out duration-100"
+                                        enter-from-class="transform opacity-0 scale-95"
+                                        enter-to-class="transform opacity-100 scale-100"
+                                        leave-active-class="transition ease-in duration-75"
+                                        leave-from-class="transform opacity-100 scale-100"
+                                        leave-to-class="transform opacity-0 scale-95">
+                                <menu-items class="absolute left-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div class="py-1">
+                                        <menu-item v-slot="{ active }">
+                                            <span :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-12 py-2 text-sm', 'cursor-default']"
+                                                  @click="filterGroup = null">
+                                                All
+                                            </span>
+                                        </menu-item>
+                                        <menu-item v-for="[id, name] in Object.entries(userGroups).sort((a, b) => a[1].localeCompare(b[1]))"
+                                                   v-slot="{ active }">
+                                            <div @click="filterGroup = id"
+                                                 :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm', 'cursor-default flex flex-row']">
+                                                <div class="w-5 mr-3">
+                                                    <PencilSquareIcon v-if="['admin', 'editor'].includes(getAccessLevel(id))"
+                                                                      class="h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                      aria-hidden="true" />
+                                                </div>
+                                                <!-- <EyeIcon v-else class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> -->
+                                                <div>{{ name }}</div>
                                             </div>
-                                            <!-- <EyeIcon v-else class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> -->
-                                            <div>{{ name }}</div>
-                                        </div>
-                                    </menu-item>
-                                </div>
-                            </menu-items>
-                        </transition>
-                    </Menu>
-
+                                        </menu-item>
+                                    </div>
+                                </menu-items>
+                            </transition>
+                        </Menu>
+                    </div>
+                    <!-- Join/create an institution -->
+                    <button v-if="authStore.isAdmin || Object.keys(authStore.userGroups).length"
+                            type="button"
+                            class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            @click="() => router.push({ name: 'newOrganization' })">
+                        Join or create institution
+                    </button>
                     <!-- Create new initiative -->
                     <button v-if="authStore.isAdmin || Object.keys(authStore.userGroups).length"
                             type="button"
@@ -254,9 +256,8 @@ async function checkTermsAndConditionsAndShowDialog() {
                                             <div class="flex items-center justify-between">
                                                 <label :title="project.data.project?.title || 'No title'"
                                                        class="truncate">
-                                                    <router-link
-                                                        :to="{ name: 'projectInfo', params: { id: project.id } }"
-                                                        :class="[project.data.project?.title ? 'text-ferm-blue-dark-800' : 'italic text-gray-400', 'text-sm font-medium hover:text-indigo-500 project-link']">
+                                                    <router-link :to="{ name: 'projectInfo', params: { id: project.id } }"
+                                                                 :class="[project.data.project?.title ? 'text-ferm-blue-dark-800' : 'italic text-gray-400', 'text-sm font-medium hover:text-indigo-500 project-link']">
                                                         {{ project.data.project?.title || 'No title' }}
                                                     </router-link>
                                                 </label>
@@ -274,22 +275,18 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                 <div class="sm:flex">
                                                     <p class="flex items-center text-sm text-gray-500">
                                                         <template v-if="projectUtils.getStatus(project) === 'draft'">
-                                                            <Cog6ToothIcon
-                                                                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                                aria-hidden="true" />
+                                                            <Cog6ToothIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                                           aria-hidden="true" />
                                                             Draft
                                                         </template>
-                                                        <template
-                                                            v-if="projectUtils.getStatus(project) === 'submitted'">
-                                                            <DocumentMagnifyingGlassIcon
-                                                                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                                aria-hidden="true" />
+                                                        <template v-if="projectUtils.getStatus(project) === 'submitted'">
+                                                            <DocumentMagnifyingGlassIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                                                         aria-hidden="true" />
                                                             Under review
                                                         </template>
                                                         <template v-if="projectUtils.getStatus(project) === 'public'">
-                                                            <MegaphoneIcon
-                                                                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                                aria-hidden="true" />
+                                                            <MegaphoneIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                                           aria-hidden="true" />
                                                             Public
                                                         </template>
                                                     </p>
@@ -300,45 +297,38 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                         <div class="sm:mt-0 sm:ml-6 text-sm">
                                                             <MenuButton @click="showBestPractices(project.id)"
                                                                         class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none">
-                                                            <span
-                                                                class="text-gray-600">{{ project.data.bestPracticesCount
+                                                                <span class="text-gray-600">{{ project.data.bestPracticesCount
                                                                 }} good
-                                                                practice{{ project.data.bestPracticesCount === 1 ? '' : 's'
-                                                                }}</span>
+                                                                    practice{{ project.data.bestPracticesCount === 1 ? '' : 's'
+                                                                    }}</span>
                                                                 <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
                                                                                  aria-hidden="true" />
                                                             </MenuButton>
                                                         </div>
-                                                        <transition
-                                                            enter-active-class="transition ease-out duration-100"
-                                                            enter-from-class="transform opacity-0 scale-95"
-                                                            enter-to-class="transform opacity-100 scale-100"
-                                                            leave-active-class="transition ease-in duration-75"
-                                                            leave-from-class="transform opacity-100 scale-100"
-                                                            leave-to-class="transform opacity-0 scale-95">
-                                                            <menu-items
-                                                                class="absolute z-10 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                        <transition enter-active-class="transition ease-out duration-100"
+                                                                    enter-from-class="transform opacity-0 scale-95"
+                                                                    enter-to-class="transform opacity-100 scale-100"
+                                                                    leave-active-class="transition ease-in duration-75"
+                                                                    leave-from-class="transform opacity-100 scale-100"
+                                                                    leave-to-class="transform opacity-0 scale-95">
+                                                            <menu-items class="absolute z-10 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                                 <div v-if="bestPractices.length"
                                                                      class="py-1">
                                                                     <menu-item v-slot="{ active }"
                                                                                v-for="bp in bestPractices">
-                                                                        <router-link
-                                                                            :to="`/registry/good-practices/${project.id}/${bp.id}/objectives`"
-                                                                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'px-4 py-2 text-sm block']">
+                                                                        <router-link :to="`/registry/good-practices/${project.id}/${bp.id}/objectives`"
+                                                                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'px-4 py-2 text-sm block']">
                                                                             <div class="flex flex-row">
                                                                                 <div>
-                                                                                    <PencilSquareIcon
-                                                                                        v-if="!bp.data.status || bp.data.status === 'draft'"
-                                                                                        class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                        aria-hidden="true" />
-                                                                                    <DocumentMagnifyingGlassIcon
-                                                                                        v-else-if="bp.data.status === 'submitted'"
-                                                                                        class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                        aria-hidden="true" />
-                                                                                    <MegaphoneIcon
-                                                                                        v-else-if="bp.data.status === 'published'"
-                                                                                        class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                        aria-hidden="true" />
+                                                                                    <PencilSquareIcon v-if="!bp.data.status || bp.data.status === 'draft'"
+                                                                                                      class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                                      aria-hidden="true" />
+                                                                                    <DocumentMagnifyingGlassIcon v-else-if="bp.data.status === 'submitted'"
+                                                                                                                 class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                                                 aria-hidden="true" />
+                                                                                    <MegaphoneIcon v-else-if="bp.data.status === 'published'"
+                                                                                                   class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                                   aria-hidden="true" />
                                                                                 </div>
                                                                                 <div class="truncate">
                                                                                     {{ bp.data.title || 'No title' }}
@@ -358,10 +348,9 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                     </Menu>
                                                     <div v-else
                                                          class="sm:mt-0 sm:ml-6 text-sm">
-                                                        <router-link
-                                                            :to="{ name: 'goodPracticesObjectivesEdit', params: { projectId: project.id, id: 'new' }}"
-                                                            type="button"
-                                                            class="inline-flex items-center text-sm font-normal text-ferm-blue-dark-700">
+                                                        <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { projectId: project.id, id: 'new' } }"
+                                                                     type="button"
+                                                                     class="inline-flex items-center text-sm font-normal text-ferm-blue-dark-700">
                                                             Add good practice
                                                         </router-link>
                                                     </div>
@@ -373,8 +362,7 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                     <p>
                                                         Last updated on
                                                         {{ ' ' }}
-                                                        <time
-                                                            :datetime="fbTimestampToString(project.data['updateTime'])">
+                                                        <time :datetime="fbTimestampToString(project.data['updateTime'])">
                                                             {{ fbTimestampToString(project.data['updateTime']) }}
                                                         </time>
                                                     </p>

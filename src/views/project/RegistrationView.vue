@@ -18,6 +18,7 @@ import Organization from '@/components/inputs/organizations/Organization.vue';
 import PointOfContact from '@/components/inputs/pointsOfContact/PointOfContact.vue';
 import SelectFormGroup from '@/components/inputs/base/SelectFormGroup.vue';
 import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
+import RecursiveMenuFormGroup from '@/components/inputs/base/RecursiveMenuFormGroup.vue';
 import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 
@@ -259,6 +260,57 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                          :searchable="false"
                                          :edit="edit" />
             </template>
+
+
+
+
+            <!-- Only show restoration type and tenure status if not GEF or if GEF3 -->
+            <template v-if="store.project.reportingLine !== 'GEF' || store.project.project.gefIndicator?.startsWith('GEF3')">
+                <RecursiveMenuFormGroup :edit="edit"
+                                         v-model="store.project.project.restorationTypes"
+                                         :label="store.project.reportingLine === 'GEF' ? 'Intervention/restoration types' : 'Restoration types'"
+                                         :options="menus.restorationTypes"
+                                         :searchable="false"
+                                         :showSelection="false"
+                                         class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
+                    <template v-slot:info>
+                        The possible values are ecological restoration and rehabilitation. This can be determined by analyzing the current and target ecosystem (natural or transformed). Examples of transformed ecosystems are: farmlands, forest plantation, urban ecosystems. As a useful rule of thumb, if the target ecosystem is natural, the restoration will be ecological restoration. If the target ecosystem is transformed, the restoration will be rehabilitation.
+                        <span class="font-bold"
+                              v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span>
+                    </template>
+                </RecursiveMenuFormGroup>
+                <RecursiveMenuFormGroup :edit="edit"
+                                         v-model="store.project.project.tenureStatuses"
+                                         label="Tenure statuses"
+                                         :options="menus.tenureStatuses"
+                                         :searchable="false"
+                                         :showSelection="false"
+                                         class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
+                    <template v-slot:info>
+                        <p>
+                            It is the legal status of the area under restoration. Information on tenure status should include documentation of Free and Prior Consent (FPIC) to ensure that people's rights are respected in the process of restoration and adherence to the UN Decade principles (FAO, IUCN CEM & SER, 2021) as well as the Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) (FAO, 2022).
+                            <span class="font-bold"
+                                  v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3.</span>
+                        </p>
+                        <p class="pt-4">
+                            References:
+                            <br>
+                            FAO. 2022. Voluntary Guidelines on the Responsible Governance of Tenure of Land, Fisheries and Forests in the Context of National Food Security. First revision. Rome. <a href="https://doi.org/10.4060/i2801e"
+                               target="_blank"
+                               class="text-ferm-blue-dark-700 hover:text-ferm-blue-dark-600">https://doi.org/10.4060/i2801e</a>
+                        </p>
+                        <p class="pt-4">
+                            FAO, IUCN CEM & SER. (2021). Principles for ecosystem restoration to guide the United Nations Decade 2021&mdash;2030. Rome, FAO.
+                        </p>
+                    </template>
+                </RecursiveMenuFormGroup>
+            </template>
+
+
+
+
+
+
 
             <TextareaFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                                :edit="edit"

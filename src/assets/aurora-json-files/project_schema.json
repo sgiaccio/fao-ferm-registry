@@ -1,0 +1,1615 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "idProject": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "lang": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "land_uses": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "tag"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "tag"
+          ]
+        }
+      ]
+    },
+    "barriers": {
+      "type": "array",
+      "items": {}
+    },
+    "goals": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "goal": {
+              "type": "string"
+            },
+            "subtheme": {
+              "type": "string"
+            },
+            "selected": {
+              "type": "boolean"
+            },
+            "color": {
+              "type": "string"
+            },
+            "selected_col": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "goal",
+            "subtheme",
+            "selected",
+            "color",
+            "selected_col"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "goal": {
+              "type": "string"
+            },
+            "subtheme": {
+              "type": "string"
+            },
+            "selected": {
+              "type": "boolean"
+            },
+            "color": {
+              "type": "string"
+            },
+            "selected_col": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "goal",
+            "subtheme",
+            "selected",
+            "color",
+            "selected_col"
+          ]
+        }
+      ]
+    },
+    "index_value": {
+      "type": "integer"
+    },
+    "indicators": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "indicator": {
+              "type": "string"
+            },
+            "metric": {
+              "type": "string"
+            },
+            "action": {
+              "type": "string"
+            },
+            "action_id": {
+              "type": "integer"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "bottom_limit": {
+              "type": "integer"
+            },
+            "top_limit": {
+              "type": "integer"
+            },
+            "step": {
+              "type": "number"
+            },
+            "rg_goal": {
+              "type": "string"
+            },
+            "rg_goal_id": {
+              "type": "string"
+            },
+            "rg_subtheme": {
+              "type": "string"
+            },
+            "bs_focus": {
+              "type": "string"
+            },
+            "bs_focus_id": {
+              "type": "integer"
+            },
+            "bs_subtheme": {
+              "type": "string"
+            },
+            "eg_focus": {
+              "type": "string"
+            },
+            "eg_focus_id": {
+              "type": "integer"
+            },
+            "eg_subtheme": {
+              "type": "string"
+            },
+            "landuse": {
+              "type": "string"
+            },
+            "sgd_aichi_ldn": {
+              "type": "string"
+            },
+            "selected": {
+              "type": "boolean"
+            },
+            "SDGs": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "constraints_ease": {
+              "type": "integer"
+            },
+            "constraints_affordability": {
+              "type": "integer"
+            },
+            "constraints_availablity": {
+              "type": "integer"
+            },
+            "constraints_quality": {
+              "type": "integer"
+            },
+            "constraints_comprehensiveness": {
+              "type": "integer"
+            },
+            "constraints_sensitivity": {
+              "type": "integer"
+            },
+            "constraints_average": {
+              "type": "integer"
+            },
+            "baseValue": {
+              "type": "string"
+            },
+            "goalValue": {
+              "type": "string"
+            },
+            "optionsDropdown": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                }
+              ]
+            },
+            "selectedOptionDropdown": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "indicator",
+            "metric",
+            "action",
+            "action_id",
+            "unit",
+            "bottom_limit",
+            "top_limit",
+            "step",
+            "rg_goal",
+            "rg_goal_id",
+            "rg_subtheme",
+            "bs_focus",
+            "bs_focus_id",
+            "bs_subtheme",
+            "eg_focus",
+            "eg_focus_id",
+            "eg_subtheme",
+            "landuse",
+            "sgd_aichi_ldn",
+            "selected",
+            "SDGs",
+            "constraints_ease",
+            "constraints_affordability",
+            "constraints_availablity",
+            "constraints_quality",
+            "constraints_comprehensiveness",
+            "constraints_sensitivity",
+            "constraints_average",
+            "baseValue",
+            "goalValue",
+            "optionsDropdown",
+            "selectedOptionDropdown"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "indicator": {
+              "type": "string"
+            },
+            "metric": {
+              "type": "string"
+            },
+            "action": {
+              "type": "string"
+            },
+            "action_id": {
+              "type": "integer"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "bottom_limit": {
+              "type": "integer"
+            },
+            "top_limit": {
+              "type": "integer"
+            },
+            "step": {
+              "type": "number"
+            },
+            "rg_goal": {
+              "type": "string"
+            },
+            "rg_goal_id": {
+              "type": "string"
+            },
+            "rg_subtheme": {
+              "type": "string"
+            },
+            "bs_focus": {
+              "type": "string"
+            },
+            "bs_focus_id": {
+              "type": "integer"
+            },
+            "bs_subtheme": {
+              "type": "string"
+            },
+            "eg_focus": {
+              "type": "string"
+            },
+            "eg_focus_id": {
+              "type": "integer"
+            },
+            "eg_subtheme": {
+              "type": "string"
+            },
+            "landuse": {
+              "type": "string"
+            },
+            "sgd_aichi_ldn": {
+              "type": "string"
+            },
+            "selected": {
+              "type": "boolean"
+            },
+            "SDGs": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "constraints_ease": {
+              "type": "integer"
+            },
+            "constraints_affordability": {
+              "type": "integer"
+            },
+            "constraints_availablity": {
+              "type": "integer"
+            },
+            "constraints_quality": {
+              "type": "integer"
+            },
+            "constraints_comprehensiveness": {
+              "type": "integer"
+            },
+            "constraints_sensitivity": {
+              "type": "integer"
+            },
+            "constraints_average": {
+              "type": "integer"
+            },
+            "baseValue": {
+              "type": "string"
+            },
+            "goalValue": {
+              "type": "string"
+            },
+            "optionsDropdown": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                }
+              ]
+            },
+            "selectedOptionDropdown": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "indicator",
+            "metric",
+            "action",
+            "action_id",
+            "unit",
+            "bottom_limit",
+            "top_limit",
+            "step",
+            "rg_goal",
+            "rg_goal_id",
+            "rg_subtheme",
+            "bs_focus",
+            "bs_focus_id",
+            "bs_subtheme",
+            "eg_focus",
+            "eg_focus_id",
+            "eg_subtheme",
+            "landuse",
+            "sgd_aichi_ldn",
+            "selected",
+            "SDGs",
+            "constraints_ease",
+            "constraints_affordability",
+            "constraints_availablity",
+            "constraints_quality",
+            "constraints_comprehensiveness",
+            "constraints_sensitivity",
+            "constraints_average",
+            "baseValue",
+            "goalValue",
+            "optionsDropdown",
+            "selectedOptionDropdown"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "indicator": {
+              "type": "string"
+            },
+            "metric": {
+              "type": "string"
+            },
+            "action": {
+              "type": "string"
+            },
+            "action_id": {
+              "type": "integer"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "bottom_limit": {
+              "type": "integer"
+            },
+            "top_limit": {
+              "type": "integer"
+            },
+            "step": {
+              "type": "number"
+            },
+            "rg_goal": {
+              "type": "string"
+            },
+            "rg_goal_id": {
+              "type": "string"
+            },
+            "rg_subtheme": {
+              "type": "string"
+            },
+            "bs_focus": {
+              "type": "string"
+            },
+            "bs_focus_id": {
+              "type": "integer"
+            },
+            "bs_subtheme": {
+              "type": "string"
+            },
+            "eg_focus": {
+              "type": "string"
+            },
+            "eg_focus_id": {
+              "type": "integer"
+            },
+            "eg_subtheme": {
+              "type": "string"
+            },
+            "landuse": {
+              "type": "string"
+            },
+            "sgd_aichi_ldn": {
+              "type": "string"
+            },
+            "selected": {
+              "type": "boolean"
+            },
+            "SDGs": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "constraints_ease": {
+              "type": "integer"
+            },
+            "constraints_affordability": {
+              "type": "integer"
+            },
+            "constraints_availablity": {
+              "type": "integer"
+            },
+            "constraints_quality": {
+              "type": "integer"
+            },
+            "constraints_comprehensiveness": {
+              "type": "integer"
+            },
+            "constraints_sensitivity": {
+              "type": "integer"
+            },
+            "constraints_average": {
+              "type": "integer"
+            },
+            "baseValue": {
+              "type": "string"
+            },
+            "goalValue": {
+              "type": "string"
+            },
+            "optionsDropdown": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                }
+              ]
+            },
+            "selectedOptionDropdown": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "indicator",
+            "metric",
+            "action",
+            "action_id",
+            "unit",
+            "bottom_limit",
+            "top_limit",
+            "step",
+            "rg_goal",
+            "rg_goal_id",
+            "rg_subtheme",
+            "bs_focus",
+            "bs_focus_id",
+            "bs_subtheme",
+            "eg_focus",
+            "eg_focus_id",
+            "eg_subtheme",
+            "landuse",
+            "sgd_aichi_ldn",
+            "selected",
+            "SDGs",
+            "constraints_ease",
+            "constraints_affordability",
+            "constraints_availablity",
+            "constraints_quality",
+            "constraints_comprehensiveness",
+            "constraints_sensitivity",
+            "constraints_average",
+            "baseValue",
+            "goalValue",
+            "optionsDropdown",
+            "selectedOptionDropdown"
+          ]
+        }
+      ]
+    },
+    "landuseIndicators": {
+      "type": "array",
+      "items": {}
+    },
+    "barriersIndicators": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "goal": {
+              "type": "string"
+            },
+            "subtheme": {
+              "type": "string"
+            },
+            "barrier": {
+              "type": "string"
+            },
+            "indicator": {
+              "type": "string"
+            },
+            "metric": {
+              "type": "string"
+            },
+            "action": {
+              "type": "string"
+            },
+            "action_id": {
+              "type": "integer"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "bottom_limit": {
+              "type": "integer"
+            },
+            "top_limit": {
+              "type": "integer"
+            },
+            "step": {
+              "type": "number"
+            },
+            "selected": {
+              "type": "boolean"
+            },
+            "constraints_ease": {
+              "type": "integer"
+            },
+            "constraints_affordability": {
+              "type": "integer"
+            },
+            "constraints_availablity": {
+              "type": "integer"
+            },
+            "constraints_quality": {
+              "type": "integer"
+            },
+            "constraints_comprehensiveness": {
+              "type": "integer"
+            },
+            "constraints_sensitivity": {
+              "type": "integer"
+            },
+            "constraints_average": {
+              "type": "integer"
+            },
+            "baseValue": {
+              "type": "string"
+            },
+            "goalValue": {
+              "type": "string"
+            },
+            "SDGs": {
+              "type": "array",
+              "items": {}
+            },
+            "optionsDropdown": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                }
+              ]
+            },
+            "selectedOptionDropdown": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "goal",
+            "subtheme",
+            "barrier",
+            "indicator",
+            "metric",
+            "action",
+            "action_id",
+            "unit",
+            "bottom_limit",
+            "top_limit",
+            "step",
+            "selected",
+            "constraints_ease",
+            "constraints_affordability",
+            "constraints_availablity",
+            "constraints_quality",
+            "constraints_comprehensiveness",
+            "constraints_sensitivity",
+            "constraints_average",
+            "baseValue",
+            "goalValue",
+            "SDGs",
+            "optionsDropdown",
+            "selectedOptionDropdown"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "goal": {
+              "type": "string"
+            },
+            "subtheme": {
+              "type": "string"
+            },
+            "barrier": {
+              "type": "string"
+            },
+            "indicator": {
+              "type": "string"
+            },
+            "metric": {
+              "type": "string"
+            },
+            "action": {
+              "type": "string"
+            },
+            "action_id": {
+              "type": "integer"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "bottom_limit": {
+              "type": "integer"
+            },
+            "top_limit": {
+              "type": "integer"
+            },
+            "step": {
+              "type": "number"
+            },
+            "selected": {
+              "type": "boolean"
+            },
+            "constraints_ease": {
+              "type": "integer"
+            },
+            "constraints_affordability": {
+              "type": "integer"
+            },
+            "constraints_availablity": {
+              "type": "integer"
+            },
+            "constraints_quality": {
+              "type": "integer"
+            },
+            "constraints_comprehensiveness": {
+              "type": "integer"
+            },
+            "constraints_sensitivity": {
+              "type": "integer"
+            },
+            "constraints_average": {
+              "type": "integer"
+            },
+            "baseValue": {
+              "type": "string"
+            },
+            "goalValue": {
+              "type": "string"
+            },
+            "SDGs": {
+              "type": "array",
+              "items": {}
+            },
+            "optionsDropdown": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                }
+              ]
+            },
+            "selectedOptionDropdown": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "goal",
+            "subtheme",
+            "barrier",
+            "indicator",
+            "metric",
+            "action",
+            "action_id",
+            "unit",
+            "bottom_limit",
+            "top_limit",
+            "step",
+            "selected",
+            "constraints_ease",
+            "constraints_affordability",
+            "constraints_availablity",
+            "constraints_quality",
+            "constraints_comprehensiveness",
+            "constraints_sensitivity",
+            "constraints_average",
+            "baseValue",
+            "goalValue",
+            "SDGs",
+            "optionsDropdown",
+            "selectedOptionDropdown"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "goal": {
+              "type": "string"
+            },
+            "subtheme": {
+              "type": "string"
+            },
+            "barrier": {
+              "type": "string"
+            },
+            "indicator": {
+              "type": "string"
+            },
+            "metric": {
+              "type": "string"
+            },
+            "action": {
+              "type": "string"
+            },
+            "action_id": {
+              "type": "integer"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "bottom_limit": {
+              "type": "integer"
+            },
+            "top_limit": {
+              "type": "integer"
+            },
+            "step": {
+              "type": "number"
+            },
+            "selected": {
+              "type": "boolean"
+            },
+            "constraints_ease": {
+              "type": "integer"
+            },
+            "constraints_affordability": {
+              "type": "integer"
+            },
+            "constraints_availablity": {
+              "type": "integer"
+            },
+            "constraints_quality": {
+              "type": "integer"
+            },
+            "constraints_comprehensiveness": {
+              "type": "integer"
+            },
+            "constraints_sensitivity": {
+              "type": "integer"
+            },
+            "constraints_average": {
+              "type": "integer"
+            },
+            "baseValue": {
+              "type": "string"
+            },
+            "goalValue": {
+              "type": "string"
+            },
+            "SDGs": {
+              "type": "array",
+              "items": {}
+            },
+            "optionsDropdown": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "value"
+                  ]
+                }
+              ]
+            },
+            "selectedOptionDropdown": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "goal",
+            "subtheme",
+            "barrier",
+            "indicator",
+            "metric",
+            "action",
+            "action_id",
+            "unit",
+            "bottom_limit",
+            "top_limit",
+            "step",
+            "selected",
+            "constraints_ease",
+            "constraints_affordability",
+            "constraints_availablity",
+            "constraints_quality",
+            "constraints_comprehensiveness",
+            "constraints_sensitivity",
+            "constraints_average",
+            "baseValue",
+            "goalValue",
+            "SDGs",
+            "optionsDropdown",
+            "selectedOptionDropdown"
+          ]
+        }
+      ]
+    },
+    "customIndicators": {
+      "type": "array",
+      "items": {}
+    },
+    "goalsImportance": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "goal": {
+              "type": "string"
+            },
+            "goal_id": {
+              "type": "string"
+            },
+            "importance": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "goal",
+            "goal_id",
+            "importance"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "goal": {
+              "type": "string"
+            },
+            "goal_id": {
+              "type": "string"
+            },
+            "importance": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "goal",
+            "goal_id",
+            "importance"
+          ]
+        }
+      ]
+    },
+    "landuseImportance": {
+      "type": "integer"
+    },
+    "barriersImportance": {
+      "type": "integer"
+    },
+    "customImportance": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "idProject",
+    "name",
+    "lang",
+    "description",
+    "land_uses",
+    "barriers",
+    "goals",
+    "index_value",
+    "indicators",
+    "landuseIndicators",
+    "barriersIndicators",
+    "customIndicators",
+    "goalsImportance",
+    "landuseImportance",
+    "barriersImportance",
+    "customImportance"
+  ]
+}

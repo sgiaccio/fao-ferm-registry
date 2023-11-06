@@ -4,16 +4,16 @@ import type { PropType } from "vue";
 import baseProps from "../formGroupProps";
 import FormGroup from "../FormGroup.vue";
 
-import RecursiveRadio from "./RecursiveRadio.vue";
+import RecursiveMenu from "./RecursiveMenu.vue";
 
-import type { RecursiveMenu, MenuValue } from '../../project/menus'
+import type { RecursiveMenu as RecursiveMenuType, MenuValue } from '../../project/menus'
 
 
 defineProps({
     ...baseProps,
     ...{
-        options: { type: Array as PropType<RecursiveMenu> },
-        modelValue: { type: Object as PropType<MenuValue> },
+        options: { type: Array as PropType<RecursiveMenuType> },
+        modelValue: { type: Array as PropType<MenuValue[]> },
         showSelection: { type: Boolean, default: true },
         searchable: { type: Boolean, default: true },
         expandable: { type: Boolean, default: true }
@@ -32,13 +32,13 @@ function valueChanged(value: string) {
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
-        <RecursiveRadio :edit="edit"
-                        :options="options"
-                        :model-value="modelValue"
-                        :showSelection="showSelection"
-                        @update:modelValue="valueChanged"
-                        :searchable="searchable"
-                        :expandable="expandable" />
+        <RecursiveMenu :edit="edit"
+                       :options="options"
+                       :model-value="modelValue"
+                       :showSelection="showSelection"
+                       @update:modelValue="valueChanged"
+                       :searchable="searchable"
+                       :expandable="expandable" />
         <template v-slot:info
                   v-if="$slots.info">
             <slot name="info" />

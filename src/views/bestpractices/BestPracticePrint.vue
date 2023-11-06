@@ -32,7 +32,6 @@ watch(bestPractice, bp => {
 // watch([bestPractice, thumbnailReady], ([bp, tr]) => {
 //     console.log(bp, tr);
 //     if (bp && tr) {
-//         alert();
 //         // Use nextTick to wait for the DOM to be updated
 //         nextTick(() => {
 //             window.print();
@@ -41,7 +40,6 @@ watch(bestPractice, bp => {
 // });
 
 // function thumbnailLoaded() {
-//     alert();
 //     thumbnailReady.value = true;
 // }
 </script>
