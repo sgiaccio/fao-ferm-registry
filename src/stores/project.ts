@@ -22,8 +22,9 @@ import { db } from '../firebase';
 import { snakeToCamel } from '../lib/util'
 
 import { useAuthStore } from './auth';
+import { GoalIndicator, rawGoalIndicators } from '@/lib/auroraIndicators';
 
-import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
+// import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
 
 
 const projectsCollection = collection(db, 'registry')
@@ -74,12 +75,14 @@ export const useProjectStore = defineStore({
             }
 
             // map aurora indicators to their ids
-            // TODO - this is a temporary solution to save the aurora indicators
             this.projectAreas.forEach((area: any) => {
                 // Get the aurora indicators from the area
                 const [_, areaValue]: [string, any] = Object.entries(area)[0];
                 if (areaValue.goalIndicators) {
-                    areaValue.goalIndicators = areaValue.goalIndicators.map((indicator: any) => indicator.indicator.id);
+                    areaValue.goalIndicators = areaValue.goalIndicators.map((indicator: any) => ({
+                        ...indicator,
+                        indicator: new GoalIndicator(indicator.indicator)
+                    }));
                 }
             });
 
@@ -354,17 +357,12 @@ export const useProjectStore = defineStore({
                 const [areaType, areaValue]: [string, any] = Object.entries(area)[0];
                 const newAreaValue = { ...areaValue };
 
-                // replace the aurora indicator ids with the full objects from the goalJsonData
-                const goalIndicatorIds = newAreaValue.goalIndicators;
-                if (goalIndicatorIds && goalIndicatorIds.length > 0) {
-                    newAreaValue.goalIndicators = goalIndicatorIds.map((id: number) => {
-                        const indicator = goalJsonData.find((i: any) => i.id === id);
-                        return { indicator }; // This object will also contain monitoring information
-                    });
-                }
-                // Remove the goalIndicators property from the area as they are not stored in the database
-                // delete newAreaValue.goalIndicatorIds;
-
+                // Replace the aurora indicator ids with the full objects from the goalJsonData
+                newAreaValue.goalIndicators = newAreaValue.goalIndicators.map((goalIndicator: any) => ({
+                    ...goalIndicator, // This will spread the current properties of goalIndicator into the new object
+                    indicator: rawGoalIndicators.find((ind: any) => ind.id === goalIndicator.indicator.id)
+                }));
+                
                 projectAreasToBeSaved.push({ [areaType]: newAreaValue });
             }
 
@@ -391,7 +389,6 @@ export const useProjectStore = defineStore({
             }
         },
         async deleteProject(projectId: string) {
-            debugger;
             const batch = writeBatch(db);
 
             // Delete project

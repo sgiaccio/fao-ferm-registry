@@ -2,7 +2,7 @@ import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
 
 
 // Goal sorting
-const goalOrder = ['f_yield', 'cl_mitigation', 's_quality', 'w_quality', 'e_quantity', 'b_quality', 'cu_practices', 'co_income'];
+export const goalOrder = ['Food & Products', 'Climate', 'Soil', 'Water', 'Energy', 'Biodiversity', 'Culture', 'Community'];
 
 export class GoalIndicator {
     id: number;
@@ -16,15 +16,27 @@ export class GoalIndicator {
     rg_subtheme: string;
 
     constructor(goalIndicator: GoalIndicator_) {
+        // check if goalIndicator is valid
+        if (!goalIndicator) {
+            throw new Error('Invalid goal indicator');
+        }
+        // check if goalIndicator has all required properties
+        const requiredProperties = ['id', 'indicator', 'metric', 'action', 'action_id', 'unit', 'rg_goal', 'rg_goal_id', 'rg_subtheme'];
+        for (const property of requiredProperties) {
+            if (!goalIndicator[property]) {
+                throw new Error(`Invalid goal indicator, missing property ${property}`);
+            }
+        }
+
         this.id = goalIndicator.id;
-        this.indicator = goalIndicator.indicator;
-        this.metric = goalIndicator.metric;
-        this.action = goalIndicator.action;
+        this.indicator = goalIndicator.indicator.trim();
+        this.metric = goalIndicator.metric.trim();
+        this.action = goalIndicator.action.trim();
         this.action_id = goalIndicator.action_id;
-        this.unit = goalIndicator.unit;
-        this.rg_goal = goalIndicator.rg_goal;
-        this.rg_goal_id = goalIndicator.rg_goal_id;
-        this.rg_subtheme = goalIndicator.rg_subtheme;
+        this.unit = goalIndicator.unit.trim();
+        this.rg_goal = goalIndicator.rg_goal.trim();
+        this.rg_goal_id = goalIndicator.rg_goal_id.trim();
+        this.rg_subtheme = goalIndicator.rg_subtheme.trim();
     }
 
     get color(): string {
@@ -54,37 +66,26 @@ export const goalIndicators = goalJsonData.map(goalIndicator => new GoalIndicato
 export const rawGoalIndicators = goalJsonData;
 
 export const goalColors = {
-    'Food & Products': 'rgb(150, 189, 61)',
-    'Climate': 'rgb(75, 166, 123)',
-    'Soil': 'rgb(5, 146, 195)',
-    'Water': 'rgb(0, 107, 160)',
-    'Energy': 'rgb(0, 66, 122)',
-    'Biodiversity': 'rgb(76, 48, 126)',
-    'Culture': 'rgb(148, 27, 130)',
-    'Community': 'rgb(181, 68, 40)',
+    'Food & Products': '150, 189, 61',
+    'Climate': '75, 166, 123',
+    'Soil': '5, 146, 195',
+    'Water': '0, 107, 160',
+    'Energy': '0, 66, 122',
+    'Biodiversity': '76, 48, 126',
+    'Culture': '148, 27, 130',
+    'Community': '181, 68, 40',
 };
 
-export function getGoalColor(goal: string): string {
-    return goalColors[goal];
+export function getGoalColor(goal: string, opacity: number = 1): string {
+    return `rgba(${goalColors[goal]}, ${opacity})`;
 }
 
 // sort goals by order
 export const sortedGoalIndicators = goalIndicators.sort((a, b) => {
-    const aIndex = goalOrder.indexOf(a.rg_goal_id)
-    const bIndex = goalOrder.indexOf(b.rg_goal_id);
+    const aIndex = goalOrder.indexOf(a.rg_goal)
+    const bIndex = goalOrder.indexOf(b.rg_goal);
     return aIndex - bIndex;
 });
-
-export function getSortedIndicatorsById(indicatorIds: number[]) {
-    if (!indicatorIds || !indicatorIds.length) {
-        return [];
-    }
-    return sortedGoalIndicators.filter(indicator => indicatorIds.includes(indicator.id));
-}
-
-// export function getIndicatorColor(indicator: any): string {
-//     return indicatorColors[indicator.rg_goal];
-// }
 
 interface GoalIndicator_ {
     id: number;

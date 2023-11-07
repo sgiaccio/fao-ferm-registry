@@ -9,20 +9,14 @@ import { getRecursiveMenuLabel } from '@/lib/util';
 import TabTemplate from '../TabTemplate.vue';
 
 // import { indicators, gefIndicators } from '@/components/project/menus';
-import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
-import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 import RecursiveRadio from '@/components/inputs/base/RecursiveRadio.vue';
 
 import { roundToPrecisionAsString } from '@/lib/util';
 
+import { goalIndicators, sortedGoalIndicators, getGoalColor, groupByGoal, rawGoalIndicators, GoalIndicator } from '@/lib/auroraIndicators';
 
+// import { CheckBadgeIcon } from '@heroicons/vue/24/solid';
 
-
-// import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
-// import landuseJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
-// import barriersJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
-
-import { goalIndicators, sortedGoalIndicators, getGoalColor, groupByGoal, rawGoalIndicators } from '@/lib/auroraIndicators';
 
 function getIndicatorsMenu(data, themeLabelKey: string, subthemeLabelKey: string) {
     const goalsMap = new Map();
@@ -82,21 +76,6 @@ function getIndicatorsMenu(data, themeLabelKey: string, subthemeLabelKey: string
     return result;
 }
 
-
-// const transformedData = getIndicatorsMenu(jsonData);
-// console.log(JSON.stringify(transformedData, null, 2));
-
-const goalIndicatorsMenu = getIndicatorsMenu(goalIndicators, 'rg_goal', 'rg_subtheme');
-// const landuseIndicatorsMenu = getIndicatorsMenu(landuseJsonData, 'rg_goal', 'rg_subtheme');
-
-
-
-
-
-
-
-
-
 const store = useProjectStore();
 const menus = useMenusStore().menus;
 
@@ -134,71 +113,44 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
     }
 }), { deep: true });
 
-// const indicatorsMenu = menus.auroraIndicators.map(i => ({
-//     ...i,
-//     label: `${i.label} [${i.units}]`,
-// }));
+// const showGoals = ref(new Map());
 
-// let indicatorsMenu: any = [];
+const showGoals = ref(new Array(store.projectAreas.length).fill(new Map()));
 
-
-// function addUnitAndAction(indicators: any, newIndicators: any) {
-//     for (const indicator of indicators) {
-//         console.log(indicator.label);
-//         if (indicator.items) {
-//             for (const item of indicator.items) {
-//                 addUnitAndAction(indicator.items, []);
-//             }
-//         }
-//         //     if (indicator.items) {
-//         //         addUnitAndAction(indicator.items, newIndicators);
-//         //     } else {
-//         //         newIndicators.push({
-//         //             ...indicator,
-//         //             label: `${indicator.label} [${indicator.units}]`,
-//         //         });
-//         //     }
-//     }
-// }
-
-// addUnitAndAction(getIndicatorsMenu(jsonData), []);
-
-
-// Goal sorting
-// const goalOrder = ['f_yield', 'cl_mitigation', 's_quality', 'w_quality', 'e_quantity', 'b_quality', 'cu_practices', 'co_income'];
-// const indicatorColors = {
-//     'Food & Products': 'rgb(150, 189, 61)',
-//     'cl_mitigation': 'rgb(75, 166, 123)',
-//     s_quality: 'rgb(5, 146, 195)',
-//     w_quality: 'rgb(0, 107, 160)',
-//     e_quantity: 'rgb(0, 66, 122)',
-//     b_quality: 'rgb(76, 48, 126)',
-//     cu_practices: 'rgb(148, 27, 130)',
-//     co_income: 'rgb(181, 68, 40)',
-// };
-
-// // sort goals by order
-// const sortedGoalIndicators = goalJsonData.sort((a, b) => {
-//     const aIndex = goalOrder.indexOf(a.rg_goal_id)
-//     const bIndex = goalOrder.indexOf(b.rg_goal_id);
-//     return aIndex - bIndex;
-// });
-
-const showGoals = ref(new Map());
-
-function toggleGoal(goal: string) {
-    showGoals.value.set(goal, !showGoals.value.get(goal));
+function toggleGoal(idx: number, goal: string) {
+    const newMap = new Map(showGoals.value[idx]);
+    newMap.set(goal, !newMap.get(goal));
+    showGoals.value[idx] = newMap;
 }
 
 function addIndicator(area: any, indicator: any) {
-    debugger;
-    // const rawGoalIndicator = rawGoalIndicators.find(i => i.id === indicator.id);
+    const rawGoalIndicator = rawGoalIndicators.find(i => i.id === indicator.id);
 
     const areaValue = Object.values(area)[0];
     if (!areaValue.goalIndicators) {
         areaValue.goalIndicators = [];
     }
-    areaValue.goalIndicators.push(rawGoalIndicator);
+    areaValue.goalIndicators.push({ indicator: rawGoalIndicator });
+}
+
+function isSelected(area: any, indicator: any) {
+    const indicators = Object.values(area)[0]?.goalIndicators;
+    if (!indicators) return false;
+    return indicators.some(i => {
+        try {
+            const t = new GoalIndicator(i.indicator);
+            return t.equals(indicator);
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    });
+}
+
+function nSelectedByGoal(area: any, goal: string) {
+    const indicators = groupByGoal(sortedGoalIndicators).find(g => g.goal === goal)?.indicators;
+    if (!indicators) return 0;
+    return indicators.filter(i => isSelected(area, i)).length;
 }
 </script>
 
@@ -269,8 +221,8 @@ function addIndicator(area: any, indicator: any) {
                         <div class="flex flex-row my-3">
                             <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2 flex-grow">
                                 Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
-                                      v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
-                                      }}</span>
+                                      v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}
+                                </span>
                             </div>
                             <div v-if="edit">
                                 <button v-if="i === 0 && store.projectAreas.length > 1"
@@ -291,26 +243,32 @@ function addIndicator(area: any, indicator: any) {
                         </div> -->
 
                         <div v-for="goal in groupByGoal(sortedGoalIndicators)"
-                             class="text-xs mb-1">
-                            <div class="w-full px-3 py-2 font-bold text-white border rounded-t-md cursor-pointer"
-                                :class="showGoals.get(goal.goal) ? '' : 'rounded-b-md'"
-                                 @click="() => toggleGoal(goal.goal)"
-                                 :style="`background-color: ${getGoalColor(goal.goal)}; border-color: ${getGoalColor(goal.goal)};`">{{ goal.goal }}
+                             class="text-xs mb-2">
+                            <div class="w-full px-3 py-2 font-bold text-white border rounded-t-md cursor-pointer flex"
+                                 :class="showGoals[i].get(goal.goal) ? '' : 'rounded-b-md'"
+                                 @click="() => toggleGoal(i, goal.goal)"
+                                 :style="`background-color: ${getGoalColor(goal.goal)}; border-color: ${getGoalColor(goal.goal)};`">
+                                <div class="flex-grow">{{ goal.goal }}</div>
+                                <div :class="['font-normal', nSelectedByGoal(area, goal.goal) ? '' : 'text-gray-300']">{{ nSelectedByGoal(area, goal.goal) }} selected</div>
                             </div>
 
-                            <div v-if="!!showGoals.get(goal.goal)"
-                            class="border-x border-b rounded-b-md"
+                            <div v-show="!!showGoals[i].get(goal.goal)"
+                                 class="border-x border-b rounded-b-md"
                                  :style="`border-color: ${getGoalColor(goal.goal)};`">
                                 <div v-for="indicator in goal.indicators"
                                      class="px-3 py-2 border-b last:border-b-0 cursor-pointer"
+                                     :style="`border-color: ${getGoalColor(goal.goal, 0.4)}`"
                                      @click="() => addIndicator(area, indicator)">
                                     <div class="flex flex-row ">
                                         <div class="flex-grow self-center">
-                                            {{ indicator.rg_subtheme }} || {{ indicator.indicator }}
+                                            {{ indicator.indicator }}
                                             <br>
-                                            {{ indicator.action }}: {{ indicator.metric }}
+                                            {{ indicator.action }} &ndash; {{ indicator.metric }} &ndash; {{ indicator.rg_subtheme }}
                                         </div>
-
+                                        <div v-if="isSelected(area, indicator)"
+                                             class="text-green-600 font-bold text-lg">
+                                            &#10003;
+                                        </div>
                                         <!-- todo: if indicator has been selected then highlight the row -->
                                         <!-- todo: add delete indicator button -->
                                     </div>
@@ -376,13 +334,13 @@ function addIndicator(area: any, indicator: any) {
                             </div>
                         </div>
                         <!-- Project indicators -->
-                        <div>
+                        <!-- <div>
                             <h1 class="text-2xl dark:text-zinc-300 font-bold mb-3">Project indicators</h1>
                             <RecursiveMenu :edit="edit"
                                            v-model="area[Object.keys(area)[0]].goalIndicators"
                                            :options="goalIndicatorsMenu"
                                            :searchable="true" />
-                        </div>
+                        </div> -->
                         <div class="px-4 sm:px-3 lg:px-4">
                             <!-- <div class="sm:flex sm:items-center">
                                 <div class="sm:flex-auto">

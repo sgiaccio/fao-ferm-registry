@@ -17,7 +17,6 @@ watch(() => props.enabled, () => {
         emit('update:modelValue', undefined);
     } else {
         // focus on the text input
-        console.log(inputRef.value);
         inputRef.value?.focus();
         inputRef.value?.select();
     }

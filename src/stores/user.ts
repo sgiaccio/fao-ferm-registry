@@ -20,11 +20,9 @@ export const useUserStore = defineStore({
         async deleteUser(user: User) {
             const auth = getAuth();
             const currentUser = auth.currentUser;
-            console.log(currentUser)
 
             try {
                 await deleteDoc(doc(db, 'users', user.uid));
-                console.log(user);
                 await deleteUser(user.uid);
 
                 alert(user.displayName || user.email + ' deleted');

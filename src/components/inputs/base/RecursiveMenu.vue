@@ -29,11 +29,6 @@ function toggle(i: number) {
     isOpen.value[i] = !isOpen.value[i];
 }
 
-function open(i: number) {
-    console.log('open', i);
-    isOpen.value[i] = true;
-}
-
 function sortCheckedValues(a: any, b: any) {
     if ((a as String) > (b as String)) return 1;
     else if ((a as String) < (b as String)) return -1;

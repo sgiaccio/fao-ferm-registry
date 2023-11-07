@@ -250,7 +250,6 @@ function findBiomeLabel(biome: string, biomes: any = menus.iucnEcosystems): stri
 // }
 
 function deleteOption(area: any, biome: string) {
-    console.log(area);
     const areaValue = getAreaValue(area);
     areaValue.ecosystems = areaValue.ecosystems?.filter((e: string) => e !== biome);
 }
