@@ -78,8 +78,8 @@ export const useProjectStore = defineStore({
             this.projectAreas.forEach((area: any) => {
                 // Get the aurora indicators from the area
                 const [_, areaValue]: [string, any] = Object.entries(area)[0];
-                if (areaValue.auroraIndicators) {
-                    areaValue.auroraIndicators = areaValue.auroraIndicators.map((indicator: any) => indicator.id);
+                if (areaValue.goalIndicators) {
+                    areaValue.goalIndicators = areaValue.goalIndicators.map((indicator: any) => indicator.indicator.id);
                 }
             });
 
@@ -355,15 +355,15 @@ export const useProjectStore = defineStore({
                 const newAreaValue = { ...areaValue };
 
                 // replace the aurora indicator ids with the full objects from the goalJsonData
-                const auroraIndicatorIds = newAreaValue.auroraIndicators;
-                if (auroraIndicatorIds && auroraIndicatorIds.length > 0) {
-                    newAreaValue.auroraIndicators = auroraIndicatorIds.map((id: number) => {
+                const goalIndicatorIds = newAreaValue.goalIndicators;
+                if (goalIndicatorIds && goalIndicatorIds.length > 0) {
+                    newAreaValue.goalIndicators = goalIndicatorIds.map((id: number) => {
                         const indicator = goalJsonData.find((i: any) => i.id === id);
-                        return indicator;
+                        return { indicator }; // This object will also contain monitoring information
                     });
                 }
-                // Remove the auroraIndicators property from the area as they are not stored in the database
-                // delete newAreaValue.auroraIndicatorIds;
+                // Remove the goalIndicators property from the area as they are not stored in the database
+                // delete newAreaValue.goalIndicatorIds;
 
                 projectAreasToBeSaved.push({ [areaType]: newAreaValue });
             }

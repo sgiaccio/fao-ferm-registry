@@ -32,6 +32,10 @@ const projectTabs = [{
     name: 'projectIndicators',
     component: () => import('../views/project/IndicatorsView.vue')
 }, {
+    path: 'monitoring',
+    name: 'projectMonitoring',
+    component: () => import('../views/project/MonitoringView.vue')
+}, {
     path: 'results',
     name: 'projectResults',
     component: () => import('../views/project/ResultsView.vue')

@@ -23,6 +23,7 @@ const tabs = [
     { name: 'Characteristics', path: 'characteristics' },
     { name: 'Activities', path: 'activities' },
     { name: 'Indicators', path: 'indicators' },
+    { name: 'Monitoring', path: 'monitoring' },
     { name: 'Results', path: 'results' }
 ];
 
@@ -70,11 +71,11 @@ function gotoPreviousTab() {
                 </div>
                 <div class="hidden sm:block">
                     <div class="border-b border-gray-200">
-                        <nav class="-mb-px grid auto-cols-auto grid-cols-7 dark:text-white text-sm tracking-tight font-bold"
+                        <nav class="-mb-px grid auto-cols-auto grid-cols-8 dark:text-white text-sm tracking-tight font-akrobat font-semibold"
                              aria-label="Tabs">
                             <div class="bg-yellow-100 dark:bg-yellow-900 col-span-4 text-center py-2">Planning & Assessment</div>
                             <div class="bg-green-100 dark:bg-green-900 col-span-1 text-center py-2">Implementation</div>
-                            <div class="bg-blue-100 dark:bg-blue-900 col-span-2 text-center py-2">Monitoring & Reporting</div>
+                            <div class="bg-blue-100 dark:bg-blue-900 col-span-3 text-center py-2">Monitoring & Reporting</div>
 
                             <router-link v-for="tab in tabs"
                                          :class="[route.path.endsWith(tab.path) ? 'border-indigo-500 text-indigo-600 dark:text-indigo-200' : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500 hover:text-gray-700 dark:hover:text-gray-300', 'border-b-2 py-6 text-center text-sm font-medium', 'cursor-pointer flex flex-col']"

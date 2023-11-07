@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
@@ -18,11 +18,13 @@ import { roundToPrecisionAsString } from '@/lib/util';
 
 
 
-import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
+// import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
 // import landuseJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
 // import barriersJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
 
-function transformData(data, themeLabelKey: string, subthemeLabelKey: string) {
+import { goalIndicators, sortedGoalIndicators, getGoalColor, groupByGoal, rawGoalIndicators } from '@/lib/auroraIndicators';
+
+function getIndicatorsMenu(data, themeLabelKey: string, subthemeLabelKey: string) {
     const goalsMap = new Map();
 
     data.forEach(item => {
@@ -81,11 +83,11 @@ function transformData(data, themeLabelKey: string, subthemeLabelKey: string) {
 }
 
 
-// const transformedData = transformData(jsonData);
+// const transformedData = getIndicatorsMenu(jsonData);
 // console.log(JSON.stringify(transformedData, null, 2));
 
-const goalIndicatorsMenu = transformData(goalJsonData, 'rg_goal', 'rg_subtheme');
-// const landuseIndicatorsMenu = transformData(landuseJsonData, 'rg_goal', 'rg_subtheme');
+const goalIndicatorsMenu = getIndicatorsMenu(goalIndicators, 'rg_goal', 'rg_subtheme');
+// const landuseIndicatorsMenu = getIndicatorsMenu(landuseJsonData, 'rg_goal', 'rg_subtheme');
 
 
 
@@ -109,15 +111,15 @@ function applyToAll() {
 
     const key = Object.keys(store.projectAreas[0])[0];
     const gefIndicator = store.projectAreas[0][key].gefIndicator;
-    const auroraIndicators = store.projectAreas[0][key].auroraIndicators;
+    const goalIndicators = store.projectAreas[0][key].goalIndicators;
 
     store.projectAreas.forEach((area, i) => {
         if (i > 0) {
             if (gefIndicator) {
                 area[key].gefIndicator = gefIndicator;
             }
-            if (auroraIndicators && auroraIndicators.length) {
-                area[key].auroraIndicators = [...auroraIndicators];
+            if (goalIndicators && goalIndicators.length) {
+                area[key].goalIndicators = [...goalIndicators];
             }
         }
     });
@@ -159,7 +161,7 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
 //     }
 // }
 
-// addUnitAndAction(transformData(jsonData), []);
+// addUnitAndAction(getIndicatorsMenu(jsonData), []);
 
 
 // Goal sorting
@@ -181,6 +183,23 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
 //     const bIndex = goalOrder.indexOf(b.rg_goal_id);
 //     return aIndex - bIndex;
 // });
+
+const showGoals = ref(new Map());
+
+function toggleGoal(goal: string) {
+    showGoals.value.set(goal, !showGoals.value.get(goal));
+}
+
+function addIndicator(area: any, indicator: any) {
+    debugger;
+    // const rawGoalIndicator = rawGoalIndicators.find(i => i.id === indicator.id);
+
+    const areaValue = Object.values(area)[0];
+    if (!areaValue.goalIndicators) {
+        areaValue.goalIndicators = [];
+    }
+    areaValue.goalIndicators.push(rawGoalIndicator);
+}
 </script>
 
 <template>
@@ -263,13 +282,42 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
                             </div>
                         </div>
                         <!-- Project indicators -->
-                        <div>
+                        <!-- <div>
                             <h1 class="text-2xl dark:text-zinc-300 font-bold mb-3">Project indicators</h1>
                             <RecursiveMenu :edit="edit"
-                                           v-model="area[Object.keys(area)[0]].auroraIndicators"
+                                           v-model="area[Object.keys(area)[0]].goalIndicators"
                                            :options="goalIndicatorsMenu"
                                            :searchable="true" />
+                        </div> -->
+
+                        <div v-for="goal in groupByGoal(sortedGoalIndicators)"
+                             class="text-xs mb-1">
+                            <div class="w-full px-3 py-2 font-bold text-white border rounded-t-md cursor-pointer"
+                                :class="showGoals.get(goal.goal) ? '' : 'rounded-b-md'"
+                                 @click="() => toggleGoal(goal.goal)"
+                                 :style="`background-color: ${getGoalColor(goal.goal)}; border-color: ${getGoalColor(goal.goal)};`">{{ goal.goal }}
+                            </div>
+
+                            <div v-if="!!showGoals.get(goal.goal)"
+                            class="border-x border-b rounded-b-md"
+                                 :style="`border-color: ${getGoalColor(goal.goal)};`">
+                                <div v-for="indicator in goal.indicators"
+                                     class="px-3 py-2 border-b last:border-b-0 cursor-pointer"
+                                     @click="() => addIndicator(area, indicator)">
+                                    <div class="flex flex-row ">
+                                        <div class="flex-grow self-center">
+                                            {{ indicator.rg_subtheme }} || {{ indicator.indicator }}
+                                            <br>
+                                            {{ indicator.action }}: {{ indicator.metric }}
+                                        </div>
+
+                                        <!-- todo: if indicator has been selected then highlight the row -->
+                                        <!-- todo: add delete indicator button -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
                 <div v-else-if="edit"
@@ -331,7 +379,7 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
                         <div>
                             <h1 class="text-2xl dark:text-zinc-300 font-bold mb-3">Project indicators</h1>
                             <RecursiveMenu :edit="edit"
-                                           v-model="area[Object.keys(area)[0]].auroraIndicators"
+                                           v-model="area[Object.keys(area)[0]].goalIndicators"
                                            :options="goalIndicatorsMenu"
                                            :searchable="true" />
                         </div>
