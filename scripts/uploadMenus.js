@@ -24,10 +24,7 @@ async function uploadData(collectionName, data) {
         batch.set(docRef, { items: data });
 
         await batch.commit();
-        console.log(`Data uploaded to ${collectionName} collection successfully.`);
     } catch (error) {
-        console.log("error uploading data:");
-        console.log(data);
         console.error(error);
         // throw error;
     }

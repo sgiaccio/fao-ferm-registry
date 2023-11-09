@@ -1,4 +1,5 @@
 import type { RecursiveMenu } from "@/components/project/menus";
+import { sortedGoalIndicators } from "./auroraIndicators";
 
 export function fbTimestampToString(ts: any) {
     return ts.toDate().toLocaleDateString('default');
@@ -98,4 +99,33 @@ export function roundToPrecisionAsString(number: number, precision: number) {
     }
 
     return result;
+}
+
+export function getSortedIndicatorsAndMonitoring(indicatorAndMonitoring: any) {
+    function rank(i1: any, i2: any) {
+        // check nullity
+        if (!i1.indicator.rg_goal || !i2.indicator.rg_goal) return 0;
+
+        const i1Index = sortedGoalIndicators.findIndex(i => i.rg_goal === i1.indicator.rg_goal);
+        const i2Index = sortedGoalIndicators.findIndex(i => i.rg_goal === i2.indicator.rg_goal);
+        return i1Index - i2Index;
+    }
+
+    if (!indicatorAndMonitoring) return [];
+    const sorted = indicatorAndMonitoring.sort(rank);
+
+    // group by goal
+    const grouped = sorted.reduce((acc: any, indicator: any) => {
+        const goal = indicator.indicator.rg_goal;
+        if (!acc[goal]) {
+            acc[goal] = {
+                goal,
+                indicators: []
+            };
+        }
+        acc[goal].indicators.push(indicator);
+        return acc;
+    }, {});
+
+    return grouped;
 }

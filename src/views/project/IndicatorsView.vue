@@ -13,68 +13,12 @@ import RecursiveRadio from '@/components/inputs/base/RecursiveRadio.vue';
 
 import { roundToPrecisionAsString } from '@/lib/util';
 
-import { goalIndicators, sortedGoalIndicators, getGoalColor, groupByGoal, rawGoalIndicators, GoalIndicator } from '@/lib/auroraIndicators';
+import { sortedGoalIndicators, getGoalColor, groupByGoal, GoalIndicator } from '@/lib/auroraIndicators';
 
-// import { CheckBadgeIcon } from '@heroicons/vue/24/solid';
+import { ChevronRightIcon, ChevronDownIcon, CheckIcon, TrashIcon } from '@heroicons/vue/20/solid';
 
+import { getSortedIndicatorsAndMonitoring } from '@/lib/util';
 
-function getIndicatorsMenu(data, themeLabelKey: string, subthemeLabelKey: string) {
-    const goalsMap = new Map();
-
-    data.forEach(item => {
-        if (!goalsMap.has(item[themeLabelKey])) {
-            goalsMap.set(item[themeLabelKey], {
-                label: item[themeLabelKey],
-                items: new Map()
-            });
-        }
-        const goal = goalsMap.get(item[themeLabelKey]);
-
-        if (!goal.items.has(item[subthemeLabelKey])) {
-            goal.items.set(item[subthemeLabelKey], {
-                label: item[subthemeLabelKey],
-                items: new Map()
-            });
-        }
-        const subTheme = goal.items.get(item[subthemeLabelKey]);
-
-        if (!subTheme.items.has(item.indicator)) {
-            subTheme.items.set(item.indicator, {
-                label: item.indicator,
-                items: []
-            });
-        }
-        const indicator = subTheme.items.get(item.indicator);
-
-        indicator.items.push({
-            value: item.id,
-            label: item.metric.trim(),
-            dangerousHtmlLabel: `${item.metric} [${item.unit.trim()}]`,
-            unit: item.unit.trim(),
-            action: item.action.trim()
-        });
-    });
-
-    // Convert Maps to arrays
-    const result = Array.from(goalsMap.values()).map(goal => {
-        return {
-            label: goal.label,
-            items: Array.from(goal.items.values()).map(subTheme => {
-                return {
-                    label: subTheme.label,
-                    items: Array.from(subTheme.items.values()).map(indicator => {
-                        return {
-                            label: indicator.label,
-                            items: indicator.items
-                        };
-                    })
-                };
-            })
-        };
-    });
-
-    return result;
-}
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
@@ -88,17 +32,18 @@ withDefaults(defineProps<{
 function applyToAll() {
     if (!confirm('Are you sure you want to apply this indicator to all areas? Your current selections will be overwritten.')) return;
 
-    const key = Object.keys(store.projectAreas[0])[0];
-    const gefIndicator = store.projectAreas[0][key].gefIndicator;
-    const goalIndicators = store.projectAreas[0][key].goalIndicators;
+    const areaValue: any = Object.values(store.projectAreas[0])[0];
+    const gefIndicator = areaValue.gefIndicator;
+    const goalIndicators = areaValue.goalIndicators;
 
     store.projectAreas.forEach((area, i) => {
         if (i > 0) {
+            const areaToChange: any = Object.values(area)[0];
             if (gefIndicator) {
-                area[key].gefIndicator = gefIndicator;
+                areaToChange.gefIndicator = gefIndicator;
             }
             if (goalIndicators && goalIndicators.length) {
-                area[key].goalIndicators = [...goalIndicators];
+                areaToChange.goalIndicators = goalIndicators.map(i => ({ indicator: i.indicator.clone() }));
             }
         }
     });
@@ -124,7 +69,10 @@ function toggleGoal(idx: number, goal: string) {
 }
 
 function addIndicator(area: any, indicator: any) {
-    const rawGoalIndicator = rawGoalIndicators.find(i => i.id === indicator.id);
+    // check if the indicator was already selected
+    if (isSelected(area, indicator)) return;
+
+    const rawGoalIndicator = sortedGoalIndicators.find(i => i.id === indicator.id);
 
     const areaValue = Object.values(area)[0];
     if (!areaValue.goalIndicators) {
@@ -152,6 +100,46 @@ function nSelectedByGoal(area: any, goal: string) {
     if (!indicators) return 0;
     return indicators.filter(i => isSelected(area, i)).length;
 }
+
+const showAreaGoals = ref(new Array(store.projectAreas.length).fill(false));
+
+function toggleAreaGoals(i: number) {
+    showAreaGoals.value[i] = !showAreaGoals.value[i];
+}
+
+function removeIndicator(area: any, indicator: GoalIndicator) {
+    const areaValue = Object.values(area)[0];
+    if (!areaValue.goalIndicators) return;
+
+    // look for the indicator to remove
+    const toBeRemoved = areaValue.goalIndicators.find(i => {
+        try {
+            const t = new GoalIndicator(i.indicator);
+            return t.equals(indicator);
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    });
+
+    console.log(toBeRemoved);
+
+    // check that there are no monitoring years
+    if (toBeRemoved?.monitoring?.length) {
+        alert('Please remove all monitoring years before removing the indicator.');
+        return;
+    }
+
+    areaValue.goalIndicators = areaValue.goalIndicators.filter(i => {
+        try {
+            const t = new GoalIndicator(i.indicator);
+            return !t.equals(indicator);
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    });
+}
 </script>
 
 <template>
@@ -170,54 +158,51 @@ function nSelectedByGoal(area: any, goal: string) {
             </template>
             <template v-else>
                 <p>
-                    Indicators are selected to monitor ecosystem restoration progress. The list of global indicators for monitoring ecosystem restoration is based on a compilation of >5,000 indicators found on international, regional, and national frameworks. More frequently used indicators in this compilation have been grouped under the same topic category and one final indicator representing all of them has been formulated (<a href="https://www.fao.org/publications/card/en/c/CB9982EN"
-                       target="_blank"
-                       class="text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300">https://www.fao.org/publications/card/en/c/CB9982EN</a>).
+                    Indicators and their corresponding metrics are the way to track the progress of restoration efforts. This list of indicators has been elaborated by FAO and WRI in the publication: "The Road to Restoration" (FAO and WRI, 2019) also available through the AURORA tool (<a target="_blank"
+                       class="text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300"
+                       href="https://www.auroramonitoring.org">https://www.auroramonitoring.org</a>).
                 </p>
                 <p class="pt-4">
-                    You can select several indicators from this list to monitor your restoration project. You are advised to select up to 10 indicators by project.
+                    Measuring progress on restoration focuses on understanding the practitioner’s goals for restoration and they can be categorized into various themes (goal-themes) whether they be community, culture, food & products, water, energy, biodiversity, soil, or climate.
                 </p>
+                <p class="pt-4">
+                    Therefore, it is important to identify the overarching goal-theme and specific targets for your restoration effort and select the indicators in the drop-down list within each goal-theme leading to the achievement of those goals and targets.
+                </p>
+                <p class="pt-4">
+                    The Indicators identified by FAO and WRI in this section correspond to those at the initiative level. However, they contribute globally, and each of these indicators is intricately linked to a specific SDG, emphasizing the interconnectedness of restoration efforts with broader sustainable development objectives.
+                </p>
+                <p class="pt-4">
+                    In addition, FAO and UNEP elaborated a list of 20 headline SDG indicators contributing to ecosystem restoration based on a compilation of >5,000 indicators found on international, regional, and national frameworks (FAO and UNEP, 2022).
+
+                </p>
+                <p class="pt-4">
+                    References:
+                </p>
+                <p class="pt-2">
+                    FAO and WRI. 2019. The Road to Restoration: A Guide to Identifying Priorities and Indicators for Monitoring Forest and Landscape Restoration. Rome, Washington, DC.
+                </p>
+                <p class="pt-4">
+                    FAO and UNEP. 2022. Global indicators for monitoring ecosystem restoration – A contribution to the UN Decade on Ecosystem Restoration. Rome, FAO.
+                </p>
+                <p class="pt-4">
+                    <a target="_blank"
+                       class="text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300"
+                       href="https://doi.org/10.4060/cb9982en">https://doi.org/10.4060/cb9982en</a>
+                </p>
+
             </template>
         </template>
         <template #default>
-            <!-- hide if GEF -->
-            <!-- <div v-if="store.project.reportingLine !== 'GEF'"
-                 class="pb-6">
-                <h1 class="text-2xl dark:text-zinc-300 font-bold mb-3">SDG indicators</h1>
-                <RecursiveMenu :edit="edit"
-                               v-model="store.project.indicators"
-                               :options="menus.indicators"
-                               :expandLevel="0" />
-
-            </div> -->
-
-            <!-- hide if not GEF -->
-            <!-- <div class="pt-8"
-                 v-if="store.project.reportingLine !== 'GEF'">
-                <div v-if="store.projectAreas?.length"
-                     class="flex flex-col gap-y-4">
-                    <div v-for="( area ) in  store.projectAreas "
-                         class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
-                        <!- - Project indicators - ->
-                        <div>
-                            <h1 class="text-2xl dark:text-zinc-300 font-bold mb-3">Project level indicators</h1>
-                            <RecursiveMenu :edit="edit"
-                                           v-model="area[Object.keys(area)[0]].auroraIndicators"
-                                           :options="goalIndicatorsMenu"
-                                           :searchable="true" />
-                        </div>
-                    </div>
-                </div>
-            </div> -->
             <div class="pt-8"
                  v-if="store.project.reportingLine !== 'GEF'">
                 <LabelFormGroup label="Total area of land achieved (spatially explicit format)"
                                 :value="`${roundToPrecisionAsString(store.polygonsArea(), 2)} Ha`" />
-
                 <div v-if="store.projectAreas?.length"
                      class="flex flex-col gap-y-4">
-                    <div v-for="( area, i ) in  store.projectAreas "
-                         class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
+                    <div v-for="( area, i ) in store.projectAreas"
+                         class="border-2 px-3 pt-2 pb-3 rounded-lg border-gray-300 dark:border-gray-500">
+                        <!-- <pre>{{ JSON.stringify(area[Object.keys(area)[0]].goalIndicators, null, 2) }}</pre> -->
+
                         <div class="flex flex-row my-3">
                             <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2 flex-grow">
                                 Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
@@ -233,49 +218,85 @@ function nSelectedByGoal(area: any, goal: string) {
                                 </button>
                             </div>
                         </div>
-                        <!-- Project indicators -->
-                        <!-- <div>
-                            <h1 class="text-2xl dark:text-zinc-300 font-bold mb-3">Project indicators</h1>
-                            <RecursiveMenu :edit="edit"
-                                           v-model="area[Object.keys(area)[0]].goalIndicators"
-                                           :options="goalIndicatorsMenu"
-                                           :searchable="true" />
-                        </div> -->
 
-                        <div v-for="goal in groupByGoal(sortedGoalIndicators)"
-                             class="text-xs mb-2">
-                            <div class="w-full px-3 py-2 font-bold text-white border rounded-t-md cursor-pointer flex"
-                                 :class="showGoals[i].get(goal.goal) ? '' : 'rounded-b-md'"
-                                 @click="() => toggleGoal(i, goal.goal)"
-                                 :style="`background-color: ${getGoalColor(goal.goal)}; border-color: ${getGoalColor(goal.goal)};`">
-                                <div class="flex-grow">{{ goal.goal }}</div>
-                                <div :class="['font-normal', nSelectedByGoal(area, goal.goal) ? '' : 'text-gray-300']">{{ nSelectedByGoal(area, goal.goal) }} selected</div>
-                            </div>
-
-                            <div v-show="!!showGoals[i].get(goal.goal)"
-                                 class="border-x border-b rounded-b-md"
-                                 :style="`border-color: ${getGoalColor(goal.goal)};`">
+                        <!-- summary of the selected indicators -->
+                        <div class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-white"
+                             v-if="area[Object.keys(area)[0]].goalIndicators">
+                            <template v-for="goal in getSortedIndicatorsAndMonitoring(area[Object.keys(area)[0]].goalIndicators)">
                                 <div v-for="indicator in goal.indicators"
-                                     class="px-3 py-2 border-b last:border-b-0 cursor-pointer"
-                                     :style="`border-color: ${getGoalColor(goal.goal, 0.4)}`"
-                                     @click="() => addIndicator(area, indicator)">
-                                    <div class="flex flex-row ">
-                                        <div class="flex-grow self-center">
-                                            {{ indicator.indicator }}
-                                            <br>
-                                            {{ indicator.action }} &ndash; {{ indicator.metric }} &ndash; {{ indicator.rg_subtheme }}
-                                        </div>
-                                        <div v-if="isSelected(area, indicator)"
-                                             class="text-green-600 font-bold text-lg">
-                                            &#10003;
-                                        </div>
-                                        <!-- todo: if indicator has been selected then highlight the row -->
-                                        <!-- todo: add delete indicator button -->
+                                     class="rounded px-3 py-2 flex"
+                                     :style="`background-color: ${getGoalColor(goal.goal)};`">
+                                    <div class="flex-grow">
+                                        {{ indicator.indicator.indicator }} &ndash;
+                                        {{ indicator.indicator.rg_subtheme }} &ndash;
+                                        {{ indicator.indicator.metric }} &ndash;
+                                        {{ indicator.indicator.action }}
+                                    </div>
+                                    <div v-if="edit"
+                                         @click="removeIndicator(area, indicator.indicator)"
+                                         class="cursor-pointer">
+                                        <TrashIcon class="w-4 h-4 cursor-pointer self-center text-black hover:text-red-500" />
                                     </div>
                                 </div>
-                            </div>
+                            </template>
+                        </div>
+                        <div v-else
+                             class="-mt-2 mb-2 text-gray-500">
+                            No indicators selected for this area
                         </div>
 
+                        <div v-if="edit"
+                             class="shadow-md rounded">
+                            <div class="w-full px-2.5 py-2 font-bold text-gray-700 dark:text-gray-200 border-t border-x border-gray-300 cursor-pointer flex gap-0.5 rounded-t hover:bg-gray-100"
+                                 :class="[!showAreaGoals[i] ? 'rounded-b border-b' : '']"
+                                 @click="() => toggleAreaGoals(i)">
+                                <ChevronRightIcon v-if="!showAreaGoals[i]"
+                                                  class="inline w-5 h-5 cursor-pointer self-center" />
+                                <ChevronDownIcon v-if="showAreaGoals[i]"
+                                                 class="inline w-5 h-5 cursor-pointer self-center" />
+                                <div class="flex-grow self-center">Add project indicators</div>
+                            </div>
+                            <template v-if="showAreaGoals[i]">
+                                <div v-for="( goal, j ) in  groupByGoal(sortedGoalIndicators)"
+                                     class="text-xs -mb-0">
+                                    <div class="w-full px-2.5 py-2 font-bold text-white border-t border-y cursor-pointer flex gap-0.5 hover:brightness-110"
+                                         :class="[j === groupByGoal(sortedGoalIndicators).length - 1 && !showGoals[i].get(goal.goal) ? 'rounded-b' : '']"
+                                         @click="() => toggleGoal(i, goal.goal)"
+                                         :style="`background-color: ${getGoalColor(goal.goal)}; border-color: ${getGoalColor(goal.goal)};`">
+                                        <ChevronRightIcon v-if="!showGoals[i].get(goal.goal)"
+                                                          class="inline w-5 h-5 cursor-pointer self-center" />
+                                        <ChevronDownIcon v-if="showGoals[i].get(goal.goal)"
+                                                         class="inline w-5 h-5 cursor-pointer self-center" />
+                                        <div class="flex-grow self-center">{{ goal.goal }}</div>
+                                        <div :class="['font-normal', nSelectedByGoal(area, goal.goal) ? '' : 'text-gray-300', 'self-center']">{{ nSelectedByGoal(area, goal.goal) }} selected</div>
+                                    </div>
+
+                                    <div v-show="!!showGoals[i].get(goal.goal)"
+                                         class="border-x border-b"
+                                         :class="j === groupByGoal(sortedGoalIndicators).length - 1 ? 'rounded-b-md' : ''"
+                                         :style="`border-color: ${getGoalColor(goal.goal)};`">
+                                        <div v-for="indicator  in  goal.indicators"
+                                             class="px-3 py-2 border-b last:border-b-0 cursor-pointer hover:bg-gray-50"
+                                             :style="`border-color: ${getGoalColor(goal.goal, 0.4)}`"
+                                             @click="() => addIndicator(area, indicator)">
+                                            <div class="flex flex-row">
+                                                <div class="flex-grow self-center">
+                                                    {{ indicator.indicator }}
+                                                    <br>
+                                                    {{ indicator.rg_subtheme }} &ndash;
+                                                    {{ indicator.metric }} &ndash;
+                                                    {{ indicator.action }}
+                                                </div>
+                                                <div v-if="isSelected(area, indicator)"
+                                                     class="text-green-600 font-bold text-lg self-center">
+                                                    <CheckIcon class="inline w-5 h-5 cursor" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </div>
                 <div v-else-if="edit"
@@ -290,10 +311,9 @@ function nSelectedByGoal(area: any, goal: string) {
             </div>
 
 
-
             <!-- GEF -->
-            <div class="pt-8"
-                 v-else>
+            <div v-else
+                 class="pt-8">
                 <LabelFormGroup label="Total area of land achieved (spatially explicit format)"
                                 :value="`${roundToPrecisionAsString(store.polygonsArea(), 2)} Ha`" />
 
@@ -301,7 +321,7 @@ function nSelectedByGoal(area: any, goal: string) {
                 <div class="mb-6">
                     <!-- <h3 class="text-xl font-semibold leading-6 text-gray-900">Area by indicator</h3> -->
                     <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                        <div v-for=" [indicator, area]  in  store.areaByGefIndicator() "
+                        <div v-for="  [indicator, area]   in   store.areaByGefIndicator()  "
                              :key="indicator"
                              class="overflow-hidden rounded-lg bg-gray-100 px-4 py-5 shadow sm:p-6 flex flex-col">
                             <dt class="flex-grow text-sm font-medium text-gray-500">
@@ -316,7 +336,7 @@ function nSelectedByGoal(area: any, goal: string) {
 
                 <div v-if="store.projectAreas?.length"
                      class="flex flex-col gap-y-4">
-                    <div v-for="( area, i ) in  store.projectAreas "
+                    <div v-for="(  area, i  ) in   store.projectAreas  "
                          class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
                         <div class="flex flex-row my-3">
                             <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2 flex-grow">
@@ -333,74 +353,6 @@ function nSelectedByGoal(area: any, goal: string) {
                                 </button>
                             </div>
                         </div>
-                        <!-- Project indicators -->
-                        <!-- <div>
-                            <h1 class="text-2xl dark:text-zinc-300 font-bold mb-3">Project indicators</h1>
-                            <RecursiveMenu :edit="edit"
-                                           v-model="area[Object.keys(area)[0]].goalIndicators"
-                                           :options="goalIndicatorsMenu"
-                                           :searchable="true" />
-                        </div> -->
-                        <div class="px-4 sm:px-3 lg:px-4">
-                            <!-- <div class="sm:flex sm:items-center">
-                                <div class="sm:flex-auto">
-                                    <h1 class="text-base font-semibold leading-6 text-gray-900">Users</h1>
-                                    <p class="mt-2 text-sm text-gray-700">A list of all the users in your account including their name, title, email and role.</p>
-                                </div>
-                                <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                                    <button type="button"
-                                            class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add user</button>
-                                </div>
-                            </div> -->
-                            <!-- <div class="mt-8 flow-root">
-                                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                                    <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                                        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-                                            <table class="min-w-full divide-y divide-gray-300">
-                                                <thead class="bg-gray-50">
-                                                    <tr>
-                                                        <th scope="col"
-                                                            class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Goal</th>
-                                                        <th scope="col"
-                                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Subtheme</th>
-                                                        <th scope="col"
-                                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Indicator</th>
-                                                        <th scope="col"
-                                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Action</th>
-                                                        <th scope="col"
-                                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Metric</th>
-                                                        <th scope="col"
-                                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Unit</th>
-                                                        <th scope="col"
-                                                            class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                                                            <span class="sr-only">Select/delete</span>
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="divide-y divide-gray-200 bg-white">
-                                                    <tr v-for="metric in sortedGoalIndicators"
-                                                        :key="metric.email" :style="`background-color: ${indicatorColors[metric.rg_goal_id]};`">
-                                                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ metric.name }}</td>
-                                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ metric.rg_goal_id }}</td>
-                                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ metric.email }}</td>
-                                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ metric.role }}</td>
-                                                        <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                                                            <a href="#"
-                                                               class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, {{ metric.name }}</span></a>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
-                        </div>
-
-                        <!-- <div class="mt-6">
-                            <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">Project level indicators</h1>
-
-                        </div> -->
                         <div class="mt-6">
                             <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">GEF indicators</h1>
                             <RecursiveRadio v-model="area[Object.keys(area)[0]].gefIndicator"

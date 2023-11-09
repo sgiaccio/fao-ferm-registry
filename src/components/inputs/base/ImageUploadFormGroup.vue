@@ -24,7 +24,6 @@ async function loadFile(src: string, maxRetries = 5, pause = 2000): Promise<Blob
 
     return new Promise(async (resolve, reject) => {
         while (!blob && tries++ < maxRetries) {
-            console.debug('trying...');
             try {
                 blob = await getBlob(ref(storage, src));
                 resolve(blob);

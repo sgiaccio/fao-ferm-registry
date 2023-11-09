@@ -130,7 +130,7 @@ export const useAuthStore = defineStore({
         },
         async setUserData(user: User | null) {
             if (user === null) {
-                console.debug('User is null');
+                // console.debug('User is null');
             } else {
                 this.user = user;
 

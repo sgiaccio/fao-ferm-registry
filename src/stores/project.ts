@@ -358,11 +358,13 @@ export const useProjectStore = defineStore({
                 const newAreaValue = { ...areaValue };
 
                 // Replace the aurora indicator ids with the full objects from the goalJsonData
-                newAreaValue.goalIndicators = newAreaValue.goalIndicators.map((goalIndicator: any) => ({
-                    ...goalIndicator, // This will spread the current properties of goalIndicator into the new object
-                    indicator: rawGoalIndicators.find((ind: any) => ind.id === goalIndicator.indicator.id)
-                }));
-                
+                if (newAreaValue.goalIndicators) {
+                    newAreaValue.goalIndicators = newAreaValue.goalIndicators.map((goalIndicator: any) => ({
+                        ...goalIndicator,
+                        indicator: rawGoalIndicators.find((ind: any) => ind.id === goalIndicator.indicator.id)
+                    }));
+                }
+
                 projectAreasToBeSaved.push({ [areaType]: newAreaValue });
             }
 

@@ -6,8 +6,11 @@ import { useProjectStore } from '@/stores/project';
 import TabTemplate from '../TabTemplate.vue';
 
 import { PlusCircleIcon } from '@heroicons/vue/24/solid';
+import { TrashIcon } from '@heroicons/vue/20/solid';
 
-import { getGoalColor, sortedGoalIndicators } from '@/lib/auroraIndicators';
+import { getGoalColor } from '@/lib/auroraIndicators';
+
+import { getSortedIndicatorsAndMonitoring } from '@/lib/util';
 
 
 const store = useProjectStore();
@@ -18,25 +21,6 @@ withDefaults(defineProps<{
     edit: true
 });
 
-function applyToAll() {
-    if (!confirm('Are you sure you want to apply this indicator to all areas? Your current selections will be overwritten.')) return;
-
-    const key = Object.keys(store.projectAreas[0])[0];
-    const gefIndicator = store.projectAreas[0][key].gefIndicator;
-    const goalIndicators = store.projectAreas[0][key].goalIndicators;
-
-    store.projectAreas.forEach((area, i) => {
-        if (i > 0) {
-            if (gefIndicator) {
-                area[key].gefIndicator = gefIndicator;
-            }
-            if (goalIndicators && goalIndicators.length) {
-                area[key].goalIndicators = [...goalIndicators];
-            }
-        }
-    });
-}
-
 // Delete restorationType and tenureStatus for GEF3 indicators. This should be done in the store, but will be done here for now.
 watch(() => store.projectAreas, areas => areas.forEach(area => {
     const areaValue = Object.values(area)[0];
@@ -46,38 +30,15 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
     }
 }), { deep: true });
 
-
-function getSortedIndicatorsAndMonitoring(indicatorAndMonitoring: any) {
-    function rank(i1: any, i2: any) {
-        // check nullity
-        if (!i1.indicator.rg_goal || !i2.indicator.rg_goal) return 0;
-
-        const i1Index = sortedGoalIndicators.findIndex(i => i.rg_goal === i1.indicator.rg_goal);
-        const i2Index = sortedGoalIndicators.findIndex(i => i.rg_goal === i1.indicator.rg_goal);
-        return Math.sign(i1Index - i2Index);
-    }
-
-    const sorted = indicatorAndMonitoring.sort(rank);
-
-    // group by goal
-    const grouped = sorted.reduce((acc: any, indicator: any) => {
-        const goal = indicator.indicator.rg_goal;
-        if (!acc[goal]) {
-            acc[goal] = {
-                goal,
-                indicators: []
-            };
-        }
-        acc[goal].indicators.push(indicator);
-        return acc;
-    }, {});
-
-    return grouped;
-}
-
 function addMonitoringYear(indicator) {
     if (!indicator.monitoring) indicator.monitoring = [];
     indicator.monitoring.push({ year: undefined, value: undefined });
+}
+
+function removeIndicator(monitoring, i: number) {
+    if (confirm("Are you sure you want to delete this monitoring year?")) {
+        monitoring.splice(i, 1);
+    }
 }
 </script>
 
@@ -95,17 +56,8 @@ function addMonitoringYear(indicator) {
                                   v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
                                   }}</span>
                         </div>
-                        <div v-if="edit">
-                            <button v-if="i === 0 && store.projectAreas.length > 1"
-                                    type="button"
-                                    class="rounded bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    @click="applyToAll">
-                                Apply to all
-                            </button>
-                        </div>
                     </div>
                     <!-- Project indicators -->
-
                     <div v-for="goal in getSortedIndicatorsAndMonitoring(area[Object.keys(area)[0]].goalIndicators)"
                          class="text-xs mb-4">
                         <!-- {{ JSON.stringify(goal, null, 2) }} -->
@@ -122,38 +74,55 @@ function addMonitoringYear(indicator) {
                                         <div class="flex-grow self-center">
                                             {{ indicator.indicator.indicator }}
                                             <br>
-                                            {{ indicator.indicator.action }} &ndash; {{ indicator.indicator.metric }} &ndash; {{ indicator.indicator.rg_subtheme }}
+                                            {{ indicator.indicator.rg_subtheme }} &ndash;
+                                            {{ indicator.indicator.metric }} &ndash;
+                                            {{ indicator.indicator.action }}
                                         </div>
                                     </div>
                                     <div class="flex flex-col gap-y-3">
-                                        <div v-for="i in indicator.monitoring || []"
+                                        <div v-for="monitoring, i in indicator.monitoring || []"
                                              class="flex flex-row gap-x-5">
                                             <div class="flex flex-col">
-                                                <label for="year"
+                                                <label :for="`year-${i}`"
                                                        class="block text-xs font-medium text-gray-700 dark:text-gray-100">
                                                     Year
                                                 </label>
-                                                <input type="number"
+                                                <input v-if="edit"
+                                                       type="number"
                                                        name="year"
                                                        id="year"
+                                                       min="1950"
+                                                       max="9999"
                                                        class="mt-0.5 focus:ring-indigo-500 focus:border-indigo-500 block w-20 shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                                       v-model="i.year">
+                                                       v-model="monitoring.year"
+                                                       :readonly="!edit">
+                                                <div v-else
+                                                     class="text-base">{{ monitoring.year }}</div>
                                             </div>
                                             <div class="flex flex-col">
-                                                <label for="value"
+                                                <label :for="`value-${i}`"
                                                        class="block text-xs font-medium text-gray-700 dark:text-gray-100">
                                                     {{ indicator.indicator.unit }}
                                                 </label>
-                                                <input type="number"
+                                                <input v-if="edit"
+                                                       type="number"
                                                        name="value"
                                                        id="value"
                                                        class="mt-0.5 focus:ring-indigo-500 focus:border-indigo-500 block w-24 shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                                       v-model="i.value">
+                                                       v-model="monitoring.value"
+                                                       :readonly="!edit">
+                                                <div v-else
+                                                     class="text-base">{{ monitoring.value }}</div>
                                             </div>
+                                            <trash-icon v-if="edit"
+                                                        class="w-5 h-5 cursor-pointer self-center"
+                                                        v-model="monitoring.value"
+                                                        @click="() => removeIndicator(indicator.monitoring, i)" />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="w-full text-right mt-3 ">
+                                <div v-if="edit"
+                                     class="w-full text-right mt-3">
                                     <PlusCircleIcon class="inline w-5 h-5 cursor-pointer"
                                                     :style="`color: ${getGoalColor(goal.goal)};`"
                                                     @click="() => addMonitoringYear(indicator)" />
