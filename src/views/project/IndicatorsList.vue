@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { sortedGoalIndicators, getGoalColor, groupByGoal, GoalIndicator } from '@/lib/auroraIndicators';
 import { getSortedIndicatorsAndMonitoring } from '@/lib/util';
 
-import { ChevronRightIcon, ChevronDownIcon, CheckIcon, TrashIcon } from '@heroicons/vue/20/solid';
+import { ChevronRightIcon, ChevronDownIcon, CheckCircleIcon, TrashIcon } from '@heroicons/vue/20/solid';
 
 
 const props = defineProps({
@@ -125,7 +125,7 @@ function nSelectedByGoal(goal: string) {
 
     <div v-if="edit"
          class="shadow-md rounded">
-        <div class="w-full px-2.5 py-2 font-bold text-gray-700 dark:text-gray-200 border-t border-x border-gray-300 cursor-pointer flex gap-0.5 rounded-t hover:bg-gray-100"
+        <div class="w-full px-2.5 py-2 font-bold text-gray-700 dark:text-gray-200 border-t border-x border-gray-300 cursor-pointer flex gap-0.5 rounded-t hover:bg-gray-100 dark:hover:bg-gray-900"
              :class="[!showAreaGoals ? 'rounded-b border-b' : '']"
              @click="toggleAreaGoals">
             <ChevronRightIcon v-if="!showAreaGoals"
@@ -154,7 +154,7 @@ function nSelectedByGoal(goal: string) {
                      :class="j === groupByGoal(sortedGoalIndicators).length - 1 ? 'rounded-b-md' : ''"
                      :style="`border-color: ${getGoalColor(goal.goal)};`">
                     <div v-for="indicator  in  goal.indicators"
-                         class="px-3 py-2 border-b last:border-b-0 cursor-pointer hover:bg-gray-50"
+                         :class="['px-3 py-2 border-b last:border-b-0 text-black dark:text-gray-200', isSelected(indicator) ? '' : 'hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer']"
                          :style="`border-color: ${getGoalColor(goal.goal, 0.4)}`"
                          @click="() => addIndicator(indicator)">
                         <div class="flex flex-row">
@@ -166,8 +166,9 @@ function nSelectedByGoal(goal: string) {
                                 {{ indicator.action }}
                             </div>
                             <div v-if="isSelected(indicator)"
-                                 class="text-green-600 font-bold text-lg self-center">
-                                <CheckIcon class="inline w-5 h-5 cursor" />
+                                 class="font-bold text-lg self-center"
+                                 >
+                                <CheckCircleIcon class="inline w-6 h-6 cursor" :style="`color: ${getGoalColor(goal.goal)}`"/>
                             </div>
                         </div>
                     </div>
