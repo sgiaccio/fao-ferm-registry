@@ -20,6 +20,8 @@ import { ChevronRightIcon, ChevronDownIcon, CheckIcon, TrashIcon } from '@heroic
 import { getSortedIndicatorsAndMonitoring } from '@/lib/util';
 
 
+import IndicatorsList from './IndicatorsList.vue';
+
 const store = useProjectStore();
 const menus = useMenusStore().menus;
 
@@ -72,13 +74,13 @@ function addIndicator(area: any, indicator: any) {
     // check if the indicator was already selected
     if (isSelected(area, indicator)) return;
 
-    const rawGoalIndicator = sortedGoalIndicators.find(i => i.id === indicator.id);
+    const goalIndicator = sortedGoalIndicators.find(i => i.id === indicator.id);
 
     const areaValue = Object.values(area)[0];
     if (!areaValue.goalIndicators) {
         areaValue.goalIndicators = [];
     }
-    areaValue.goalIndicators.push({ indicator: rawGoalIndicator });
+    areaValue.goalIndicators.push({ indicator: goalIndicator });
 }
 
 function isSelected(area: any, indicator: any) {
@@ -219,8 +221,11 @@ function removeIndicator(area: any, indicator: GoalIndicator) {
                             </div>
                         </div>
 
+                        <IndicatorsList v-model="area[Object.keys(area)[0]].goalIndicators"
+                                        :edit="edit" />
+
                         <!-- summary of the selected indicators -->
-                        <div class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-white"
+                        <!-- <div class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-white"
                              v-if="area[Object.keys(area)[0]].goalIndicators">
                             <template v-for="goal in getSortedIndicatorsAndMonitoring(area[Object.keys(area)[0]].goalIndicators)">
                                 <div v-for="indicator in goal.indicators"
@@ -296,7 +301,7 @@ function removeIndicator(area: any, indicator: GoalIndicator) {
                                     </div>
                                 </div>
                             </template>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div v-else-if="edit"
@@ -336,10 +341,10 @@ function removeIndicator(area: any, indicator: GoalIndicator) {
 
                 <div v-if="store.projectAreas?.length"
                      class="flex flex-col gap-y-4">
-                    <div v-for="(  area, i  ) in   store.projectAreas  "
-                         class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
-                        <div class="flex flex-row my-3">
-                            <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2 flex-grow">
+                    <div v-for="(area, i) in store.projectAreas  "
+                         class="border-2 rounded-lg border-gray-300 dark:border-gray-500 divide-y-2">
+                        <div class="flex flex-row px-3 py-5">
+                            <div class="text-gray-500 dark:text-gray-100 text-lg font-bold flex-grow">
                                 Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
                                       v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
                                       }}</span>
@@ -353,12 +358,18 @@ function removeIndicator(area: any, indicator: GoalIndicator) {
                                 </button>
                             </div>
                         </div>
-                        <div class="mt-6">
+                        <div class="px-3 py-5">
                             <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">GEF indicators</h1>
                             <RecursiveRadio v-model="area[Object.keys(area)[0]].gefIndicator"
                                             :options="menus.gefIndicators"
                                             :edit="edit" />
                         </div>
+                        <div class="px-3 py-5">
+                            <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">Project indicators</h1>
+                            <IndicatorsList v-model="area[Object.keys(area)[0]].goalIndicators"
+                                            :edit="edit" />
+                        </div>
+
                     </div>
                 </div>
                 <div v-else-if="edit"

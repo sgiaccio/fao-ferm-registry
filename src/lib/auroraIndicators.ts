@@ -74,7 +74,6 @@ export class GoalIndicator {
     }
 }
 
-
 export const goalIndicators = goalJsonData.map(goalIndicator => new GoalIndicator(goalIndicator));
 
 export const rawGoalIndicators: RawGoalIndicator[] = goalJsonData;
