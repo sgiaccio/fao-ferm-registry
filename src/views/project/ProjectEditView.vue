@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, watch } from 'vue';
 import { useRoute } from 'vue-router';
+
+import { storeToRefs } from 'pinia'
 
 import router from '@/router';
 
@@ -50,6 +52,14 @@ async function cancel() {
         await router.push({ name: 'initiatives' });
     }
 }
+
+const { projectAreas } = storeToRefs(store)
+watch(projectAreas, (projectAreas, oldProjectAreas) => {
+    if (projectAreas.length < oldProjectAreas.length) {
+        // an element has been deleted, update countries list
+        store.updateCountries();
+    }
+});
 </script>
 
 <template>

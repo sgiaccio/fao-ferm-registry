@@ -5,6 +5,16 @@ import { TrashIcon } from '@heroicons/vue/20/solid';
 
 const openedDialog = ref<string | null>(null);
 
+// const props_ = defineProps({
+//     deleteConfirmMessage: { type: String, default: "Are you sure you want to delete this item?" },
+//     modelValue: { type: null },
+//     inputComponents: null,
+//     numbering: null, // TODO fn(number) => string
+//     deleteConfirmMsg: String,
+//     required: { type: Boolean, default: false }, // TODO
+//     edit: { type: Boolean, default: true }
+// });
+
 const props = withDefaults(defineProps<{
     deleteConfirmMessage?: string,
     modelValue?: any,

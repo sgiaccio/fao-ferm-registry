@@ -1,6 +1,7 @@
 import { httpsCallable, getFunctions } from "firebase/functions";
 import { functions } from ".";
 
+
 export async function getMyGroupsAssigmentRequests() {
     const f = httpsCallable(functions, 'getMyGroupsAssigmentRequests');
     const result = await f();
@@ -100,3 +101,17 @@ export async function getPolygonZonalStats(polygonId: string, stats: string) {
 //     const result = await deleteAllProjectAreas({ projectId });
 //     return result.data;
 // }
+
+export async function getIntersectingCountries(uuids: string[]): Promise<Set<string>> {
+    const functions = getFunctions();
+    const callGetIntersectingCountries = httpsCallable(functions, 'getIntersectingCountries');
+  
+    try {
+      const result = await callGetIntersectingCountries({ uuids });
+      return new Set(result.data as string[]);
+    } catch (error) {
+      console.error('Error fetching intersecting countries:', error);
+      throw error; // Re-throw the error or handle it as needed.
+    }
+  }
+  

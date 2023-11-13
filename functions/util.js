@@ -13,6 +13,7 @@ const bestPracticesCollection = db.collection("bestPractices");
 const assignmentRequestsCollection = db.collection("assignementRequests"); // Typo in the name
 const newGroupRequestsCollection = db.collection("newGroupRequests");
 const mailCollection = db.collection("mail");
+const areasCollection = db.collection("areas");
 
 db.settings({ ignoreUndefinedProperties: true });
 
@@ -182,6 +183,7 @@ exports = module.exports = {
     assignmentRequestsCollection,
     newGroupRequestsCollection,
     mailCollection,
+    areasCollection,
 
     findAsync,
 

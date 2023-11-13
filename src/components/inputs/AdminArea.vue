@@ -71,6 +71,10 @@ watch(admin0, async (val, prev) => {
     });
 }, { immediate: true });
 
+watch(admin0, () => {
+    store.updateCountries();
+});
+
 watch(admin1, async (val, prev) => {
     if (val) {
         // const t0 = findInJson(json, admin0.value);

@@ -132,7 +132,7 @@ function nSelectedByGoal(goal: string) {
                               class="inline w-5 h-5 cursor-pointer self-center" />
             <ChevronDownIcon v-if="showAreaGoals"
                              class="inline w-5 h-5 cursor-pointer self-center" />
-            <div class="flex-grow self-center">Add project indicators</div>
+            <div class="flex-grow self-center ">Add project indicators</div>
         </div>
         <template v-if="showAreaGoals">
             <div v-for="( goal, j ) in  groupByGoal(sortedGoalIndicators)"

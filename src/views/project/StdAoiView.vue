@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
 
-import { TrashIcon } from '@heroicons/vue/20/solid';
+import { TrashIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
@@ -13,14 +13,18 @@ import MapInput from '@/components/inputs/base/MapInput.vue';
 import AdminArea from '@/components/inputs/AdminArea.vue';
 import MapUpload from '@/components/inputs/base/MapUpload.vue';
 import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
+import KmlKmzUploadDialog from './KmlKmzUploadDialog.vue';
 import FormGroup from '@/components/inputs/FormGroup.vue';
 import NumberInput from '@/components/inputs/base/NumberInput.vue';
 // import AreaFormGroup from '@/components/inputs/AreaFormGroup.vue';
 import SelectInput from '@/components/inputs/base/SelectInput.vue';
+import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
 import { getMenuSelectedLabel } from '@/components/project/menus';
+
+import { getIso2Name, countries as iso2countries } from '@/lib/gaul2iso';
 
 
 const store = useProjectStore();
@@ -48,6 +52,12 @@ const multiInputComponents = {
         newData: {},
         addItemLabel: 'Upload shapefile',
         addDialog: ShapefileUploadDialog
+    },
+    uploadKml: {
+        component: MapUpload,
+        newData: {},
+        addItemLabel: 'Upload KML/KMZ/geojson',
+        addDialog: KmlKmzUploadDialog
     }
 };
 
@@ -73,6 +83,8 @@ function numbering(i: number, v: any) {
     } else if (key === 'upload') {
         const value = v[key];
         return `Area ${value.shapeId || i + 1}`;
+    } else if (key === 'uploadKml') { // this is actually kml, kmz, geojson
+        return `Area ${i + 1}`;
     } else {
         return `Unknown area type: ${key}`;
     }
@@ -83,6 +95,20 @@ const showDeleteAreasConfirm = ref(false);
 function deleteProjectAreas() {
     store.projectAreas = [];
     showDeleteAreasConfirm.value = false;
+}
+
+function deleteCountry(i: number) {
+    store.project.project.countries.splice(i, 1);
+}
+
+const newCountry = ref('');
+function addCountry(event: Event) {
+    const country = newCountry.value;
+    if (country) {
+        const newCountries = new Set(store.project.project.countries).add(country);
+        store.project.project.countries = [...newCountries];
+        newCountry.value = '';
+    }
 }
 </script>
 
@@ -165,6 +191,27 @@ function deleteProjectAreas() {
                 </template>
             </FormGroup>
             <div class="py-6">
+
+                <div class="flex gap-x-2 mb-4" v-if="store.project.project.countries && store.project.project.countries.length">
+                    <div class="border rounded-md px-2 py-1 flex flex-row gap-x-1"
+                         v-for="area, i in store.project.project.countries.map(getIso2Name)">
+                        <div>{{ area }}</div>
+                        <XCircleIcon v-if="edit"
+                                     class="self-center h-4 w-4 text-gray-400 hover:text-gray-500 cursor-pointer"
+                                     aria-hidden="true"
+                                     @click="() => deleteCountry(i)" />
+                    </div>
+                    <select v-model="newCountry"
+                            @change="addCountry"
+                            class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="">Add country</option>
+                        <option v-for="country in iso2countries"
+                                :value="country.ISO2">
+                            {{ country.name }}
+                        </option>
+                    </select>
+                </div>
+
                 <MultiInput :edit="edit"
                             :numbering="(n, v) => numbering(n, v)"
                             :inputComponents="multiInputComponents"

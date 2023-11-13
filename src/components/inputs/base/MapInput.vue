@@ -123,6 +123,8 @@ async function postGeoJson() {
             uploadStatus.value = 'uploaded';
             emit('update:modelValue', { ...props.modelValue, uuid: uuidsArr[0] });
             alert(`Area uploaded with UUID ${uuidsArr[0]}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
+
+            projectStore.updateCountries();
         }).catch(_error => {
             alert('Error uploading the JSON file');
             uploadStatus.value = 'idle';

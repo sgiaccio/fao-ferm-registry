@@ -27,6 +27,8 @@ import { useMenusStore } from '@/stores/menus';
 
 import { roundToPrecisionAsString } from '@/lib/util';
 
+import { getIso2Name, countries as iso2countries } from '@/lib/gaul2iso';
+
 
 const menus = useMenusStore().menus;
 
@@ -91,6 +93,20 @@ function deleteProjectAreas() {
     store.projectAreas = [];
     showDeleteAreasConfirm.value = false;
 }
+
+function deleteCountry(i: number) {
+    store.project.project.countries.splice(i, 1);
+}
+
+const newCountry = ref('');
+function addCountry(event: Event) {
+    const country = newCountry.value;
+    if (country) {
+        const newCountries = new Set(store.project.project.countries).add(country);
+        store.project.project.countries = [...newCountries];
+        newCountry.value = '';
+    }
+}
 </script>
 
 <template>
@@ -137,7 +153,7 @@ function deleteProjectAreas() {
             </p>
         </template>
         <template #default>
-            <div v-if="false"
+            <!-- <div v-if="false"
                  class="text-sm bg-ferm-gray px-6 py-4 my-6 rounded-md">
                 <p class="font-semibold">
                     Please find the requirements of geospatial data in <a class="text-ferm-blue-dark-800 underline"
@@ -169,9 +185,8 @@ function deleteProjectAreas() {
                         data for precise area calculations or analyses, considering these inherent limitations.
                     </div>
                 </AlertModal>
-            </div>
+            </div> -->
 
-            <!-- Enable this when the reporting line is GEF -->
             <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 dark:bg-amber-900 shadow-md border-gray-300">
                 <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data).</span>
                     The sum of committed land in GEF Core Indicators 1&mdash;5 shall be included
@@ -284,7 +299,6 @@ function deleteProjectAreas() {
                     </p>
                     <p class="mt-4">Areas can be identified based on different options:
                     <ul class="list-disc list-inside">
-
                         <li>
                             Select administrative areas
                             <InformationCircleIcon @click="() => { showAdminAreaInfoModal = true }"
@@ -309,8 +323,27 @@ function deleteProjectAreas() {
                         <p>The total of the land (in ha) will be computed by the
                             plattorm based on spatially explicit information provided.</p>
                     </template>
-
                 </LabelFormGroup>
+
+                <div class="flex gap-x-2 mb-4" v-if="store.project.project.countries && store.project.project.countries.length">
+                    <div class="border rounded-md px-2 py-1 flex flex-row gap-x-1"
+                         v-for="area, i in store.project.project.countries.map(getIso2Name)">
+                        <div>{{ area }}</div>
+                        <XCircleIcon v-if="edit"
+                                     class="self-center h-4 w-4 text-gray-400 hover:text-gray-500 cursor-pointer"
+                                     aria-hidden="true"
+                                     @click="() => deleteCountry(i)" />
+                    </div>
+                    <select v-model="newCountry"
+                            @change="addCountry"
+                            class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="">Add country</option>
+                        <option v-for="country in iso2countries"
+                                :value="country.ISO2">
+                            {{ country.name }}
+                        </option>
+                    </select>
+                </div>
 
                 <MultiInput :edit="edit"
                             :numbering="(n, v) => numbering(n, v)"
@@ -334,5 +367,4 @@ function deleteProjectAreas() {
             </div>
         </template>
     </TabTemplate>
-    <!-- <pre>{{JSON.stringify(store.projectAreas, null, 2)}}</pre> -->
 </template>

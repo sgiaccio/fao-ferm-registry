@@ -2,8 +2,13 @@ const functions = require("firebase-functions");
 const { Pool } = require("pg");
 const axios = require("axios");
 
-const { db } = require("./util");
+const { areasCollection } = require("./util");
 const { defineString } = require("firebase-functions/params");
+
+const { gaul2iso } = require("./gaul2iso");
+
+const serviceAccount = require('./fao-ferm2-review-ad0074f38f58.json'); // Your path to the service account key
+const ee = require('@google/earthengine'); // ee is required to find intersecting countries
 
 
 // Secrets api is not working, so we are using config instead for now
@@ -50,15 +55,19 @@ function getDatabaseClient(secrets) {
 /**
  * Fetches a polygon from the database as GeoJSON based on its ID.
  *
- * @param {number} id The ID of the polygon.
+ * @param {number} uuid The ID of the polygon.
  * @param {PoolClient} client The database client to use.
  * @returns {Object} The GeoJSON representation of the polygon.
  */
-async function fetchPolygonFromDatabase(client, id) {
+async function fetchPolygonFromDatabase(client, uuid) {
+    if (!isValidUuid(uuid)) {
+        throw new Error("Invalid UUID");
+    }
+
     const query = "SELECT ST_AsGeoJSON(geom) AS geojson FROM project_areas WHERE area_uuid = $1";
 
     try {
-        const result = await client.query(query, [id]);
+        const result = await client.query(query, [uuid]);
         if (result.rows.length === 0) {
             return null;
         }
@@ -66,6 +75,25 @@ async function fetchPolygonFromDatabase(client, id) {
         return JSON.parse(result.rows[0].geojson);
     } catch (error) {
         throw new Error("Database query failed: " + error.message);
+    }
+}
+
+async function fetchPolygonsFromDatabase(client, uuids) {
+    if (!uuids || !uuids.length || !uuids.every(isValidUuid)) {
+        throw new Error("Invalid UUIDs: ", uuids.map(uuids.join(", ")));
+    }
+
+    const query = "SELECT ST_AsGeoJSON(ST_Union(geom::geometry)) AS geojson FROM project_areas WHERE area_uuid = ANY($1::uuid[])";
+
+    try {
+        const result = await client.query(query, [uuids]);
+        if (result.rows.length === 0) {
+            return null;
+        }
+
+        return JSON.parse(result.rows[0].geojson);
+    } catch (error) {
+        throw new Error("Could not fetch polygons from database: " + error.message);
     }
 }
 
@@ -164,7 +192,7 @@ exports.getPolygonZonalStats = functions
 //             .flatMap(doc => doc.data().areas) // Use flatMap to flatten the array while mapping
 //             .filter(area => ["upload", "draw"].includes(Object.keys(area)[0])) // Only keep objects with "upload" or "draw" keys
 //             .map(area => (Object.values(area)[0] || {}).uuid) // Extract the UUID from the object value
-//             .filter(uuid => uuid && validUUIDPattern.test(uuid)); // Ensure truthy and valid UUIDs
+//             .filter(uuid => uuid && isValidUuid(uuid)); // Ensure truthy and valid UUIDs
 
 //         const client = await getDatabaseClient({
 //             user: dbUser.value(),
@@ -228,48 +256,221 @@ exports.getPolygonZonalStats = functions
 //     return { message: `Deleted area with ID: ${projectId}` };
 // });
 
-// Periodically delete dangling project_areas records from the PostgreSQL database
-exports.deleteDanglingAreaRecords = functions
-    // .runWith({ secrets: [dbUser, dbHost, dbDatabase, dbPassword] })
-    .pubsub.schedule("0 0 * * *")
-    .onRun(async (context) => {
-        functions.logger.info("Deleting dangling areas from postgres db...");
+const validUUIDPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+function isValidUuid(uuid) {
+    return uuid && validUUIDPattern.test(uuid);
+}
 
-        // get all the area uuids from the areas collection in firestore
-        const areasSnapshot = await db.collection("areas").get();
-        const validUUIDPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-        const areaUuids = areasSnapshot.docs
-            .flatMap(doc => doc.data().areas) // Use flatMap to flatten the array while mapping
-            .filter(area => ["upload", "draw"].includes(Object.keys(area)[0])) // Only keep objects with "upload" or "draw" keys
-            .map(area => (Object.values(area)[0] || {}).uuid) // Extract the UUID from the object value
-            .filter(uuid => uuid && validUUIDPattern.test(uuid)); // Ensure truthy and valid UUIDs
+// ------------------------------------------------------------
+// DO NOT DEPLOY THIS FUNCTION
+// THIS FUNCTION NEEDS TO BE TESTED BEFORE DEPLOYING
+// ------------------------------------------------------------
+// Periodically delete dangling project_areas records from the
+// PostgreSQL database
+// ------------------------------------------------------------
+// exports.deleteDanglingAreaRecords___DO_NOT_DEPLOY = functions
+//     // .runWith({ secrets: [dbUser, dbHost, dbDatabase, dbPassword] })
+//     .pubsub.schedule("0 0 * * *")
+//     .onRun(async (context) => {
+//         functions.logger.info("Deleting dangling areas from postgres db...");
 
-        const client = await getDatabaseClient({
-            user: dbUser.value(),
-            host: dbHost.value(),
-            database: dbDatabase.value(),
-            password: dbPassword.value()
-        });
+//         // get all the area uuids from the areas collection in firestore
+//         // const areasSnapshot = await db.collection("areas").get();
+//         // const areaUuids = areasSnapshot.docs
+//         //     .flatMap(doc => doc.data().areas || []) // Use flatMap to flatten the array while mapping
+//         //     // .filter(area => ["upload", "draw"].includes(Object.keys(area)[0])) // Only keep objects with "upload" or "draw" keys
+//         //     .map(area => (Object.values(area)[0] || {}).uuid) // Extract the UUID from the object value
+//         //     .filter(uuid => isValidUuid(uuid)); // Ensure truthy and valid UUIDs
 
-        try {
-            // Delete all project_areas records that are not in the areaUuids array
-            const deleteQuery = `
-            DELETE FROM project_areas
-            WHERE area_uuid != ALL($1::uuid[])
-            AND created_at < NOW() - INTERVAL '14 days';`;
-            const deleteResult = await client.query(deleteQuery, [areaUuids]);
+//         // Get all the area uuids from the 'areas' collection in Firestore.
+//         const areasSnapshot = await admin.firestore().collection('areas').get();
+//         const areaUuids = areasSnapshot.docs
+//             .flatMap(doc => {
+//                 // Get the 'areas' array from the document's data, or default to an empty array.
+//                 // const areasArray = 
+//                 const areas = doc.data().areas;
+//                 return getUploadedAreasUuids(areas); // Filter out any undefined or invalid UUIDs.
+//             });
 
-            const deletedRowCount = deleteResult.rowCount;
-            if (deletedRowCount === 0) {
-                functions.logger.info("No areas to delete from postgres db.");
+//         const client = await getDatabaseClient({
+//             user: dbUser.value(),
+//             host: dbHost.value(),
+//             database: dbDatabase.value(),
+//             password: dbPassword.value()
+//         });
+
+//         try {
+//             // Delete all project_areas records that are not in the areaUuids array
+//             const deleteQuery = `
+//             DELETE FROM project_areas
+//             WHERE area_uuid != ALL($1::uuid[])
+//             AND created_at < NOW() - INTERVAL '14 days';`;
+//             const deleteResult = await client.query(deleteQuery, [areaUuids]);
+
+//             const deletedRowCount = deleteResult.rowCount;
+//             if (deletedRowCount === 0) {
+//                 functions.logger.info("No areas to delete from postgres db.");
+//             } else {
+//                 functions.logger.info(`Deleted ${deletedRowCount} areas from postgres db.`);
+//             }
+//         } catch (error) {
+//             functions.logger.error("Error deleting areas from postgres:", error);
+//             throw new Error("Error deleting areas from postgres: " + error.message);
+//         } finally {
+//             client.release();
+//         }
+//     });
+
+
+
+
+
+
+
+
+
+
+// function getUploadedAreasUuids(areas = []) {
+//     return areas
+//         .map(areaObject => {
+//             // Get all values (which are objects) from each area object, and find the one that has a 'uuid'.
+//             // using this instead of Object.values(areaObject)[0] here because it's more robust
+//             const areaData = Object.values(areaObject).find(value => value.hasOwnProperty('uuid'));
+//             return areaData?.uuid;
+//         })
+//         .filter(isValidUuid);
+// }
+
+// exports.getPolygonsFromUuids = functions
+//     // .runWith({ secrets: [dbUser, dbHost, dbDatabase, dbPassword, earthMapApiKey] })
+//     .https
+//     .onCall(async ({ uuids }, context) => {
+//         // Check if the user is logged in
+//         if (!context.auth) {
+//             throw new functions.https.HttpsError("unauthenticated", "User must be authenticated to fetch polygon data.");
+//         }
+
+//         const client = await getDatabaseClient({
+//             user: dbUser.value(),
+//             host: dbHost.value(),
+//             database: dbDatabase.value(),
+//             password: dbPassword.value()
+//         });
+
+//         try {
+//             // Fetch the polygon from the database. If it doesn't exist, throw an error.
+//             // functions.logger.log("Fetching polygon for ID:", polygonId, "...");
+//             // const polygon = await fetchPolygonFromDatabase(client, polygonId);
+//             // if (!polygon) {
+//             //     throw new functions.https.HttpsError("not-found", "Polygon not found");
+//             // }
+
+//             // get all the polygons from the areas collection in firestore
+//             const areasSnapshot = await db.collection("areas").get();
+//             const areaUuids = areasSnapshot.docs
+//                 .flatMap(doc => doc.data().areas) // Use flatMap to flatten the array while mapping
+//                 .filter(area => ["upload", "draw"].includes(Object.keys(area)[0])) // Only keep objects with "upload" or "draw" keys
+//                 .map(area => (Object.values(area)[0] || {}).uuid) // Extract the UUID from the object value
+//                 .filter(uuid => uuid && isValidUuid(uuid)); // Ensure truthy and valid UUIDs
+
+//             return result;
+//         } catch (error) {
+//             if (error instanceof functions.https.HttpsError) {
+//                 throw error; // Re-throw if it's already an HttpsError
+//             }
+//             functions.logger.error("Error:", error);
+//             throw new functions.https.HttpsError("internal", error.message);
+//         } finally {
+//             client.release();
+//         }
+//     });
+
+
+
+// async function getAreasUuids(projectId) {
+//     const areaDoc = await areasCollection.doc(projectId).get();
+//     if (!areaDoc.exists) {
+//         throw new functions.https.HttpsError("not-found", "No areas found for document", projectId);
+//     }
+
+//     return getUploadedAreasUuids(areaDoc.data().areas);
+// }
+
+
+ee.data.authenticateViaPrivateKey(serviceAccount, () => {
+    ee.initialize(null, null, () => {
+        console.log('Authenticated and initialized GEE successfully.');
+    }, (err) => {
+        console.error('Failed to initialize GEE:', err);
+    });
+}, (err) => {
+    console.error('Failed to authenticate GEE:', err);
+});
+
+// Function to use the fetched GeoJSON in GEE
+function getIntersectingCountriesFromGee(polygons) {
+    return new Promise((resolve, reject) => {
+        // Convert GeoJSON to an Earth Engine Geometry
+        // const tolerance = 10000; // Tolerance in meters
+        const geometry = ee.Geometry(polygons); //.simplify(tolerance);
+
+        const countries = ee.FeatureCollection('FAO/GAUL/2015/level0');
+
+        // Filter the countries FeatureCollection to get those that intersect with the geometry
+        const intersectingCountries = countries.filterBounds(geometry);
+
+        intersectingCountries.evaluate(function (result, error) {
+            if (error) {
+                reject(error);
             } else {
-                functions.logger.info(`Deleted ${deletedRowCount} areas from postgres db.`);
+                // Process the result to extract country names and codes
+                const countryInfo = result.features.map(feature => ({
+                    name: feature.properties.ADM0_NAME,
+                    code: feature.properties.ADM0_CODE
+                }));
+                resolve(countryInfo);
             }
-        } catch (error) {
-            functions.logger.error("Error deleting areas from postgres:", error);
-            throw new Error("Error deleting areas from postgres: " + error.message);
-        } finally {
-            client.release();
-        }
+        });
+    });
+}
+
+exports.getIntersectingCountries = functions.runWith({ timeoutSeconds: 120 }).https.onCall(async (data, context) => {
+    // Check for user authentication
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    // Get the UUIDs from the data payload
+    const { uuids } = data;
+    if (!uuids) {
+        throw new functions.https.HttpsError('invalid-argument', 'The function must be called with a valid "projectId" argument.');
+    }
+
+    const client = await getDatabaseClient({
+        user: dbUser.value(),
+        host: dbHost.value(),
+        database: dbDatabase.value(),
+        password: dbPassword.value()
     });
 
+    try {
+        // const uuids = await getAreasUuids(projectId);
+        const polygonsData = await fetchPolygonsFromDatabase(client, uuids);
+
+        if (!polygonsData) {
+            throw new functions.https.HttpsError('not-found', 'No polygons found for the given UUIDs.');
+        }
+        const analysisResults = await getIntersectingCountriesFromGee(polygonsData);
+
+        // Return the ISO 2 codes array of intersecting countries
+        return analysisResults.map(c => gaul2iso(c.code)).filter(c => c);
+    } catch (error) {
+        if (error instanceof functions.https.HttpsError) {
+            throw error; // Re-throw if it's already an HttpsError
+        }
+        functions.logger.error("Error:", error);
+        throw new functions.https.HttpsError("internal", error.message);
+    } finally {
+        client.release();
+    }
+});

@@ -872,7 +872,7 @@ exports.getPolygonZonalStats = areas.getPolygonZonalStats;
 // exports.getAllAreaPolygons = areas.getAllAreaPolygons;
 exports.deleteDanglingAreaRecords = areas.deleteDanglingAreaRecords;
 // exports.deleteAllProjectAreas = areas.deleteAllProjectAreas;
-
+exports.getIntersectingCountries = areas.getIntersectingCountries;
 
 /************************************************
  *

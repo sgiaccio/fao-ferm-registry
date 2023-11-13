@@ -211,10 +211,10 @@ service cloud.firestore {
 
         // Project areas documents
         match /areas/{document=**} {
-            allow read: if isSignedIn()
-            allow create: if isSignedIn()
-            allow update: if isSignedIn()
-            allow delete: if isSignedIn()
+            allow read: if isAdmin() || isSignedIn() && isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor", "guest"])
+            allow create: if isAdmin() || isSignedIn() && isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor"]) && isOneOfStatuses(get(/databases/$(database)/documents/areas/$(request.resource.id)), ["draft"])
+            allow update: if isAdmin() || isSignedIn() && isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor"]) && isOneOfStatuses(get(/databases/$(database)/documents/areas/$(request.resource.id)), ["draft"])
+            allow delete: if isAdmin() || isSignedIn() && isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor"]) && isOneOfStatuses(get(/databases/$(database)/documents/areas/$(request.resource.id)), ["draft"])
         }
 
         // User data documents

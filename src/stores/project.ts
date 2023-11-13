@@ -19,10 +19,12 @@ import { defineStore } from 'pinia';
 
 import { db } from '../firebase';
 
-import { snakeToCamel } from '../lib/util'
+import { setsContainSameValues, snakeToCamel } from '../lib/util'
 
 import { useAuthStore } from './auth';
 import { GoalIndicator, rawGoalIndicators } from '@/lib/auroraIndicators';
+import { getIntersectingCountries } from '@/firebase/functions';
+import { gaul2iso } from '@/lib/gaul2iso';
 
 // import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
 
@@ -411,8 +413,36 @@ export const useProjectStore = defineStore({
 
             await batch.commit();
             // await this.fetchGroupOwnedProjects();
+        },
+        async getCountriesIso2Codes() {
+            if (!this.projectAreas || this.projectAreas.length === 0) return new Set();
+
+            console.log(this.projectAreas);
+            const uuids = this.projectAreas.map(a => Object.values(a)).map(v => v[0].uuid).filter(uuid => uuid)
+            console.log(uuids);
+            const intersectingCountries = uuids ? await getIntersectingCountries(uuids) : new Set();
+            console.log('intersectingCountries', intersectingCountries);
+
+            // also merge the countries from the admin areas
+            const adminAreasIsoCodes = new Set(this.projectAreas.map(a => Object.values(a)).map(v => +v[0].admin0).filter(a0 => a0).map(gaul2iso).filter(iso => iso));
+            console.log('adminAreasIsoCodes', adminAreasIsoCodes);
+
+            return new Set([...intersectingCountries, ...adminAreasIsoCodes]);
+        },
+        async updateCountries() {
+            try {
+                this.getCountriesIso2Codes().then(intersectingCountries => {
+                    const oldCountries = new Set(this.project.project.countries);
+                    if (!setsContainSameValues(oldCountries, intersectingCountries)) {
+                        alert('The list of intersecting countries has changed. Please review the list of countries in the general tab before saving.');
+                        this.project.project.countries = [...intersectingCountries];
+                    }
+                });
+            } catch (e) {
+                alert('Error getting the new list of countries');
+            }
         }
-    },
+    }
 });
 
 // const store = useProjectStore();

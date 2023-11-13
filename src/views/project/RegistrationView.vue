@@ -58,32 +58,32 @@ const pointsOfContact = {
 const store = useProjectStore();
 const menus = useMenusStore().menus;
 
-const selectedFile = vueRef<File | null>(null);
-const uploadStatus = vueRef<'idle' | 'uploading' | 'uploaded'>('idle');
+// const selectedFile = vueRef<File | null>(null);
+// const uploadStatus = vueRef<'idle' | 'uploading' | 'uploaded'>('idle');
 
-function setSelectedFile(event: Event) {
-    selectedFile.value = (event.target as HTMLInputElement).files![0];
-}
+// function setSelectedFile(event: Event) {
+//     selectedFile.value = (event.target as HTMLInputElement).files![0];
+// }
 
 const storage = getStorage();
 
-function uploadFile(projectId: string | null) {
-    if (projectId === null) return;
+// function uploadFile(projectId: string | null) {
+//     if (projectId === null) return;
 
-    if (uploadStatus.value !== 'idle') return;
+//     if (uploadStatus.value !== 'idle') return;
 
-    const storageRef = ref(storage, `${projectId}/documents/${selectedFile.value!.name}`);
-    const uploadTask = uploadBytes(storageRef, selectedFile.value!);
+//     const storageRef = ref(storage, `${projectId}/documents/${selectedFile.value!.name}`);
+//     const uploadTask = uploadBytes(storageRef, selectedFile.value!);
 
-    uploadStatus.value = 'uploading';
-    uploadTask.then(snapshot => {
-        getFiles(projectId);
-        selectedFile.value = null;
-        uploadStatus.value = 'uploaded';
-    }).catch(error => {
-        uploadStatus.value = 'idle';
-    });
-}
+//     uploadStatus.value = 'uploading';
+//     uploadTask.then(snapshot => {
+//         getFiles(projectId);
+//         selectedFile.value = null;
+//         uploadStatus.value = 'uploaded';
+//     }).catch(error => {
+//         uploadStatus.value = 'idle';
+//     });
+// }
 
 async function listFiles(projectId: string) {
     const dirRef = ref(storage, projectId + '/documents/');
@@ -97,17 +97,17 @@ async function getFiles(id: string) {
     fileName.value = fList.items && fList.items.length && fList.items[0].name || null; // only one file can be uploaded
 }
 
-function deleteFile(projectId: string | null, fileName: string) {
-    if (projectId === null) return;
+// function deleteFile(projectId: string | null, fileName: string) {
+//     if (projectId === null) return;
 
-    if (!confirm(`Are you sure you want to delete the file ${fileName}`)) return;
-    const fRef = ref(storage, `${projectId}/documents/${fileName}`);
-    deleteObject(fRef).then(() => {
-        getFiles(projectId);
-    }).catch((error) => {
-        alert('Error deleting the file');
-    });
-}
+//     if (!confirm(`Are you sure you want to delete the file ${fileName}`)) return;
+//     const fRef = ref(storage, `${projectId}/documents/${fileName}`);
+//     deleteObject(fRef).then(() => {
+//         getFiles(projectId);
+//     }).catch((error) => {
+//         alert('Error deleting the file');
+//     });
+// }
 
 watch(() => store.id as string, async id => {
     if (id) {
@@ -261,57 +261,6 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                          :edit="edit" />
             </template>
 
-
-
-
-            <!-- Only show restoration type and tenure status if not GEF or if GEF3 -->
-            <template v-if="store.project.reportingLine !== 'GEF' || store.project.project.gefIndicator?.startsWith('GEF3')">
-                <RecursiveMenuFormGroup :edit="edit"
-                                         v-model="store.project.project.restorationTypes"
-                                         :label="store.project.reportingLine === 'GEF' ? 'Intervention/restoration types' : 'Restoration types'"
-                                         :options="menus.restorationTypes"
-                                         :searchable="false"
-                                         :showSelection="false"
-                                         class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
-                    <template v-slot:info>
-                        The possible values are ecological restoration and rehabilitation. This can be determined by analyzing the current and target ecosystem (natural or transformed). Examples of transformed ecosystems are: farmlands, forest plantation, urban ecosystems. As a useful rule of thumb, if the target ecosystem is natural, the restoration will be ecological restoration. If the target ecosystem is transformed, the restoration will be rehabilitation.
-                        <span class="font-bold"
-                              v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span>
-                    </template>
-                </RecursiveMenuFormGroup>
-                <RecursiveMenuFormGroup :edit="edit"
-                                         v-model="store.project.project.tenureStatuses"
-                                         label="Tenure statuses"
-                                         :options="menus.tenureStatuses"
-                                         :searchable="false"
-                                         :showSelection="false"
-                                         class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
-                    <template v-slot:info>
-                        <p>
-                            It is the legal status of the area under restoration. Information on tenure status should include documentation of Free and Prior Consent (FPIC) to ensure that people's rights are respected in the process of restoration and adherence to the UN Decade principles (FAO, IUCN CEM & SER, 2021) as well as the Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) (FAO, 2022).
-                            <span class="font-bold"
-                                  v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3.</span>
-                        </p>
-                        <p class="pt-4">
-                            References:
-                            <br>
-                            FAO. 2022. Voluntary Guidelines on the Responsible Governance of Tenure of Land, Fisheries and Forests in the Context of National Food Security. First revision. Rome. <a href="https://doi.org/10.4060/i2801e"
-                               target="_blank"
-                               class="text-ferm-blue-dark-700 hover:text-ferm-blue-dark-600">https://doi.org/10.4060/i2801e</a>
-                        </p>
-                        <p class="pt-4">
-                            FAO, IUCN CEM & SER. (2021). Principles for ecosystem restoration to guide the United Nations Decade 2021&mdash;2030. Rome, FAO.
-                        </p>
-                    </template>
-                </RecursiveMenuFormGroup>
-            </template>
-
-
-
-
-
-
-
             <TextareaFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                                :edit="edit"
                                v-model="store.project.project.description"
@@ -322,7 +271,46 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                     <p v-else>Provide a short context of the initiative in terms of actors and partners leading it, a short background, main restoration activities that will be implemented, expected results of the initiative.</p>
                 </template>
             </TextareaFormGroup>
-            <!-- TODO Short description of the initiative (max xx characters) -->
+
+            <RecursiveMenuFormGroup :edit="edit"
+                                    v-model="store.project.project.restorationTypes"
+                                    :label="store.project.reportingLine === 'GEF' ? 'Intervention/restoration types' : 'Restoration types'"
+                                    :options="menus.restorationTypes"
+                                    :searchable="false"
+                                    :showSelection="false"
+                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
+                <template v-slot:info>
+                    The possible values are ecological restoration and rehabilitation. This can be determined by analyzing the current and target ecosystem (natural or transformed). Examples of transformed ecosystems are: farmlands, forest plantation, urban ecosystems. As a useful rule of thumb, if the target ecosystem is natural, the restoration will be ecological restoration. If the target ecosystem is transformed, the restoration will be rehabilitation.
+                    <span class="font-bold"
+                          v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span>
+                </template>
+            </RecursiveMenuFormGroup>
+            <RecursiveMenuFormGroup :edit="edit"
+                                    v-model="store.project.project.tenureStatuses"
+                                    label="Tenure statuses"
+                                    :options="menus.tenureStatuses"
+                                    :searchable="false"
+                                    :showSelection="false"
+                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
+                <template v-slot:info>
+                    <p>
+                        It is the legal status of the area under restoration. Information on tenure status should include documentation of Free and Prior Consent (FPIC) to ensure that people's rights are respected in the process of restoration and adherence to the UN Decade principles (FAO, IUCN CEM & SER, 2021) as well as the Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) (FAO, 2022).
+                        <span class="font-bold"
+                              v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3.</span>
+                    </p>
+                    <p class="pt-4">
+                        References:
+                        <br>
+                        FAO. 2022. Voluntary Guidelines on the Responsible Governance of Tenure of Land, Fisheries and Forests in the Context of National Food Security. First revision. Rome. <a href="https://doi.org/10.4060/i2801e"
+                           target="_blank"
+                           class="text-ferm-blue-dark-700 hover:text-ferm-blue-dark-600">https://doi.org/10.4060/i2801e</a>
+                    </p>
+                    <p class="pt-4">
+                        FAO, IUCN CEM & SER. (2021). Principles for ecosystem restoration to guide the United Nations Decade 2021&mdash;2030. Rome, FAO.
+                    </p>
+                </template>
+            </RecursiveMenuFormGroup>
+
             <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                            :edit="edit"
                            v-model="store.project.project.website"
