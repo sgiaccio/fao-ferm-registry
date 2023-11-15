@@ -2,16 +2,6 @@
 import MapInput from './MapInput.vue'
 
 
-// defineProps<{
-//   modelValue: {
-//     siteName: string,
-//     uuid: string,
-//     area: number,
-//     activities: number[],
-//     ecosystems: string[]
-//   }
-// }>()
-
 withDefaults(defineProps<{
   modelValue: {
     siteName: string,
@@ -21,6 +11,8 @@ withDefaults(defineProps<{
     ecosystems: string[]
   },
   edit?: boolean
+  index: number
+  nAreas: number
 }>(), {
   edit: true
 });
@@ -33,7 +25,11 @@ function emitUpdateModelValue(value: any) {
 </script>
 
 <template>
-    <div>
-        <MapInput :model-value="modelValue" :edit="edit" @update:modelValue="emitUpdateModelValue"></MapInput>
-    </div>
+  <div>
+    <MapInput :model-value="modelValue"
+              :edit="edit"
+              @update:modelValue="emitUpdateModelValue"
+              :index="index"
+              :nAreas="nAreas" />
+  </div>
 </template>

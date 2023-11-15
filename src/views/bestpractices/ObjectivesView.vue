@@ -179,12 +179,12 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
                                       :edit=edit />
                 <MultiSelectFormGroup :options="menus.drivers"
                                       v-model="store.bestPractice.drivers"
-                                      label="1.9 Drivers"
+                                      label="1.9 Degradation drivers"
                                       description="Direct and indirect drivers of degradation addressed by the practice [Select all that apply]."
                                       :required="true"
                                       :edit=edit />
                 <TextareaFormGroup v-model="store.bestPractice.driversAdditionalInformation"
-                                   label="1.10 Drivers additional information"
+                                   label="1.10 Degradation drivers additional information"
                                    description="Please provide additional information to explain how the practice contributed to reducing the drivers of ecosystem degradation selected above."
                                    :edit=edit />
             </template>

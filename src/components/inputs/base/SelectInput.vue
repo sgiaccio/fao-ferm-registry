@@ -19,7 +19,6 @@ const showValidation = ref(false);
 function onInput(event: Event) {
     let value: string | undefined = (event.target as HTMLInputElement).value;
     emit('update:modelValue', value !== "" ? value : undefined);
-    
     showValidation.value = true
 }
 

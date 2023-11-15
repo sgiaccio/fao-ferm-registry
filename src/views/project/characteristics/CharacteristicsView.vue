@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 import { useProjectStore } from '../../../stores/project';
 
@@ -7,6 +7,10 @@ import TabTemplate from "../../TabTemplate.vue";
 
 import MeanMinMax from './MeanMinMax.vue';
 import LandCover from './LandCover.vue';
+import LandProductivityDynamics from './LandProductivityDynamics.vue';
+
+import { getPolygonZonalStats } from '@/firebase/functions';
+
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -39,19 +43,48 @@ async function fetchPolygonIndicator(areaUuid: string, statistics: string) {
         });
 }
 
+async function fetchPolygonIndicatorFromEarthMap(areaUuid: string, statistics: string) {
+    const results: any = await getPolygonZonalStats(areaUuid, statistics);
+    return results;
+
+    // const ecosystems = results.statisticResults.years.filter((y: any) => y.data.length)
+    //     // year is actually the ecosystem
+    //     .map((e: any) => e.year)
+    //     // get the substrings before ' - '
+    //     .map((e: any) => e.substring(0, e.indexOf(' - ')));
+    // // filter out the ones that are not in the IUCN ecosystems
+
+    // // flatten the IUCN ecosystems is calculated each time, optimize this
+    // const flattenedIucnEcosystems: string[] = [];
+    // (function flatten(ecosystems_) {
+    //     ecosystems_.forEach((e: any) => {
+    //         if (e.items) {
+    //             flatten(e.items);
+    //         } else if (e.value) {
+    //             flattenedIucnEcosystems.push(e.value);
+    //         }
+    //     });
+    // })(menus.iucnEcosystems);
+
+    // // Filter out the ones that are not in the IUCN ecosystems
+    // return ecosystems.filter((e: any) => flattenedIucnEcosystems.includes(e));
+}
+
 // const statisticsIds = ['elevation', 'temperature', 'precipitation', 'land_cover']
 
 interface Statistics {
+    type?: 'gee' | 'em', // Google Earth Engine or Earth Map
     requestId: string,
     dbId: string,
     label: string,
-    fn: any, // TODO: function
+    transformFn: any, // TODO: function
     template: any // TODO vue template
 }
 
-function calculateAverages(values: any[]): { mean: string, min: string, max: string } {
+function calculateAverages(values: any[], trunc = true): { mean: number, min: number, max: number } {
     function calculateAverage(key: string) {
-        return (values.reduce((prev, curr) => prev + curr[key], 0) / values.length).toFixed(2);
+        const average = (values.reduce((prev, curr) => prev + curr[key], 0) / values.length);
+        return trunc ? Math.trunc(average) : average;
     }
 
     return {
@@ -62,37 +95,61 @@ function calculateAverages(values: any[]): { mean: string, min: string, max: str
 }
 
 const statistics: Statistics[] = [{
+    type: 'em',
+    requestId: 'landProductivity',
+    dbId: 'landProductivityDynamics',
+    label: 'Land Productivity Dynamics [ha]',
+
+    transformFn: (val: any) => {
+        const data2016 = val.statisticResults.years.find((y: any) => y.year === 2016).data;
+        // camelize the keys
+        const camelized = data2016.map((d: any) => ({
+            areaHa: Math.trunc(d.area_ha),
+            areaPercentage: d.area_percentage,
+            areaSqm: Math.trunc(d.area_sqm),
+            className: d.class_name,
+            classNumber: d.class_number,
+            classPalette: d.class_palette,
+            index: d.index
+        }));
+        return camelized;
+    },
+    template: LandProductivityDynamics
+}, {
+    requestId: 'land_cover',
+    dbId: 'landCover',
+    label: 'Land cover [ha]',
+    transformFn: (val: any) => Object.entries(val[0])
+        .map(([k, v]) => [+k, +v])
+        .filter(entry => !isNaN(+entry[0]))
+        .map(entry => ({ id: entry[0], value: Math.trunc(+entry[1]) })),
+    template: LandCover
+}, {
     requestId: 'elevation',
     dbId: 'elevation',
     label: 'Elevation [m]',
-    fn: calculateAverages,
-    template: MeanMinMax
-}, {
-    requestId: 'temperature',
-    dbId: 'temperature',
-    label: 'Temperature [℃]',
-    fn: result => {
-        const k = calculateAverages(result);
-        return {
-            mean: (+k.mean - 273.15).toFixed(2),
-            min: (+k.min - 273.15).toFixed(2),
-            max: (+k.max - 273.15).toFixed(2),
-        }
-    },
+    transformFn: calculateAverages,
     template: MeanMinMax
 }, {
     requestId: 'precipitation',
     dbId: 'precipitation',
     label: 'Precipitation [mm/pentad]',
-    fn: calculateAverages,
+    transformFn: calculateAverages,
     template: MeanMinMax
 }, {
-    requestId: 'land_cover',
-    dbId: 'landCover',
-    label: 'Land cover',
-    fn: (val: any) => Object.entries(val[0]).map(([k, v]) => [+k, v]).filter(entry => !isNaN(+entry[0])),
-    template: LandCover
-}]
+    requestId: 'temperature',
+    dbId: 'temperature',
+    label: 'Temperature [℃]',
+    transformFn: result => {
+        const k = calculateAverages(result, false);
+        return {
+            mean: Math.trunc(+k.mean - 273.15),
+            min: Math.trunc(+k.min - 273.15),
+            max: Math.trunc(+k.max - 273.15),
+        }
+    },
+    template: MeanMinMax
+}];
 
 const t = statistics.reduce((prev, curr) => ({ ...prev, [curr.dbId]: 'idle' }), {})
 const areaStatStatus = ref<{ [key: string]: 'idle' | 'loading' | 'error' }[]>(new Array(store.projectAreas.length).fill(null).map(() => ({ ...t })));
@@ -100,7 +157,7 @@ const areaStatStatus = ref<{ [key: string]: 'idle' | 'loading' | 'error' }[]>(ne
 const nDots = ref(0);
 const nLoading = ref(0)
 
-function fetchIndicators(area: any) {
+function fetchIndicators_(area: any) {
 
     const areaIdx = store.projectAreas.indexOf(area);
 
@@ -122,7 +179,61 @@ function fetchIndicators(area: any) {
 
         try {
             const result = await fetchPolygonIndicator(areaValues.uuid, stats.requestId);
-            areaValues.characteristics[stats.dbId] = stats.fn(result);
+            areaValues.characteristics[stats.dbId] = stats.transformFn(result);
+            areaStatStatus.value[areaIdx][stats.dbId] = 'idle';
+        } catch (e) {
+            console.error(e);
+            areaStatStatus.value[areaIdx][stats.dbId] = 'error';
+        } finally {
+            nLoading.value -= 1;
+            if (nLoading.value === 0) {
+                clearInterval(intervalId);
+                nDots.value = 1;
+            }
+        }
+    });
+}
+
+
+// onMounted(() => {
+//     getPolygonZonalStats(store.id!, store.projectAreas.map(area => area[Object.keys(area)[0]].uuid))
+//         .then(result => {
+//             result.forEach((area, i) => {
+//                 areaStatStatus.value[i] = { ...areaStatStatus.value[i], ...area };
+//             })
+//         })
+//         .catch(e => console.error(e));
+// });
+
+function fetchIndicators(area: any) {
+    const areaIdx = store.projectAreas.indexOf(area);
+
+    if (Object.values(areaStatStatus.value[areaIdx]).includes('loading')) {
+        return;
+    }
+
+    let intervalId: number;
+
+    statistics.forEach(async stats => {
+        if (nLoading.value === 0) {
+            intervalId = window.setInterval(() => nDots.value = (nDots.value + 1) % 4, 600);
+        }
+        nLoading.value += 1;
+
+        areaStatStatus.value[areaIdx][stats.dbId] = 'loading';
+        const areaValues = area[Object.keys(area)[0]];
+        areaValues.characteristics = {};
+
+        try {
+            let result;
+            if (!stats.type || stats.type === 'gee') {
+                result = await fetchPolygonIndicator(areaValues.uuid, stats.requestId);
+            } else if (stats.type === 'em') {
+                result = await fetchPolygonIndicatorFromEarthMap(areaValues.uuid, stats.requestId);
+            } else {
+                throw Error('Unknown statistics type');
+            }
+            areaValues.characteristics[stats.dbId] = stats.transformFn(result);
             areaStatStatus.value[areaIdx][stats.dbId] = 'idle';
         } catch (e) {
             areaStatStatus.value[areaIdx][stats.dbId] = 'error';
@@ -142,47 +253,120 @@ function fetchIndicators(area: any) {
         <template #description>
             <p>The project area is characterized by a number of default parameters. They are automatically generated for each aoi based on global data sources. More information about the data source will be soon made available.</p>
             <div class="font-light mt-4 text-sm">
-                <p>
-                    <span class="font-bold">Elevation:</span> Shuttle Radar Topography Mission (SRTM) digital elevation dataset with 3 arc second (approx. 90m) spatial resolution. The vertical error of the DEM’s is reported to be less than 16m.
-                    <br>
-                    Source: <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
-                       target="_blank"
-                       href="https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4">https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4</a>
+                <p class="4">
+                    <span class="font-bold">Land Productivity Dynamics:</span> The dynamics in the land productivity indicator are related to changes in the health and productive capacity of the land and reflects the net effects of changes in ecosystem functioning due to changes in plant phenology and biomass growth, where declining trends are often (but not always) a defining characteristic of land degradation. Understanding changes in the productive capacity of the land is critical for assessing the impact of land management interventions, its long-term sustainability, and the climate-derived impacts which could affect ecosystem resilience and human livelihoods. The categories correspond to the trends observed during the period 2001-2016.
                 </p>
-                <p class="mt-2">
-                    <span class="font-bold">Temperature:</span> ERA5 is the fifth generation ECMWF atmospheric reanalysis of the global climate. Monthly aggregates have been calculated based on the ERA5 hourly temperature values.
-                    <br>
-                    Source: <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
-                       target="_blank"
-                       href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY</a>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Proportion of each category of land productivity dynamics within the area under restoration
                 </p>
-                <p class="mt-2">
-                    <span class="font-bold">Rainfall:</span> Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS) is a 30+ year quasi-global rainfall dataset. CHIRPS incorporates 0.05° resolution satellite imagery with in-situ station data to create gridded rainfall time series for trend analysis and seasonal drought monitoring.
-                    <br>
-                    Source: <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
-                       target="_blank"
-                       href="https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_PENTAD">https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_PENTAD</a>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> Hectares
                 </p>
-                <p class="mt-2">
-                    <span class="font-bold">Land cover:</span> Dynamic Land Cover map at 100 m resolution (CGLS-LC100). Provides provides a primary land cover scheme using PROBA-V 100 m time-series.
-                    <br>
-                    Source: <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
-                       target="_blank"
-                       href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global">https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global</a>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial</span> resolution: 250 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Ivits E; Cherlet M. Land-Productivity Dynamics Towards integrated assessment of land degradation at global scales. EUR 26052. Luxembourg (Luxembourg): Publications Office of the European Union; 2013. JRC80541
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://earthmap.org/documents/LPD_Global.pdf">https://earthmap.org/documents/LPD_Global.pdf</a>
+                </p>
+
+                <p class="mt-4">
+                    <span class="font-bold">Land cover:</span>
+                    The type of land cover directly influences the composition of ecosystems and biodiversity, and also provide different ecosystem services, such as water regulation, carbon sequestration, or erosion control. Global land cover for the year 2020 contains 11 land cover classes, aligned with UN-FAO's Land Cover Classification System.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Proportion of each category within the area under restoration.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> Hectares
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 10 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Zanaga, D., Van De Kerchove, R., De Keersmaecker, W., Souverijns, N., Brockmann, C., Quast, R., Wevers, J., Grosu, A., Paccini, A., Vergnaud, S., Cartus, O., Santoro, M., Fritz, S., Georgieva, I., Lesiv, M., Carter, S., Herold, M., Li, Linlin, Tsendbazar, N.E., Ramoino, F., Arino, O., 2021. ESA WorldCover 10 m 2020 v100. <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://doi.org/10.5281/zenodo.5571936">https://doi.org/10.5281/zenodo.5571936</a>
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v100">https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v100</a>
+                </p>
+
+
+                <p class="mt-4">
+                    <span class="font-bold">Elevation:</span>
+                    Elevation has an impact on various environmental factors such as microclimatic conditions, water flow and hydrology, species distribution, soil composition and ecosystem dynamics. This Digital Elevation Model (DEM) provides elevation values for the year 2000.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Minimum, maximum, and mean elevation values within the area under restoration.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 90 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Jarvis, A., H.I. Reuter, A. Nelson, E. Guevara. 2008. Hole-filled SRTM for the globe Version 4, available from the CGIAR-CSI SRTM 90m Database: <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://srtm.csi.cgiar.org">https://srtm.csi.cgiar.org</a>.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4">https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4</a>
+                </p>
+
+
+
+                <p class="mt-4">
+                    <span class="font-bold">Rainfall:</span> Precipitation influences species adaptation, soil health, helps to understand historical droughts or heavy rainfall and to plan for long-term ecosystem stability. Estimates of precipitation are computed from 2015 to 2019.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Mean monthly precipitation of 5 years within the area under restoration
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial</span> resolution: 27830 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://cds.climate.copernicus.eu/cdsapp#!/home">https://cds.climate.copernicus.eu/cdsapp#!/home</a>
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
+                </p>
+
+
+                <p class="mt-4">
+                    <span class="font-bold">Temperature:</span>
+                    Temperature influences the distribution and range of species, growing season and phenology, resilience to climate change, soil health and nutrient cycling and has a direct impact in water availability and evapotranspiration. Estimates of temperature are computed from 2015 to 2019.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Minimum, maximum and mean monthly temperature of 5 years within the area under restoration
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> degree Celsius (°C)
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 27830 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://cds.climate.copernicus.eu/cdsapp#!/home">https://cds.climate.copernicus.eu/cdsapp#!/home</a>
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
                 </p>
             </div>
         </template>
         <template #default>
             <div v-if="store.projectAreas?.length"
-                 class="text-sm text-gray-800 dark:text-zinc-300 flex flex-col gap-y-4">
+                 class="text-sm text-gray-800 dark:text-zinc-300 flex flex-col gap-y-4 mt-6">
                 <div v-for="area, i in store.projectAreas"
                      class="border-2 border-gray-300 dark:border-gray-500 px-3 py-2 rounded-lg">
                     <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2">
-                        Area {{ i + 1}}<span class="text-black dark:text-gray-100"
+                        Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
                               v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}</span>
                     </div>
 
-                    <div class="grid grid-cols-4 gap-x-4 gap-y-3">
+                    <div class="grid grid-cols-4 gap-x-4 gap-y-4">
                         <template v-for="stats in statistics">
                             <div class="font-bold">{{ stats.label }}</div>
                             <div v-if="area[Object.keys(area)[0]].characteristics && area[Object.keys(area)[0]].characteristics[stats.dbId]"
@@ -203,7 +387,7 @@ function fetchIndicators(area: any) {
                         </template>
                     </div>
                     <div class="w-full flex place-content-end"
-                         v-if="['upload', 'draw', 'uploadKml'].includes(Object.keys(area)[0])">
+                         v-if="edit && ['upload', 'draw', 'uploadKml'].includes(Object.keys(area)[0])">
                         <button type="button"
                                 class="inline-flex items-center rounded border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 @click="fetchIndicators(area)">Get values</button>

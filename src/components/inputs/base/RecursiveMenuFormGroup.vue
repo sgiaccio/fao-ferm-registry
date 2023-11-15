@@ -16,7 +16,7 @@ defineProps({
         modelValue: { type: Array as PropType<MenuValue[]> },
         showSelection: { type: Boolean, default: true },
         searchable: { type: Boolean, default: true },
-        expandable: { type: Boolean, default: true }
+        // expandable: { type: Boolean, default: true }
     }
 });
 
@@ -37,8 +37,7 @@ function valueChanged(value: string) {
                        :model-value="modelValue"
                        :showSelection="showSelection"
                        @update:modelValue="valueChanged"
-                       :searchable="searchable"
-                       :expandable="expandable" />
+                       :searchable="searchable" />
         <template v-slot:info
                   v-if="$slots.info">
             <slot name="info" />

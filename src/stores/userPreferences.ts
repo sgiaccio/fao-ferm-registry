@@ -56,7 +56,7 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
             }
         } catch (error) {
             // Document does not exist - it will be created when the user completes the registration form
-            console.log(error.code);
+            console.error(error.code);
         }
 
         // this.bpDisclaimerAccepted querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));

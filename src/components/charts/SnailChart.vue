@@ -8,10 +8,12 @@ const props = withDefaults(defineProps<{
     labels: string[];
     targetValue: number;
     unit?: string;
-    size?: number
+    size?: number,
+    notAchievedLabel?: string,
 }>(), {
     unit: '',
-    size: 100
+    size: 100,
+    notAchievedLabel: 'Not achieved',
 });
 
 const chart = ref(null);
@@ -56,7 +58,7 @@ onMounted(() => {
 
     if (totalArea < props.targetValue) {
         _values.push(props.targetValue - totalArea);
-        _labels.value.push('Not achieved');
+        _labels.value.push(props.notAchievedLabel);
         _colors.value.push('#aaa');
     }
 
@@ -71,7 +73,12 @@ onMounted(() => {
         .innerRadius(d => d[1])
         .outerRadius(d => d[1] + lineWidth);
 
-    const increment = (2 * Math.PI) / props.targetValue;
+    let increment = (2 * Math.PI) / props.targetValue;
+    let decreaseIncrement = false
+    if (increment > 0.1) {
+        increment /= 50;
+        decreaseIncrement = true
+    }
 
     const predictedRadius = 2 * (spiralInnerRadius + (isDisc ? 0 : (totalAngle / (2 * Math.PI) * spiralPitch)) + lineWidth);
 
@@ -103,9 +110,17 @@ onMounted(() => {
 
         // Generate data for the spiral as before
         for (let i = 0; i < value; i++) {
-            currentAngle += increment;
-            const radius = spiralInnerRadius + (isDisc ? 0 : (currentAngle / (2 * Math.PI) * spiralPitch));
-            spiralData.push([currentAngle, radius]);
+            if (decreaseIncrement) {
+                for (let j = 0; j < 50; j++) {
+                    currentAngle += increment;
+                    const radius = spiralInnerRadius + (isDisc ? 0 : (currentAngle / (2 * Math.PI) * spiralPitch));
+                    spiralData.push([currentAngle, radius]);
+                }
+            } else {
+                currentAngle += increment;
+                const radius = spiralInnerRadius + (isDisc ? 0 : (currentAngle / (2 * Math.PI) * spiralPitch));
+                spiralData.push([currentAngle, radius]);
+            }
         }
 
         // If it's not the last segment, extend the current segment slightly
@@ -165,7 +180,7 @@ onMounted(() => {
                  class="flex items-center space-x-2">
                 <span class="w-5 h-5 rounded-full shadow flex-none"
                       :style="{ backgroundColor: _colors[index] }"></span>
-                <span class="break-words">{{ label }}</span>
+                <span class="break-words">{{ label }}: {{ _values[index] }} {{ props.unit }}</span>
             </div>
         </div>
     </div>

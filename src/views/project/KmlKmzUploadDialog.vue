@@ -82,7 +82,7 @@ async function uploadFile() {
             alert(`Files uploaded with UUIDs ${uuidsArr}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
         }).catch(e => {
             alert('Error uploading the file: ' + e.message);
-            console.log(e);
+            console.error(e);
             uploadStatus.value = 'idle';
         });
 }

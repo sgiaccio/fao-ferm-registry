@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, provide } from 'vue';
 
 import { TrashIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 
@@ -18,7 +18,7 @@ import FormGroup from '@/components/inputs/FormGroup.vue';
 import NumberInput from '@/components/inputs/base/NumberInput.vue';
 // import AreaFormGroup from '@/components/inputs/AreaFormGroup.vue';
 import SelectInput from '@/components/inputs/base/SelectInput.vue';
-import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
+// import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
@@ -40,24 +40,40 @@ const multiInputComponents = {
     adminArea: {
         component: AdminArea,
         newData: {},
-        addItemLabel: 'Add admin area'
+        addItemLabel: 'Add admin area',
+        calculatedProps: [
+            { key: 'index', f: (area: any, i: number) => i },
+            { key: 'nAreas', f: (areas: any) => areas.length }
+        ],
     },
     draw: {
         component: MapInput,
         newData: {},
-        addItemLabel: 'Draw polygon'
+        addItemLabel: 'Draw polygon',
+        calculatedProps: [
+            { key: 'index', f: (area: any, i: number) => i },
+            { key: 'nAreas', f: (areas: any) => areas.length }
+        ],
     },
     upload: {
         component: MapUpload,
         newData: {},
         addItemLabel: 'Upload shapefile',
-        addDialog: ShapefileUploadDialog
+        addDialog: ShapefileUploadDialog,
+        calculatedProps: [
+            { key: 'index', f: (area: any, i: number) => i },
+            { key: 'nAreas', f: (areas: any) => areas.length }
+        ],
     },
     uploadKml: {
         component: MapUpload,
         newData: {},
-        addItemLabel: 'Upload KML/KMZ/geojson',
-        addDialog: KmlKmzUploadDialog
+        addItemLabel: 'Upload KML/KMZ/GeoJSON',
+        addDialog: KmlKmzUploadDialog,
+        calculatedProps: [
+            { key: 'index', f: (area: any, i: number) => i },
+            { key: 'nAreas', f: (areas: any) => areas.length }
+        ],
     }
 };
 
@@ -110,6 +126,29 @@ function addCountry(event: Event) {
         newCountry.value = '';
     }
 }
+
+function getAreaType(area: any) {
+    return Object.keys(area)[0];
+}
+function getAreaValue(area: any) {
+    return area[getAreaType(area)];
+}
+
+provide('applyToAll', () => {
+    if (!confirm('Are you sure you want to apply this ecosystem to all areas? Your current selections will be overwritten.')) return;
+
+    const ecosystems = getAreaValue(store.projectAreas[0]).ecosystems;
+    if (!ecosystems?.length) {
+        alert('Please select ecosystems for the first area first.');
+        return;
+    }
+    store.projectAreas.forEach((area, i) => {
+        const type = getAreaType(area);
+        if (i > 0) {
+            area[type].ecosystems = [...ecosystems];
+        }
+    });
+});
 </script>
 
 <template>
@@ -139,6 +178,18 @@ function addCountry(event: Event) {
                     Draw directly on the platform
                 </li>
             </ul>
+            <p class="pt-4">
+                It is crucial to identify the ecosystems that your initiative is restoring. If spatially explicit
+                information of an area is provided and represents the entirety of the area under restoration (i.e.
+                polygons of the areas are provided), the ecosystems can be calculated based on a map overlay. If only
+                tabular data of an area is provided, we kindly ask you to select the corresponding ecosystems using
+                biomes of the IUCN Global Ecosystem Typology 2.0 (Keith et al., 2022).
+            </p>
+            <p class="pt-4">
+                There are different ecosystem classifications. The IUCN Global Ecosystem Typology 2.0 is the outcome of
+                critical review and input by an extensive international network of ecosystem scientists, containing
+                profiles for 25 biomes and 108 ecosystem functional groups.
+            </p>
         </template>
         <template #default>
             <FormGroup label="Committed area to restore">
@@ -191,17 +242,20 @@ function addCountry(event: Event) {
                 </template>
             </FormGroup>
             <div class="py-6">
+                <div v-if="edit || store.project.project.countries?.length > 0"
+                     class="text-sm italic text-gray-700 mb-1.5">Countries are automatically set based on your uploaded polygons and selected admin areas. You can also edit them manually.</div>
 
-                <div class="flex gap-x-2 mb-4" v-if="store.project.project.countries && store.project.project.countries.length">
-                    <div class="border rounded-md px-2 py-1 flex flex-row gap-x-1"
-                         v-for="area, i in store.project.project.countries.map(getIso2Name)">
+                <div class="flex gap-x-2 mb-4">
+                    <div class="border rounded-md px-2 py-1 flex flex-row gap-x-1 items-center"
+                         v-for="area, i in (store.project.project.countries || []).map(getIso2Name)">
                         <div>{{ area }}</div>
                         <XCircleIcon v-if="edit"
-                                     class="self-center h-4 w-4 text-gray-400 hover:text-gray-500 cursor-pointer"
+                                     class="self-center h-5 w-5 text-gray-400 hover:text-gray-500 cursor-pointer"
                                      aria-hidden="true"
                                      @click="() => deleteCountry(i)" />
                     </div>
                     <select v-model="newCountry"
+                            v-if="edit"
                             @change="addCountry"
                             class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         <option value="">Add country</option>
@@ -211,6 +265,7 @@ function addCountry(event: Event) {
                         </option>
                     </select>
                 </div>
+
 
                 <MultiInput :edit="edit"
                             :numbering="(n, v) => numbering(n, v)"

@@ -272,45 +272,6 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                 </template>
             </TextareaFormGroup>
 
-            <RecursiveMenuFormGroup :edit="edit"
-                                    v-model="store.project.project.restorationTypes"
-                                    :label="store.project.reportingLine === 'GEF' ? 'Intervention/restoration types' : 'Restoration types'"
-                                    :options="menus.restorationTypes"
-                                    :searchable="false"
-                                    :showSelection="false"
-                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
-                <template v-slot:info>
-                    The possible values are ecological restoration and rehabilitation. This can be determined by analyzing the current and target ecosystem (natural or transformed). Examples of transformed ecosystems are: farmlands, forest plantation, urban ecosystems. As a useful rule of thumb, if the target ecosystem is natural, the restoration will be ecological restoration. If the target ecosystem is transformed, the restoration will be rehabilitation.
-                    <span class="font-bold"
-                          v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span>
-                </template>
-            </RecursiveMenuFormGroup>
-            <RecursiveMenuFormGroup :edit="edit"
-                                    v-model="store.project.project.tenureStatuses"
-                                    label="Tenure statuses"
-                                    :options="menus.tenureStatuses"
-                                    :searchable="false"
-                                    :showSelection="false"
-                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
-                <template v-slot:info>
-                    <p>
-                        It is the legal status of the area under restoration. Information on tenure status should include documentation of Free and Prior Consent (FPIC) to ensure that people's rights are respected in the process of restoration and adherence to the UN Decade principles (FAO, IUCN CEM & SER, 2021) as well as the Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) (FAO, 2022).
-                        <span class="font-bold"
-                              v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3.</span>
-                    </p>
-                    <p class="pt-4">
-                        References:
-                        <br>
-                        FAO. 2022. Voluntary Guidelines on the Responsible Governance of Tenure of Land, Fisheries and Forests in the Context of National Food Security. First revision. Rome. <a href="https://doi.org/10.4060/i2801e"
-                           target="_blank"
-                           class="text-ferm-blue-dark-700 hover:text-ferm-blue-dark-600">https://doi.org/10.4060/i2801e</a>
-                    </p>
-                    <p class="pt-4">
-                        FAO, IUCN CEM & SER. (2021). Principles for ecosystem restoration to guide the United Nations Decade 2021&mdash;2030. Rome, FAO.
-                    </p>
-                </template>
-            </RecursiveMenuFormGroup>
-
             <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                            :edit="edit"
                            v-model="store.project.project.website"
@@ -352,7 +313,6 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                      :options="menus.restorationStatuses"
                                      :showSelection="false"
                                      :searchable="false"
-                                     :expandable="false"
                                      :edit="edit">
                 <template v-slot:info>
                     <p>Provides an indication of whether the restoration area can be counted towards a reporting period. Restoration status is broken down into four components and an area specifies one of the components to represent its status. Each restoration status is characterized by a temporal component, which includes the start year of the restoration activities and end year, if applicable.
@@ -386,6 +346,54 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                     </p>
                 </template>
             </RecursiveRadioFormGroup>
+            <RecursiveMenuFormGroup :edit="edit"
+                                    v-model="store.project.project.restorationTypes"
+                                    :label="store.project.reportingLine === 'GEF' ? 'Intervention/restoration types' : 'Restoration types'"
+                                    :options="menus.restorationTypes"
+                                    :searchable="false"
+                                    :showSelection="false"
+                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
+                <template v-slot:info>
+                    The possible values are ecological restoration and rehabilitation. This can be determined by analyzing the current and target ecosystem (natural or transformed). Examples of transformed ecosystems are: farmlands, forest plantation, urban ecosystems. As a useful rule of thumb, if the target ecosystem is natural, the restoration will be ecological restoration. If the target ecosystem is transformed, the restoration will be rehabilitation.
+                    <span class="font-bold"
+                          v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span>
+                </template>
+            </RecursiveMenuFormGroup>
+
+            <RecursiveMenuFormGroup :edit="edit"
+                                    v-model="store.project.project.tenureStatuses"
+                                    label="Tenure statuses"
+                                    :options="menus.tenureStatuses"
+                                    :searchable="false"
+                                    :showSelection="false"
+                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
+                <template v-slot:info>
+                    <p>
+                        It is the legal status of the area under restoration. Information on tenure status should include documentation of Free and Prior Consent (FPIC) to ensure that people's rights are respected in the process of restoration and adherence to the UN Decade principles (FAO, IUCN CEM & SER, 2021) as well as the Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) (FAO, 2022).
+                        <span class="font-bold"
+                              v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3.</span>
+                    </p>
+                    <p class="pt-4">
+                        References:
+                        <br>
+                        FAO. 2022. Voluntary Guidelines on the Responsible Governance of Tenure of Land, Fisheries and Forests in the Context of National Food Security. First revision. Rome. <a href="https://doi.org/10.4060/i2801e"
+                           target="_blank"
+                           class="text-ferm-blue-dark-700 hover:text-ferm-blue-dark-600">https://doi.org/10.4060/i2801e</a>
+                    </p>
+                    <p class="pt-4">
+                        FAO, IUCN CEM & SER. (2021). Principles for ecosystem restoration to guide the United Nations Decade 2021&mdash;2030. Rome, FAO.
+                    </p>
+                </template>
+            </RecursiveMenuFormGroup>
+
+            <RecursiveMenuFormGroup :edit="edit"
+                                    v-model="store.project.contributionToSdg"
+                                    label="Contribution to SDG goals"
+                                    :options="menus.contributionToSdg"
+                                    :searchable="false"
+                                    :showSelection="false"
+                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700" />
+
             <FileUploadFormGroup2 :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'"
                                   :folder="`${store.id!}/documents`"
                                   :multiple="false"

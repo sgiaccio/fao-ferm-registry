@@ -160,38 +160,33 @@ function removeIndicator(area: any, indicator: GoalIndicator) {
             </template>
             <template v-else>
                 <p>
-                    Indicators and their corresponding metrics are the way to track the progress of restoration efforts. This list of indicators has been elaborated by FAO and WRI in the publication: "The Road to Restoration" (FAO and WRI, 2019) also available through the AURORA tool (<a target="_blank"
+                    The progress of restoration efforts can be tracked using indicators and their corresponding metrics. Initiative-level indicators for monitoring primarily terrestrial restoration efforts are from the publication: "The Road to Restoration" (FAO and WRI, 2019) also available through the AURORA tool (<a target="_blank"
                        class="text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300"
                        href="https://www.auroramonitoring.org">https://www.auroramonitoring.org</a>).
                 </p>
                 <p class="pt-4">
-                    Measuring progress on restoration focuses on understanding the practitioner’s goals for restoration and they can be categorized into various themes (goal-themes) whether they be community, culture, food & products, water, energy, biodiversity, soil, or climate.
+                    If you do not know or have not yet decided which indicators you will need in your restoration initiative, use the AURORA tool and follow the process. In the future you will be able to import the selected indicators from the AURORA tool into the FERM registry.
                 </p>
                 <p class="pt-4">
-                    Therefore, it is important to identify the overarching goal-theme and specific targets for your restoration effort and select the indicators in the drop-down list within each goal-theme leading to the achievement of those goals and targets.
+                    If you already know the indicators needed to monitor your restoration initiative, please select them from the drop-down list in this section.
                 </p>
                 <p class="pt-4">
-                    The Indicators identified by FAO and WRI in this section correspond to those at the initiative level. However, they contribute globally, and each of these indicators is intricately linked to a specific SDG, emphasizing the interconnectedness of restoration efforts with broader sustainable development objectives.
+                    If the indicator needed to monitor your initiative is not available in this list, please insert your custom indicator by providing a short name for the indicator and the measurement unit.
                 </p>
                 <p class="pt-4">
-                    In addition, FAO and UNEP elaborated a list of 20 headline SDG indicators contributing to ecosystem restoration based on a compilation of >5,000 indicators found on international, regional, and national frameworks (FAO and UNEP, 2022).
-
+                    The initiative level indicators contribute to SDGs, emphasizing the interconnectedness of restoration efforts with broader sustainable development objectives (FAO and UNEP, 2022).
                 </p>
                 <p class="pt-4">
                     References:
                 </p>
-                <p class="pt-2">
+                <p class="pt-1">
                     FAO and WRI. 2019. The Road to Restoration: A Guide to Identifying Priorities and Indicators for Monitoring Forest and Landscape Restoration. Rome, Washington, DC.
                 </p>
                 <p class="pt-4">
-                    FAO and UNEP. 2022. Global indicators for monitoring ecosystem restoration – A contribution to the UN Decade on Ecosystem Restoration. Rome, FAO.
-                </p>
-                <p class="pt-4">
-                    <a target="_blank"
+                    FAO and UNEP. 2022. Global indicators for monitoring ecosystem restoration &mdash; A contribution to the UN Decade on Ecosystem Restoration. Rome, FAO. <a target="_blank"
                        class="text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300"
                        href="https://doi.org/10.4060/cb9982en">https://doi.org/10.4060/cb9982en</a>
                 </p>
-
             </template>
         </template>
         <template #default>

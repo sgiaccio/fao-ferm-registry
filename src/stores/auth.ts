@@ -258,7 +258,7 @@ export const useAuthStore = defineStore({
                 await signUp({ email, fullName });
                 window.localStorage.setItem('emailForSignIn', email);
             } catch (error: any) {
-                console.log(error.details?.code);
+                console.error(error.details?.code);
                 throw error.details?.code ? Error(error.details.code, { cause: error }) : error;
             }
         }

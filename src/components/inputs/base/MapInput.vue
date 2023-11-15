@@ -21,6 +21,8 @@ import { useMenusStore } from '@/stores/menus';
 import FormGroup from '../FormGroup.vue';
 import TextInput from './TextInput.vue';
 
+import AreaEcosystemsView from '@/views/project/AreaEcosystemsView.vue';
+
 import { CalculatorIcon } from '@heroicons/vue/20/solid';
 import NumberInput from '@/components/inputs/base/NumberInput.vue';
 
@@ -36,6 +38,8 @@ const props = withDefaults(defineProps<{
         ecosystems: string[],
     }
     edit?: boolean
+    index: number,
+    nAreas: number
 }>(), {
     edit: true
 });
@@ -247,4 +251,8 @@ function fetchPolygonArea() {
             :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-default']"
             @click="postGeoJson()">Upload
     </button>
+    <AreaEcosystemsView :edit="edit"
+                        :area="modelValue"
+                        :index="index"
+                        :nAreas="nAreas" />
 </template>

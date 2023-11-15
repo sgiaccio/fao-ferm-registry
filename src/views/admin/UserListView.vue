@@ -57,7 +57,7 @@ onMounted(async () => {
             allGroups.value = Object.fromEntries(Object.entries(groups).filter(([gid]) => groupsWhereAdmin.includes(gid)));
         }
     } catch (e) {
-        console.log(e);
+        console.error(e);
         alert("Error getting users and groups");
     }
 });
@@ -134,7 +134,7 @@ function save() {
             alert("User privileges saved");
         }).catch(e => {
             alert('Error saving user privileges: ' + e.message);
-            console.log(e);
+            console.error(e);
         }).finally(() => showEditDialog.value = false);
     } else {
         const addMessage = httpsCallable(functions, 'setUserPrivilegesGroupAdmin');
@@ -145,7 +145,7 @@ function save() {
             alert("User privileges saved");
         }).catch(e => {
             alert('Error saving user privileges: ' + e.message);
-            console.log(e);
+            console.error(e);
         }).finally(() => showEditDialog.value = false);
     }
 }
@@ -161,7 +161,7 @@ function createUser() {
         alert("User created");
     }).catch(e => {
         alert('Error creating user: ' + e.message);
-        console.log(e);
+        console.error(e);
     }).finally(() => userToAdd.value = null);
 }
 

@@ -29,7 +29,7 @@ export async function uploadFiles(path: string, files: File[], onProgress: (prog
                     lastBytesTransferred[file.name] = snapshot.bytesTransferred;
 
                     const progress = (totalBytesTransferred / totalBytes) * 100;
-                    console.log("Overall upload is " + progress + "% done");
+                    // console.log("Overall upload is " + progress + "% done");
                     onProgress(progress);
                 },
                 (error) => {
@@ -39,7 +39,7 @@ export async function uploadFiles(path: string, files: File[], onProgress: (prog
                 },
                 () => {
                     // Handle successful uploads on complete
-                    console.log("Upload successful");
+                    // console.log("Upload successful");
                     resolve();
                 }
             );

@@ -135,7 +135,7 @@ async function uploadFile() {
             alert(`${uuidsArr.length} files uploaded. Please remember to click "Save and close" otherwise the data will be lost.`);
         }).catch(e => {
             alert('Error uploading the Shapefile: ' + e.message);
-            console.log(e);
+            console.error(e);
             uploadStatus.value = 'idle';
         });
 }

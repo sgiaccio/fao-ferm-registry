@@ -323,7 +323,7 @@ export const useProjectStore = defineStore({
                 createTime: serverTimestamp(),
                 updateTime: serverTimestamp()
             });
-            console.log("Document written with ID: ", projectRef);
+            // console.log("Document written with ID: ", projectRef);
 
             await this.fetchProject(projectRef.id);
         },
@@ -388,7 +388,7 @@ export const useProjectStore = defineStore({
                     .map((a: any) => +((getValue(a) as { area: number }).area || 0));
                 return areas.reduce((a: number, b: number) => a + b, 0);
             } catch (e) {
-                console.log('Error calculating polygons area', e);
+                console.error('Error calculating polygons area', e);
                 return NaN;
             }
         },
@@ -417,29 +417,26 @@ export const useProjectStore = defineStore({
         async getCountriesIso2Codes() {
             if (!this.projectAreas || this.projectAreas.length === 0) return new Set();
 
-            console.log(this.projectAreas);
             const uuids = this.projectAreas.map(a => Object.values(a)).map(v => v[0].uuid).filter(uuid => uuid)
-            console.log(uuids);
-            const intersectingCountries = uuids ? await getIntersectingCountries(uuids) : new Set();
-            console.log('intersectingCountries', intersectingCountries);
+            const intersectingCountries = uuids && uuids.length ? await getIntersectingCountries(uuids) : new Set();
 
             // also merge the countries from the admin areas
             const adminAreasIsoCodes = new Set(this.projectAreas.map(a => Object.values(a)).map(v => +v[0].admin0).filter(a0 => a0).map(gaul2iso).filter(iso => iso));
-            console.log('adminAreasIsoCodes', adminAreasIsoCodes);
 
             return new Set([...intersectingCountries, ...adminAreasIsoCodes]);
         },
         async updateCountries() {
+            alert('Please wait while the list of countries is updated. This may take a few seconds.');
             try {
                 this.getCountriesIso2Codes().then(intersectingCountries => {
                     const oldCountries = new Set(this.project.project.countries);
                     if (!setsContainSameValues(oldCountries, intersectingCountries)) {
-                        alert('The list of intersecting countries has changed. Please review the list of countries in the general tab before saving.');
+                        alert('The list of countries has changed. Please review it in the Areas & Ecosystems tab before saving.');
                         this.project.project.countries = [...intersectingCountries];
                     }
                 });
             } catch (e) {
-                alert('Error getting the new list of countries');
+                alert('Error getting the new new list of countries');
             }
         }
     }

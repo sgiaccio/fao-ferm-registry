@@ -123,7 +123,7 @@ watch(() => props.modelValue, (newValue, oldValue) => {
 </script>
 
 <template>
-    <div v-if="!level && showSelection"
+    <div v-if="!level && showSelection || !edit"
          id="selection_overview">
         <div class="border border-slate-400 shadow-sm rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
             <div class="ml-2 text-gray-600 dark:text-gray-400"

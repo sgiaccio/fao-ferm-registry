@@ -293,7 +293,7 @@ function handleLeave(el, done) {
 }
 
 function handleAfterLeave(el) {
-    console.log("After leave:", el);
+    // console.log("After leave:", el);
     // No need to check opacity as the element should be gone
 }
 

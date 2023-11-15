@@ -6,7 +6,6 @@ import { useMenusStore } from '@/stores/menus';
 
 import TabTemplate from '../TabTemplate.vue';
 import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
-import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
 import TextInput from '@/components/inputs/base/TextInput.vue';
 import { ref } from 'vue';
 

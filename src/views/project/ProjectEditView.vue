@@ -94,14 +94,14 @@ watch(projectAreas, (projectAreas, oldProjectAreas) => {
         </div>
     </div>
 
-    <!-- <router-view v-if="store.loaded"
-                 :edit="true" /> -->
-    <router-view v-slot="{ Component }" v-if="store.loaded">
+    <router-view v-if="store.loaded"
+                 :edit="true" />
+    <!-- <router-view v-slot="{ Component }" v-if="store.loaded">
         <keep-alive>
             <component :is="Component"
                        :key="$route.fullPath"></component>
         </keep-alive>
-    </router-view>
+    </router-view> -->
 
     <!-- buttons -->
     <div class="w-full pb-8 flex gap-x-6">

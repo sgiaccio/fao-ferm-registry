@@ -37,6 +37,8 @@ const areaForGefIndicator3 = areaByGefIndicator.reduce((total, [indicator, area]
 
 const chartValues = areaByGefIndicator.map(([_, value]) => value);
 const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel(label, menus.gefIndicators));
+
+
 </script>
 
 
@@ -47,8 +49,19 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
         </template> -->
         <template #default>
             <div v-if="store.project.reportingLine !== 'GEF'"
-                 class="font-semibold text-3xl text-center">
-                Under development
+                 class="flex flex-col gap-6">
+                <div v-if="store.project.project.targetArea && store.project.project.areaUnderRestoration"
+                     class="shadow-lg rounded px-4 py-3 text-base border">
+                    <SnailChart :values="[store.project.project.areaUnderRestoration]"
+                                :labels="['Area under restoration']"
+                                :unit="store.project.project.areaUnits"
+                                :targetValue="store.project.project.targetArea"
+                                not-achieved-label="Area committed not under restoration" />
+                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has achieved {{ roundToPrecisionAsString(store.project.project.areaUnderRestoration / store.project.project.targetArea * 100) }}% of your total committed land ({{ store.project.project.targetArea }} {{ store.project.project.areaUnits || ''}}).</p>
+                </div>
+                <div v-else class="pt-6 font-bold text-xl">
+                    Committed area to restore or Total area under restoration not selected in the Area & Ecosystems tab.
+                </div>
             </div>
             <div v-else-if="chartValues.length > 0 && getLastTargetArea()"
                  class="flex flex-col gap-6">

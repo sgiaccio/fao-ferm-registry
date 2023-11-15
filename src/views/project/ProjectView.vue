@@ -18,8 +18,8 @@ onBeforeRouteLeave((_to, _from) => {
 
 const tabs = [
     { name: 'General', path: 'general' },
-    { name: 'Area', path: 'area' },
-    { name: 'Ecosystems', path: 'ecosystems' },
+    { name: 'Area & Ecosystems', path: 'area' },
+    // { name: 'Ecosystems', path: 'ecosystems' },
     { name: 'Characteristics', path: 'characteristics' },
     { name: 'Activities', path: 'activities' },
     { name: 'Indicators', path: 'indicators' },
@@ -71,9 +71,9 @@ function gotoPreviousTab() {
                 </div>
                 <div class="hidden sm:block">
                     <div class="border-b border-gray-200">
-                        <nav class="-mb-px grid auto-cols-auto grid-cols-8 dark:text-white text-sm tracking-tight font-akrobat font-semibold"
+                        <nav class="-mb-px grid auto-cols-auto grid-cols-7 dark:text-white text-sm tracking-tight font-akrobat font-semibold"
                              aria-label="Tabs">
-                            <div class="bg-yellow-100 dark:bg-yellow-900 col-span-4 text-center py-2">Planning & Assessment</div>
+                            <div class="bg-yellow-100 dark:bg-yellow-900 col-span-3 text-center py-2">Planning & Assessment</div>
                             <div class="bg-green-100 dark:bg-green-900 col-span-1 text-center py-2">Implementation</div>
                             <div class="bg-blue-100 dark:bg-blue-900 col-span-3 text-center py-2">Monitoring & Reporting</div>
 

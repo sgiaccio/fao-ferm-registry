@@ -19,14 +19,14 @@ const props = withDefaults(defineProps<{
     deleteConfirmMessage?: string,
     modelValue?: any,
     inputComponents?: any,
-    numbering?: () => string,
+    numbering?: (n: number, v: any) => string,
     deleteConfirmMsg?: string,
     required?: boolean,
-    edit?: boolean
+    edit?: boolean,
 }>(), {
     deleteConfirmMessage: "Are you sure you want to delete this item?",
     required: false,
-    edit: true
+    edit: true,
 });
 
 
@@ -47,7 +47,7 @@ function getKey(obj: any) {
     if (kyz.length === 1) {
         return kyz[0];
     } else {
-       throw Error(`One and only one key is allowed - found ${kyz.length}`);
+        throw Error(`One and only one key is allowed - found ${kyz.length}`);
     }
 }
 
@@ -97,38 +97,46 @@ const errorMessages = computed(() => {
 
 <template>
     <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 dark:border-stone-700 dark:divide-stone-700 bg-white dark:bg-stone-800">
-        <component
-            v-for="([k, d]) in dialogs" class="p-3"
-            :is="d.addDialog"
-            :open="openedDialog === k"
-            @cancel="openedDialog = null"
-            @done="(newData: any) => addItemFromDialog(k, newData)" />
-        <div v-for="(v, i) in modelValue" class="p-3">
-            <div class="text-gray-400 dark:text-gray-100 text-lg font-bold" v-if="numbering">{{numbering(i, v)}}</div>
-            <component
+        <component v-for="([k, d]) in dialogs"
+                   class="p-3"
+                   :is="d.addDialog"
+                   :open="openedDialog === k"
+                   @cancel="openedDialog = null"
+                   @done="(newData: any) => addItemFromDialog(k, newData)" />
+        <div v-for="(v, i) in modelValue"
+             class="p-3">
+
+            <div class="text-gray-400 dark:text-gray-100 text-lg font-bold"
+                 v-if="numbering">{{ numbering(i, v) }}</div>
+            <component :key="v"
+                       :is="inputComponents[getKey(v)].component"
+                       v-bind="{ ...inputComponents[getKey(v)].props, edit, ...((inputComponents[getKey(v)].calculatedProps || []).reduce((acc: any[], prop: any) => ({ ...acc, [prop.key]: prop.f(modelValue, i) }), {})) }"
+                       v-model="v[getKey(v)]" />
+            <!-- <component
                 :key="v"
                 :is="inputComponents[getKey(v)].component"
                 v-bind="{ ...inputComponents[getKey(v)].props, edit }"
-                v-model="v[getKey(v)]" />
-            <div
-                v-if="edit" 
-                class="w-full text-orange-600 text-right hover:text-orange-500">
-                <button
-                    type="button"
-                    @click="deleteItem(i)">
+                v-model="v[getKey(v)]" /> -->
+            <div v-if="edit"
+                 class="w-full text-orange-600 text-right hover:text-orange-500">
+                <button type="button"
+                        @click="deleteItem(i)">
                     <TrashIcon class="h-5 w-5" />
                 </button>
             </div>
         </div>
-        <div v-if="edit" class="flex p-3 gap-x-3">
-            <button
-                v-for="(componentDef, key) in props.inputComponents"
-                type="button"
-                @click="addButtonPushed('' + key)"
-                class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                {{componentDef.addItemLabel}}
+        <div v-if="edit"
+             class="flex p-3 gap-x-3">
+            <button v-for="(componentDef, key) in props.inputComponents"
+                    type="button"
+                    @click="addButtonPushed('' + key)"
+                    class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                {{ componentDef.addItemLabel }}
             </button>
         </div>
     </div>
-    <p v-if="errorMessages.length" v-for="message in errorMessages" class="mt-2 text-sm text-red-600" id="email-error">{{message}}</p>
+    <p v-if="errorMessages.length"
+       v-for="message in errorMessages"
+       class="mt-2 text-sm text-red-600"
+       id="email-error">{{ message }}</p>
 </template>
