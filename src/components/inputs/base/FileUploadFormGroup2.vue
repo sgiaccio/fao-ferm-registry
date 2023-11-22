@@ -14,8 +14,10 @@ const progress = ref(0);
 const props = defineProps({
     ...baseProps,
     ...{
-        folder: { type: String, required: true },
+        projectId: { type: String, required: true },
+        folder: { type: String, required: false },
         multiple: { type: Boolean, default: true },
+        accessToken: { type: String, required: true },
     }
 });
 
@@ -23,7 +25,7 @@ const uploadedFiles = ref<{ name: string, path: string }[]>([]);
 
 async function getUploadedFiles() {
     try {
-        uploadedFiles.value = await listFiles(props.folder);
+        uploadedFiles.value = await listFiles(props.projectId, props.folder, props.accessToken);
     } catch (error) {
         console.error(error);
         alert('Failed to load files: ' + error);
@@ -34,22 +36,33 @@ onMounted(async () => {
     await getUploadedFiles();
 });
 
-function upload(files: FileList) {
-    uploadFiles(props.folder, Array.from(files), (uploadProgress) => {
-        progress.value = uploadProgress;
-    }).then(async () => {
-        console.log('Upload complete');
-        progress.value = 0;
+// function upload(files: FileList) {
+//     uploadFiles(props.folder, Array.from(files), (uploadProgress) => {
+//         progress.value = uploadProgress;
+//     }).then(async () => {
+//         console.log('Upload complete');
+//         progress.value = 0;
+//         await getUploadedFiles();
+//     }).catch((error) => {
+//         console.error('Upload failed:', error);
+//         alert('Upload failed: ' + error);
+//     });
+// }
+
+async function upload(files: FileList) {
+    try {
+        // export async function uploadFiles(projectId: string, filePath: string, files: File[], accessToken: string) {
+        await uploadFiles(props.projectId, props.folder, Array.from(files), props.accessToken);
         await getUploadedFiles();
-    }).catch((error) => {
+} catch (error) {
         console.error('Upload failed:', error);
         alert('Upload failed: ' + error);
-    });
+    }
 }
 
 async function download(path: string, name: string) {
     try {
-        const blob = await getFileAsBlob(path);
+        const blob = await getFileAsBlob(props.projectId, path, props.accessToken);
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement('a');
@@ -112,7 +125,7 @@ async function deleteFromStorage(name: string, path: string) {
     if (!props.edit) return;
     if (confirm(`Are you sure you want to delete ${name}?`)) {
         try {
-            await deleteFile(path);
+            await deleteFile(props.projectId, path, props.accessToken);
             await getUploadedFiles();
         } catch (error) {
             alert('Failed to delete file: ' + error);

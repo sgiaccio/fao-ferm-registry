@@ -5,6 +5,7 @@ import { ref as vueRef, watch, computed } from 'vue';
 
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
+import { useAuthStore } from '@/stores/auth';
 
 import TabTemplate from '../TabTemplate.vue';
 
@@ -57,6 +58,7 @@ const pointsOfContact = {
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
+const authStore = useAuthStore();
 
 // const selectedFile = vueRef<File | null>(null);
 // const uploadStatus = vueRef<'idle' | 'uploading' | 'uploaded'>('idle');
@@ -395,10 +397,12 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                     class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700" />
 
             <FileUploadFormGroup2 :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'"
-                                  :folder="`${store.id!}/documents`"
+                                  :projectId="store.id!"
+                                  folder="documents"
                                   :multiple="false"
                                   class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
-                                  :edit="edit">
+                                  :edit="edit"
+                                  :accessToken="authStore!.user!.accessToken">
             </FileUploadFormGroup2>
             <!-- <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                        :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">

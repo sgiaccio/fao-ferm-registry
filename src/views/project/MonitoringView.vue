@@ -45,7 +45,7 @@ function removeIndicator(monitoring, i: number) {
 <template>
     <TabTemplate title="Monitoring">
         <template #description>
-            Monitoring is the most important aspect in quantifying the progress of restoration in your area. To facilitate the monitoring, this section allows you to input the metric values corresponding to your chosen indicators on an annual basis. This process can be executed for each of the constituent areas of your restoration initiative.
+            With robust monitoring, it is possible to track restoration actions, determine their effectiveness, and adopt adaptive management practices to improve the outcomes of the restoration. To facilitate the monitoring, this section allows you to input the metric values corresponding to your chosen indicators on an annual basis. This process can be executed for each of the areas of your restoration initiative.
         </template>
         <template #default>
             <div v-if="store.projectAreas?.length"

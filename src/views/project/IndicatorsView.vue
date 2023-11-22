@@ -124,8 +124,6 @@ function removeIndicator(area: any, indicator: GoalIndicator) {
         }
     });
 
-    console.log(toBeRemoved);
-
     // check that there are no monitoring years
     if (toBeRemoved?.monitoring?.length) {
         alert('Please remove all monitoring years before removing the indicator.');

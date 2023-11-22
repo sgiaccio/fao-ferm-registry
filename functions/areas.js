@@ -2,7 +2,7 @@ const functions = require("firebase-functions");
 const { Pool } = require("pg");
 const axios = require("axios");
 
-const { areasCollection } = require("./util");
+// const { areasCollection, registryCollection } = require("./util");
 const { defineString } = require("firebase-functions/params");
 
 const { gaul2iso } = require("./gaul2iso");
@@ -80,7 +80,7 @@ async function fetchPolygonFromDatabase(client, uuid) {
 
 async function fetchPolygonsFromDatabase(client, uuids) {
     if (!uuids || !uuids.length || !uuids.every(isValidUuid)) {
-        throw new Error("Invalid UUIDs: ", uuids.map(uuids.join(", ")));
+        throw new Error("Invalid UUIDs: ", uuids.join(", "));
     }
 
     const query = "SELECT ST_AsGeoJSON(ST_Union(geom::geometry)) AS geojson FROM project_areas WHERE area_uuid = ANY($1::uuid[])";
@@ -261,6 +261,7 @@ function isValidUuid(uuid) {
     return uuid && validUUIDPattern.test(uuid);
 }
 
+/*
 // ------------------------------------------------------------
 // DO NOT DEPLOY THIS FUNCTION
 // THIS FUNCTION NEEDS TO BE TESTED BEFORE DEPLOYING
@@ -320,10 +321,149 @@ function isValidUuid(uuid) {
 //             client.release();
 //         }
 //     });
+*/
+
+// This function was meant to be run once to set the project.countries field in the registry collection
+// DO NOT DEPLOY THIS FUNCTION
+// exports.setProjectAreasSecret = functions.runWith({ timeoutSeconds: 540 }).https.onRequest(async (req, res) => {
+//     return;
+//     if (false) {
+//         return;
+//         functions.logger.info("getting list of countries");
+//         const areasSnapshot = await areasCollection.get();
+//         const allAreas = areasSnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+
+//         const client = await getDatabaseClient({
+//             user: dbUser.value(),
+//             host: dbHost.value(),
+//             database: dbDatabase.value(),
+//             password: dbPassword.value()
+//         });
+
+//         let i = 0;
+//         for (const { id, data } of allAreas) {
+//             // if (i++ > 10) continue;
+//             // console.log(Object.values(data.areas || {}))
+//             if (id === 'IcbmtEM4PWQw5mbvUJwm') continue; // this makes the thing crash
+//             // bRweaO6vbmoubzlLjMQD, eDSF9xpF4sHj7aojdgji, eFtOMxINrMYSXcsqtWds, wrlRf4Zkp1MCruQsfjbU also causes an error - check
+//             console.log(' -------------------------------------');
+//             console.log('Processing area ' + id);
+//             const uuids = data.areas.map(a => Object.values(a)).map(v => v[0].uuid).filter(uuid => uuid).filter(isValidUuid)
+//             console.log('uuids', uuids)
+//             const adminIso2Codes = data.areas.map(a => Object.values(a)).map(v => +v[0].admin0).filter(a0 => a0).map(gaul2iso).filter(iso => iso);
+
+//             let uploadedIso2Codes = [];
+//             try {
+//                 if (uuids.length) {
+//                     const polygonsData = await fetchPolygonsFromDatabase(client, uuids);
+//                     // get list of intersecting countries
+//                     const intersectingCountries = await getIntersectingCountriesFromGee(polygonsData);
+//                     // get the list of intersecting countries iso2 codes
+//                     uploadedIso2Codes = intersectingCountries?.length ? intersectingCountries.map(c => gaul2iso(c.code)).filter(c => c) : [];
+//                 }
+//             } catch (error) {
+//                 console.error('Error getting intersecting countries:', error);
+//             }
+
+//             const allIso2Codes = [...new Set([...adminIso2Codes, ...uploadedIso2Codes])];
+//             console.log('uploadedIso2Codes', uploadedIso2Codes);
+//             console.log('adminIso2Codes', adminIso2Codes);
+//             console.log('allIso2Codes', allIso2Codes);
+
+//             // save in registry document
+//             try {
+//                 const docUpdate = {};
+//                 docUpdate['project.countries'] = allIso2Codes;
+//                 await registryCollection.doc(id).update(docUpdate);
+//             } catch (error) {
+//                 console.error('Error updating registry document:', error);
+//             }
+
+//             // const polygonsData = await fetchPolygonsFromDatabase(client, uuids);
+
+//             // if (!polygonsData) {
+//             //     return
+//             // }
+
+//             // const intersectingCountries = await getIntersectingCountriesFromGee(polygonsData);
+
+//             // console.log('intersectingCountries', intersectingCountries);
+//         }
+
+//         client.release();
+//         return res.send({ test: 'test' });
+//     }
+//     else {
+//         return;
+//     }
+//     return;
+// });
 
 
 
+// exports.setProjectAreas_____d3fe = functions
+//     .https
+//     .onRequest(async (_req, _res) => {
+//         return ({ test: 'caz' });
+//         functions.logger.info("getting list of countries");
 
+//         const areasSnapshot = areasCollection.get();
+//         return console.log(areasSnapshot.docs)
+
+//         areasSnapshot.docs.forEach(async doc => {
+//             const data = doc.data();
+//             const uuids = data.map(a => Object.values(a)).map(v => v[0].uuid).filter(uuid => uuid)
+//             const adminAreasIsoCodes = new Set(data.map(a => Object.values(a)).map(v => +v[0].admin0).filter(a0 => a0).map(gaul2iso).filter(iso => iso));
+
+//             console.log('uuids', uuids);
+//             console.log('adminAreasIsoCodes', adminAreasIsoCodes);
+
+//             const polygonsData = await fetchPolygonsFromDatabase(client, uuids);
+
+//             if (!polygonsData) {
+//                 return
+//             }
+
+//             const intersectingCountries = await getIntersectingCountriesFromGee(polygonsData);
+
+//             console.log('intersectingCountries', intersectingCountries);
+//         });
+//         // const areaUuids = areasSnapshot.docs
+//         //     .flatMap(doc => {
+//         //         // Get the 'areas' array from the document's data, or default to an empty array.
+//         //         // const areasArray = 
+//         //         const areas = doc.data().areas;
+//         //         return getUploadedAreasUuids(areas); // Filter out any undefined or invalid UUIDs.
+//         //     });
+
+//         // const client = await getDatabaseClient({
+//         //     user: dbUser.value(),
+//         //     host: dbHost.value(),
+//         //     database: dbDatabase.value(),
+//         //     password: dbPassword.value()
+//         // });
+
+//         // try {
+//         //     // Delete all project_areas records that are not in the areaUuids array
+//         //     const deleteQuery = `
+//         //     DELETE FROM project_areas
+//         //     WHERE area_uuid != ALL($1::uuid[])
+//         //     AND created_at < NOW() - INTERVAL '14 days';`;
+//         //     const deleteResult = await client.query(deleteQuery, [areaUuids]);
+
+//         //     const deletedRowCount = deleteResult.rowCount;
+//         //     if (deletedRowCount === 0) {
+//         //         functions.logger.info("No areas to delete from postgres db.");
+//         //     } else {
+//         //         functions.logger.info(`Deleted ${deletedRowCount} areas from postgres db.`);
+//         //     }
+//         // } catch (error) {
+//         //     functions.logger.error("Error deleting areas from postgres:", error);
+//         //     throw new Error("Error deleting areas from postgres: " + error.message);
+//         // } finally {
+//         //     client.release();
+//         // }
+//     });
 
 
 

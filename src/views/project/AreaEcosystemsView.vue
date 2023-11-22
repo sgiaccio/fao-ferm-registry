@@ -123,12 +123,12 @@ async function getAreaBiomeStats() {
     // Stop watching, the watcher is only supposed to watch when it's the user that changes the ecosystems
     unwatcher();
 
-    const areaValue = props;
+    const areaValue = props.area;
     try {
         // check if there are already ecosystems for that area
         if (!areaValue.ecosystems?.length || confirm('Are you sure you want to overwrite the existing biomes?')) {
             areaBiomesLoadingStatus.value = 'loading';
-            const newBiomes = await getBiomeStats(area);
+            const newBiomes = await getBiomeStats(areaValue);
             areaValue.ecosystems = newBiomes;
             // if (confirm(`Are you sure you want to apply this ecosystem to the area?: ${newBiomes.join(', ')}`)) {
             //     store.projectAreas.forEach((area, j) => {
@@ -211,7 +211,7 @@ function handleAfterLeave(el: any) {
                     type="button"
                     :disabled="areaBiomesLoadingStatus === 'loading' || areaBiomesLoadingStatus === 'success'"
                     @click="getAreaBiomeStats"
-                    :class="[areaBiomesLoadingStatus === 'loading' ? 'bg-gray-100 text-gray-400' : 'bg-ferm-blue-dark-100 text-gray-900', 'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300', ['idle', 'error'].includes(areaBiomesLoadingStatus) ? 'hover:bg-ferm-blue-dark-200' : '']">
+                    :class="[areaBiomesLoadingStatus === 'loading' ? 'bg-gray-100 text-gray-400' : 'bg-ferm-blue-dark-100 text-gray-900', 'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 mb-4 mt-2 text-sm font-semibold ring-1 ring-inset ring-gray-300', ['idle', 'error'].includes(areaBiomesLoadingStatus) ? 'hover:bg-ferm-blue-dark-200' : '']">
                 <ListBulletIcon v-if="areaBiomesLoadingStatus === 'idle'"
                                 class="-ml-0.5 h-5 w-5 text-gray-400"
                                 aria-hidden="true" />
@@ -226,7 +226,7 @@ function handleAfterLeave(el: any) {
             </button>
 
             <div class="flex flex-row items-center w-full">
-                <div class="flex-grow font-bold text-lg">IUCN Global Ecosystem Typology 2.0 - Biomes</div>
+                <div class="flex-grow font-bold text-lg dark:text-gray-200">IUCN Global Ecosystem Typology 2.0 - Biomes</div>
                 <button v-if="index === 0 && nAreas > 1"
                         type="button"
                         :disabled="!area.ecosystems?.length && nAreas > 1"

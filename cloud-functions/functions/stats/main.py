@@ -4,7 +4,9 @@
 # gcloud functions deploy get_polygon_zonal_stats --region=${REGION} \
 #     --source=./ --runtime=python39 \
 #     --stage-bucket=fao-ferm-functions-staging \
-#     --trigger-http --allow-unauthenticated
+#     --trigger-http --allow-unauthenticated \
+#     \
+#     --timeout 540
 
 
 

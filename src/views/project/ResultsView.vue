@@ -44,12 +44,17 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
 
 <template>
     <TabTemplate title="Results">
-        <!-- <template #description>
-            <p>Results are calculated for selected indicators in each area of interests. The indicator calculation is based on available global layers and cloud computing environment such as SEPAL. The standard operating procedure to assess ecosystem restoration indicators is under preparation.</p>
-        </template> -->
+        <template #description>
+            In this section you can see a summary of the results of your restoration initiative, such as:
+            <ul class="list-disc list-inside">
+                <li>The progress in the extent of the restoration area</li>
+                <li>The proportion of area of each ecosystem under restoration</li>
+                <li>The progress of the indicators</li>
+            </ul>
+        </template>
         <template #default>
             <div v-if="store.project.reportingLine !== 'GEF'"
-                 class="flex flex-col gap-6">
+                 class="flex flex-col gap-6 mt-6">
                 <div v-if="store.project.project.targetArea && store.project.project.areaUnderRestoration"
                      class="shadow-lg rounded px-4 py-3 text-base border">
                     <SnailChart :values="[store.project.project.areaUnderRestoration]"
@@ -57,14 +62,15 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
                                 :unit="store.project.project.areaUnits"
                                 :targetValue="store.project.project.targetArea"
                                 not-achieved-label="Area committed not under restoration" />
-                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has achieved {{ roundToPrecisionAsString(store.project.project.areaUnderRestoration / store.project.project.targetArea * 100) }}% of your total committed land ({{ store.project.project.targetArea }} {{ store.project.project.areaUnits || ''}}).</p>
+                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has achieved {{ roundToPrecisionAsString(store.project.project.areaUnderRestoration / store.project.project.targetArea * 100) }}% of your total committed land ({{ store.project.project.targetArea }} {{ store.project.project.areaUnits || '' }}).</p>
                 </div>
-                <div v-else class="pt-6 font-bold text-xl">
+                <div v-else
+                     class="pt-6 font-bold text-xl">
                     Committed area to restore or Total area under restoration not selected in the Area & Ecosystems tab.
                 </div>
             </div>
             <div v-else-if="chartValues.length > 0 && getLastTargetArea()"
-                 class="flex flex-col gap-6">
+                 class="flex flex-col gap-6 mt-6">
                 <div v-if="store.project.project.areaAchievedMatch === 1"
                      class="shadow-lg rounded px-4 py-3 text-base border">
                     <SnailChart v-if="chartValues.length > 0 && getLastTargetArea()"

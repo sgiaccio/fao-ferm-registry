@@ -130,12 +130,12 @@ const statistics: Statistics[] = [{
     label: 'Elevation [m]',
     transformFn: calculateAverages,
     template: MeanMinMax
-}, {
-    requestId: 'precipitation',
-    dbId: 'precipitation',
-    label: 'Precipitation [mm/pentad]',
-    transformFn: calculateAverages,
-    template: MeanMinMax
+    // }, {
+    //     requestId: 'precipitation',
+    //     dbId: 'precipitation',
+    //     label: 'Precipitation [mm/pentad]',
+    //     transformFn: calculateAverages,
+    //     template: MeanMinMax
 }, {
     requestId: 'temperature',
     dbId: 'temperature',
@@ -251,7 +251,8 @@ function fetchIndicators(area: any) {
 <template>
     <TabTemplate title="Characteristics">
         <template #description>
-            <p>The project area is characterized by a number of default parameters. They are automatically generated for each aoi based on global data sources. More information about the data source will be soon made available.</p>
+            <p>In this section, you can access basic information about the characteristics of your area under restoration. Designing a restoration initiative starts with a local assessment of the area being considered for restoration, including a general description of its environmental, biophysical and socio-economic components that can be assessed in this section. The characteristics of a site can help restoration practitioners to make more informed decisions about which species to reintroduce, where to focus restoration efforts, and how to replicate or restore elsewhere based on similar characteristics. The degree of degradation, and its effects on biodiversity, ecological integrity, and human health and well-being must be identified as well (in progress).</p>
+            <p class="mt-4">For each of the areas under restoration within your initiative a set of quantitative and qualitative statistics are calculated automatically using the following datasets. Details about these datasets, methods used for computation, and original sources are also provided.</p>
             <div class="font-light mt-4 text-sm">
                 <p class="4">
                     <span class="font-bold">Land Productivity Dynamics:</span> The dynamics in the land productivity indicator are related to changes in the health and productive capacity of the land and reflects the net effects of changes in ecosystem functioning due to changes in plant phenology and biomass growth, where declining trends are often (but not always) a defining characteristic of land degradation. Understanding changes in the productive capacity of the land is critical for assessing the impact of land management interventions, its long-term sustainability, and the climate-derived impacts which could affect ecosystem resilience and human livelihoods. The categories correspond to the trends observed during the period 2001-2016.
@@ -269,12 +270,14 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">References:</span> Ivits E; Cherlet M. Land-Productivity Dynamics Towards integrated assessment of land degradation at global scales. EUR 26052. Luxembourg (Luxembourg): Publications Office of the European Union; 2013. JRC80541
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://earthmap.org/documents/LPD_Global.pdf">https://earthmap.org/documents/LPD_Global.pdf</a>
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
+                       target="_blank"
+                       href="https://earthmap.org/documents/LPD_Global.pdf">https://earthmap.org/documents/LPD_Global.pdf</a>
                 </p>
 
                 <p class="mt-4">
                     <span class="font-bold">Land cover:</span>
-                    The type of land cover directly influences the composition of ecosystems and biodiversity, and also provide different ecosystem services, such as water regulation, carbon sequestration, or erosion control. Global land cover for the year 2020 contains 11 land cover classes, aligned with UN-FAO's Land Cover Classification System.
+                    The type of land cover directly influences the composition of ecosystems and biodiversity, and also provide different ecosystem services, such as water regulation, carbon sequestration, or erosion control. This layer is the Dynamic Land Cover map (CGLS-LC100) for the year 2019.
                 </p>
                 <p class="mt-1">
                     <span class="font-medium">Values:</span> Proportion of each category within the area under restoration.
@@ -283,15 +286,15 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">Units:</span> Hectares
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Spatial resolution:</span> 10 meters
+                    <span class="font-medium">Spatial resolution:</span> 100 meters
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">References:</span> Zanaga, D., Van De Kerchove, R., De Keersmaecker, W., Souverijns, N., Brockmann, C., Quast, R., Wevers, J., Grosu, A., Paccini, A., Vergnaud, S., Cartus, O., Santoro, M., Fritz, S., Georgieva, I., Lesiv, M., Carter, S., Herold, M., Li, Linlin, Tsendbazar, N.E., Ramoino, F., Arino, O., 2021. ESA WorldCover 10 m 2020 v100. <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://doi.org/10.5281/zenodo.5571936">https://doi.org/10.5281/zenodo.5571936</a>
-                </p>
-                <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v100">https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v100</a>
-                </p>
+                    <span class="font-medium">References:</span> Buchhorn, M., Smets, B., Bertels, L., Roo, B. D., Lesiv, M., Tsendbazar, N.-E., Herold, M., & Fritz, S. (2020). Copernicus Global Land Service: Land Cover 100m: collection 3: epoch 2019: Globe (Version V3.0.1) [Data set]. Zenodo.
 
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
+                       target="_blank"
+                       href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global">https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global</a>
+                </p>
 
                 <p class="mt-4">
                     <span class="font-bold">Elevation:</span>
@@ -307,34 +310,15 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">Spatial resolution:</span> 90 meters
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">References:</span> Jarvis, A., H.I. Reuter, A. Nelson, E. Guevara. 2008. Hole-filled SRTM for the globe Version 4, available from the CGIAR-CSI SRTM 90m Database: <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://srtm.csi.cgiar.org">https://srtm.csi.cgiar.org</a>.
+                    <span class="font-medium">References:</span> Jarvis, A., H.I. Reuter, A. Nelson, E. Guevara. 2008. Hole-filled SRTM for the globe Version 4, available from the CGIAR-CSI SRTM 90m Database: <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
+                       target="_blank"
+                       href="https://srtm.csi.cgiar.org">https://srtm.csi.cgiar.org</a>.
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4">https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4</a>
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
+                       target="_blank"
+                       href="https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4">https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4</a>
                 </p>
-
-
-
-                <p class="mt-4">
-                    <span class="font-bold">Rainfall:</span> Precipitation influences species adaptation, soil health, helps to understand historical droughts or heavy rainfall and to plan for long-term ecosystem stability. Estimates of precipitation are computed from 2015 to 2019.
-                </p>
-                <p class="mt-1">
-                    <span class="font-medium">Values:</span> Mean monthly precipitation of 5 years within the area under restoration
-                </p>
-                <p class="mt-1">
-                    <span class="font-medium">Units:</span> meters
-                </p>
-                <p class="mt-1">
-                    <span class="font-medium">Spatial</span> resolution: 27830 meters
-                </p>
-                <p class="mt-1">
-                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://cds.climate.copernicus.eu/cdsapp#!/home">https://cds.climate.copernicus.eu/cdsapp#!/home</a>
-                </p>
-                <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
-                </p>
-
-
                 <p class="mt-4">
                     <span class="font-bold">Temperature:</span>
                     Temperature influences the distribution and range of species, growing season and phenology, resilience to climate change, soil health and nutrient cycling and has a direct impact in water availability and evapotranspiration. Estimates of temperature are computed from 2015 to 2019.
@@ -349,10 +333,14 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">Spatial resolution:</span> 27830 meters
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://cds.climate.copernicus.eu/cdsapp#!/home">https://cds.climate.copernicus.eu/cdsapp#!/home</a>
+                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
+                       target="_blank"
+                       href="https://cds.climate.copernicus.eu/cdsapp#!/home">https://cds.climate.copernicus.eu/cdsapp#!/home</a>
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200" target="_blank" href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200"
+                       target="_blank"
+                       href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
                 </p>
             </div>
         </template>

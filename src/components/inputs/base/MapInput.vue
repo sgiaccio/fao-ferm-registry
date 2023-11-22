@@ -27,6 +27,8 @@ import { CalculatorIcon } from '@heroicons/vue/20/solid';
 import NumberInput from '@/components/inputs/base/NumberInput.vue';
 
 import { getMenuSelectedLabel } from '@/components/project/menus';
+import MultiPolygon from 'ol/geom/MultiPolygon';
+import Feature from 'ol/Feature';
 
 
 const props = withDefaults(defineProps<{
@@ -86,26 +88,54 @@ const drawStyle = {
 const vectorSource = new VectorSource();
 const vectorLayer = new VectorLayer({ source: vectorSource, style });
 
+// function getGeoJson() {
+//     const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
+//     return geoJSON.writeFeatures(multiPolygon.getPolygons());
+// }
+
 function getGeoJson() {
     const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
-    return geoJSON.writeFeatures(vectorLayer.getSource().getFeatures());
+
+    // Get the array of polygons and convert them to features
+    const polygons = multiPolygon.getPolygons();
+    const features = polygons.map(polygon => new Feature(polygon));
+    // Write the features to GeoJSON
+    return geoJSON.writeFeatures(features);
 }
 
 const areaUploaded = computed(() => !!props.modelValue?.uuid);
 
-const draw = new Draw({
+const drawInteraction = new Draw({
     source: vectorSource,
     type: 'Polygon',
     style: drawStyle
 });
-const modify = new Modify({ source: vectorSource, style: drawStyle });
-const snap = new Snap({ source: vectorSource });
+
+var multiPolygon = new MultiPolygon([]);
+drawInteraction.on('drawend', e => {
+    const poly = e.feature.getGeometry();
+    multiPolygon.appendPolygon(poly);
+    // updateGeojson();
+});
+// function updateGeojson() {
+//     const formatGeoJSON = new GeoJSON()
+//     const cloned = multiPolygon.clone();
+
+//     cloned.transform('EPSG:3857', 'EPSG:4326');
+//     var geojson = formatGeoJSON.writeGeometry(cloned);
+//     console.info(geojson);
+// }
+
+
+const modifyInteraction = new Modify({ source: vectorSource, style: drawStyle });
+const snapInteraction = new Snap({ source: vectorSource });
 
 async function postGeoJson() {
     if (areaUploaded.value) return;
 
     uploadStatus.value = 'uploading';
     const geoJson = getGeoJson();
+    console.log(geoJson);
     fetch(
         '/loadAreaJson',
         {
@@ -174,9 +204,9 @@ onMounted(async () => {
     });
 
     if (!areaUploaded.value && props.edit) {
-        m.addInteraction(draw);
-        m.addInteraction(modify);
-        m.addInteraction(snap);
+        m.addInteraction(drawInteraction);
+        m.addInteraction(modifyInteraction);
+        m.addInteraction(snapInteraction);
     } else {
         const geoJson = await fetchGeoJson();
         const olGeoJsonObj = new GeoJSON({ dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
@@ -189,17 +219,17 @@ onMounted(async () => {
 
 watch(areaUploaded, (uploaded) => {
     if (uploaded && props.edit) {
-        m.removeInteraction(draw);
-        m.removeInteraction(modify);
-        m.removeInteraction(snap);
+        m.removeInteraction(drawInteraction);
+        m.removeInteraction(modifyInteraction);
+        m.removeInteraction(snapInteraction);
 
         if (!props.modelValue.area) {
             fetchPolygonArea();
         }
     } else {
-        m.addInteraction(draw);
-        m.addInteraction(modify);
-        m.addInteraction(snap);
+        m.addInteraction(drawInteraction);
+        m.addInteraction(modifyInteraction);
+        m.addInteraction(snapInteraction);
     }
 });
 
@@ -214,6 +244,11 @@ function fetchPolygonArea() {
     }).then(response => response.json()).then(area => {
         emit('update:modelValue', { ...props.modelValue, area: parseInt((1e-4 * area)) });
     });
+}
+
+function clear() {
+    multiPolygon = new MultiPolygon([]);
+    vectorSource.clear();
 }
 </script>
 
@@ -247,10 +282,14 @@ function fetchPolygonArea() {
          ref="mapRoot"
          id="caz" />
     <button v-if="!areaUploaded && edit"
-            class="mt-4 inline-flex items-center rounded-md border border-transparent px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-default']"
+            class="rounded-md px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400 cursor-default']"
             @click="postGeoJson()">Upload
     </button>
+    <button class="ml-4 mt-4 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            @click="clear">Clear
+    </button>
+
     <AreaEcosystemsView :edit="edit"
                         :area="modelValue"
                         :index="index"
