@@ -222,7 +222,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                 <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                                :edit="edit"
                                v-model="store.project.project.gefFaoSymbol"
-                               label="GEF/FAO Symbol" />
+                               label="GEF Project Symbol" />
                 <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
                            label="GEF investment type">
                     <SmallCardsFormGroup v-model="store.project.project.gefInvestmentType"

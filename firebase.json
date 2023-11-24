@@ -8,13 +8,18 @@
         "region": "europe-west3"
       },
       {
-        "source": "/loadShapefileMultiple",
-        "function": "load_shapefile_multiple",
+        "source": "/loadShapefile",
+        "function": "load_shapefile",
         "region": "europe-west3"
       },
       {
         "source": "/loadKmlKmz",
         "function": "load_kml_kmz",
+        "region": "europe-west3"
+      },
+      {
+        "source": "/uploadProjectFile",
+        "function": "upload_project_file",
         "region": "europe-west3"
       },
       {

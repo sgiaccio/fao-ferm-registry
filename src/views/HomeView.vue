@@ -321,7 +321,8 @@ onMounted(async () => {
                             </div>
                         </a>
 
-                        <a href="https://ferm-search.fao.org/search" class="bg-ferm-mustard-dark/90 hover:bg-ferm-mustard-light border-ferm-mustard-dark_ border-4_ rounded-lg px-4 py-4 text-left transition-colors shadow backdrop-blur">
+                        <a href="https://ferm-search.fao.org/search"
+                           class="bg-ferm-mustard-dark/90 hover:bg-ferm-mustard-light border-ferm-mustard-dark_ border-4_ rounded-lg px-4 py-4 text-left transition-colors shadow backdrop-blur">
                             <div class="flex flex-row gap-x-2">
                                 <div>
                                     <MagnifyingGlassIcon class="w-6 h-6" />
@@ -332,6 +333,11 @@ onMounted(async () => {
                                 </div>
                             </div>
                         </a>
+                    </div>
+                    <div class="flex flex-row items-center justify-center mt-8">
+                        <a href="/docs/FERM guidance version nov2023 draft.pdf"
+                           class="flex-shrink relative text-center font-medium text-gray-50 text-base md:text-lg lg:text-xltext-shadow-sm bg-ferm-blue-dark/80 hover:bg-ferm-blue-light border-ferm-mustard-dark_ border-4_ rounded-lg px-5 py-2 transition-colors shadow backdrop-blur cursor-pointer"
+                           download>Download the FERM user guide</a>
                     </div>
                 </div>
             </div>
@@ -367,8 +373,8 @@ onMounted(async () => {
                 <div class="p-4 font-akrobat font-semibold text-white col-span-2 rounded-lg text-sm bg-[url('/soil.jpg')] bg-cover bg-center flex lg:h-full justify-end items-end h-48">
                     <div class="px-16 aligh-bottom text-center bottom-3 text-lg sm:text-xl brightness-100 z-50 sm:leading-tight text-shadow-sm shadow-black">
                         Join <a href="https://twitter.com/hashtag/GenerationRestoration"
-                                class="underline hover:text-yellow-300"
-                                target="_blank">#GenerationRestoration</a> and share your restoration initiative and good practices with the world.
+                           class="underline hover:text-yellow-300"
+                           target="_blank">#GenerationRestoration</a> and share your restoration initiative and good practices with the world.
                     </div>
                 </div>
 

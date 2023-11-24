@@ -13,11 +13,7 @@ import RecursiveRadio from '@/components/inputs/base/RecursiveRadio.vue';
 
 import { roundToPrecisionAsString } from '@/lib/util';
 
-import { sortedGoalIndicators, getGoalColor, groupByGoal, GoalIndicator } from '@/lib/auroraIndicators';
-
-import { ChevronRightIcon, ChevronDownIcon, CheckIcon, TrashIcon } from '@heroicons/vue/20/solid';
-
-import { getSortedIndicatorsAndMonitoring } from '@/lib/util';
+import { sortedGoalIndicators, groupByGoal, GoalIndicator } from '@/lib/auroraIndicators';
 
 
 import IndicatorsList from './IndicatorsList.vue';

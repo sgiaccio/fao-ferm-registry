@@ -28,6 +28,8 @@ import pyproj
 from pyproj.exceptions import CRSError
 
 import psycopg2
+from psycopg2 import pool
+
 
 from zipfile import ZipFile, BadZipFile
 
@@ -136,24 +138,37 @@ def authenticated(fn):
     # authentication check, i.e. fn(authenticated(request))
     return wrapped
 
-def connect_unix_socket():
-    # Note: Saving credentials in environment variables is convenient, but not
-    # secure - consider a more secure solution such as
-    # Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
-    # keep secrets safe.
-    # db_user = os.environ['DB_USER']
-    # db_pass = os.environ['DB_PASS']
-    # db_name = os.environ['DB_NAME]
-    # unix_socket_path = os.environ['INSTANCE_UNIX_SOCKET']
+# def connect_unix_socket():
+#     # Note: Saving credentials in environment variables is convenient, but not
+#     # secure - consider a more secure solution such as
+#     # Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
+#     # keep secrets safe.
+#     # db_user = os.environ['DB_USER']
+#     # db_pass = os.environ['DB_PASS']
+#     # db_name = os.environ['DB_NAME]
+#     # unix_socket_path = os.environ['INSTANCE_UNIX_SOCKET']
 
+#     try:
+#         conn = psycopg2.connect(dbname=db_name, user=db_user, password=db_pass, host=unix_socket_path)
+#         return conn
+#     except psycopg2.Error as e:
+#         print('Error: Couldn\'t connect to the Postgres database')
+#         print(e)
+
+# conn = connect_unix_socket()
+
+
+def initialize_connection_pool():
+    global db_pool
     try:
-        conn = psycopg2.connect(dbname=db_name, user=db_user, password=db_pass, host=unix_socket_path)
-        return conn
+        db_pool = pool.SimpleConnectionPool(1, 5, dbname=db_name, user=db_user, password=db_pass, host=unix_socket_path)
+        print('Connection pool created successfully')
     except psycopg2.Error as e:
-        print('Error: Couldn\'t connect to the Postgres database')
+        print('Error: Could not create a connection pool')
         print(e)
+        raise
 
-conn = connect_unix_socket()
+initialize_connection_pool()
 
 def flat_unzip(file, dest_dir):
     files = []
@@ -176,6 +191,7 @@ def flat_unzip(file, dest_dir):
     return files
 
 def _insert_into_postgis(project_id, shp_file_path, bucket_path, orig_filename, dissolve=False):
+    conn = db_pool.getconn()
     cursor = conn.cursor()
 
     uuid_list = []
@@ -227,7 +243,10 @@ def _insert_into_postgis(project_id, shp_file_path, bucket_path, orig_filename, 
         print(e)
         raise
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            db_pool.putconn(conn)
 
 def upload_blob(bucket_name, source_file, destination_blob_name):
     """Uploads a file to the bucket."""
@@ -295,11 +314,21 @@ def load_geometries(request, file_handler, dissolve=False):
             tmp_dir.cleanup()
 
 def _fetch_areas(project_id, uuids):
-    cursor = conn.cursor()
-    cursor.execute("SELECT area_uuid, ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s", [tuple(uuids), str(project_id)])   
-    areas = cursor.fetchall()
-    cursor.close()
-    return areas
+    try:
+        conn = db_pool.getconn()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT area_uuid, ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s", [tuple(uuids), str(project_id)])   
+        areas = cursor.fetchall()
+        return areas;
+    except Exception as e:
+        print(traceback.format_exc())
+        raise
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            db_pool.putconn(conn)
 
 # Define a custom exception for file handling errors
 class FileHandlerError(Exception):
@@ -356,7 +385,10 @@ def get_polygon_area(request):
         The area of the polygon
     """
     area_uuid = request.args['area_uuid']
+
+    conn = db_pool.getconn()
     cursor = conn.cursor()
+
     try:
         cursor.execute("SELECT ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) FROM project_areas WHERE area_uuid = %s", [str(area_uuid)])
         area = round(cursor.fetchone()[0])
@@ -365,7 +397,10 @@ def get_polygon_area(request):
         print(traceback.format_exc())
         return (str(error), 400, { 'Access-Control-Allow-Origin': '*' })
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            db_pool.putconn(conn)
 
 
 # def get_file_path(filename):
@@ -387,7 +422,7 @@ def load_area_json(request):
         with open(file_path, "w") as f:
             f.write(st_geojson)
 
-        uuids = _insert_into_postgis(project_id, file_path, None, None)
+        uuids = _insert_into_postgis(project_id, file_path, None, None, True)
 
         return (json.dumps(uuids), 200, { 'Access-Control-Allow-Origin': '*' })
     except AssertionError as error:
@@ -421,8 +456,10 @@ def get_area_json(request):
 
         return ('', 204, headers)
 
-    cursor = conn.cursor()
     try:
+        conn = db_pool.getconn()
+        cursor = conn.cursor()
+
         project_id = request.args['project_id']
         area_uuid = request.args.get('area_uuid')
 
@@ -440,7 +477,10 @@ def get_area_json(request):
         print(traceback.format_exc())
         return (str(error), 400, { 'Access-Control-Allow-Origin': '*' })
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            db_pool.putconn(conn)
 
 # load_shapefile = lambda request: load_geometries(request, _unzip_and_find_shapefile, False)
 do_not_process = lambda _1, _2, temp_zipfile_path: temp_zipfile_path

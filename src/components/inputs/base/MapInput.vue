@@ -135,7 +135,6 @@ async function postGeoJson() {
 
     uploadStatus.value = 'uploading';
     const geoJson = getGeoJson();
-    console.log(geoJson);
     fetch(
         '/loadAreaJson',
         {
@@ -286,7 +285,8 @@ function clear() {
             :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400 cursor-default']"
             @click="postGeoJson()">Upload
     </button>
-    <button class="ml-4 mt-4 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+    <button v-if="!areaUploaded && edit"
+            class="ml-4 mt-4 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
             @click="clear">Clear
     </button>
 

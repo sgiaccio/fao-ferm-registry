@@ -99,7 +99,7 @@ async function uploadFile() {
     formData.append('file', selectedFile.value, selectedFile.value.name);
 
     return fetch(
-        '/loadShapefileMultiple',
+        '/loadShapefile',
         {
             method: 'POST',
             headers: {
