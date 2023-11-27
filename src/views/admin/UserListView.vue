@@ -98,17 +98,18 @@ async function edit(user: User) {
     showEditDialog.value = true;
 }
 
-const selectedGroup = ref()
-const selectedLevel = ref()
+const groupToAdd = ref();
+const levelToAdd = ref();
+
 
 // Add the user to the selected group with the selected level
 function addGroup(user) {
-    if (selectedGroup.value && selectedLevel.value) {
-        user.privileges[selectedGroup.value] = selectedLevel.value;
+    if (groupToAdd.value && levelToAdd.value) {
+        user.privileges[groupToAdd.value] = levelToAdd.value;
         refreshAvailableGroups(user);
     }
-    selectedGroup.value = null;
-    selectedLevel.value = null;
+    groupToAdd.value = null;
+    levelToAdd.value = null;
 }
 
 // Remove the user from the selected group and refresh the list of available groups
@@ -123,15 +124,16 @@ function onAfterLeave() {
 }
 
 // TODO: move this function
-function save() {
+async function save() {
     if (authStore.isAdmin) {
         const addMessage = httpsCallable(functions, 'setUserPrivileges');
-        addMessage({
+        return addMessage({
             admin: userToEdit.value.admin,
             email: userToEdit.value.email,
             privileges: userToEdit.value.privileges
         }).then(_result => {
             alert("User privileges saved");
+            refreshUsers();
         }).catch(e => {
             alert('Error saving user privileges: ' + e.message);
             console.error(e);
@@ -159,6 +161,7 @@ function createUser() {
         admin: userToAdd.value.admin
     }).then(_result => {
         alert("User created");
+        refreshUsers();
     }).catch(e => {
         alert('Error creating user: ' + e.message);
         console.error(e);
@@ -178,7 +181,7 @@ function deleteUser() {
 // }
 
 const userToAdd = ref<any | null>(null);
-async function addUser() {
+function addUser() {
     userToAdd.value = {
         email: '',
         displayName: '',
@@ -198,6 +201,19 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
         }
     }
 });
+
+function cancelCreate() {
+    userToAdd.value = null;
+    groupToAdd.value = null;
+    levelToAdd.value = null;
+}
+
+function cancelEdit() {
+    userToEdit.value = null;
+    groupToAdd.value = null;
+    levelToAdd.value = null;
+    showEditDialog.value = false;
+}
 </script>
 
 <template>
@@ -360,7 +376,16 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                                                 <tr v-for="(level, group) in userToEdit.privileges || []"
                                                                     :key="group">
                                                                     <td class="whitespace-nowrap py-2 pl-6 pr-3 text-sm text-gray-500 sm:pl-0">{{ allGroups[group] }}</td>
-                                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">{{ level }}</td>
+                                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                                        <select v-model="userToEdit.privileges[group]"
+                                                                                id="level"
+                                                                                name="level"
+                                                                                class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                                            <option value="guest">Guest</option>
+                                                                            <option value="editor">Editor</option>
+                                                                            <option value="admin">Admin</option>
+                                                                        </select>
+                                                                    </td>
                                                                     <td class="relative whitespace-nowrap py-2 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
                                                                         <span @click="deleteGroup(userToEdit, group)"
                                                                               class="cursor-pointer text-indigo-600 hover:text-indigo-900">Delete<span class="sr-only">, {{ allGroups[group] }}</span></span>
@@ -380,7 +405,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                     <div class="mt-3">
                                         <label for="group"
                                                class="block text-sm font-medium text-gray-700">Institution</label>
-                                        <select v-model="selectedGroup"
+                                        <select v-model="groupToAdd"
                                                 id="group"
                                                 name="group"
                                                 class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
@@ -391,7 +416,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                     <div class="mt-3">
                                         <label for="level"
                                                class="block text-sm font-medium text-gray-700">Level</label>
-                                        <select v-model="selectedLevel"
+                                        <select v-model="levelToAdd"
                                                 id="level"
                                                 name="level"
                                                 class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
@@ -408,13 +433,13 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                 <button type="button"
                                         class="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:indigo-600 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
-                                        @click="save()">Save</button>
+                                        @click="save">Save</button>
                                 <button type="button"
                                         class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                                        @click="showEditDialog = false">Cancel</button>
-                                <button type="button"
+                                        @click="cancelEdit">Cancel</button>
+                                <!-- <button type="button"
                                         class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
-                                        @click="deleteUser">Delete</button>
+                                        @click="deleteUser">Delete user</button> -->
                             </div>
                         </DialogPanel>
                     </TransitionChild>
@@ -525,7 +550,16 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                                                 <tr v-for="(level, group) in userToAdd.privileges || {}"
                                                                     :key="group">
                                                                     <td class="whitespace-nowrap py-2 pl-6 pr-3 text-sm text-gray-500 sm:pl-0">{{ allGroups[group] }}</td>
-                                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">{{ level }}</td>
+                                                                    <td class="whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-900">
+                                                                        <select v-model="userToAdd.privileges[group]"
+                                                                                id="level"
+                                                                                name="level"
+                                                                                class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                                                                            <option value="guest">Guest</option>
+                                                                            <option value="editor">Editor</option>
+                                                                            <option value="admin">Admin</option>
+                                                                        </select>
+                                                                    </td>
                                                                     <td class="relative whitespace-nowrap py-2 pl-3 pr-6 text-right text-sm font-medium sm:pr-0">
                                                                         <span @click="deleteGroup(userToAdd, group)"
                                                                               class="cursor-pointer text-indigo-600 hover:text-indigo-900">Delete<span class="sr-only">, {{ allGroups[group] }}</span></span>
@@ -545,7 +579,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                     <div class="mt-3">
                                         <label for="group"
                                                class="block text-sm font-medium text-gray-700">Institution</label>
-                                        <select v-model="selectedGroup"
+                                        <select v-model="groupToAdd"
                                                 id="group"
                                                 name="group"
                                                 class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
@@ -556,7 +590,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                     <div class="mt-3">
                                         <label for="level"
                                                class="block text-sm font-medium text-gray-700">Level</label>
-                                        <select v-model="selectedLevel"
+                                        <select v-model="levelToAdd"
                                                 id="level"
                                                 name="level"
                                                 class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
@@ -576,7 +610,7 @@ watch(() => userToEdit.value?.admin, (curr, prev) => {
                                         @click="createUser()">Save</button>
                                 <button type="button"
                                         class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                                        @click="userToAdd = null">Cancel</button>
+                                        @click="cancelCreate">Cancel</button>
                             </div>
                         </DialogPanel>
                     </TransitionChild>

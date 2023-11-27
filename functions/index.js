@@ -881,7 +881,3 @@ exports.getIntersectingCountries = areas.getIntersectingCountries;
  * **********************************************/
 const goodPractices = require("./goodPractices");
 exports.updateBpIdFieldOnWrite = goodPractices.updateBpIdFieldOnWrite;
-
-
-const files = require("./files");
-exports.uploadProjectFile = files.uploadProjectFile;
