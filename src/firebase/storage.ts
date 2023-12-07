@@ -60,10 +60,9 @@ export async function uploadFiles(projectId: string, path: string = '', files: F
 
             fetch('https://europe-west3-fao-ferm.cloudfunctions.net/upload_project_file', {
                 method: 'POST',
-                body: formData, // The FormData instance
+                body: formData,
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
-                    // 'Content-Type': 'multipart/form-data' should not be set manually
                 },
             }).then(response => {
                 if (!response.ok) {

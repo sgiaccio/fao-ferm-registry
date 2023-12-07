@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import * as vue from 'vue';
-import { getStorage, ref, uploadBytes, listAll, deleteObject, getBlob } from 'firebase/storage';
+import { getStorage, ref, getBlob } from 'firebase/storage';
 
 import baseProps from "../formGroupProps"
 import FormGroup from '../FormGroup.vue'
 
+import { useAuthStore } from '@/stores/auth';
+
+
+const authStore = useAuthStore();
 
 const selectedFile = vue.ref<File | null>(null);
 const uploadStatus = vue.ref<'idle' | 'uploading' | 'uploaded'>('idle');
@@ -13,10 +17,12 @@ const props = defineProps({
     ...baseProps,
     ...{
         bucketUrl: { type: String }, // firebase sets default bucket if undefined
-        folder: { type: String },
+        bpId: { type: String, required: true },
         modelValue: { type: String }
     }
 });
+
+const storage = getStorage(undefined, props.bucketUrl);
 
 async function loadFile(src: string, maxRetries = 5, pause = 2000): Promise<Blob> {
     let tries = 0;
@@ -40,8 +46,9 @@ async function loadFile(src: string, maxRetries = 5, pause = 2000): Promise<Blob
 const thumbnailUrl = vue.ref();
 
 async function loadThumbnail(maxRetries = 1, pause = 2000) {
+    revokeObjectURL();
     try {
-        const imgBlob = await loadFile(`${props.folder}/thumbnail/thumbnail.jpg`, maxRetries, pause);
+        const imgBlob = await loadFile(`${props.bpId}/images/thumbnail/thumbnail.jpg`, maxRetries, pause);
         const urlCreator = window.URL || window.webkitURL;
         thumbnailUrl.value = urlCreator.createObjectURL(imgBlob);
     } catch (error) {
@@ -49,27 +56,79 @@ async function loadThumbnail(maxRetries = 1, pause = 2000) {
     }
 }
 
+// async function loadThumbnail(maxRetries = 1, pause = 2000) {
+//     // create url parameters
+//     const params = new URLSearchParams({
+//         'bp_id': props.bpId
+//     });
+
+//     return fetch('https://europe-west3-fao-ferm.cloudfunctions.net/get_bp_thumbnail?' + params, {
+//         method: 'GET',
+//         headers: {
+//             'Authorization': `Bearer ${authStore!.user!.accessToken}`,
+//         },
+//     }).then(async response => {
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+//         return response.blob();
+//     }).then(imgBlob => {
+//         debugger;
+//         thumbnailUrl.value = URL.createObjectURL(imgBlob);
+//     }).catch(error => {
+//         console.error(error); // DEBUG
+//     });
+// }
+
+
 vue.onMounted(async () => {
-    getFiles();
     loadThumbnail();
 });
 
+
+function revokeObjectURL() {
+    if (thumbnailUrl.value) {
+        URL.revokeObjectURL(thumbnailUrl.value!);
+    }
+}
+
+vue.onUnmounted(revokeObjectURL);
 
 function setSelectedFile(event: Event) {
     selectedFile.value = (event.target as HTMLInputElement).files![0];
 }
 
-const storage = getStorage(undefined, props.bucketUrl);
+async function uploadToBucket(bpId: string, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('bp_id', bpId);
+
+    return fetch('https://europe-west3-fao-ferm.cloudfunctions.net/upload_bp_image', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Authorization': `Bearer ${authStore!.user!.accessToken}`,
+        },
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+    }).then(data => {
+        console.log(data); // DEBUG
+    }).catch(error => {
+        console.error(error); // DEBUG
+    });
+}
+
 
 function uploadFile() {
     if (uploadStatus.value !== 'idle') return;
 
-    const storageRef = ref(storage, `${props.folder}/${selectedFile.value!.name}`);
-    const uploadTask = uploadBytes(storageRef, selectedFile.value!);
+    const uploadTask = uploadToBucket(props.bpId, selectedFile.value!);
 
     uploadStatus.value = 'uploading';
-    uploadTask.then(async _snapshot => {
-        getFiles();
+    uploadTask.then(async () => {
         selectedFile.value = null;
         uploadStatus.value = 'uploaded';
         await loadThumbnail(5);
@@ -78,28 +137,39 @@ function uploadFile() {
     });
 }
 
-async function listFiles(folder: string) {
-    const dirRef = ref(storage, folder);
-    return listAll(dirRef);
-}
-
-const fileName = vue.ref<string | null>();
-
-async function getFiles() {
-    const fList = await listFiles(props.folder!);
-    fileName.value = fList.items && fList.items.length && fList.items[0].name || null; // only one file can be uploaded
-    // emit('update:modelValue', fileName.value);
-}
+// async function listFiles(folder: string) {
+//     const dirRef = ref(storage, folder);
+//     return listAll(dirRef);
+// }
 
 function deleteFile() {
-    if (!confirm(`Are you sure you want to delete the file ${fileName.value}`)) return;
-    const fRef = ref(storage, `${props.folder}/${fileName.value}`);
-    deleteObject(fRef)
-        .catch(_ => alert('Error deleting the file'))
-        .finally(() => {
-            getFiles();
-            loadThumbnail(5);
-        });
+    const params = new URLSearchParams({
+        'bp_id': props.bpId
+    });
+
+    return fetch('https://europe-west3-fao-ferm.cloudfunctions.net/delete_bp_image?' + params, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${authStore!.user!.accessToken}`,
+        },
+    }).then(async response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    }).catch(error => {
+        console.error(error); // DEBUG
+    }).finally(() => {
+        loadThumbnail();
+    });
+
+    // if (!confirm('Are you sure you want to delete the image?')) return;
+    // const fRef = ref(storage, `${props.folder}/${fileName.value}`);
+    // deleteObject(fRef)
+    //     .catch(_ => alert('Error deleting the file'))
+    //     .finally(() => {
+    //         getFiles();
+    //         loadThumbnail(5);
+    //     });
 }
 </script>
 
@@ -107,7 +177,7 @@ function deleteFile() {
     <FormGroup :label="label"
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
-        <div v-if="!fileName">
+        <div v-if="!thumbnailUrl">
             <label for="file"
                    class="block text-sm font-medium text-gray-700" />
             <div class="dark:text-zinc-400 border-gray-300 dark:bg-zinc-900 mt-1 flex rounded-md shadow-sm">
@@ -126,7 +196,7 @@ function deleteFile() {
                         type="button"
                         class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none"
                         :class="['idle' === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
-                        @click="uploadFile()">
+                        @click="uploadFile">
                     <!-- Not uploading -->
                     <svg v-if="uploadStatus === 'idle'"
                          xmlns="http://www.w3.org/2000/svg"
@@ -152,8 +222,8 @@ function deleteFile() {
                 </button>
             </div>
             <!-- Show reminder if file was chosen -->
-            <div v-if="selectedFile"
-                 class="text-red-500 text-sm">Remember to click the upload button before saving.</div>
+            <!-- <div v-if="selectedFile"
+                 class="text-red-500 text-sm">Remember to click the upload button before saving.</div> -->
         </div>
         <div v-else
              class="dark:text-white">

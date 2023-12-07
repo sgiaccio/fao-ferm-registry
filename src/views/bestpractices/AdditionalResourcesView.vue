@@ -19,7 +19,7 @@ withDefaults(defineProps<{
 //     details?: string,
 // }
 
-const store = useBestPracticesStore();
+const bpStore = useBestPracticesStore();
 
 const yesNo = [
     { label: "No", value: 0 },
@@ -30,24 +30,24 @@ const yesNo = [
 <template>
     <TabTemplate title="Additional Resources">
         <template #default>
-            <template v-if="store.bestPractice">
-                <TextareaFormGroup v-model="store.bestPractice.links"
+            <template v-if="bpStore.bestPractice">
+                <TextareaFormGroup v-model="bpStore.bestPractice.links"
                                    label="5.1 Links"
                                    description="Please provide links to pictures, testimonials or references from local stakeholders, videos, scientific articles and publications, outreach materials, websites and/or social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice."
                                    :edit="edit" />
-                <SelectFormGroup v-model="store.bestPractice.details"
+                <SelectFormGroup v-model="bpStore.bestPractice.details"
                                  :options="yesNo"
                                  label="5.2 Additional information on costs and benefits"
                                  :required="true"
                                  description="Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO's Team on Economics of Ecosystem Restoration (TEER)."
                                  :edit="edit" />
-                <TextareaFormGroup v-model="store.bestPractice.additionalComments"
+                <TextareaFormGroup v-model="bpStore.bestPractice.additionalComments"
                                    label="5.3 Additional comments"
                                    description="Feel free to share any additional information regarding the practice."
                                    :edit="edit" />
                 <ImageUploadFormGroup label="5.4 Please upload a picture of the practice"
                                       bucket-url="gs://fao-ferm-goodpractices"
-                                      :folder="`${store.id}/images/`"
+                                      :bpId="bpStore.id!"
                                       :edit="edit" />
             </template>
         </template>

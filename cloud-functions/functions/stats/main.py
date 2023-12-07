@@ -125,12 +125,14 @@ def _get_area_multipolygon(area_uuid, project_id):
         cursor.execute("SELECT geom FROM project_areas WHERE area_uuid = %s AND project_id = %s", [str(area_uuid), str(project_id)])
         area = cursor.fetchone()[0]
         # print(wkb.loads(area, hex=True)) # DEBUG
-        cursor.close()
+        # cursor.close()
         return wkb.loads(area, hex=True);
         # return unary_union([shape(wkt.loads(polygon['geom'])) for polygon in source])
     except Exception as error:
         print(traceback.format_exc())
         return (str(error), 400, { 'Access-Control-Allow-Origin': '*' } )
+    finally:
+        cursor.close()
 
     # Create a multipolygon by merging all features - needed for zonal statistics
 

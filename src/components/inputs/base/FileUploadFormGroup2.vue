@@ -51,7 +51,6 @@ onMounted(async () => {
 
 async function upload(files: FileList) {
     try {
-        // export async function uploadFiles(projectId: string, filePath: string, files: File[], accessToken: string) {
         await uploadFiles(props.projectId, props.folder, Array.from(files), props.accessToken);
         await getUploadedFiles();
 } catch (error) {

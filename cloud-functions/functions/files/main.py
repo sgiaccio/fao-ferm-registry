@@ -5,13 +5,10 @@ from tempfile import TemporaryDirectory
 
 from functools import wraps
 from flask import abort, jsonify
-# from fastkml import kml
 
 import os
 import traceback
-# from glob import glob
 from tempfile import TemporaryDirectory, NamedTemporaryFile
-# from uuid import uuid1
 
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import BadRequest
@@ -20,8 +17,6 @@ from werkzeug.exceptions import BadRequest
 from google.cloud import storage
 from firebase_admin import auth, firestore, initialize_app
 
-
-# fiona.drvsupport.supported_drivers['KML'] = 'rw'
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -83,7 +78,7 @@ def authenticated(fn):
 
             if not verified['admin']:
                 if group is not None and privileges.get(group) not in ('admin', 'editor'):
-                    raise ValueError(f'User is not in admin nor editor in group {group}')
+                    raise ValueError(f'User is not admin or editor in group {group}')
 
                 # Group is not there so it's a new record - check if the user is editor or admin in at least one group
                 # It works if there's only one group per user but otherwise authorization has to be reviewed
