@@ -30,10 +30,10 @@ function getLastTargetArea() {
 }
 
 const areaByGefIndicator = store.areaByGefIndicator();
-const areaForGefIndicator3 = areaByGefIndicator.reduce((total, [indicator, area]) => {
-    if (indicator.startsWith('GEF3')) return total + area;
-    return total;
-}, 0);
+// const areaForGefIndicator3 = areaByGefIndicator.reduce((total, [indicator, area]) => {
+//     if (indicator.startsWith('GEF3')) return total + area;
+//     return total;
+// }, 0);
 
 const chartValues = areaByGefIndicator.map(([_, value]) => value);
 const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel(label, menus.gefIndicators));
@@ -78,8 +78,7 @@ const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel
                                 :labels="chartLabels"
                                 unit="Ha"
                                 :targetValue="getLastTargetArea()" />
-                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has achieved {{ roundToPrecisionAsString(store.polygonsArea() / getLastTargetArea() * 100, 2) }}% of your total committed land.</p>
-                    <p class="mt-2 text-center">{{ roundToPrecisionAsString(areaForGefIndicator3 / getLastTargetArea() * 100, 2) }}% of this land is under restoration (GEF core indicator 3).</p>
+                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has  {{ Math.trunc(store.polygonsArea() / getLastTargetArea() * 100) }}% of committed land under restoration.</p>
                 </div>
                 <div v-else
                      class="shadow-lg rounded px-4 py-3 text-base border">

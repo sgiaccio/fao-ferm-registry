@@ -357,8 +357,8 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                     class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
                 <template v-slot:info>
                     The possible values are ecological restoration and rehabilitation. This can be determined by analyzing the current and target ecosystem (natural or transformed). Examples of transformed ecosystems are: farmlands, forest plantation, urban ecosystems. As a useful rule of thumb, if the target ecosystem is natural, the restoration will be ecological restoration. If the target ecosystem is transformed, the restoration will be rehabilitation.
-                    <span class="font-bold"
-                          v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span>
+                    <!-- <span class="font-bold"
+                          v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span> -->
                 </template>
             </RecursiveMenuFormGroup>
 
@@ -372,8 +372,8 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                 <template v-slot:info>
                     <p>
                         It is the legal status of the area under restoration. Information on tenure status should include documentation of Free and Prior Consent (FPIC) to ensure that people's rights are respected in the process of restoration and adherence to the UN Decade principles (FAO, IUCN CEM & SER, 2021) as well as the Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) (FAO, 2022).
-                        <span class="font-bold"
-                              v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3.</span>
+                        <!-- <span class="font-bold"
+                              v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3.</span> -->
                     </p>
                     <p class="pt-4">
                         References:

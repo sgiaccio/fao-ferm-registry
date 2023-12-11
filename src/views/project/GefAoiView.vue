@@ -259,7 +259,7 @@ provide('applyToAll', () => {
                                  v-model="store.project.project.targetAreaDesignPhase" />
                     <template v-slot:info>
                         <p>Please include the land (in ha) committed in <span class="font-bold">project design phase</span>
-                            (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                            (sum of GEF Core Indicators 1-5).</p>
                     </template>
                 </FormGroup>
                 <!-- <NumberFormGroup :edit="edit"
@@ -278,7 +278,7 @@ provide('applyToAll', () => {
                                  v-model="store.project.project.targetAreaReviewPhase" />
                     <template v-slot:info>
                         <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span>
-                            (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                            (sum of GEF Core Indicators 1-5).</p>
                     </template>
                 </FormGroup>
                 <!-- <AreaFormGroup v-if="edit || store.project.project.targetAreaReviewPhase"
@@ -299,7 +299,7 @@ provide('applyToAll', () => {
                                  v-model="store.project.project.targetAreaEvaluationPhase" />
                     <template v-slot:info>
                         <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span>
-                            (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
+                            (sum of GEF Core Indicators 1-5).</p>
                     </template>
                 </FormGroup>
                 <!-- <AreaFormGroup v-if="edit || store.project.project.targetAreaEvaluationPhase"
