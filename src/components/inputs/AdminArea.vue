@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 import SelectInput from './base/SelectInput.vue';
 
@@ -12,7 +12,6 @@ import { getMenuSelectedLabel } from '@/components/project/menus';
 
 import AreaEcosystemsView from '@/views/project/AreaEcosystemsView.vue';
 
-import { countries } from '@/lib/gaul2iso';
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
@@ -50,9 +49,7 @@ const admin1Menu = ref();
 const admin2Menu = ref();
 
 onMounted(async () => {
-    const allAdmin0Codes = await getGaulLevel0()
-    const admin0CodesMappedToIso = countries.map(c => +c.ADM0_CODE)
-    admin0Menu.value = allAdmin0Codes.filter(a => admin0CodesMappedToIso.includes(+a.value));
+    admin0Menu.value = await getGaulLevel0();
     watch(() => props.modelValue, (curr, prev) => {
         if (curr.admin0 !== prev.admin0)
         store.updateCountries();

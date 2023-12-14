@@ -24,13 +24,19 @@ import { setsContainSameValues, snakeToCamel } from '../lib/util'
 import { useAuthStore } from './auth';
 import { GoalIndicator, rawGoalIndicators } from '@/lib/auroraIndicators';
 import { getIntersectingCountries } from '@/firebase/functions';
-import { gaul2iso } from '@/lib/gaul2iso';
 
-// import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
+import { getGaulLevel0 } from '@/firebase/firestore';
 
 
 const projectsCollection = collection(db, 'registry')
 const areaCollection = collection(db, 'areas')
+
+
+function gaul2iso(gaulLevel0: any[], gaulId: number) {
+    const gaul0 = gaulLevel0
+        .find(g => g.value === gaulId);
+    return gaul0?.iso2;
+}
 
 export const useProjectStore = defineStore({
     id: 'project',
@@ -420,9 +426,16 @@ export const useProjectStore = defineStore({
             const uuids = this.projectAreas.map(a => Object.values(a)).map(v => v[0].uuid).filter(uuid => uuid)
             const intersectingCountries = uuids && uuids.length ? await getIntersectingCountries(uuids) : new Set();
 
+            const gaulLevel0 = await getGaulLevel0();
             // also merge the countries from the admin areas
-            const adminAreasIsoCodes = new Set(this.projectAreas.map(a => Object.values(a)).map(v => +v[0].admin0).filter(a0 => a0).map(gaul2iso).filter(iso => iso));
+            const adminAreasIsoCodes = new Set(this.projectAreas
+                .map(a => Object.values(a))
+                .map(v => +v[0].admin0)
+                .filter(a0 => a0)
+                .map(g => gaul2iso(gaulLevel0, g))
+                .filter(iso => iso));
 
+            debugger;
             return new Set([...intersectingCountries, ...adminAreasIsoCodes]);
         },
         async updateCountries() {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, provide } from 'vue';
+import { ref, watch, provide, onMounted } from 'vue';
 
 import { TrashIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 
@@ -24,17 +24,28 @@ import ConfirmModal from '@/views/ConfirmModal.vue';
 
 import { getMenuSelectedLabel } from '@/components/project/menus';
 
-import { getIso2Name, countries as iso2countries } from '@/lib/gaul2iso';
+// import { getIso2Name, countries as iso2countries } from '@/lib/gaul2iso';
+import { getGaulLevel0 } from '@/firebase/firestore';
 
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
+let countries = ref();
 
 withDefaults(defineProps<{
     edit?: boolean
 }>(), {
     edit: true
 });
+
+onMounted(async () => {
+    countries.value = await getGaulLevel0();
+});
+
+function getCountryName(iso2: string) {
+    const country = countries.value.find(c => console.log(c) || c.iso2 === iso2)
+    return country?.label || null;
+}
 
 const multiInputComponents = {
     adminArea: {
@@ -213,44 +224,17 @@ provide('applyToAll', () => {
                     Includes pledges, targets, aspirations, or commitments of area to restore. This parameter will not be counted as area under restoration but will serve as a reference to monitor restoration progress.
                 </template>
             </FormGroup>
-            <!-- <AreaFormGroup :edit="edit"
-                           label="Committed area to restore"
-                           v-model="store.project.project.targetArea"
-                           description="Area of the restoration target">
-                <template v-slot:info>
-                    Includes pledges, targets, aspirations, or commitments of area to restore. This parameter will not be counted as area under restoration but will serve as a reference to monitor restoration progress.
-                </template>
-            </AreaFormGroup> -->
             <FormGroup :label="`Total area under restoration [${getMenuSelectedLabel(store.project.project.areaUnits, menus.units)}]`">
                 <NumberInput :edit="edit"
                              v-model="store.project.project.areaUnderRestoration" />
-                <!-- <template v-slot:info>
-                    <p>
-                        The number expressed in this box describes the area where restoration is happening. Area under restoration is defined as:
-                    </p>
-                    <p class="pt-2">
-                        The area (in hectares) where functionality (ability to provide ecosystem goods and services) [and biodiversity] has been improved by restoration (not only area of direct intervention) (IUCN, 2022).
-                    </p>
-                    <p class="pt-2">
-                        References: IUCN (2022).
-                        <br>
-                        The Restoration Barometer: a guide for governments.
-                        <br>
-                        Gland, Switzerland: IUCN.
-                        <br>
-                        <a href="https://restorationbarometer.org/wp-content/uploads/2022/02/Barometer_Guide-Doc_16.pdf"
-                           target="_blank"
-                           class="text-ferm-blue-dark-700 hover:text-ferm-blue-dark-600">https://restorationbarometer.org/wp-content/uploads/2022/02/Barometer_Guide-Doc_16.pdf</a>
-                    </p>
-                </template> -->
             </FormGroup>
             <div class="py-6">
                 <div v-if="edit || store.project.project.countries?.length > 0"
                      class="text-sm italic text-gray-700 mb-1.5">Countries are automatically set based on your uploaded polygons and selected admin areas. You can also edit them manually.</div>
-
-                <div class="flex gap-x-2 mb-4">
+                <div v-if="countries"
+                     class="flex gap-x-2 mb-4">
                     <div class="border rounded-md px-2 py-1 flex flex-row gap-x-1 items-center"
-                         v-for="area, i in (store.project.project.countries || []).map(getIso2Name)">
+                         v-for="(area, i) in (store.project.project.countries || []).map(getCountryName)">
                         <div>{{ area }}</div>
                         <XCircleIcon v-if="edit"
                                      class="self-center h-5 w-5 text-gray-400 hover:text-gray-500 cursor-pointer"
@@ -262,13 +246,12 @@ provide('applyToAll', () => {
                             @change="addCountry"
                             class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         <option value="">Add country</option>
-                        <option v-for="country in iso2countries"
-                                :value="country.ISO2">
-                            {{ country.name }}
+                        <option v-for="country in countries"
+                                :value="country.iso2">
+                            {{ country.label }}
                         </option>
                     </select>
                 </div>
-
 
                 <MultiInput :edit="edit"
                             :numbering="(n, v) => numbering(n, v)"

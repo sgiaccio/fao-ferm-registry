@@ -116,20 +116,23 @@ function memoize<T extends (...args: any[]) => Promise<any>>(fn: T): (...x: Para
 }
 
 export const getGaulLevel0 = memoize(async () => {
-    const gaulCollection = collection(db, "gaul");
+    const gaulCollection = collection(db, "adminAreas");
     const level0AreasDocs = await getDocs(query(gaulCollection));
-    return level0AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name })).sort((a, b) => a.label.localeCompare(b.label));
+    return level0AreasDocs.docs
+        .filter(doc => doc.data().iso2)
+        .map(doc => ({ value: +doc.id, label: doc.data().country_name_en || doc.data().country_name_iso2, iso2: doc.data().iso2 }))
+        .sort((a, b) => a.label.localeCompare(b.label));
 });
 
 
 export const getGaulLevel1 = memoize(async (admin0: string) => {
-    const gaulCollection = collection(db, "gaul", admin0, "children");
+    const gaulCollection = collection(db, "adminAreas", admin0, "children");
     const level1AreasDocs = await getDocs(query(gaulCollection));
     return level1AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name })).sort((a, b) => a.label.localeCompare(b.label));
 });
 
 export const getGaulLevel2 = memoize(async (admin0: string, admin2: string) => {
-    const gaulCollection = collection(db, "gaul", admin0, "children", admin2, "children");
+    const gaulCollection = collection(db, "adminAreas", admin0, "children", admin2, "children");
     const level2AreasDocs = await getDocs(query(gaulCollection));
     return level2AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name })).sort((a, b) => a.label.localeCompare(b.label));
 });

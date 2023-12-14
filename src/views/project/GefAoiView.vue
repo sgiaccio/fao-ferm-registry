@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, provide } from 'vue';
+import { ref, provide, onMounted } from 'vue';
 
 import { InformationCircleIcon } from '@heroicons/vue/24/outline';
 import { TrashIcon, XCircleIcon } from '@heroicons/vue/20/solid';
@@ -21,7 +21,6 @@ import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
 import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
 
-// import AreaEcosystemsView from './AreaEcosystemsView.vue';
 
 import AlertModal from '@/views/AlertModal.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
@@ -30,11 +29,22 @@ import { useMenusStore } from '@/stores/menus';
 
 import { roundToPrecisionAsString } from '@/lib/util';
 
-import { getIso2Name, countries as iso2countries } from '@/lib/gaul2iso';
+import { getGaulLevel0 } from '@/firebase/firestore';
 
 
-
+const store = useProjectStore();
+const authStore = useAuthStore();
 const menus = useMenusStore().menus;
+let countries = ref();
+
+onMounted(async () => {
+    countries.value = await getGaulLevel0();
+});
+
+function getCountryName(iso2: string) {
+    const country = countries.value.find(c => console.log(c) || c.iso2 === iso2)
+    return country?.label || null;
+}
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -83,8 +93,6 @@ const multiInputComponents = {
     },
 };
 
-const store = useProjectStore();
-const authStore = useAuthStore();
 
 const showUploadInfoModal = ref(false);
 const showDrawInfoModal = ref(false);
@@ -212,40 +220,6 @@ provide('applyToAll', () => {
             </p>
         </template>
         <template #default>
-            <!-- <div v-if="false"
-                 class="text-sm bg-ferm-gray px-6 py-4 my-6 rounded-md">
-                <p class="font-semibold">
-                    Please find the requirements of geospatial data in <a class="text-ferm-blue-dark-800 underline"
-                       href="/gef/Requirements of geospatial data.pdf"
-                       target="_blank">this link</a>
-                </p>
-                <p class="mt-4 font-semibold">
-                    Please find the structure of the feature table to be uploaded in the platform in <a class="text-ferm-blue-dark-800 underline"
-                       href="/gef/Sample feature table GEF Projects.csv"
-                       target="_blank">this link</a>
-                </p>
-
-                <p @click="() => showDisclaimer = true"
-                   class="mt-4 font-semibold cursor-pointer text-ferm-blue-dark-800 underline uppercase">
-                    Disclaimer
-                </p>
-                <AlertModal type="info"
-                            :onClose="() => showDisclaimer = false"
-                            :open="showDisclaimer"
-                            title="DISCLAIMER"
-                            buttonText="Close">
-                    <div class="text-left text-sm">
-                        Please be aware that data on the FERM platform is internally converted to EPSG:4326 - WGS 84
-                        Coordinate System. This geographic coordinate system, representing locations as latitude and
-                        longitude, may introduce potential distortions in area calculations, particularly over large
-                        spatial extents. These distortions are not errors in the provided data but are inherent
-                        characteristics of the EPSG:4326 - WGS 84 system. We advise exercising caution when using
-                        this
-                        data for precise area calculations or analyses, considering these inherent limitations.
-                    </div>
-                </AlertModal>
-            </div> -->
-
             <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 dark:bg-amber-900 shadow-md border-gray-300">
                 <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data).</span>
                     The sum of committed land in GEF Core Indicators 1&mdash;5 shall be included
@@ -262,15 +236,6 @@ provide('applyToAll', () => {
                             (sum of GEF Core Indicators 1-5).</p>
                     </template>
                 </FormGroup>
-                <!-- <NumberFormGroup :edit="edit"
-                                 label="Target area in design phase"
-                                 v-model="store.project.project.targetAreaDesignPhase"
-                                 description="Area of land committed in design phase">
-                    <template v-slot:info>
-                        <p>Please include the land (in ha) committed in <span class="font-bold">project design phase</span>
-                            (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
-                    </template>
-                </NumberFormGroup> -->
                 <FormGroup :edit="edit || store.project.project.targetAreaReviewPhase"
                            label="Target area in mid-term review phase [Hectares]"
                            description="Area of land committed in mid-term review phase">
@@ -281,17 +246,6 @@ provide('applyToAll', () => {
                             (sum of GEF Core Indicators 1-5).</p>
                     </template>
                 </FormGroup>
-                <!-- <AreaFormGroup v-if="edit || store.project.project.targetAreaReviewPhase"
-                               :edit="edit"
-                               label="Target area in mid-term review phase"
-                               v-model="store.project.project.targetAreaReviewPhase"
-                               description="Area of land committed in mid-term review phase">
-                    <template v-slot:info>
-                        <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span>
-                            (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
-                    </template>
-                </AreaFormGroup> -->
-
                 <FormGroup :edit="edit || store.project.project.targetAreaEvaluationPhase"
                            label="Target area in terminal evaluation phase [Hectares]"
                            description="Area of land committed in terminal evaluation phase">
@@ -302,16 +256,6 @@ provide('applyToAll', () => {
                             (sum of GEF Core Indicators 1-5).</p>
                     </template>
                 </FormGroup>
-                <!-- <AreaFormGroup v-if="edit || store.project.project.targetAreaEvaluationPhase"
-                               :edit="edit"
-                               label="Target area in terminal evaluation phase"
-                               v-model="store.project.project.targetAreaEvaluationPhase"
-                               description="Area of land committed in terminal evaluation phase">
-                    <template v-slot:info>
-                        <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span>
-                            (sum of GEF Core Indicators 1-5). Restoration target will fall under GEF Core Indicator 3.</p>
-                    </template>
-                </AreaFormGroup> -->
             </div>
 
             <div class="border-2 rounded-xl my-4 px-5 bg-teal-50 dark:bg-teal-900 shadow-md border-gray-300">
@@ -385,25 +329,24 @@ provide('applyToAll', () => {
                             plattorm based on spatially explicit information provided.</p>
                     </template>
                 </LabelFormGroup>
-
-                <div class="flex gap-x-2 mb-4"
-                     v-if="store.project.project.countries && store.project.project.countries.length">
-                    <div class="border rounded-md px-2 py-1 flex flex-row gap-x-1 bg-white"
-                         v-for="area, i in (store.project.project.countries || []).map(getIso2Name)">
-                        <div class="self-center">{{ area }}</div>
+                <div v-if="countries"
+                     class="flex gap-x-2 mb-4">
+                    <div class="border rounded-md px-2 py-1 flex flex-row gap-x-1 items-center"
+                         v-for="(area, i) in (store.project.project.countries || []).map(getCountryName)">
+                        <div>{{ area }}</div>
                         <XCircleIcon v-if="edit"
-                                     class="self-center h-4 w-4 text-gray-400 hover:text-gray-500 cursor-pointer"
+                                     class="self-center h-5 w-5 text-gray-400 hover:text-gray-500 cursor-pointer"
                                      aria-hidden="true"
                                      @click="() => deleteCountry(i)" />
                     </div>
-                    <select v-if="edit"
-                            v-model="newCountry"
+                    <select v-model="newCountry"
+                            v-if="edit"
                             @change="addCountry"
                             class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         <option value="">Add country</option>
-                        <option v-for="country in iso2countries"
-                                :value="country.ISO2">
-                            {{ country.name }}
+                        <option v-for="country in countries"
+                                :value="country.iso2">
+                            {{ country.label }}
                         </option>
                     </select>
                 </div>
