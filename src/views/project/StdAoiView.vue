@@ -232,8 +232,8 @@ provide('applyToAll', () => {
                 <div v-if="edit || store.project.project.countries?.length > 0"
                      class="text-sm italic text-gray-700 mb-1.5">Countries are automatically set based on your uploaded polygons and selected admin areas. You can also edit them manually.</div>
                 <div v-if="countries"
-                     class="flex gap-x-2 mb-4">
-                    <div class="border rounded-md px-2 py-1 flex flex-row gap-x-1 items-center"
+                     class="flex flex-wrap w-full gap-2 mb-4 whitespace-nowrap">
+                    <div class="border rounded-md px-4 py-1 flex flex-row gap-x-1 items-center bg-white"
                          v-for="(area, i) in (store.project.project.countries || []).map(getCountryName)">
                         <div>{{ area }}</div>
                         <XCircleIcon v-if="edit"
@@ -241,16 +241,18 @@ provide('applyToAll', () => {
                                      aria-hidden="true"
                                      @click="() => deleteCountry(i)" />
                     </div>
-                    <select v-model="newCountry"
-                            v-if="edit"
-                            @change="addCountry"
-                            class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                        <option value="">Add country</option>
-                        <option v-for="country in countries"
-                                :value="country.iso2">
-                            {{ country.label }}
-                        </option>
-                    </select>
+                    <div>
+                        <select v-model="newCountry"
+                                v-if="edit"
+                                @change="addCountry"
+                                class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">Add country</option>
+                            <option v-for="country in countries"
+                                    :value="country.iso2">
+                                {{ country.label }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
 
                 <MultiInput :edit="edit"

@@ -435,7 +435,6 @@ export const useProjectStore = defineStore({
                 .map(g => gaul2iso(gaulLevel0, g))
                 .filter(iso => iso));
 
-            debugger;
             return new Set([...intersectingCountries, ...adminAreasIsoCodes]);
         },
         async updateCountries() {
