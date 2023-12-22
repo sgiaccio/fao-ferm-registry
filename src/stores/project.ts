@@ -420,39 +420,69 @@ export const useProjectStore = defineStore({
             await batch.commit();
             // await this.fetchGroupOwnedProjects();
         },
+
         async getCountriesIso2Codes() {
             if (!this.projectAreas || this.projectAreas.length === 0) return new Set();
 
-            const uuids = this.projectAreas.map(a => Object.values(a)).map(v => v[0].uuid).filter(uuid => uuid)
-            const intersectingCountries = uuids && uuids.length ? await getIntersectingCountries(uuids) : new Set();
-
-            const gaulLevel0 = await getGaulLevel0();
-            // also merge the countries from the admin areas
-            const adminAreasIsoCodes = new Set(this.projectAreas
-                .map(a => Object.values(a))
-                .map(v => +v[0].admin0)
-                .filter(a0 => a0)
-                .map(g => gaul2iso(gaulLevel0, g))
-                .filter(iso => iso));
+            const intersectingCountries = await _getPolygonsIso2Codes(this.projectAreas);
+            const adminAreasIsoCodes = await _getAdminAreasIso2Codes(this.projectAreas);
 
             return new Set([...intersectingCountries, ...adminAreasIsoCodes]);
         },
         async updateCountries() {
             alert('Please wait while the list of countries is updated. This may take a few seconds.');
             try {
-                this.getCountriesIso2Codes().then(intersectingCountries => {
-                    const oldCountries = new Set(this.project.project.countries);
-                    if (!setsContainSameValues(oldCountries, intersectingCountries)) {
-                        alert('The list of countries has changed. Please review it in the Areas & Ecosystems tab before saving.');
-                        this.project.project.countries = [...intersectingCountries];
-                    }
-                });
+                const intersectingCountries = await _getPolygonsIso2Codes(this.projectAreas);
+                const adminAreasIsoCodes = await _getAdminAreasIso2Codes(this.projectAreas);
+
+                const oldIso2Codes = new Set(this.project.project.countries);
+                const newIso2Codes = new Set([...intersectingCountries, ...adminAreasIsoCodes]);
+
+                if (!setsContainSameValues(oldIso2Codes, newIso2Codes)) {
+                    alert('The list of countries has changed. Please review it in the Areas & Ecosystems tab before saving.');
+                    this.project.project.countries = [...newIso2Codes];
+                }
+            } catch (e) {
+                alert('Error getting the new new list of countries');
+            }
+        },
+        async addCountriesFromAdminAreas() {
+            alert('Adding countries from admin areas');
+            try {
+                const adminAreasIsoCodes = await _getAdminAreasIso2Codes(this.projectAreas);
+                const oldIso2Codes = new Set(this.project.project.countries);
+                const newIso2Codes = new Set([...oldIso2Codes, ...adminAreasIsoCodes]);
+
+                if (!setsContainSameValues(oldIso2Codes, newIso2Codes)) {
+                    alert('The list of countries has changed. Please review it in the Areas & Ecosystems tab before saving.');
+                    this.project.project.countries = [...newIso2Codes];
+                }
             } catch (e) {
                 alert('Error getting the new new list of countries');
             }
         }
     }
 });
+
+async function _getPolygonsIso2Codes(projectAreas: any[]) {
+    const uuids = projectAreas.map(a => Object.values(a)).map(v => v[0].uuid).filter(uuid => uuid);
+    const intersectingCountries = uuids && uuids.length ? await getIntersectingCountries(uuids) : new Set();
+
+    return intersectingCountries;
+}
+
+async function _getAdminAreasIso2Codes(projectAreas: any[]) {
+    const gaulLevel0 = await getGaulLevel0();
+    // also merge the countries from the admin areas
+    const adminAreasIsoCodes = new Set(projectAreas
+        .map(a => Object.values(a))
+        .map(v => +v[0].admin0)
+        .filter(a0 => a0)
+        .map(g => gaul2iso(gaulLevel0, g))
+        .filter(iso => iso));
+
+    return adminAreasIsoCodes;
+}
 
 // const store = useProjectStore();
 // // Watch for changes in the project and update the projectAreas variable

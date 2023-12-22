@@ -51,8 +51,15 @@ const admin2Menu = ref();
 onMounted(async () => {
     admin0Menu.value = await getGaulLevel0();
     watch(() => props.modelValue, (curr, prev) => {
-        if (curr.admin0 !== prev.admin0)
-        store.updateCountries();
+        if (!store.project) return;
+
+        if (curr.admin0 !== prev.admin0) {
+            if (!prev.admin0) {
+                store.addCountriesFromAdminAreas();
+            } else {
+                store.updateCountries();
+            }
+        }
     }, { deep: true });
 });
 

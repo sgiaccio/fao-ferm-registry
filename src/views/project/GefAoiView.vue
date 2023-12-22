@@ -42,7 +42,7 @@ onMounted(async () => {
 });
 
 function getCountryName(iso2: string) {
-    const country = countries.value.find(c => console.log(c) || c.iso2 === iso2)
+    const country = countries.value.find(c => c.iso2 === iso2)
     return country?.label || null;
 }
 

@@ -298,7 +298,7 @@ function cancelSubmit() {
         <div class="mt-2">
             <label for="institutionTypeOther"
                    :class="[newInstitutionFormData.type === 'Other' ? 'text-gray-900' : 'text-gray-400', 'block text-sm font-medium leading-6']">Please
-                specify type <span v-if="newInstitutionFormData.type === 'Other'"
+                specify type if other <span v-if="newInstitutionFormData.type === 'Other'"
                       class="text-red-600">*</span></label>
             <div class="mt-2">
                 <input v-model="newInstitutionFormData.otherType"

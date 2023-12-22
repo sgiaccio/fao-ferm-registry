@@ -131,7 +131,7 @@ function uploadFile() {
     uploadTask.then(async () => {
         selectedFile.value = null;
         uploadStatus.value = 'uploaded';
-        await loadThumbnail(5);
+        await loadThumbnail(20);
     }).catch(_error => {
         uploadStatus.value = 'idle';
     });

@@ -117,7 +117,7 @@ async function uploadFile() {
         }).then(async uuidsAndAreas => {
             const uuidsAndAreasParsed = JSON.parse(uuidsAndAreas);
             const uuidsArr: string[] = uuidsAndAreasParsed.map(([uuid, _]: [string, any]) => uuid);
-            const areasArr: number[] = uuidsAndAreasParsed.map(([_, area]: [string, number]) => (area * 0.0001).toFixed(2));
+            const areasArr: number[] = uuidsAndAreasParsed.map(([_, area]: [string, number]) => (area * 1e-4).toFixed(2));
 
             uploadStatus.value = 'uploaded';
             emit('done', uuidsArr.map((uuid, i) => ({

@@ -131,7 +131,7 @@ def resize_images(data, context):
     with Image(blob=blob.download_as_string()) as image:
         new_height = min(thumb_height, image.height)
         ratio = float(image.width) / float(image.height)
-        image.sample(int(new_height * ratio), new_height)
+        image.resize(int(new_height * ratio), new_height)
         resized_image = image.make_blob('jpg')
 
         print(f"Image {file_name} was resized.")

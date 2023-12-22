@@ -55,6 +55,8 @@ async function cancel() {
 
 const { projectAreas } = storeToRefs(store)
 watch(projectAreas, (projectAreas, oldProjectAreas) => {
+    if (!store.project) return;
+
     if (projectAreas.length < oldProjectAreas.length) {
         // an element has been deleted, update countries list
         store.updateCountries();
