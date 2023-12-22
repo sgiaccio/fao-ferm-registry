@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue';
+import { onBeforeMount, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 import router from '@/router';
@@ -7,6 +7,8 @@ import router from '@/router';
 import { useBestPracticesStore } from '@/stores/bestpractices';
 
 import { ArrowRightCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/20/solid';
+
+import { onBeforeRouteLeave } from 'vue-router';
 
 
 const props = defineProps<{
@@ -20,6 +22,11 @@ const store = useBestPracticesStore();
 
 const route = useRoute();
 
+function beforeUnloadHandler(event: BeforeUnloadEvent) {
+  event.preventDefault();
+  event.returnValue = true;
+};
+
 onBeforeMount(async () => {
     const projectId = route.params.projectId as string;
     const bestPracticeId = route.params.id as string;
@@ -28,7 +35,21 @@ onBeforeMount(async () => {
     } else {
         await store.fetch(projectId as string, bestPracticeId);
     }
+    window.addEventListener("beforeunload", beforeUnloadHandler);
 });
+
+onUnmounted(() => {
+    window.removeEventListener("beforeunload", beforeUnloadHandler);
+});
+
+onBeforeRouteLeave((to, from) => {
+    if (!store.bestPractice) return true
+
+    const answer = window.confirm(
+        'Do you really want to leave? you have unsaved changes!'
+    )
+    if (!answer) return false
+})
 
 async function saveAndExit() {
     await store.save();

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, watch } from 'vue';
+import { onBeforeMount, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { storeToRefs } from 'pinia'
@@ -9,6 +9,8 @@ import router from '@/router';
 import { useProjectStore } from '@/stores/project';
 
 import { ArrowRightCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/20/solid';
+
+import { onBeforeRouteLeave } from 'vue-router';
 
 
 const props = defineProps<{
@@ -22,13 +24,35 @@ const store = useProjectStore();
 
 const route = useRoute();
 
+
+function beforeUnloadHandler(event: BeforeUnloadEvent) {
+    event.preventDefault();
+    event.returnValue = true;
+};
+
 onBeforeMount(async () => {
     if (route.params.id === 'new') {
         store.createEmptyProject(route.query.groupId as string);
     } else {
         await store.fetchProject(route.params.id as string);
     }
+    window.addEventListener("beforeunload", beforeUnloadHandler);
 });
+
+onUnmounted(() => {
+    window.removeEventListener("beforeunload", beforeUnloadHandler);
+});
+
+
+onBeforeRouteLeave((to, from) => {
+    if (!store.loaded) return true
+
+    const answer = window.confirm(
+        'Do you really want to leave? you have unsaved changes!'
+    )
+    if (!answer) return false
+})
+
 
 // const showJson = ref(false);
 // function toggleJson() {
