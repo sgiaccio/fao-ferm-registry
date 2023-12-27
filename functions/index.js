@@ -881,3 +881,12 @@ exports.getIntersectingCountries = areas.getIntersectingCountries;
  * **********************************************/
 const goodPractices = require("./goodPractices");
 exports.updateBpIdFieldOnWrite = goodPractices.updateBpIdFieldOnWrite;
+
+
+/************************************************
+ * 
+ * APPLICATION STATUS
+ * 
+ * **********************************************/
+const applicationStatus = require("./applicationStatus");
+exports.checkEmailSend = applicationStatus.checkEmailSend;

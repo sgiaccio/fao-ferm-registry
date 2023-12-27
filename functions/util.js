@@ -14,6 +14,7 @@ const assignmentRequestsCollection = db.collection("assignementRequests"); // Ty
 const newGroupRequestsCollection = db.collection("newGroupRequests");
 const mailCollection = db.collection("mail");
 const areasCollection = db.collection("areas");
+const applicationStateCollection = db.collection("applicationState");
 
 db.settings({ ignoreUndefinedProperties: true });
 
@@ -184,6 +185,8 @@ exports = module.exports = {
     newGroupRequestsCollection,
     mailCollection,
     areasCollection,
+    applicationStateCollection,
+    firestore: admin.firestore,
 
     findAsync,
 
