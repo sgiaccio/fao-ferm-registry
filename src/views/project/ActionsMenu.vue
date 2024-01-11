@@ -11,7 +11,7 @@ import { useProjectStore } from '@/stores/project';
 
 const projectStore = useProjectStore();
 
-import { submitForReview, publishProject, rejectProject } from '@/firebase/functions';
+import { submitForReview, publishProject, rejectProject, addProjectCollaboator } from '@/firebase/functions';
 
 import {
     EllipsisVerticalIcon,
@@ -23,7 +23,8 @@ import {
     CheckBadgeIcon,
     DocumentMagnifyingGlassIcon,
     EyeIcon,
-    ChevronDownIcon
+    ChevronDownIcon,
+    UserGroupIcon,
 } from '@heroicons/vue/20/solid';
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
@@ -98,11 +99,15 @@ async function deleteProject(projectId: string) {
 
 function goToEditRoute() {
     const routeName = route.name;
-    if (route.name === 'initiatives') {
+    if (routeName === 'initiatives') {
         router.push({ name: 'projectInfoEdit', params: { id: props.project.id } });
     } else {
         router.push({ name: `${String(routeName)}Edit`, params: { id: props.project.id } });
     }
+}
+
+function goToCollaboratorsRoute() {
+    router.push({ name: 'projectCollaborators', params: { id: props.project.id } });
 }
 </script>
 
@@ -259,6 +264,15 @@ function goToEditRoute() {
                             Edit
                         </div>
                     </menu-item>
+<!--                    <menu-item v-if="true"-->
+<!--                               v-slot="{ active }">-->
+<!--                        <div @click="goToCollaboratorsRoute"-->
+<!--                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">-->
+<!--                            <user-group-icon class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"-->
+<!--                                                            aria-hidden="true" />-->
+<!--                            Collaborators-->
+<!--                        </div>-->
+<!--                    </menu-item>-->
                     <menu-item v-if="projectUtils.canSubmit(project) && (!sections || sections.includes('publishing'))"
                                v-slot="{ active }">
                         <div @click="openSubmitDialog"

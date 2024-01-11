@@ -38,7 +38,7 @@ function _getGroupsWhereRole(context, role) {
     return Object.keys(privileges).filter(group => privileges[group] === role);
 }
 
-function _getGroupsWhereEditor(context) {
+function getGroupsWhereEditor(context) {
     return _getGroupsWhereRole(context, "editor");
 }
 
@@ -161,7 +161,7 @@ async function getGroupAdminEmails(groupId) {
 // }
 
 function isGroupEditor(context, project) {
-    const groupsWhereEditor = _getGroupsWhereEditor(context);
+    const groupsWhereEditor = getGroupsWhereEditor(context);
     return groupsWhereEditor.includes(project.group);
 }
 
@@ -175,6 +175,55 @@ async function isProjectPublic(projectId) {
     return !!project.status && project.status === "public";
 }
 
+// exports.createUser = async function (email, displayName, privileges, isAdmin, context) {
+//     // check if the user is an admin
+//     if (!isSuperAdmin(context)) {
+//         throw new functions.https.HttpsError("permission-denied", "Only admins can create new users");
+//     }
+
+//     // Validate the input
+//     if (typeof isAdmin === "undefined") {
+//         throw new functions.https.HttpsError("invalid-argument", "admin is undefined");
+//     }
+
+//     if (!email) {
+//         throw new functions.https.HttpsError("invalid-argument", "The function must be called with one argument \"email\" containing the email for the user.");
+//     }
+
+//     const invalidGroup = await checkValidGroups(privileges);
+//     if (invalidGroup) {
+//         throw new functions.https.HttpsError("invalid-argument", `Invalid group id ${invalidGroup}`);
+//     }
+
+//     const invalidLevelGroup = await checkValidLevels(privileges);
+//     if (invalidLevelGroup) {
+//         throw new functions.https.HttpsError("invalid-argument", `Invalid privilege ${privileges[invalidLevelGroup]} level for group ${invalidLevelGroup}`);
+//     }
+
+//     try {
+//         // Create the user
+//         const user = {
+//             email,
+//         };
+//         if (displayName) {
+//             user.displayName = displayName;
+//         }
+//         const userRecord = await admin.auth().createUser(user);
+
+//         // Set the custom claims on the newly created user. Just print the error to the console for now.
+//         const uid = userRecord.uid;
+//         try {
+//             await admin.auth().setCustomUserClaims(uid, { privileges, admin: isAdmin });
+//         } catch (err) {
+//             console.error("Error setting custom claims:", JSON.stringify(err, null, 2));
+//         }
+//         return userRecord;
+//     } catch (err) {
+//         console.error("Error creating new user:", JSON.stringify(err, null, 2));
+//         throw new Error("Error creating new user");
+//     }
+// };
+  
 exports = module.exports = {
     db,
     usersCollection,
@@ -193,11 +242,13 @@ exports = module.exports = {
     GROUP_ROLES,
     STATUSES,
 
+    getUser,
     getUserEmail,
     getUserDisplayName,
     getGroupName,
     isSuperAdmin,
     getGroupsWhereAdmin,
+    getGroupsWhereEditor,
     isGroupAdmin,
     getGroupAdminEmails,
     getSuperAdminEmails,

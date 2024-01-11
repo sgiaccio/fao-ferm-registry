@@ -124,6 +124,10 @@ const router = createRouter({
                     path: "newGroups",
                     name: "newGroups",
                     component: () => import('../views/admin/NewGroupRequestsView.vue')
+                }, {
+                    path: "appState",
+                    name: "appState",
+                    component: () => import('../views/admin/AppState.vue')
                 }
             ]
         }, {
@@ -149,6 +153,10 @@ const router = createRouter({
                     path: 'initiatives',
                     name: 'initiatives',
                     component: () => import('../views/project/ProjectListView.vue'),
+                }, {
+                    path: 'initiatives/:id/collaborators',
+                    name: 'projectCollaborators',
+                    component: () => import('../views/project/CollaboratorsView.vue'),  
                 }, {
                     path: 'initiatives/:id',
                     component: () => import('../views/project/ProjectView.vue'),

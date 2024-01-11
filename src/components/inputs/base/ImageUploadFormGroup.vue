@@ -88,7 +88,7 @@ vue.onMounted(async () => {
 
 function revokeObjectURL() {
     if (thumbnailUrl.value) {
-        URL.revokeObjectURL(thumbnailUrl.value!);
+        URL.revokeObjectURL(thumbnailUrl.value);
     }
 }
 
@@ -157,7 +157,7 @@ function deleteFile() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
     }).catch(error => {
-        console.error(error); // DEBUG
+        console.error(error);
     }).finally(() => {
         loadThumbnail();
         uploadStatus.value = 'idle';

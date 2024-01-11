@@ -18,7 +18,7 @@ const route = useRoute();
 const { bestPractice } = storeToRefs(store);
 
 onBeforeMount(async () => {
-    await store.fetch(route.params.id as string);
+    await store.fetch(route.params.projectId as string, route.params.id as string);
 });
 
 watch(bestPractice, bp => {

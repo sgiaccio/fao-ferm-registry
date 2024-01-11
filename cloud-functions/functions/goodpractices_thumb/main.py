@@ -110,7 +110,8 @@ def _upload_blob(bucket_name, source_file, destination_blob_name):
 
     blob.upload_from_file(source_file, rewind=True)
 
-# Resizes images that are uploaded.
+# Resizes images that are uploaded - 512 MB should be allocated to this function
+# It's triggered by the fao-ferm-goodpractices bucket uploads
 def resize_images(data, context):
     file_data = data
     file_name = file_data["name"]

@@ -1,15 +1,21 @@
 const functions = require("firebase-functions");
-const { mailCollection, applicationStateCollection, db, firestore } = require('./util');
+const { defineString } = require("firebase-functions/params");
+
+const { mailCollection, applicationStateCollection, firestore } = require('./util');
+
+
+const emailCheck = defineString("EMAIL_CHECK");
 
 
 exports.checkEmailSend = functions
     // schedule the function to run every day at 9am
+    .region('europe-west3')
     .pubsub.schedule('0 9 * * *')
     .onRun(async (_context) => {
         try {
             const mailDoc = {
                 // TODO: put the email in a config parameter.
-                to: "stefano.giaccio@fao.org",
+                to: emailCheck.value(),
                 message: {
                     subject: "Email check",
                     text: "Make sure that you get this email every day",

@@ -140,7 +140,7 @@ function onClose() {
                 :onClose="onClose"
                 :open="showTanksDialog"
                 title="Thank you for registering"
-                buttonText="Go to the registry">
+                buttonText="Enter the registry">
         <p class="text-sm text-gray-500">To proceed, select a group and submit a join request. Administrators will review your request and notify you of their decision.</p>
     </AlertModal>
 

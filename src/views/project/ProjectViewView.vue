@@ -2,9 +2,7 @@
 import { onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { PencilSquareIcon, PrinterIcon, ArrowSmallLeftIcon, ArrowSmallRightIcon } from '@heroicons/vue/20/solid';
-
-import router from '@/router';
+import { ArrowSmallLeftIcon, ArrowSmallRightIcon } from '@heroicons/vue/20/solid';
 
 import { useProjectStore } from '@/stores/project';
 import ActionsMenu from '@/views/project/ActionsMenu.vue';
@@ -24,15 +22,6 @@ const route = useRoute();
 onBeforeMount(async () => {
     await store.fetchProject(route.params.id as string);
 });
-
-function edit() {
-    router.push({ name: 'projectInfoEdit', params: { id: route.params.id } });
-}
-
-async function print() {
-    const routeData = router.resolve({ name: 'printInitiative' });
-    window.open(routeData.href, '_blank');
-}
 </script>
 
 <template>

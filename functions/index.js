@@ -109,6 +109,47 @@ exports.listAllUsers = functions.https.onCall(async (_data, context) => {
 //     }
 // });
 
+// This function returns the list of editors in the given group
+exports.listGroupEditors = functions.https.onCall(async ({ groupId }, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError("unauthenticated", "User is not authenticated");
+    }
+
+    // check that the user is an admin or an editor of the group or a superadmin
+    const isSuperAdmin = util.isSuperAdmin(context);
+    const groupsWhereAdmin = util.getGroupsWhereAdmin(context);
+    const groupsWhereEditor = util.getGroupsWhereEditor(context);
+    const isGroupAdmin = groupsWhereAdmin.includes(groupId);
+    const isGroupEditor = groupsWhereEditor.includes(groupId);
+
+    // const isGroupEditor = util.isGroupEditor(context, groupId);
+    if (!isSuperAdmin && // this will be needed when we will allow superadmins to list all users and invite them to groups or assign them as collaborators to initiatives
+        !isGroupAdmin &&
+        !isGroupEditor
+    ) {
+        throw new functions.https.HttpsError("permission-denied", "User is not a superadmin nor an admin nor an editor of the group");
+    }
+
+    try {
+        // Get all the users
+        const allUsers = await admin.auth().listUsers();
+        // get only the users that are editors of the group
+        const filteredUsers = allUsers.users.filter(u => u.customClaims && u.customClaims.privileges && u.customClaims.privileges[groupId] === 'editor');
+        return {
+            users: filteredUsers.map(u => ({
+                uid: u.uid,
+                photoURL: u.photoURL,
+                displayName: u.displayName,
+                enabled: u.enabled,
+                metadata: u.metadata
+            }))
+        };
+    } catch (error) {
+        console.error("Error in listMyGroupEditors function:", error);
+        throw new functions.https.HttpsError("internal", "Something went wrong. Please try again later.");
+    }
+});
+
 exports.listAdminGroupsUsers = functions.https.onCall(async (_data, context) => {
     if (!context.auth) {
         throw new functions.https.HttpsError("unauthenticated", "User is not authenticated");
@@ -129,7 +170,7 @@ exports.listAdminGroupsUsers = functions.https.onCall(async (_data, context) => 
         // Delete duplicate users
         // const usersNoDuplicates = filteredUsers.reduce((acc, val) => acc.includes(val) ? acc : [...acc, val], []);
 
-        // Make suer that we don't return sensitive data
+        // Make sure that we don't return sensitive data
         return {
             users: filteredUsers.map(u => ({
                 uid: u.uid,
@@ -890,3 +931,11 @@ exports.updateBpIdFieldOnWrite = goodPractices.updateBpIdFieldOnWrite;
  * **********************************************/
 const applicationStatus = require("./applicationStatus");
 exports.checkEmailSend = applicationStatus.checkEmailSend;
+
+/************************************************
+ * 
+ * PRIVILEGES
+ * 
+ * **********************************************/
+const privileges = require("./privileges");
+exports.addProjectCollaborator = privileges.addProjectCollaborator;

@@ -105,13 +105,26 @@ export async function getPolygonZonalStats(polygonId: string, stats: string) {
 export async function getIntersectingCountries(uuids: string[]): Promise<Set<string>> {
     const functions = getFunctions();
     const callGetIntersectingCountries = httpsCallable(functions, 'getIntersectingCountries');
-  
+
     try {
-      const result = await callGetIntersectingCountries({ uuids });
-      return new Set(result.data as string[]);
+        const result = await callGetIntersectingCountries({ uuids });
+        return new Set(result.data as string[]);
     } catch (error) {
-      console.error('Error fetching intersecting countries:', error);
-      throw error; // Re-throw the error or handle it as needed.
+        console.error('Error fetching intersecting countries:', error);
+        throw error; // Re-throw the error or handle it as needed.
     }
-  }
-  
+}
+
+export async function getGroupEditors(groupId: string) {
+    const functions = getFunctions();
+    const listGroupEditors = httpsCallable(functions, 'listGroupEditors');
+    const result = await listGroupEditors({ groupId });
+    return result.data;
+}
+
+export async function addProjectCollaboator(projectId: string, uid: string) {
+    const functions = getFunctions();
+    const addProjectCollaboator = httpsCallable(functions, 'addProjectCollaborator');
+    const result = await addProjectCollaboator({ projectId, uid });
+    return result.data;
+}
