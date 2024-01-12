@@ -89,7 +89,7 @@ function cancel() {
                                     </div>
                                 </template>
 
-                                <div :class="[type ? 'sm:ml-4' : '', 'mt-12 text-center sm:mt-0 sm:text-left']">
+                                <div :class="[type ? 'sm:ml-4 sm:flex-grow' : '', 'mt-12 text-center sm:mt-0 sm:text-left sm:flex-grow']">
                                     <DialogTitle v-if="title"
                                                  as="h3"
                                                  class="sm:mt-2 font-akrobat text-3xl font-bold _leading-6 text-ferm-blue-light-800">{{ title }}</DialogTitle>

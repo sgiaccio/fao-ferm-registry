@@ -13,6 +13,7 @@ const tabs = [
     { name: 'Submitted initiatives', routeName: 'submittedInitiatives', current: false, superAdminOnly: false },
     { name: 'Institution assignments requests', routeName: 'groupAssignments', current: false, superAdminOnly: false },
     { name: 'New institution requests', routeName: 'newGroups', current: false, superAdminOnly: true },
+    // { name: 'Application state', routeName: 'appState', current: false, superAdminOnly: true },
 ]
 
 const store = useAuthStore();

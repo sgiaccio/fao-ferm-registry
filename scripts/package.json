@@ -1,0 +1,16 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "Scripts to manage the firebase project (Firestore, auth, etc.)",
+  "main": "addNumGoodPractices.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "firebase-admin": "^11.10.1",
+    "fuse.js": "^7.0.0"
+  }
+}
