@@ -111,7 +111,7 @@ export async function getIntersectingCountries(uuids: string[]): Promise<Set<str
         return new Set(result.data as string[]);
     } catch (error) {
         console.error('Error fetching intersecting countries:', error);
-        throw error; // Re-throw the error or handle it as needed.
+        throw error;
     }
 }
 
@@ -127,4 +127,10 @@ export async function addProjectCollaboator(projectId: string, uid: string) {
     const addProjectCollaboator = httpsCallable(functions, 'addProjectCollaborator');
     const result = await addProjectCollaboator({ projectId, uid });
     return result.data;
+}
+
+export async function saveProjectCollaborators(projectId: string, collaboratorsUids: string[]) {
+    const functions = getFunctions();
+    const saveProjectCollaborators = httpsCallable(functions, 'saveProjectCollaborators');
+    return saveProjectCollaborators({ projectId, collaboratorsUids });
 }

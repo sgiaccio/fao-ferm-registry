@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { CheckCircleIcon, ChevronDownIcon, ChevronRightIcon, TrashIcon } from '@heroicons/vue/20/solid';
+import { computed, ref } from 'vue';
+
+import { TrashIcon } from '@heroicons/vue/20/solid';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
-import { computed, ref } from 'vue';
 
 
 const props = defineProps({
@@ -56,7 +57,6 @@ const newIndicatorValid = computed(() => {
 });
 </script>
 
-
 <template>
     <ConfirmModal :open="showIndicatorDialog"
                   @confirm="addIndicator"
@@ -68,13 +68,12 @@ const newIndicatorValid = computed(() => {
         <div class="flex flex-col gap-y-6 mt-6">
             <div class="relative">
                 <label for="indicator"
-                       class="absolute -top-2 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-900">Indicator
-                    group</label>
+                       class="absolute -top-2 left-2 inline-block bg-white px-1 text-xs font-medium text-gray-900">Indicator</label>
                 <input type="text"
                        name="indicator"
                        id="indicator"
                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                       placeholder="i.e. Products Harvested"
+                       placeholder="e.g. Products Harvested"
                        v-model="newIndicator.indicator" />
             </div>
             <div class="relative">
@@ -84,7 +83,7 @@ const newIndicatorValid = computed(() => {
                        name="metric"
                        id="metric"
                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                       placeholder="i.e. Volume of Food Crops Harvested Per Year"
+                       placeholder="e.g. Volume of Food Crops Harvested Per Year"
                        v-model="newIndicator.metric" />
             </div>
             <div class="relative">
@@ -94,7 +93,7 @@ const newIndicatorValid = computed(() => {
                        name="unit"
                        id="unit"
                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                       placeholder="i.e. kg/ha"
+                       placeholder="e.g. kg/ha"
                        v-model="newIndicator.unit" />
             </div>
         </div>

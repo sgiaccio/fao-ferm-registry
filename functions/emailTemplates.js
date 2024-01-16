@@ -255,7 +255,7 @@ exports.newGroupRejection = function(email, displayName, institutionName) {
 
                 <p>Dear ${displayName || email},</p>
 
-                <p>Thank you for your interest in creating a new institution, <strong${institutionName}</strong>, 
+                <p>Thank you for your intrerest in creating a new institution, <strong${institutionName}</strong>, 
                 within our restoration community. We value your commitment and the initiative you have shown 
                 towards our shared goal of environmental conservation.</p>
 
@@ -276,6 +276,23 @@ exports.newGroupRejection = function(email, displayName, institutionName) {
                 <p>We truly appreciate your understanding and your continued support of our collective 
                 restoration efforts. We look forward to your future contributions within our community.</p>
 
+                <p>Best regards,</p>
+                
+                <p>The FERM Team<br>
+                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+            `
+        }
+    };
+}
+
+exports.newCollaborator = function(email, displayName, projectTitle, projectId) {
+    return {
+        to: email,
+        message: {
+            subject: `You have been added as a collaborator to the initiative ${projectTitle}`,
+            html: `
+                <p>Dear ${displayName || email},</p>
+                <p>You have been added as a collaborator to the initiative ${projectTitle}. You can access the initiative at <a href="${baseUrl}/registry/initiatives/${projectId}">${baseUrl}/registry/initiatives/${projectId}</a></p>
                 <p>Best regards,</p>
                 
                 <p>The FERM Team<br>

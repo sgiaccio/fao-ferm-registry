@@ -30,6 +30,7 @@ import {
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 
 import TwoStagesDialog from '@/components/TwoStagesDialog.vue';
+import { canAddCollaborators } from '@/lib/project';
 
 
 const props = withDefaults(defineProps<{
@@ -264,15 +265,15 @@ function goToCollaboratorsRoute() {
                             Edit
                         </div>
                     </menu-item>
-<!--                    <menu-item v-if="true"-->
-<!--                               v-slot="{ active }">-->
-<!--                        <div @click="goToCollaboratorsRoute"-->
-<!--                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">-->
-<!--                            <user-group-icon class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"-->
-<!--                                                            aria-hidden="true" />-->
-<!--                            Collaborators-->
-<!--                        </div>-->
-<!--                    </menu-item>-->
+                    <menu-item v-if="canAddCollaborators(project)"
+                               v-slot="{ active }">
+                        <div @click="goToCollaboratorsRoute"
+                             :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']">
+                            <user-group-icon class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                            aria-hidden="true" />
+                            Collaborators
+                        </div>
+                    </menu-item>
                     <menu-item v-if="projectUtils.canSubmit(project) && (!sections || sections.includes('publishing'))"
                                v-slot="{ active }">
                         <div @click="openSubmitDialog"

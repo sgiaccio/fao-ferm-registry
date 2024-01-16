@@ -2,28 +2,20 @@
 import { computed, ref, onBeforeMount } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
 
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
+import { CheckIcon, ChevronUpDownIcon, TrashIcon } from '@heroicons/vue/20/solid';
 
 import {
-    // Combobox,
-    // ComboboxButton,
-    // ComboboxInput,
-    // ComboboxLabel,
-    // ComboboxOption,
-    // ComboboxOptions,
     Listbox,
     ListboxButton,
     ListboxOptions,
-    ListboxOption,
-} from '@headlessui/vue'
-
-// import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-// import { ChevronDownIcon } from '@heroicons/vue/20/solid'
+    ListboxOption
+} from '@headlessui/vue';
 
 import { useProjectStore } from '@/stores/project';
 import { useAuthStore } from '@/stores/auth';
 
-import { getAdminGroupsUsers, getAllUsers, getGroupEditors } from '@/firebase/functions';
+import { saveProjectCollaborators, getGroupEditors } from '@/firebase/functions';
+import router from '@/router';
 
 
 const store = useProjectStore();
@@ -37,7 +29,7 @@ interface User {
 }
 
 const collaborators = ref<User[]>([]);
-const availableUsers = ref<User[]>([]);
+const availableUsers = ref<User[] | null>();
 
 
 onBeforeMount(async () => {
@@ -49,7 +41,7 @@ onBeforeMount(async () => {
     const allUsers = users.users.map((u: any) => ({
         uid: u.uid,
         displayName: u.displayName,
-        email: u.email,
+        email: u.email
     }));
 
     availableUsers.value = allUsers.filter((user: any) => {
@@ -65,15 +57,15 @@ onBeforeRouteLeave((_to, _from) => {
     store.resetProjectState();
 });
 
-const query = ref('')
+const query = ref('');
 const filteredUsers = computed(() => {
     if (!availableUsers.value) {
         return [];
     }
     return query.value === ''
         ? availableUsers.value
-        : availableUsers.value.filter(user => user.displayName.toLowerCase().includes(query.value.toLowerCase()))
-})
+        : availableUsers.value.filter(user => user.displayName.toLowerCase().includes(query.value.toLowerCase()));
+});
 
 function addCollaborator(user: User) {
     if (user) {
@@ -86,153 +78,111 @@ function removeCollaborator(user: any) {
     collaborators.value = collaborators.value.filter((u: any) => u.uid !== user.uid).sort((a: any, b: any) => a.displayName.localeCompare(b.displayName));
     availableUsers.value = [...availableUsers.value, user].sort((a: any, b: any) => a.displayName.localeCompare(b.displayName));
 }
+
+const saving = ref(false);
+async function save() {
+    if (!saving.value) {
+        saving.value = true;
+        try {
+            await saveProjectCollaborators(store.id, collaborators.value.map((u: any) => u.uid));
+            alert('saved');
+        } catch (e) {
+            alert('Error saving collaborators');
+            console.error(e);
+        } finally {
+            saving.value = false;
+            router.push({ name: "initiatives" });
+        }
+    }
+}
 </script>
 
 <template>
     <!-- <pre>{{ JSON.stringify(collaborators || [], null, 2) }}</pre>
     <pre>{{ JSON.stringify(availableUsers || [], null, 2) }}</pre> -->
-    <div>
-        Collaborators
-    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-1">
+        <div class="max-w-3xl mx-auto">
 
-    <div class="max-w-lg m-auto">
-        <ul role="list"
-            class="divide-y divide-gray-100">
-            <li v-for="user in collaborators"
-                :key="user.uid"
-                class="flex items-center justify-between gap-x-6 py-5">
-                <div class="flex min-w-0 gap-x-4">
-                    <!-- <img class="h-12 w-12 flex-none rounded-full bg-gray-50"
-                         :src="person.imageUrl"
-                         alt="" /> -->
-                    <div class="min-w-0 flex-auto">
-                        <p class="text-sm font-semibold leading-6 text-gray-900">{{ user.displayName }}</p>
-                        <!-- <p class="mt-1 truncate text-xs leading-5 text-gray-500">{{ person.email }}</p> -->
+            <!--            <h1 class="bg-ferm-blue-light-200 text-black py-3 md:py-5 rounded-md text-center text-3xl dark:bg-ferm-blue-dark-900 dark:text-white uppercase font-bold">Collaborators</h1>-->
+
+            <div class="max-w-lg m-auto border rounded-lg mt-6 px-6 py-6">
+                <h1 class="block text-xl mb-6 font-bold leading-6 text-gray-800">Collaborators of the
+                    <span class="italic">{{ store.project?.project?.title }}</span> project</h1>
+                <ul role="list"
+                    class="divide-y divide-gray-100">
+                    <li v-for="user in collaborators"
+                        :key="user.uid"
+                        class="flex items-center justify-between gap-x-6 pb-5">
+                        <div class="flex min-w-0 gap-x-4">
+                            <div class="min-w-0 flex-auto">
+                                <p class="text-sm font-semibold leading-6 text-gray-900">{{ user.displayName }}</p>
+                            </div>
+                        </div>
+                        <button @click="removeCollaborator(user)">
+                            <TrashIcon
+                                class="h-5 w-5 text-red-600 hover:text-red-500"
+                                aria-hidden="true"
+                                aria-label="Delete" />
+                        </button>
+                    </li>
+                </ul>
+
+                <Listbox v-if="availableUsers?.length > 0"
+                         as="div"
+                         @update:modelValue="value => addCollaborator(value)">
+                    <div class="relative mt-2">
+                        <ListboxButton
+                            class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                            <span class="block truncate">Add a collaborator</span>
+                            <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
+                                                   aria-hidden="true" />
+                            </span>
+                        </ListboxButton>
+
+                        <transition leave-active-class="transition ease-in duration-100"
+                                    leave-from-class="opacity-100"
+                                    leave-to-class="opacity-0">
+                            <ListboxOptions
+                                class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                <ListboxOption as="template"
+                                               v-for="user in filteredUsers"
+                                               :key="user.uid"
+                                               :value="user"
+                                               v-slot="{ active, selected }">
+                                    <li :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
+                                        <span
+                                            :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{ user.displayName
+                                            }}</span>
+
+                                        <span v-if="selected"
+                                              :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
+                                            <CheckIcon class="h-5 w-5"
+                                                       aria-hidden="true" />
+                                        </span>
+                                    </li>
+                                </ListboxOption>
+                            </ListboxOptions>
+                        </transition>
                     </div>
+                </Listbox>
+                <div class="text-gray-600 text-sm italic" v-else-if="availableUsers">
+                    No more editors are available in your organization
                 </div>
-                <button @click="removeCollaborator(user)"
-                        class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Remove</button>
-            </li>
-        </ul>
+                <div v-else class="text-gray-600 text-md">Loading editors list...</div>
+                <div class="flex pt-6 justify-end">
+                    <button @click="() => router.push({ name: 'initiatives' })"
+                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Cancel
+                    </button>
 
-
-        <!-- <Combobox v-if="availableUsers.length > 0"
-                  as="div"
-                  @update:modelValue="value => addCollaborator(value)">
-            <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-900">Add collaborator</ComboboxLabel>
-            <div class="relative mt-2">
-                <ComboboxInput class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                               @change="query = $event.target.value" />
-                <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                    <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
-                                       aria-hidden="true" />
-                </ComboboxButton>
-
-                <ComboboxOptions v-if="filteredUsers.length > 0"
-                                 class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                    <ComboboxOption v-for="user in filteredUsers"
-                                    :key="user.uid"
-                                    :value="user"
-                                    as="template"
-                                    v-slot="{ active, selected }">
-                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
-                            <span :class="['block truncate', selected && 'font-semibold']">
-                                {{ user.displayName }}
-                            </span>
-
-                            <span v-if="selected"
-                                  :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
-                                <CheckIcon class="h-5 w-5"
-                                           aria-hidden="true" />
-                            </span>
-                        </li>
-                    </ComboboxOption>
-                </ComboboxOptions>
+                    <button
+                        :class="['mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']"
+                        @click="save">
+                        Save
+                    </button>
+                </div>
             </div>
-        </Combobox> -->
-
-
-        <Listbox v-if="availableUsers.length > 0"
-                 as="div"
-                 @update:modelValue="value => addCollaborator(value)">
-            <ListboxLabel class="block text-sm font-medium leading-6 text-gray-900">Add collaborator</ListboxLabel>
-            <div class="relative mt-2">
-                <ListboxButton class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                    <span class="block truncate">Collaborators</span>
-                    <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                        <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
-                                           aria-hidden="true" />
-                    </span>
-                </ListboxButton>
-
-                <transition leave-active-class="transition ease-in duration-100"
-                            leave-from-class="opacity-100"
-                            leave-to-class="opacity-0">
-                    <ListboxOptions class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        <ListboxOption as="template"
-                        v-for="user in filteredUsers"
-                                       :key="user.uid"
-                                       :value="user"
-                                       v-slot="{ active, selected }">
-                            <li :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
-                                <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{ user.displayName }}</span>
-
-                                <span v-if="selected"
-                                      :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
-                                    <CheckIcon class="h-5 w-5"
-                                               aria-hidden="true" />
-                                </span>
-                            </li>
-                        </ListboxOption>
-                    </ListboxOptions>
-                </transition>
-            </div>
-        </Listbox>
-
-
-        <Listbox v-if="availableUsers.length > 0"
-                 @update:modelValue="value => addCollaborator(value)">
-            <ListboxButton>Add collaborator</ListboxButton>
-            <ListboxOptions>
-                <ListboxOption v-for="user in filteredUsers"
-                               :key="user.uid"
-                               :value="user">
-                    {{ user.displayName }}
-                </ListboxOption>
-            </ListboxOptions>
-        </Listbox>
-
-        <!-- <Menu v-if="availableUsers.length > 0"
-              as="div"
-              class="relative inline-block text-left">
-            <div>
-                <MenuButton class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                    Add collaborator
-                    <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400"
-                                     aria-hidden="true" />
-                </MenuButton>
-            </div>
-
-            <transition enter-active-class="transition ease-out duration-100"
-                        enter-from-class="transform opacity-0 scale-95"
-                        enter-to-class="transform opacity-100 scale-100"
-                        leave-active-class="transition ease-in duration-75"
-                        leave-from-class="transform opacity-100 scale-100"
-                        leave-to-class="transform opacity-0 scale-95">
-                <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div class="py-1">
-                        <MenuItem v-slot="{ active }"
-                                  v-for="user in filteredUsers"
-                                  :key="user.uid"
-                                  @click="addCollaborator(user)">
-                        <span :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm cursor-pointer']">{{ user.displayName }}</span>
-                        </MenuItem>
-                    </div>
-                </MenuItems>
-            </transition>
-        </Menu> -->
-        <div v-else>
-            No more users available in your organization.
         </div>
     </div>
 </template>

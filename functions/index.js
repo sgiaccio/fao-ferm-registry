@@ -938,4 +938,4 @@ exports.checkEmailSend = applicationStatus.checkEmailSend;
  * 
  * **********************************************/
 const privileges = require("./privileges");
-exports.addProjectCollaborator = privileges.addProjectCollaborator;
+exports.saveProjectCollaborators = privileges.saveProjectCollaborators;
