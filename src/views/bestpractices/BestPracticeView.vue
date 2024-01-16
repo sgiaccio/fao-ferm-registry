@@ -105,7 +105,7 @@ async function closeGuidelines(accepted: boolean) {
                     <div class="border-b border-gray-200">
                         <nav class="-mb-px flex" aria-label="Tabs">
                             <router-link v-for="tab in tabs" :key="tab.name" :to="tab.href"
-                                :class="[route.name === tab.href ? 'border-indigo-500  text-indigo-600 dark:text-indigo-100' : 'border-transparent text-gray-500 dark:text-indigo-300 hover:text-gray-700 dark:hover:text-indigo-200 hover:border-gray-300', 'w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm']"
+                                :class="[route.name === tab.href ? 'border-indigo-500  text-indigo-600 dark:text-indigo-100' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm']"
                                 :aria-current="route.name === tab.href ? 'page' : undefined">{{
                                     tab.name
                                 }}</router-link>
@@ -196,10 +196,10 @@ async function closeGuidelines(accepted: boolean) {
 
             <router-view :previous="gotoPreviousTab" :next="gotoNextTab" :first="firstTab" :last="lastTab"/>
 
-            <!-- <button class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
+            <!-- <button class="absolute left-0 border hover:text-amber-800 text-amber-500 font-semibold border-gray-300 bg-gray-200 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
                     @click="toggleJson">JSON</button>
             <pre v-if="showJson"
-                 class="mb-10 text-xs font-medium text-amber-700 dark:text-amber-600 top-20">{{ JSON.stringify(store.bestPractice, null, 2) }}</pre> -->
+                 class="mb-10 text-xs font-medium text-amber-700 top-20">{{ JSON.stringify(store.bestPractice, null, 2) }}</pre> -->
         </div>
     </div>
 </template>

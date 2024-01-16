@@ -46,13 +46,13 @@ const lastWord = computed(() => {
         </AlertModal>
         <fieldset @focusout="emit('focusout')">
             <div class="sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start py-5 sm:content-center">
-                <legend class="block text-sm font-bold text-gray-700 dark:text-zinc-300 sm:mt-px">
+                <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
                     {{ labelWithoutLastWord }}
                     <span class="whitespace-nowrap">
                         {{ lastWord }}
                         <template v-if="$slots.info">
                             <InformationCircleIcon @click="() => showAlertModal = true"
-                                                    class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
+                                                    class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 cursor-pointer" />
                         </template>
                     </span>
                 </legend>

@@ -103,7 +103,7 @@ async function save() {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-1">
         <div class="max-w-3xl mx-auto">
 
-            <!--            <h1 class="bg-ferm-blue-light-200 text-black py-3 md:py-5 rounded-md text-center text-3xl dark:bg-ferm-blue-dark-900 dark:text-white uppercase font-bold">Collaborators</h1>-->
+            <!--            <h1 class="bg-ferm-blue-light-200 text-black py-3 md:py-5 rounded-md text-center text-3xl uppercase font-bold">Collaborators</h1>-->
 
             <div class="max-w-lg m-auto border rounded-lg mt-6 px-6 py-6">
                 <h1 class="block text-xl mb-6 font-bold leading-6 text-gray-800">Collaborators of the

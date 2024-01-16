@@ -347,7 +347,7 @@ onMounted(async () => {
         <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
         <div class="mx-auto max-w-5xl">
 
-            <div class="px-4 lg:px-0 mt-10 text-lg leading-snug font-akrobat font-semibold text-center max-w-2xl mx-auto text-gray-700 dark:text-gray-400 tracking-wide">The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.</div>
+            <div class="px-4 lg:px-0 mt-10 text-lg leading-snug font-akrobat font-semibold text-center max-w-2xl mx-auto text-gray-700 tracking-wide">The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.</div>
 
             <div class="px-4 sm:px-0 mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
 

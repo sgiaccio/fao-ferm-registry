@@ -126,7 +126,7 @@ function nSelectedByGoal(goal: string) {
 
         <div v-if="edit"
              class="shadow-md rounded">
-            <div class="w-full px-2.5 py-2 font-bold text-gray-700 dark:text-gray-200 border-t border-x border-gray-300 cursor-pointer flex gap-0.5 rounded-t hover:bg-gray-100 dark:hover:bg-gray-900"
+            <div class="w-full px-2.5 py-2 font-bold text-gray-700 border-t border-x border-gray-300 cursor-pointer flex gap-0.5 rounded-t hover:bg-gray-100 dark:hover:bg-gray-900"
                  :class="[!showAreaGoals ? 'rounded-b border-b' : '']"
                  @click="toggleAreaGoals">
                 <ChevronRightIcon v-if="!showAreaGoals"
@@ -155,7 +155,7 @@ function nSelectedByGoal(goal: string) {
                          :class="j === groupByGoal(sortedGoalIndicators).length - 1 ? 'rounded-b-md' : ''"
                          :style="`border-color: ${getGoalColor(goal.goal)};`">
                         <div v-for="indicator  in  goal.indicators"
-                             :class="['px-3 py-2 border-b last:border-b-0 text-black dark:text-gray-200', isSelected(indicator) ? '' : 'hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer']"
+                             :class="['px-3 py-2 border-b last:border-b-0 text-black dark:text-gray-200', isSelected(indicator) ? '' : 'hover:bg-gray-50 cursor-pointer']"
                              :style="`border-color: ${getGoalColor(goal.goal, 0.4)}`"
                              @click="() => addIndicator(indicator)">
                             <div class="flex flex-row">

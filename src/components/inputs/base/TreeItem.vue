@@ -129,7 +129,7 @@ function bubble(val: number[]) {
             </div>
             <div class="ml-3 text-sm">
                 <label :for="`${uid}_${treeData?.value}`"
-                       class="font-normal dark:text-zinc-300 cursor-pointer">{{ treeData?.label }}</label>
+                       class="font-normal cursor-pointer">{{ treeData?.label }}</label>
             </div>
         </div>
         <ul class="ml-10"
@@ -174,7 +174,7 @@ function bubble(val: number[]) {
             </div>
         </div>
         <ul v-if="edit"
-            class="dark:text-white cursor-default">
+            class="cursor-default">
             <TreeItem v-for="child in treeData?.items"
                       :uid="uid"
                   :modelValue="modelValue"

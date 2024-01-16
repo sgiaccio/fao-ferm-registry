@@ -22,7 +22,7 @@ onMounted(async () => {
 <template>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="max-w-3xl mx-auto">
-        <h1 class="mt-12 font-semibold text-4xl text-gray-800 dark:text-white mb-8">Good Practices</h1>
+        <h1 class="mt-12 font-semibold text-4xl text-gray-800 mb-8">Good Practices</h1>
         <!-- <router-link
             :to="{ name: 'bestPractice', params: { id: 'new' }}"
             class="cursor-pointer inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Add new good practice</router-link> -->

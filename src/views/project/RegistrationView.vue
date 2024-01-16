@@ -210,8 +210,8 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                 In this tab, you can provide basic information about your restoration initiative. The title and a summary of the aims and expected results of the initiative can be provided in the description section. Further information can be provided such as when the initiative is expected to start and end, the restoration status, web links or documentation that you find relevant, responsible organisms and the contact person who can provide further technical details of the restoration initiative.
             </p>
         </template>
-        <div class="divide-y divide-slate-100 dark:divide-slate-900 border-2 border-slate-200 dark:border-slate-900 rounded-md shadow-sm mt-4 mb-6 overflow-hidden">
-            <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+        <div class="divide-y divide-slate-100 border-2 border-slate-200 rounded-md shadow-sm mt-4 mb-6 overflow-hidden">
+            <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                            :edit="edit"
                            v-model="store.project.project.title"
                            label="Title"
@@ -219,11 +219,11 @@ watch(() => store.project?.project.restorationStatus, newValue => {
 
             <!-- Enable this when the reporting line is GEF -->
             <template v-if="store.project.reportingLine === 'GEF'">
-                <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                                :edit="edit"
                                v-model="store.project.project.gefFaoSymbol"
                                label="GEF Project Symbol" />
-                <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                            label="GEF investment type">
                     <SmallCardsFormGroup v-model="store.project.project.gefInvestmentType"
                                          :options="menus.gefInvestmentTypes"
@@ -236,7 +236,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                 :edit="edit"
                                 :searchable="false" />
             </FormGroup> -->
-                <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                            label="GEF cycle">
                     <!-- <RecursiveRadio v-model="store.project.project.gefCycle"
                                 :options="menus.gefCycles"
@@ -247,13 +247,13 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                          :options="menus.gefCycles"
                                          :edit="edit" />
                 </FormGroup>
-                <MultiSelectFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                <MultiSelectFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                                       v-if="store.project.project.gefInvestmentType === 'project'"
                                       :edit="edit"
                                       v-model="store.project.project.gefFocalAreas"
                                       label="GEF standalone projects (focal areas)"
                                       :options="menus.gefFocalAreas" />
-                <RecursiveRadioFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                <RecursiveRadioFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                                          v-if="store.project.project.gefInvestmentType === 'program'"
                                          label="GEF programmes"
                                          v-model="store.project.project.gefProgram"
@@ -263,7 +263,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                          :edit="edit" />
             </template>
 
-            <TextareaFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+            <TextareaFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                                :edit="edit"
                                v-model="store.project.project.description"
                                label="Description"
@@ -274,7 +274,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                 </template>
             </TextareaFormGroup>
 
-            <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+            <TextFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                            :edit="edit"
                            v-model="store.project.project.website"
                            label="Website"
@@ -297,19 +297,19 @@ watch(() => store.project?.project.restorationStatus, newValue => {
             <!--                       label="Ending date"-->
             <!--                       description="Date when the initiative finished or is expected to finish" />-->
 
-            <SelectFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+            <SelectFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                              :edit="edit"
                              v-model="store.project.project.startingYear"
                              label="Starting year"
                              :options="years" />
-            <SelectFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+            <SelectFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                              :edit="edit"
                              v-model="store.project.project.endingYear"
                              label="Ending year"
                              :options="years" />
 
             <RecursiveRadioFormGroup v-if="store.project.reportingLine !== 'GEF'"
-                                     class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                                     class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                                      label="Restoration status"
                                      v-model="store.project.project.restorationStatus"
                                      :options="menus.restorationStatuses"
@@ -354,7 +354,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                     :options="menus.restorationTypes"
                                     :searchable="false"
                                     :showSelection="false"
-                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
+                                    class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700">
                 <template v-slot:info>
                     The possible values are ecological restoration and rehabilitation. This can be determined by analyzing the current and target ecosystem (natural or transformed). Examples of transformed ecosystems are: farmlands, forest plantation, urban ecosystems. As a useful rule of thumb, if the target ecosystem is natural, the restoration will be ecological restoration. If the target ecosystem is transformed, the restoration will be rehabilitation.
                     <!-- <span class="font-bold"
@@ -368,7 +368,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                     :options="menus.tenureStatuses"
                                     :searchable="false"
                                     :showSelection="false"
-                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700">
+                                    class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700">
                 <template v-slot:info>
                     <p>
                         It is the legal status of the area under restoration. Information on tenure status should include documentation of Free and Prior Consent (FPIC) to ensure that people's rights are respected in the process of restoration and adherence to the UN Decade principles (FAO, IUCN CEM & SER, 2021) as well as the Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) (FAO, 2022).
@@ -394,17 +394,17 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                     :options="menus.contributionToSdg"
                                     :searchable="false"
                                     :showSelection="false"
-                                    class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700" />
+                                    class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700" />
 
             <FileUploadFormGroup2 :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'"
                                   :projectId="store.id!"
                                   folder="documents"
                                   :multiple="false"
-                                  class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+                                  class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                                   :edit="edit"
                                   :accessToken="authStore!.user!.accessToken">
             </FileUploadFormGroup2>
-            <!-- <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+            <!-- <FormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                        :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
                 <div v-if="edit">
                     <div v-if="!fileName">
@@ -462,16 +462,16 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                               v-model="store.project.project.objectives"
                               label="Objectives"
                               description="Objectives of the initiatives" /> -->
-            <MultiInputFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700 "
+            <MultiInputFormGroup class="px-4 odd:bg-white even:bg-slate-50 "
                                  :edit="edit"
                                  label="Points of contact"
                                  :inputComponents="pointsOfContact"
                                  v-model="store.project.project.pointsOfContact" />
-            <KeywordsInputGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700"
+            <KeywordsInputGroup class="px-4 odd:bg-white even:bg-slate-50 dark:odd:bg-slate-700"
                                 :edit="edit"
                                 v-model="store.project.project.keywords"
                                 label="Keywords" />
-            <MultiInputFormGroup class="px-4 odd:bg-white even:bg-slate-50 dark:even:bg-gray-800 dark:odd:bg-slate-700 "
+            <MultiInputFormGroup class="px-4 odd:bg-white even:bg-slate-50 "
                                  :edit="edit"
                                  label="Organizations"
                                  description="Organizations that implement the project/initiative"

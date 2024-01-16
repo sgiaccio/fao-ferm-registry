@@ -220,7 +220,7 @@ provide('applyToAll', () => {
             </p>
         </template>
         <template #default>
-            <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 dark:bg-amber-900 shadow-md border-gray-300">
+            <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 shadow-md border-gray-300">
                 <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data).</span>
                     The sum of committed land in GEF Core Indicators 1&mdash;5 shall be included
                     in project design phase, at mid-term review phase (MT) and at
@@ -258,7 +258,7 @@ provide('applyToAll', () => {
                 </FormGroup>
             </div>
 
-            <div class="border-2 rounded-xl my-4 px-5 bg-teal-50 dark:bg-teal-900 shadow-md border-gray-300">
+            <div class="border-2 rounded-xl my-4 px-5 bg-teal-50 shadow-md border-gray-300">
                 <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Restoration Plans/Management Plans (tabular data).</span> The
                     plan should at least include a description of restoration or land management
                     activities and the extension of the area of intervention.</p>
@@ -287,7 +287,7 @@ provide('applyToAll', () => {
                                          :show-selection="false" />
             </div>
 
-            <div class="border-2 rounded-xl my-4 px-5 pb-5 bg-red-50 dark:bg-red-900 shadow-md border-gray-300">
+            <div class="border-2 rounded-xl my-4 px-5 pb-5 bg-red-50 shadow-md border-gray-300">
                 <div class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm">
                     <p><span class="font-bold">Information on Geographic Areas (spatially explicit data).</span>
                         The data should
@@ -307,17 +307,17 @@ provide('applyToAll', () => {
                         <li>
                             Select administrative areas
                             <InformationCircleIcon @click="() => { showAdminAreaInfoModal = true }"
-                                                   class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                                                   class="w-6 h-6 inline-block ml-1 text-yellow-600 cursor-pointer" />
                         </li>
                         <li>
                             Upload polygons/vector
                             <InformationCircleIcon @click="() => { showUploadInfoModal = true }"
-                                                   class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                                                   class="w-6 h-6 inline-block ml-1 text-yellow-600 cursor-pointer" />
 
                         </li>
                         <li>Draw directly on the platform
                             <InformationCircleIcon @click="() => { showDrawInfoModal = true }"
-                                                   class="w-6 h-6 inline-block ml-1 text-yellow-600 dark:text-yellow-400 cursor-pointer" />
+                                                   class="w-6 h-6 inline-block ml-1 text-yellow-600 cursor-pointer" />
                         </li>
                     </ul>
                     </p>

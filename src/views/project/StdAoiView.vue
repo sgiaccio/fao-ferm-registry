@@ -174,7 +174,7 @@ provide('applyToAll', () => {
     <TabTemplate title="Area & ecosystems">
         <template #description>
             <p>
-                Identification of geographic areas under ecosystem restoration is key for geospatial applications and is essential to keep track of effective restoration, being the main objective of Target 2 of the Kunming-Montreal Global Biodiversity Framework (<a class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 dark:hover:text-ferm-blue-dark-200"
+                Identification of geographic areas under ecosystem restoration is key for geospatial applications and is essential to keep track of effective restoration, being the main objective of Target 2 of the Kunming-Montreal Global Biodiversity Framework (<a class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-700 dark:hover:text-ferm-blue-dark-200"
                    href="https://www.cbd.int/gbf/targets/2/"
                    target="_blank">Target 2</a>). One initiative can implement ecosystem restoration in one or more geographic areas. Activities, indicators, ecosystem characterization and results will be provided for each area. Geographic areas can be identified based on different options:
             </p>

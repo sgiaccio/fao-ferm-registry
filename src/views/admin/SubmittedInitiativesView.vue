@@ -35,7 +35,7 @@ onMounted(async () => {
 <template>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
-            <h1 class="mt-12 font-akrobat text-4xl text-gray-800 dark:text-white mb-8 font-extrabold uppercase">
+            <h1 class="mt-12 font-akrobat text-4xl text-gray-800 mb-8 font-extrabold uppercase">
                 Submitted Initiatives</h1>
 
             <template v-if="submittedProjects">

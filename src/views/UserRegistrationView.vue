@@ -159,7 +159,7 @@ function onClose() {
         </div>
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-            <div class="bg-slate-50 border border-gray-200 dark:bg-slate-700 dark:border-slate-900 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div class="bg-slate-50 border border-gray-200 py-8 px-4 shadow sm:rounded-lg sm:px-10">
                 <form @keydown="onKeydown"
                       @submit="onSubmit"
                       class="space-y-6"
@@ -272,7 +272,7 @@ function onClose() {
                                                    type="text"
                                                    name="otherText"
                                                    id="otherText"
-                                                   class="bg-transparent peer block w-full border-0 py-0 text-gray-900 dark:text-gray-100 focus:ring-0 sm:text-sm sm:leading-6" />
+                                                   class="bg-transparent peer block w-full border-0 py-0 text-gray-900 focus:ring-0 sm:text-sm sm:leading-6" />
                                             <div :class="[otherAffiliation ? 'border-t border-gray-300' : '', 'absolute inset-x-0 bottom-0 peer-focus:border-t-2 peer-focus:border-indigo-600']"
                                                  aria-hidden="true" />
                                         </div>

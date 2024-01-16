@@ -82,13 +82,13 @@ function isSelected(area: any, indicator: any) {
                     Details on GEF Core Indicators can be found under this
                     <a href="https://www.thegef.org/sites/default/files/documents/2022-09/Results_Framework_Guidelines_2022_06_30.pdf"
                        target="_blank"
-                       class="text-blue-600 dark:text-blue-100 underline hover:text-blue-500 dark:hover:text-blue-200">link</a>.
+                       class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200">link</a>.
                 </p>
             </template>
             <template v-else>
                 <p>
                     The progress of restoration efforts can be tracked using indicators and their corresponding metrics. Initiative-level indicators for monitoring primarily terrestrial restoration efforts are from the publication: "The Road to Restoration" (FAO and WRI, 2019) also available through the AURORA tool (<a target="_blank"
-                       class="text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300"
+                       class="text-ferm-blue-dark-700 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300"
                        href="https://www.auroramonitoring.org">https://www.auroramonitoring.org</a>).
                 </p>
                 <p class="pt-4">
@@ -111,7 +111,7 @@ function isSelected(area: any, indicator: any) {
                 </p>
                 <p class="pt-4">
                     FAO and UNEP. 2022. Global indicators for monitoring ecosystem restoration &mdash; A contribution to the UN Decade on Ecosystem Restoration. Rome, FAO. <a target="_blank"
-                       class="text-ferm-blue-dark-700 dark:text-ferm-blue-dark-100 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300"
+                       class="text-ferm-blue-dark-700 underline hover:text-ferm-blue-dark-500 dark:hover:text-ferm-blue-dark-300"
                        href="https://doi.org/10.4060/cb9982en">https://doi.org/10.4060/cb9982en</a>
                 </p>
             </template>
@@ -128,7 +128,7 @@ function isSelected(area: any, indicator: any) {
                         <!-- <pre>{{ JSON.stringify(area[Object.keys(area)[0]].goalIndicators, null, 2) }}</pre> -->
 
                         <div class="flex flex-row my-3">
-                            <div class="text-gray-500 dark:text-gray-100 text-lg font-bold mb-2 flex-grow">
+                            <div class="text-gray-500 text-lg font-bold mb-2 flex-grow">
                                 Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
                                       v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}
                                 </span>
@@ -189,9 +189,9 @@ function isSelected(area: any, indicator: any) {
                 <div v-if="store.projectAreas?.length"
                      class="flex flex-col gap-y-4">
                     <div v-for="(area, i) in store.projectAreas  "
-                         class="border-2 rounded-lg border-gray-300 dark:border-gray-500 divide-y-2">
+                         class="border-2 rounded-lg border-gray-300 divide-y-2">
                         <div class="flex flex-row px-3 py-5">
-                            <div class="text-gray-500 dark:text-gray-100 text-lg font-bold flex-grow">
+                            <div class="text-gray-500 text-lg font-bold flex-grow">
                                 Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
                                       v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
                                       }}</span>
@@ -206,13 +206,13 @@ function isSelected(area: any, indicator: any) {
                             </div>
                         </div>
                         <div class="px-3 py-5">
-                            <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">GEF indicators</h1>
+                            <h1 class="akrobat text-2xl font-bold mb-3">GEF indicators</h1>
                             <RecursiveRadio v-model="area[Object.keys(area)[0]].gefIndicator"
                                             :options="menus.gefIndicators"
                                             :edit="edit" />
                         </div>
                         <div class="px-3 py-5">
-                            <h1 class="akrobat text-2xl dark:text-zinc-300 font-bold mb-3">Project indicators</h1>
+                            <h1 class="akrobat text-2xl font-bold mb-3">Project indicators</h1>
                             <IndicatorsList v-model="area[Object.keys(area)[0]].goalIndicators"
                                             :edit="edit" />
                             asdf

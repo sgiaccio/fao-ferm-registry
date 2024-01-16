@@ -92,7 +92,7 @@ const id_ = Math.ceil(Math.random() * 1e9) // TODO
                     </div>
                     <div class="ml-3 text-sm">
                         <label :for="('' + option.value) + id_.toString()"
-                               class="dark:text-zinc-300 font-font-medium text-gray-700">
+                               class="font-font-medium text-gray-700">
                             <span v-if="option.dangerousHtmlLabel"
                                   v-html="option.dangerousHtmlLabel"></span>
                             <template v-else>{{ option.label }}</template>
@@ -102,7 +102,7 @@ const id_ = Math.ceil(Math.random() * 1e9) // TODO
             </fieldset>
             <div v-if="otherEnabled"
                  class="flex flex-row space-x-6 mt-3">
-                <div class="dark:text-zinc-400 font-bold text-sm">Other:</div>
+                <div class="font-bold text-sm">Other:</div>
                 <div class="flex-grow">
                     <MultiInput :modelValue="others"
                                 @update:modelValue="val => emit('update:others', val)"

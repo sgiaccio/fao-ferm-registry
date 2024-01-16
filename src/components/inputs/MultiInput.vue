@@ -96,7 +96,7 @@ const errorMessages = computed(() => {
 </script>
 
 <template>
-    <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 dark:border-stone-700 dark:divide-stone-700 bg-white dark:bg-stone-800">
+    <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 bg-white dark:bg-stone-800">
         <component v-for="([k, d]) in dialogs"
                    class="p-3"
                    :is="d.addDialog"
@@ -106,7 +106,7 @@ const errorMessages = computed(() => {
         <div v-for="(v, i) in modelValue"
              class="p-3">
 
-            <div class="text-gray-400 dark:text-gray-100 text-lg font-bold"
+            <div class="text-gray-400 text-lg font-bold"
                  v-if="numbering">{{ numbering(i, v) }}</div>
             <component :key="v"
                        :is="inputComponents[getKey(v)].component"

@@ -86,7 +86,7 @@ function enableSpecifyReplicability() {
     <TabTemplate title="Methodology">
         <template #description>
             <h2 class="text-xl font-semibold">Implementation of the practice</h2>
-            <p class="dark:text-zinc-300 italic pt-2 text-sm"><span class="font-bold">Please provide all the information that another practitioner needs to have in order to be able to replicate this practice</span>. Please provide a description of the practice and explain in detail the steps for its implementation including when applicable: timing, equipment, labour, species used, and all other relevant information.</p>
+            <p class="italic pt-2 text-sm"><span class="font-bold">Please provide all the information that another practitioner needs to have in order to be able to replicate this practice</span>. Please provide a description of the practice and explain in detail the steps for its implementation including when applicable: timing, equipment, labour, species used, and all other relevant information.</p>
         </template>
         <template #default>
             <template v-if="store.bestPractice">
@@ -95,8 +95,8 @@ function enableSpecifyReplicability() {
                                    description="Description of the practice."
                                    :edit=edit />
                 <div>
-                    <p class="text-gray-600 dark:text-white mt-6 text-sm">Please provide for each step (if applicable): timing, equipment, labour, species used, and all other relevant information</p>
-                    <p class="text-gray-600 dark:text-white mt-2 text-sm"><span class="font-bold">NOTE:</span> It is recommended that the steps for implementation are logical, detailed, well-described, and technically and socially feasible, allowing for replication or adaptation. </p>
+                    <p class="text-gray-600 mt-6 text-sm">Please provide for each step (if applicable): timing, equipment, labour, species used, and all other relevant information</p>
+                    <p class="text-gray-600 mt-2 text-sm"><span class="font-bold">NOTE:</span> It is recommended that the steps for implementation are logical, detailed, well-described, and technically and socially feasible, allowing for replication or adaptation. </p>
                     <MultiInputFormGroup label="2.2 Steps for implementation"
                                          :inputComponents="multiInputComponents"
                                          v-model="store.bestPractice.implementationSteps"
@@ -122,7 +122,7 @@ function enableSpecifyReplicability() {
                                       :edit=edit />
                 <TextareaFormGroup v-model="store.bestPractice.participatoryApproaches"
                                    label="2.6 Participatory approaches"
-                                   dangerousHtmlDescription="Please describe to what extent the practice has meaningfully fostered engagement and knowledge integration from the stakeholders, right-holders, and under-represented groups (if any) selected above (e.g., local communities, Indigenous peoples, ethnic minorities, women, youth and LGBTIQ+ people). <br>NOTE: If Indigenous Peoples\' traditional knowledge was selected above, please explain how the practice has complied with the right of <a class='text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400' target='_blank' href='https://www.fao.org/indigenous-peoples/our-pillars/fpic/en/'>Free, Prior and Informed Consent.</a>"
+                                   dangerousHtmlDescription="Please describe to what extent the practice has meaningfully fostered engagement and knowledge integration from the stakeholders, right-holders, and under-represented groups (if any) selected above (e.g., local communities, Indigenous peoples, ethnic minorities, women, youth and LGBTIQ+ people). <br>NOTE: If Indigenous Peoples\' traditional knowledge was selected above, please explain how the practice has complied with the right of <a class='text-blue-700 hover:text-blue-800 dark:hover:text-blue-400' target='_blank' href='https://www.fao.org/indigenous-peoples/our-pillars/fpic/en/'>Free, Prior and Informed Consent.</a>"
                                    :edit=edit />
                 <MultiSelectFormGroup :options="menus.scale"
                                       v-model="store.bestPractice.scale"

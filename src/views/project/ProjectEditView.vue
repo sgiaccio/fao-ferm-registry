@@ -159,7 +159,7 @@ watch(projectAreas, (projectAreas, oldProjectAreas) => {
             </button>
         </div>
         <!-- <button
-            class="absolute left-0 border hover:text-amber-800 text-amber-500 dark:text-amber-900 font-semibold border-gray-300 dark:border-gray-900 bg-gray-200 dark:bg-gray-800 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
+            class="absolute left-0 border hover:text-amber-800 text-amber-500 font-semibold border-gray-300 bg-gray-200 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
             @click="toggleJson">
             JSON
         </button> -->

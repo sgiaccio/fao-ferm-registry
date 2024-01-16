@@ -192,13 +192,13 @@ watch(() => props.modelValue, (newValue, oldValue) => {
                         </div>
                         <div class="ml-2.5 text-sm">
                             <label :for="`${uid}_${option.value}`"
-                                   class="font-normal dark:text-zinc-300 cursor-pointer">
+                                   class="font-normal cursor-pointer">
                                 <span v-html="option.dangerousHtmlLabel || option.label" />
                             </label>
                         </div>
                     </div>
                     <div v-else
-                         class="ml-2.5 text-sm dark:text-zinc-300 font-bold cursor-pointer"
+                         class="ml-2.5 text-sm font-bold cursor-pointer"
                          @click="toggle(i)">
                         <span v-html="option.dangerousHtmlLabel || option.label" />
                     </div>

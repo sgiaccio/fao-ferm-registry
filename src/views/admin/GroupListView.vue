@@ -157,7 +157,7 @@ async function addGroup() {
                                            name="group"
                                            type="text"
                                            required
-                                           class="appearance-none rounded-lg relative block w-full px-6 py-3 border-2 border-gray-400 dark:border-transparent placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-lg"
+                                           class="appearance-none rounded-lg relative block w-full px-6 py-3 border-2 border-gray-400 placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-lg"
                                            placeholder="Full name"
                                            v-model="name">
                                 </div> <!-- empty state -->

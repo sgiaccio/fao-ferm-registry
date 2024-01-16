@@ -130,7 +130,7 @@ function showAlertModal(title: string, info: string) {
                              class="w-5 h-5" />
                     </div>
                     <div class="ml-2">
-                        <span :class="[expandable ? 'cursor-pointer' : 'cursor-default', 'text-gray-900 dark:text-gray-400 text-sm']"
+                        <span :class="[expandable ? 'cursor-pointer' : 'cursor-default', 'text-gray-900 text-sm']"
                               @click="toggle(i)">
 
                             <span v-if="option.dangerousHtmlLabel"
@@ -142,7 +142,7 @@ function showAlertModal(title: string, info: string) {
                         <template v-if="option.info">
                             @nbsp;
                             <InformationCircleIcon @click="() => showAlertModal(option.dangerousHtmlLabel || option.label, option.info)"
-                                                   class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
+                                                   class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 cursor-pointer" />
                         </template>
                     </div>
                 </div>
@@ -156,7 +156,7 @@ function showAlertModal(title: string, info: string) {
                                :checked="('' + modelValue === '' + option.value)"
                                class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600 cursor-pointer" />
                         <label :for="`${uid}_${option.value}`"
-                               class="ml-3 block text-sm leading-6 text-gray-900 dark:text-gray-400 cursor-pointer">
+                               class="ml-3 block text-sm leading-6 text-gray-900 cursor-pointer">
                             <span v-if="option.dangerousHtmlLabel"
                                   v-html="option.dangerousHtmlLabel" />
                             <span v-else
@@ -165,7 +165,7 @@ function showAlertModal(title: string, info: string) {
                         <template v-if="option.info">
                             &nbsp;
                             <InformationCircleIcon @click="() => showAlertModal(option.dangerousHtmlLabel || option.label, option.info)"
-                                                   class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer" />
+                                                   class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 cursor-pointer" />
                         </template>
                     </div>
                 </div>

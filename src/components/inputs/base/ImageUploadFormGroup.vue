@@ -181,7 +181,7 @@ function deleteFile() {
         <div v-if="!thumbnailUrl">
             <label for="file"
                    class="block text-sm font-medium text-gray-700" />
-            <div class="dark:text-zinc-400 border-gray-300 dark:bg-zinc-900 mt-1 flex rounded-md shadow-sm">
+            <div class="border-gray-300 mt-1 flex rounded-md shadow-sm">
                 <div class="flex-grow focus-within:z-10">
                     <input v-if="edit"
                            type="file"

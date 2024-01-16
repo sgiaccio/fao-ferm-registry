@@ -137,9 +137,9 @@ function deleteKeyword(i: number) {
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
         <template v-if="edit">
-            <div class="relative content-center cursor-default flex flex-wrap gap-x-2 gap-y-1 text-sm items-center px-2 py-0.5 h-10_ bg-white w-full shadow-sm border-gray-300 rounded-md dark:text-zinc-400 max-w-lg_ sm:text-sm dark:border-black dark:focus:border-black dark:bg-zinc-900">
+            <div class="relative content-center cursor-default flex flex-wrap gap-x-2 gap-y-1 text-sm items-center px-2 py-0.5 h-10_ bg-white w-full shadow-sm border-gray-300 rounded-md max-w-lg_ sm:text-sm dark:bg-zinc-900">
                 <div v-for="keyword, i in props.modelValue || []"
-                     class="text-stone-900 m-0 flex items-center rounded-full pl-2.5 pr-1 bg-amber-400 dark:bg-amber-500 h-7 border border-stone-800">
+                     class="text-stone-900 m-0 flex items-center rounded-full pl-2.5 pr-1 bg-amber-400 h-7 border border-stone-800">
                     <span class="align-middle">
                         {{keyword}}
                     </span>
@@ -161,7 +161,7 @@ function deleteKeyword(i: number) {
                          @keydown.enter="addKeyword()"
                          @keyup.enter="enter()"
                          type="text"
-                         class="cursor-text dark:text-zinc-400 block w-full rounded-md pr-10 focus:outline-none border-gray-300 dark:bg-zinc-900 sm:text-sm transition ease-in-out duration-270 delay-50 focus:ring-0 dark:border-black dark:focus:border-black">
+                         class="cursor-text block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm transition ease-in-out duration-270 delay-50 focus:ring-0 dark:focus:border-black">
                         <!-- {{inputText}} -->
                     </div>
                     <div v-if="showMenu"

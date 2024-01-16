@@ -165,7 +165,7 @@ async function checkTermsAndConditionsAndShowDialog() {
                       @confirm="createProject" />
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
-            <h1 class="mt-12 font-akrobat text-4xl text-gray-800 dark:text-white mb-8 font-extrabold uppercase">
+            <h1 class="mt-12 font-akrobat text-4xl text-gray-800 mb-8 font-extrabold uppercase">
                 Initiatives</h1>
 
             <p class="dark:text-white">Restoration projects, programs, and initiatives at all spatial scales, from individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for sustaining life on Earth. The FERM registry allows for consistent and transparent monitoring, reporting, and sharing information on restoration initiatives and good practices. The information published in the FERM Registry will be used to officially report on areas under restoration during the United Nations Decade on Ecosystem Restoration and towards the data collection for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework Target 2.</p>
