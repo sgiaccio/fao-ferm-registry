@@ -164,7 +164,7 @@ watch(projectAreas, (projectAreas, oldProjectAreas) => {
             JSON
         </button> -->
         <!-- <pre v-if="true"
-             class="text-xs font-medium text-amber-700 dark:text-amber-600">
+             class="text-xs font-medium text-amber-700">
             {{ JSON.stringify(store.project, null, 2) }}
         </pre> -->
     </div>

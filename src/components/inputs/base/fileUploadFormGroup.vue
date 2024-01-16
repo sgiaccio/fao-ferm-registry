@@ -128,8 +128,7 @@ vue.watch(() => store.id as string, async id => {
             class="text-red-500 text-sm">Remember to click the upload button before saving.</div>
     </div>
     <div
-        v-else-if="edit"
-        class="dark:text-white">
+        v-else-if="edit">
         Initiative file: {{ fileName }}
         <span @click="deleteFile(store.id, fileName!)">[delete]</span>
     </div>

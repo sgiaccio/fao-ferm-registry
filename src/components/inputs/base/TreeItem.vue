@@ -114,7 +114,7 @@ function bubble(val: number[]) {
                           clip-rule="evenodd" />
                 </svg>
             </div>
-            <span class="text-sm self-center dark:text-zinc-100">{{ treeData?.label }}</span>
+            <span class="text-sm self-center">{{ treeData?.label }}</span>
         </div>
         <div v-else-if="treeData.value"
              class="relative flex items-start">
@@ -150,7 +150,7 @@ function bubble(val: number[]) {
     
     <div v-else>
         <div class="border border-slate-400 rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
-            <div class="ml-2 text-gray-600 dark:text-gray-400"
+            <div class="ml-2 text-gray-600"
                  v-if="!props.modelValue?.length">
                 <template v-if="edit">Please select from the list below</template>
                 <template v-else>None selected</template>

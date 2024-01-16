@@ -126,7 +126,7 @@ watch(() => props.modelValue, (newValue, oldValue) => {
     <div v-if="!level && showSelection || !edit"
          id="selection_overview">
         <div class="border border-slate-400 shadow-sm rounded-xl p-2 text-xs text-gray-900 flex flex-wrap gap-x-2 gap-y-2 mb-4">
-            <div class="ml-2 text-gray-600 dark:text-gray-400"
+            <div class="ml-2 text-gray-600"
                  v-if="!props.modelValue?.length">
                 <template v-if="edit">Please select from the list below</template>
                 <template v-else>None selected</template>
@@ -167,7 +167,7 @@ watch(() => props.modelValue, (newValue, oldValue) => {
                                  xmlns="http://www.w3.org/2000/svg"
                                  viewBox="0 0 20 20"
                                  fill="currentColor"
-                                 class="w-5 h-5 self-center inline-block cursor-pointer text-black dark:text-gray-200">
+                                 class="w-5 h-5 self-center inline-block cursor-pointer text-black">
                                 <path v-if="!isOpen[i]"
                                       fill-rule="evenodd"
                                       d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"

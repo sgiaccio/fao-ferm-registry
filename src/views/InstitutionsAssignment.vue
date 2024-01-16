@@ -313,7 +313,7 @@ function cancelSubmit() {
         <div class="pt-4">
             <fieldset>
                 <legend class="sr-only">The institution is a</legend>
-                <div class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
+                <div class="block text-sm font-medium leading-6 text-gray-900"
                      aria-hidden="true">The institution is a
                 </div>
                 <div class="mt-2">
@@ -327,7 +327,7 @@ function cancelSubmit() {
                         </div>
                         <div class="ml-3 text-sm leading-6">
                             <label for="partner"
-                                   class="font-normal text-gray-900 dark:text-gray-100">UN Decade partner</label>
+                                   class="font-normal text-gray-900">UN Decade partner</label>
                         </div>
                     </div>
                     <div class="relative flex items-start">
@@ -340,7 +340,7 @@ function cancelSubmit() {
                         </div>
                         <div class="ml-3 text-sm leading-6">
                             <label for="actor"
-                                   class="font-normal text-gray-900 dark:text-gray-100">UN Decade actor</label>
+                                   class="font-normal text-gray-900">UN Decade actor</label>
                         </div>
                     </div>
                     <div class="relative flex items-start">
@@ -353,7 +353,7 @@ function cancelSubmit() {
                         </div>
                         <div class="ml-3 text-sm leading-6">
                             <label for="flagship"
-                                   class="font-normal text-gray-900 dark:text-gray-100">Global Flagship </label>
+                                   class="font-normal text-gray-900">Global Flagship </label>
                         </div>
                     </div>
                 </div>
@@ -504,7 +504,7 @@ function cancelSubmit() {
             </div>
 
             <div v-if="selectedGroup && selectedGroup.group.description"
-                 class="mt-6 text-sm border border-gray-400 rounded-md px-3 py-2 dark:text-black">
+                 class="mt-6 text-sm border border-gray-400 rounded-md px-3 py-2">
                 <h1 class="font-bold mb-1">{{ selectedGroup.group.name }}</h1>
                 <span class="italic">{{ selectedGroup.group.description }}</span>
             </div>

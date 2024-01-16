@@ -226,8 +226,7 @@ function deleteFile() {
             <!-- <div v-if="selectedFile"
                  class="text-red-500 text-sm">Remember to click the upload button before saving.</div> -->
         </div>
-        <div v-else
-             class="dark:text-white">
+        <div v-else>
             <img v-if="thumbnailUrl"
                  :src="thumbnailUrl">
             <button v-if="edit"

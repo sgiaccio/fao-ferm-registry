@@ -140,7 +140,7 @@ function onInput(e: any) { //TODO
                :description="description"
                :dangerousHtmlDescription="dangerousHtmlDescription">
         <template v-if="edit">
-            <div class="relative content-center cursor-default flex flex-wrap gap-x-2 gap-y-1 text-sm items-center px-2 py-0.5 h-10_ bg-white w-full shadow-sm border-gray-300 border rounded-md max-w-lg_ sm:text-sm dark:bg-zinc-900">
+            <div class="relative content-center cursor-default flex flex-wrap gap-x-2 gap-y-1 text-sm items-center px-2 py-0.5 h-10_ bg-white w-full shadow-sm border-gray-300 border rounded-md max-w-lg_ sm:text-sm">
                 <div v-for="keyword, i in props.modelValue || []" class="text-stone-900 m-0 flex items-center rounded-full pl-2.5 pr-1 bg-amber-400 h-7 border border-stone-800">
                     <span class="align-middle">
                         {{keyword}}
@@ -151,7 +151,7 @@ function onInput(e: any) { //TODO
                 </div>
                 <div class="grow h-9" @focusout="onFocusOut(inputText)" >
                     <div contenteditable="true" @input="onInput" ref="inputRef" @keydown.enter="addKeyword(inputText)" @keyup.enter="inputText = ''" type="text"
-                        class="cursor-text border-none focus:border-none focus:ring-0 p-0 m-0 w-full mt-1.5 dark:bg-zinc-900">
+                        class="cursor-text border-none focus:border-none focus:ring-0 p-0 m-0 w-full mt-1.5">
                         {{inputText}}
                     </div>
                     <div v-if="showMenu"

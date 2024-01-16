@@ -51,10 +51,10 @@ function removeIndicator(monitoring, i: number) {
             <div v-if="store.projectAreas?.length"
                  class="flex flex-col gap-y-4 mt-6">
                 <div v-for="( area, i ) in  store.projectAreas "
-                     class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
+                     class="border-2 px-3 py-2 rounded-lg border-gray-300">
                     <div class="flex flex-row my-3">
                         <div class="text-gray-500 text-lg font-bold mb-2 flex-grow">
-                            Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
+                            Area {{ i + 1 }}<span class="text-black"
                                   v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
                                   }}</span>
                         </div>
@@ -84,7 +84,7 @@ function removeIndicator(monitoring, i: number) {
                                              class="flex flex-row gap-x-5">
                                             <div class="flex flex-col">
                                                 <label :for="`year-${i}`"
-                                                       class="block text-xs font-medium text-gray-700 dark:text-gray-100">
+                                                       class="block text-xs font-medium text-gray-700">
                                                     Year
                                                 </label>
                                                 <input v-if="edit"
@@ -101,7 +101,7 @@ function removeIndicator(monitoring, i: number) {
                                             </div>
                                             <div class="flex flex-col">
                                                 <label :for="`value-${i}`"
-                                                       class="block text-xs font-medium text-gray-700 dark:text-gray-100">
+                                                       class="block text-xs font-medium text-gray-700">
                                                     {{ indicator.indicator.unit }}
                                                 </label>
                                                 <input v-if="edit"
@@ -150,7 +150,7 @@ function removeIndicator(monitoring, i: number) {
                                      class="flex flex-row gap-x-5">
                                     <div class="flex flex-col">
                                         <label :for="`year-${i}`"
-                                               class="block text-xs font-medium text-gray-700 dark:text-gray-100">
+                                               class="block text-xs font-medium text-gray-700">
                                             Year
                                         </label>
                                         <input v-if="edit"
@@ -168,7 +168,7 @@ function removeIndicator(monitoring, i: number) {
                                     </div>
                                     <div class="flex flex-col">
                                         <label :for="`value-${i}`"
-                                               class="block text-xs font-medium text-gray-700 dark:text-gray-100">
+                                               class="block text-xs font-medium text-gray-700">
                                             {{ indicator.indicator.unit }}
                                         </label>
                                         <input v-if="edit"

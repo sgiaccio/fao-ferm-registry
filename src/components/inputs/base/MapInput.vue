@@ -277,7 +277,7 @@ function clear() {
         </template>
         <div v-else>{{ modelValue.area }}</div>
     </FormGroup>
-    <div class="mt-4 w-full h-96 border-2 border-gray-300 dark:border-gray-700"
+    <div class="mt-4 w-full h-96 border-2 border-gray-300"
          ref="mapRoot"
          id="caz" />
     <button v-if="!areaUploaded && edit"

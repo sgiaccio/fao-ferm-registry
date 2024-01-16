@@ -154,8 +154,8 @@ function onClose() {
                  class="mx-auto h-28 w-auto"
                  src="/UNDecade_LOGO_MASTER_EN.svg"
                  alt="UN Decade">
-            <h2 class="mt-6 text-center text-3xl font-akrobat font-bold tracking-tight text-gray-800 dark:text-gray-200">Welcome to the FERM Registry!</h2>
-            <h2 class="mt-2 text-center text-3xl font-akrobat font-bold tracking-tight text-sky-gray-800 dark:text-gray-200">Please introduce yourself.</h2>
+            <h2 class="mt-6 text-center text-3xl font-akrobat font-bold tracking-tight text-gray-800">Welcome to the FERM Registry!</h2>
+            <h2 class="mt-2 text-center text-3xl font-akrobat font-bold tracking-tight text-sky-gray-800">Please introduce yourself.</h2>
         </div>
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -167,7 +167,7 @@ function onClose() {
                       method="POST">
                     <div>
                         <label for="name"
-                               class="block text-base font-medium leading-6 text-gray-900 dark:text-gray-100">Name <span class="text-red-600">*</span></label>
+                               class="block text-base font-medium leading-6 text-gray-900">Name <span class="text-red-600">*</span></label>
                         <div class="mt-2">
                             <input v-model="formData.name"
                                    id="full"
@@ -207,7 +207,7 @@ function onClose() {
                     <!-- <div>
                         <fieldset>
                             <legend class="sr-only">Institution affiliation</legend>
-                            <div class="block text-base font-medium leading-6 text-gray-900 dark:text-gray-100"
+                            <div class="block text-base font-medium leading-6 text-gray-900"
                                  aria-hidden="true">Institution affiliation <span class="text-red-600">*</span></div>
                             <div class="mt-2 space-y-2">
                                 <div class="relative flex items-start">
@@ -220,7 +220,7 @@ function onClose() {
                                     </div>
                                     <div class="ml-3 text-sm leading-6">
                                         <label for="ecosystem"
-                                               class="font-normal text-gray-900 dark:text-gray-100">UN Decade on Ecosystem Restoration partner or actor</label>
+                                               class="font-normal text-gray-900">UN Decade on Ecosystem Restoration partner or actor</label>
                                     </div>
                                 </div>
                                 <div class="relative flex items-start">
@@ -233,7 +233,7 @@ function onClose() {
                                     </div>
                                     <div class="ml-3 text-sm leading-6">
                                         <label for="flagship"
-                                               class="font-normal text-gray-900 dark:text-gray-100">UN Decade flagship</label>
+                                               class="font-normal text-gray-900">UN Decade flagship</label>
                                     </div>
                                 </div>
                                 <div class="relative flex items-start">
@@ -246,7 +246,7 @@ function onClose() {
                                     </div>
                                     <div class="ml-3 text-sm leading-6">
                                         <label for="partner"
-                                               class="font-normal text-gray-900 dark:text-gray-100">FERM partner government or initiative</label>
+                                               class="font-normal text-gray-900">FERM partner government or initiative</label>
                                     </div>
                                 </div>
                                 <div class="relative flex items-start">
@@ -259,7 +259,7 @@ function onClose() {
                                     </div>
                                     <div class="ml-3 text-sm leading-6">
                                         <label for="other"
-                                               class="font-normal text-gray-900 dark:text-gray-100">Other <span v-if="otherAffiliation"
+                                               class="font-normal text-gray-900">Other <span v-if="otherAffiliation"
                                                   class="text-red-600">*</span></label>
                                     </div>
 
@@ -285,7 +285,7 @@ function onClose() {
 
                     <div>
                         <label for="purpose"
-                               class="block text-base font-medium leading-6 text-gray-900 dark:text-gray-100">How you would like to use the FERM platform? <span class="text-red-600">*</span></label>
+                               class="block text-base font-medium leading-6 text-gray-900">How you would like to use the FERM platform? <span class="text-red-600">*</span></label>
                         <div class="mt-2">
                             <textarea v-model="formData.purpose"
                                       rows="3"

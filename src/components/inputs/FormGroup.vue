@@ -58,12 +58,12 @@ const lastWord = computed(() => {
                 </legend>
                 <div class="sm:col-span-3">
                     <p v-if="description"
-                       class="font-semibold mb-3 text-sm text-gray-500 dark:text-gray-400">
+                       class="font-semibold mb-3 text-sm text-gray-500">
                         {{ description }}
                     </p>
                     <p v-else-if="dangerousHtmlDescription"
                        v-html="dangerousHtmlDescription"
-                       class="font-semibold mb-3 text-sm text-gray-500 dark:text-gray-400" />
+                       class="font-semibold mb-3 text-sm text-gray-500" />
                     <slot></slot>
                 </div>
             </div>

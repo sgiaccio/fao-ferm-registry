@@ -4,7 +4,7 @@
 </script>
 
 <template>
-    <div class="dark:bg-slate-900">
+    <div>
         <Navbar />
     </div>
     <router-view />

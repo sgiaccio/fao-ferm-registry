@@ -204,7 +204,7 @@ function handleAfterLeave(el: any) {
 
 <template>
     <div class="flex flex-col pt-6 mb-6">
-        <!-- class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500"> -->
+        <!-- class="border-2 px-3 py-2 rounded-lg border-gray-300"> -->
         <!-- <div class="flex flex-row my-3"> -->
         <template v-if="edit">
             <button v-if="hasUuid(area)"
@@ -226,7 +226,7 @@ function handleAfterLeave(el: any) {
             </button>
 
             <div class="flex flex-row items-center w-full">
-                <div class="flex-grow font-bold text-lg dark:text-gray-200">IUCN Global Ecosystem Typology 2.0 - Biomes</div>
+                <div class="flex-grow font-bold text-lg">IUCN Global Ecosystem Typology 2.0 - Biomes</div>
                 <button v-if="index === 0 && nAreas > 1"
                         type="button"
                         :disabled="!area.ecosystems?.length && nAreas > 1"
@@ -282,7 +282,7 @@ function handleAfterLeave(el: any) {
         </router-link>
     </div>
     <div v-else>
-        <div class="text-lg italic mt-6 text-gray-600 dark:text-gray-400">None selected</div>
+        <div class="text-lg italic mt-6 text-gray-600">None selected</div>
     </div> -->
 </template>
 

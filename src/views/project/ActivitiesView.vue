@@ -49,16 +49,16 @@ function toggleOtherActivitiesInput(i: number) {
         <template #description>
             <p v-if="store.project.reportingLine === 'GEF'">Activities describe what is being implemented on the ground in order to achieve sustainable management or restoration objectives. Activities are adapted from the Glossary of restoration interventions of The Economics of Ecosystem Restoration (TEER) initiative (<a href="https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/"
                    target="_blank"
-                   class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200">https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/</a>). They are divided into two main categories (biophysical and enabling) and secondary categories according to the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES) Assessment Report on Land Degradation and Restoration (<a href="https://www.ipbes.net/assessment-reports/ldr"
+                   class="text-blue-600 underline hover:text-blue-500">https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/</a>). They are divided into two main categories (biophysical and enabling) and secondary categories according to the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES) Assessment Report on Land Degradation and Restoration (<a href="https://www.ipbes.net/assessment-reports/ldr"
                    target="_blank"
-                   class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200">https://www.ipbes.net/assessment-reports/ldr</a>). Implementing enabling activities often corresponds to the preparation stage.
+                   class="text-blue-600 underline hover:text-blue-500">https://www.ipbes.net/assessment-reports/ldr</a>). Implementing enabling activities often corresponds to the preparation stage.
             </p>
             <p v-else>
                 Activities describe what is being implemented on the ground in order to achieve restoration objectives. Activities are adapted from the Glossary of restoration interventions of The Economics of Ecosystem Restoration (TEER) initiative (<a href="https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/"
                    target="_blank"
-                   class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200">https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/</a>). They are divided into two main categories (biophysical and enabling) and secondary categories according to the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES) Assessment Report on Land Degradation and Restoration (<a href="https://www.ipbes.net/assessment-reports/ldr"
+                   class="text-blue-600 underline hover:text-blue-500">https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/</a>). They are divided into two main categories (biophysical and enabling) and secondary categories according to the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES) Assessment Report on Land Degradation and Restoration (<a href="https://www.ipbes.net/assessment-reports/ldr"
                    target="_blank"
-                   class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200">https://www.ipbes.net/assessment-reports/ldr</a>). Implementing enabling activities often corresponds to the preparation stage.
+                   class="text-blue-600 underline hover:text-blue-500">https://www.ipbes.net/assessment-reports/ldr</a>). Implementing enabling activities often corresponds to the preparation stage.
 
             </p>
         </template>
@@ -66,10 +66,10 @@ function toggleOtherActivitiesInput(i: number) {
             <div v-if="store.projectAreas?.length"
                  class="flex flex-col gap-y-4 pt-6">
                 <div v-for="(area, i) in store.projectAreas"
-                     class="border-2 px-3 py-2 rounded-lg border-gray-300 dark:border-gray-500">
+                     class="border-2 px-3 py-2 rounded-lg border-gray-300">
                     <div class="flex flex-row my-3">
                         <div class="text-gray-500 text-lg font-bold mb-2 flex-grow">
-                            Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
+                            Area {{ i + 1 }}<span class="text-black"
                                   v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName
                                   }}</span>
                         </div>
@@ -154,7 +154,7 @@ function toggleOtherActivitiesInput(i: number) {
                     </div>
                     <div v-else>
                         <div v-if="area[Object.keys(area)[0]].activitiesOther"
-                             class="text-sm mt-6  dark:text-gray-400">
+                             class="text-sm mt-6 ">
                             <span class="font-bold text-gray-700">Other activities:</span> {{ area[Object.keys(area)[0]].activitiesOther }}
                         </div>
                     </div>
@@ -167,7 +167,7 @@ function toggleOtherActivitiesInput(i: number) {
                 </router-link>
             </div>
             <div v-else>
-                <div class="text-lg italic mt-6 text-gray-600 dark:text-gray-400">None selected</div>
+                <div class="text-lg italic mt-6 text-gray-600">None selected</div>
             </div>
         </template>
     </TabTemplate>

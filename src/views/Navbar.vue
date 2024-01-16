@@ -36,7 +36,7 @@ watch(darkMode, (mode) => {
 
 <template>
     <Disclosure as="nav"
-                class="bg-gray-800 dark:bg-slate-900"
+                class="bg-gray-800"
                 style="margin_:0;padding_:0"
                 v-slot="{ open }">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
