@@ -84,8 +84,6 @@ exports.saveProjectCollaborators = functions.https.onCall(async ({ projectId, co
 
     await saveNewCollaborators(projectRef, newCollaboratosUuids);
 
-    console.log("Collaborators saved")
-
     // Email the new collaborators
     await notifyNewCollaborators(newCollaborators, project);
 

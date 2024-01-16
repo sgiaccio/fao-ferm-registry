@@ -11,8 +11,7 @@ import {
     startAfter,
     limit,
     getCount,
-    QueryConstraint,
-    addDoc
+    QueryConstraint
 } from 'firebase/firestore/lite';
 
 import { defineStore } from 'pinia';
@@ -316,20 +315,41 @@ export const useProjectStore = defineStore({
 
             const authStore = useAuthStore();
 
-            const projectRef = await addDoc(projectsCollection, {
+            const batch = writeBatch(db);
+            // const projectRef = await addDoc(projectsCollection, {
+            //     group: groupId,
+            //     project: {
+            //         title: title,
+            //     },
+            //     indicators: [],
+            //     results: {},
+            //     reportingLine: reportingLine,
+            //     created_by: authStore.user.uid,
+            //     termsAndConditionsAccepted: termsAndConditionsAccepted,
+            //     createTime: serverTimestamp(),
+            //     updateTime: serverTimestamp()
+            // });
+
+            const projectRef = doc(projectsCollection);
+            batch.set(projectRef, {
                 group: groupId,
                 project: {
-                    title: title,
+                    title: title
                 },
                 indicators: [],
                 results: {},
                 reportingLine: reportingLine,
-                created_by: authStore.user.uid,
+                created_by: authStore.user!.uid,
                 termsAndConditionsAccepted: termsAndConditionsAccepted,
                 createTime: serverTimestamp(),
                 updateTime: serverTimestamp()
             });
-            // console.log("Document written with ID: ", projectRef);
+
+            // Create an empty area collection
+            const areasRef = doc(areaCollection, projectRef.id);
+            batch.set(areasRef, { areas: [] });
+
+            const result = await batch.commit();
 
             await this.fetchProject(projectRef.id);
         },

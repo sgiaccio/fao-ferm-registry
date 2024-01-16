@@ -38,17 +38,17 @@ onBeforeMount(async () => {
 
     const collaboratorsIds = store.project.collaborators || [];
 
-    const allUsers = users.users.map((u: any) => ({
+    const allGroupEditors = users.users.map((u: any) => ({
         uid: u.uid,
-        displayName: u.displayName,
-        email: u.email
-    }));
+        displayName: u.displayName || 'no name',
+    })).sort((a: any, b: any) => a.displayName.localeCompare(b.displayName));
 
-    availableUsers.value = allUsers.filter((user: any) => {
+    console.log(JSON.stringify(users.users.filter(u => !u.displayName), null, 2));
+    availableUsers.value = allGroupEditors.filter((user: any) => {
         return !collaboratorsIds.includes(user.uid) && user.uid !== authStore.user?.uid && user.uid !== store.project.created_by;
     });
 
-    collaborators.value = allUsers.filter((user: any) => {
+    collaborators.value = allGroupEditors.filter((user: any) => {
         return collaboratorsIds.includes(user.uid);
     });
 });
@@ -85,13 +85,12 @@ async function save() {
         saving.value = true;
         try {
             await saveProjectCollaborators(store.id, collaborators.value.map((u: any) => u.uid));
-            alert('saved');
         } catch (e) {
             alert('Error saving collaborators');
             console.error(e);
         } finally {
             saving.value = false;
-            router.push({ name: "initiatives" });
+            await router.push({ name: "initiatives" });
         }
     }
 }

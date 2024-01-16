@@ -937,5 +937,5 @@ exports.checkEmailSend = applicationStatus.checkEmailSend;
  * PRIVILEGES
  * 
  * **********************************************/
-const privileges = require("./privileges");
-exports.saveProjectCollaborators = privileges.saveProjectCollaborators;
+const collaborators = require("./collaborators");
+exports.saveProjectCollaborators = collaborators.saveProjectCollaborators;

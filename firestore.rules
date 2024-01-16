@@ -36,6 +36,11 @@ service cloud.firestore {
             return getStatus(rsc) in array;
         }
 
+        function isCollaborator(rsc) {
+            // Determine if the user is a collaborator of the resource
+            return isSignedIn() && request.auth.uid in rsc.data.collaborators && isOneOfRoles(rsc, ["editor"]);
+        }
+
         // Project registry documents
         match /registry/{projectId} {
             // allow create: if isSignedIn()
@@ -45,10 +50,13 @@ service cloud.firestore {
                 // The document status is draft or not defined
                 && (!('status' in request.resource.data) || request.resource.data.status == 'draft')
 
+                // the document doesn't include collaborators
+                && !('collaborators' in request.resource.data)
+
                 // The user is the creator of the resource
                 && request.auth.uid == request.resource.data.created_by
                 && (
-                // The user is a superadmin
+                    // The user is a superadmin
                     isAdmin()
 
                     // The group exists
@@ -75,6 +83,9 @@ service cloud.firestore {
                 // TODO re enable this condition and test
                 // && (!resource.data.status || resource.data.status == 'draft')
 
+                // or user is a collaborator
+                || isCollaborator(resource)
+
                 // Or user is group admin
                 || isOneOfRoles(resource, ["admin"])
             )
@@ -86,6 +97,10 @@ service cloud.firestore {
                 && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['group'])
                 // No one can change the status value directly - need to use the change status functions
                 && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status'])
+                // collaborator have not been changed
+                // request.resource.data.diff(resource.data).affectedKeys().hasAny(['collaborators'])
+
+                // && !('collaborators' in request.resource.data)
 
             allow delete: if isAdmin()
                 // User is group editor and the user is the creator of the resource
@@ -150,7 +165,7 @@ service cloud.firestore {
                     )
 
                 }
-    
+
         }
 
         // Best practice documents
@@ -210,11 +225,34 @@ service cloud.firestore {
         // }
 
         // Project areas documents
-        match /areas/{document=**} {
-            allow read: if isAdmin() || isSignedIn() && isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor", "guest"])
-            allow create: if isAdmin() || isSignedIn() && isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor"]) && isOneOfStatuses(get(/databases/$(database)/documents/areas/$(request.resource.id)), ["draft"])
-            allow update: if isAdmin() || isSignedIn() && isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor"]) && isOneOfStatuses(get(/databases/$(database)/documents/areas/$(request.resource.id)), ["draft"])
-            allow delete: if isAdmin() || isSignedIn() && isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor"]) && isOneOfStatuses(get(/databases/$(database)/documents/areas/$(request.resource.id)), ["draft"])
+        match /areas/{areaId} {
+            allow read: if isAdmin()
+            	|| isSignedIn()
+            		&& (
+            			isOneOfRoles(get(/databases/$(database)/documents/registry/$(resource.id)), ["admin", "editor", "guest"])
+            			|| isCollaborator(get(/databases/$(database)/documents/registry/$(resource.id)))
+            		)
+            allow create: if isAdmin()
+            	|| isSignedIn()
+            		&& (
+            			isOneOfRoles(getAfter(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor"])
+            			|| isCollaborator(getAfter(/databases/$(database)/documents/registry/$(request.resource.id)))
+					)
+            		&& isOneOfStatuses(getAfter(/databases/$(database)/documents/registry/$(request.resource.id)), ["draft"])
+            allow update: if isAdmin()
+            	|| isSignedIn()
+            		&& (
+            			isOneOfRoles(getAfter(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor"])
+            			|| isCollaborator(getAfter(/databases/$(database)/documents/registry/$(request.resource.id)))
+					)
+            		&& isOneOfStatuses(getAfter(/databases/$(database)/documents/registry/$(request.resource.id)), ["draft"])
+            allow delete: if isAdmin()
+            	|| isSignedIn()
+            		&& (
+            			isOneOfRoles(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["admin", "editor"])
+            			|| isCollaborator(get(/databases/$(database)/documents/registry/$(request.resource.id)))
+					)
+            		&& isOneOfStatuses(get(/databases/$(database)/documents/registry/$(request.resource.id)), ["draft"])
         }
 
         // User data documents
@@ -254,7 +292,7 @@ service cloud.firestore {
             allow delete: if false
         }
 
-        match /gaul/{document=**} {
+        match /adminAreas/{document=**} {
             allow read: if isSignedIn()
         }
 
