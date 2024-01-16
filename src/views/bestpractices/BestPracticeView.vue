@@ -105,7 +105,7 @@ async function closeGuidelines(accepted: boolean) {
                     <div class="border-b border-gray-200">
                         <nav class="-mb-px flex" aria-label="Tabs">
                             <router-link v-for="tab in tabs" :key="tab.name" :to="tab.href"
-                                :class="[route.name === tab.href ? 'border-indigo-500  text-indigo-600 dark:text-indigo-100' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm']"
+                                :class="[route.name === tab.href ? 'border-indigo-500  text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm']"
                                 :aria-current="route.name === tab.href ? 'page' : undefined">{{
                                     tab.name
                                 }}</router-link>

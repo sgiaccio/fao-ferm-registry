@@ -155,7 +155,7 @@ function nSelectedByGoal(goal: string) {
                          :class="j === groupByGoal(sortedGoalIndicators).length - 1 ? 'rounded-b-md' : ''"
                          :style="`border-color: ${getGoalColor(goal.goal)};`">
                         <div v-for="indicator  in  goal.indicators"
-                             :class="['px-3 py-2 border-b last:border-b-0 text-black dark:text-gray-200', isSelected(indicator) ? '' : 'hover:bg-gray-50 cursor-pointer']"
+                             :class="['px-3 py-2 border-b last:border-b-0 text-black', isSelected(indicator) ? '' : 'hover:bg-gray-50 cursor-pointer']"
                              :style="`border-color: ${getGoalColor(goal.goal, 0.4)}`"
                              @click="() => addIndicator(indicator)">
                             <div class="flex flex-row">

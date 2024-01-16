@@ -48,7 +48,7 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
                 type="text"
                 class="block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm transition ease-in-out duration-270 delay-50"
                 :placeholder="placeholder"
-                :class="[showValidation ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500' : 'focus:ring-0 dark:focus:border-black', enabled ? 'cursor-text' : 'cursor-not-allowed',
+                :class="[showValidation ? 'border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500' : 'focus:ring-0', enabled ? 'cursor-text' : 'cursor-not-allowed',
                 enabled ? 'cursor-text' : 'cursor-not-allowed']"
                 :value="modelValue"
                 @input="onInput"

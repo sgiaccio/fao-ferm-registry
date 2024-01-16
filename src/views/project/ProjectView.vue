@@ -78,7 +78,7 @@ function gotoPreviousTab() {
                             <div class="bg-blue-100 col-span-3 text-center py-2">Monitoring & Reporting</div>
 
                             <router-link v-for="tab in tabs"
-                                         :class="[route.path.endsWith(tab.path) ? 'border-indigo-500 text-indigo-600 dark:text-indigo-200' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300', 'border-b-2 py-6 text-center text-base font-medium', 'cursor-pointer flex flex-col']"
+                                         :class="[route.path.endsWith(tab.path) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'border-b-2 py-6 text-center text-base font-medium', 'cursor-pointer flex flex-col']"
                                          :aria-current="route.path.endsWith(tab.path) ? 'page' : undefined"
                                          :key="tab.name"
                                          :to="tab.path">
