@@ -38,7 +38,7 @@ const selectedOption = computed(() => {
 <template>
     <template v-if="edit">
         <select
-            class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md transition ease-in-out duration-270 delay-50"
+            class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md"
             :value="modelValue"
             @input="onInput">
             <option value="">{{placeholder}}</option>

@@ -14,7 +14,6 @@ import { fetchAllGroupNames } from "@/firebase/firestore";
 
 const userPrefsStore = useUserPrefsStore();
 const { register } = userPrefsStore;
-const { darkMode } = storeToRefs(useUserPrefsStore())
 
 // Stores all groups in a reactive object.
 const groups = reactive<{ [key: string]: string }>({});
@@ -146,11 +145,7 @@ function onClose() {
 
     <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
-            <img v-if="darkMode"
-                 class="mx-auto h-28 w-auto"
-                 src="/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
-                 alt="UN Decade">
-            <img v-else
+            <img
                  class="mx-auto h-28 w-auto"
                  src="/UNDecade_LOGO_MASTER_EN.svg"
                  alt="UN Decade">

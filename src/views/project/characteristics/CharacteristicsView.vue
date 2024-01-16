@@ -270,7 +270,7 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">References:</span> Ivits E; Cherlet M. Land-Productivity Dynamics Towards integrated assessment of land degradation at global scales. EUR 26052. Luxembourg (Luxembourg): Publications Office of the European Union; 2013. JRC80541
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200"
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
                        target="_blank"
                        href="https://earthmap.org/documents/LPD_Global.pdf">https://earthmap.org/documents/LPD_Global.pdf</a>
                 </p>
@@ -291,7 +291,7 @@ function fetchIndicators(area: any) {
                 <p class="mt-1">
                     <span class="font-medium">References:</span> Buchhorn, M., Smets, B., Bertels, L., Roo, B. D., Lesiv, M., Tsendbazar, N.-E., Herold, M., & Fritz, S. (2020). Copernicus Global Land Service: Land Cover 100m: collection 3: epoch 2019: Globe (Version V3.0.1) [Data set]. Zenodo.
 
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200"
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
                        target="_blank"
                        href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global">https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global</a>
                 </p>
@@ -310,12 +310,12 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">Spatial resolution:</span> 90 meters
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">References:</span> Jarvis, A., H.I. Reuter, A. Nelson, E. Guevara. 2008. Hole-filled SRTM for the globe Version 4, available from the CGIAR-CSI SRTM 90m Database: <a class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200"
+                    <span class="font-medium">References:</span> Jarvis, A., H.I. Reuter, A. Nelson, E. Guevara. 2008. Hole-filled SRTM for the globe Version 4, available from the CGIAR-CSI SRTM 90m Database: <a class="text-blue-600 underline hover:text-blue-500"
                        target="_blank"
                        href="https://srtm.csi.cgiar.org">https://srtm.csi.cgiar.org</a>.
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200"
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
                        target="_blank"
                        href="https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4">https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4</a>
                 </p>
@@ -333,12 +333,12 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">Spatial resolution:</span> 27830 meters
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200"
+                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 underline hover:text-blue-500"
                        target="_blank"
                        href="https://cds.climate.copernicus.eu/cdsapp#!/home">https://cds.climate.copernicus.eu/cdsapp#!/home</a>
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500 dark:hover:text-blue-200"
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
                        target="_blank"
                        href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
                 </p>
@@ -350,7 +350,7 @@ function fetchIndicators(area: any) {
                 <div v-for="area, i in store.projectAreas"
                      class="border-2 border-gray-300 px-3 py-2 rounded-lg">
                     <div class="text-gray-500 text-lg font-bold mb-2">
-                        Area {{ i + 1 }}<span class="text-black dark:text-gray-100"
+                        Area {{ i + 1 }}<span class="text-black"
                               v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}</span>
                     </div>
 

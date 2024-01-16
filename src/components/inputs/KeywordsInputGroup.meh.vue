@@ -161,7 +161,7 @@ function deleteKeyword(i: number) {
                          @keydown.enter="addKeyword()"
                          @keyup.enter="enter()"
                          type="text"
-                         class="cursor-text block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm transition ease-in-out duration-270 delay-50 focus:ring-0">
+                         class="cursor-text block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm focus:ring-0">
                         <!-- {{inputText}} -->
                     </div>
                     <div v-if="showMenu"

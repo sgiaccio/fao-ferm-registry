@@ -49,7 +49,7 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
                   :disabled="!props.enabled()"
                   :placeholder="placeholder"
                   @focusout="focusedOut = true"
-                  class="block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm transition ease-in-out duration-270 delay-50"
+                  class="block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm"
                   :class="{ 'border-red-400 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500': showValidation, 'focus:ring-0' : !showValidation }"
                   @input="onInput"
                   :value="modelValue"></textarea>

@@ -32,7 +32,6 @@ interface UserPrefs {
 export const useUserPrefsStore = defineStore('userPreferences', () => {
     // const bpDisclaimerAccepted = ref(false);
     const userPrefs = ref<UserPrefs>({});
-    const darkMode = ref<boolean | undefined>();
 
     function resetUserPrefsState() {
         userPrefs.value = {};
@@ -58,18 +57,6 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
             // Document does not exist - it will be created when the user completes the registration form
             console.error(error.code);
         }
-
-        // this.bpDisclaimerAccepted querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
-
-        // Set dark mode, get it from local storage if it exists
-        const darkModeSt = window.localStorage.getItem('darkMode');
-        if (!darkModeSt) {
-            darkMode.value = false;
-            window.localStorage.setItem('darkMode', 'false');
-        } else {
-            darkMode.value = darkModeSt === 'true';
-        }
-
     }
 
     async function acceptBpConsent() {
@@ -103,11 +90,5 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
         }
     }
 
-
-    function setDarkMode(mode: boolean) {
-        darkMode.value = mode;
-        window.localStorage.setItem('darkMode', '' + mode);
-    }
-
-    return { userPrefs, fetchUserPrefs, acceptBpConsent, register, darkMode, setDarkMode, getRegistrationData, resetUserPrefsState };
+    return { userPrefs, fetchUserPrefs, acceptBpConsent, register, getRegistrationData, resetUserPrefsState };
 });

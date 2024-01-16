@@ -126,7 +126,7 @@ function nSelectedByGoal(goal: string) {
 
         <div v-if="edit"
              class="shadow-md rounded">
-            <div class="w-full px-2.5 py-2 font-bold text-gray-700 border-t border-x border-gray-300 cursor-pointer flex gap-0.5 rounded-t hover:bg-gray-100 dark:hover:bg-gray-900"
+            <div class="w-full px-2.5 py-2 font-bold text-gray-700 border-t border-x border-gray-300 cursor-pointer flex gap-0.5 rounded-t hover:bg-gray-100"
                  :class="[!showAreaGoals ? 'rounded-b border-b' : '']"
                  @click="toggleAreaGoals">
                 <ChevronRightIcon v-if="!showAreaGoals"

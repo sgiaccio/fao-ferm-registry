@@ -11,7 +11,6 @@ import AlertModal from "@/views/AlertModal.vue";
 
 
 const { signInWithEmail, signInWithGoogle } = useAuthStore();
-const { darkMode } = storeToRefs(useUserPrefsStore())
 
 const loginForm = ref({
     email: null,
@@ -69,11 +68,7 @@ function onCloseLoginError() {
                 <div class="px-6 lg:px-0 lg:pt-4">
                     <div class="mx-auto max-w-2xl">
                         <div class="max-w-lg">
-                            <img v-if="darkMode"
-                                 class="h-28 w-full"
-                                 src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
-                                 alt="UN Decade">
-                            <img v-else
+                            <img
                                  class="h-28 w-full"
                                  src="@/assets/UNDecade_LOGO_MASTER_EN.svg"
                                  alt="UN Decade">
