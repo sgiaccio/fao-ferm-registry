@@ -1,7 +1,10 @@
-import { query, serverTimestamp, where, collection, doc, getDocs, setDoc } from 'firebase/firestore/lite';
+import { query, serverTimestamp, where, and, or, collection, doc, getDocs, setDoc } from 'firebase/firestore/lite';
 import { db } from './index';
 import { snakeToCamel } from '@/lib/util';
 import type { Menu, RecursiveMenu } from '@/components/project/menus';
+import { useAuthStore } from '@/stores/auth';
+
+import { getGroupsWhereEditor } from '@/lib/util';
 
 
 /**
@@ -146,3 +149,17 @@ export async function getMenus(): Promise<{ [key: string]: (Menu | RecursiveMenu
 //     const menusCollection = collection(db, "menus", id);
 //     return getDocs(query(menusCollection));
 // });
+
+export async function fetchEditableProjects(uid: string, privileges: { [key: string]: string }) {
+    const groupsWhereEditor = getGroupsWhereEditor(privileges);
+
+    const projectsCollection = collection(db, 'registry');
+
+    // search on firestore the projects that in one of the groups that the user is an editor of and (the user is either the owner of the project or a collaborator).
+    // even superadmins get only the projects that they are editors of.
+    const projects = await getDocs(query(projectsCollection,
+        and(where('group', 'in', groupsWhereEditor),
+            where('status', 'in', ['draft']),
+            or(where('created_by', '==', uid), where('collaborators', 'array-contains', uid)))));
+    return projects.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
+}

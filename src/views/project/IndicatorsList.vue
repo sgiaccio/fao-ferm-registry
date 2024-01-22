@@ -94,17 +94,15 @@ function nSelectedByGoal(goal: string) {
 </script>
 
 <template>
-    <div class="border-2 border-gray-300 rounded-md px-4 py-4 bg-gray-100">
+    <div class="border-2 border-gray-300 rounded-md px-4 py-4 bg-gray-50">
         <h1 class="font-bold text-gray-700 text-lg pb-3">Project indicators</h1>
         <!-- summary of the selected indicators -->
-        <div class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-white"
-             v-if="modelValue">
-<!--            <pre>{{ JSON.stringify(modelValue, null, 2) }}</pre>-->
+        <div v-if="modelValue"
+             class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-white">
             <template v-for="goal in getSortedIndicatorsAndMonitoring(modelValue)">
                 <div v-for="indicator in goal.indicators"
                      class="rounded px-3 py-2 flex shadow-sm"
                      :style="`background-color: ${getGoalColor(goal.goal)};`">
-                     <!-- <pre>{{JSON.stringify(indicator, null, 2)}}</pre> -->
                     <div class="flex-grow">
                         {{ indicator.indicator.indicator }} &mdash;
                         {{ indicator.indicator.rg_subtheme }} &mdash;
@@ -167,8 +165,7 @@ function nSelectedByGoal(goal: string) {
                                     {{ indicator.action }}
                                 </div>
                                 <div v-if="isSelected(indicator)"
-                                     class="font-bold text-lg self-center"
-                                     >
+                                     class="font-bold text-lg self-center">
                                     <CheckCircleIcon class="inline w-6 h-6 cursor" :style="`color: ${getGoalColor(goal.goal)}`"/>
                                 </div>
                             </div>

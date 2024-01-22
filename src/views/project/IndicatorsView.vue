@@ -215,10 +215,9 @@ function isSelected(area: any, indicator: any) {
                             <h1 class="akrobat text-2xl font-bold mb-3">Project indicators</h1>
                             <IndicatorsList v-model="area[Object.keys(area)[0]].goalIndicators"
                                             :edit="edit" />
-                            asdf
                             <CustomIndicatorsList v-model="area[Object.keys(area)[0]].customIndicators"
                                                   :edit="edit"
-                                                  class="mt-4 bg-red-200" />
+                                                  class="mt-4 bg-red-50" />
                         </div>
 
                     </div>

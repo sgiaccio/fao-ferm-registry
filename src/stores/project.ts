@@ -21,7 +21,7 @@ import { db } from '../firebase';
 import { setsContainSameValues, snakeToCamel } from '../lib/util'
 
 import { useAuthStore } from './auth';
-import { GoalIndicator, rawGoalIndicators } from '@/lib/auroraIndicators';
+import { GoalIndicator, rawGoalIndicators as _rawGoalIndicators } from '@/lib/auroraIndicators';
 import { getIntersectingCountries } from '@/firebase/functions';
 
 import { getGaulLevel0 } from '@/firebase/firestore';
@@ -302,7 +302,8 @@ export const useProjectStore = defineStore({
                 group: groupId,
                 project: {},
                 indicators: [],
-                results: {}
+                results: {},
+                status: 'draft',
             }
             this.projectAreas = [];
 
@@ -353,7 +354,7 @@ export const useProjectStore = defineStore({
 
             await this.fetchProject(projectRef.id);
         },
-        async save() {
+        async save({ rawGoalIndicators } = { rawGoalIndicators: _rawGoalIndicators }) {
             const authStore = useAuthStore();
 
             // Set project additional information
@@ -467,7 +468,6 @@ export const useProjectStore = defineStore({
             }
         },
         async addCountriesFromAdminAreas() {
-            alert('Adding countries from admin areas');
             try {
                 const adminAreasIsoCodes = await _getAdminAreasIso2Codes(this.projectAreas);
                 const oldIso2Codes = new Set(this.project.project.countries);

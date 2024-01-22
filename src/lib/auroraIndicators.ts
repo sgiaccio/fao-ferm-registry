@@ -2,7 +2,7 @@ import goalJsonData from '@/assets/aurora-json-files/goal_indicators_EN.json';
 
 
 // Goal sorting
-export const goalOrder = ['Food & Products', 'Climate', 'Soil', 'Water', 'Energy', 'Biodiversity', 'Culture', 'Community'] as const;
+export const goalOrder = ['Food & Products', 'Climate', 'Soil', 'Water', 'Energy', 'Biodiversity', 'Culture', 'Community']
 
 export class GoalIndicator {
     id: number;
@@ -95,12 +95,12 @@ export function getGoalColor(goal: string, opacity: number = 1): string {
 
 // sort goals by order
 export const sortedGoalIndicators = goalIndicators.sort((a, b) => {
-    const aIndex = goalOrder.indexOf(a.rg_goal)
+    const aIndex = goalOrder.indexOf(a.rg_goal);
     const bIndex = goalOrder.indexOf(b.rg_goal);
     return aIndex - bIndex;
 });
 
-interface RawGoalIndicator {
+export interface RawGoalIndicator {
     id: number;
     indicator: string;
     metric: string;

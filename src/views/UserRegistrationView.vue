@@ -297,7 +297,6 @@ function onClose() {
                                 class="">Submit</button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>

@@ -214,6 +214,10 @@ const router = createRouter({
             component: () => import('../views/SupportView.vue'),
             meta: { public: true }
         }, {
+            path: '/auroraImport/:userKey/:auroraProjectId',
+            name: 'auroraImport',
+            component: () => import('../views/AuroraImport.vue'),
+        }, {
             path: '/:pathMatch(.*)',
             component: () => import('../views/NotFoundView.vue'),
             meta: { public: true }

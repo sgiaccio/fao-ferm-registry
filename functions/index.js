@@ -457,7 +457,7 @@ exports.createUserRecord = functions.auth.user().onCreate(async ({ uid }) => {
     // Try to create user record, just log error if it fails
     const newUserRecord = { bpConsentAccepted: false };
     try {
-        await util.usersCollection.doc(uid).set(newUserRecord);
+        await util.usersCollection.doc(uid).set(newUserRecord, { merge: true });
     } catch (err) {
         console.error("Error creating user record:", err);
     }

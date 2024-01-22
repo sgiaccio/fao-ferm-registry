@@ -1,5 +1,6 @@
-import type { RecursiveMenu } from "@/components/project/menus";
-import { sortedGoalIndicators } from "./auroraIndicators";
+import type { RecursiveMenu } from '@/components/project/menus';
+import { sortedGoalIndicators } from './auroraIndicators';
+
 
 export function fbTimestampToString(ts: any) {
     return ts.toDate().toLocaleDateString('default');
@@ -9,13 +10,13 @@ export function snakeToCamel(o: any) {
     let newO: any;
     if (o instanceof Array) {
         return o.map(value => {
-            if (typeof value === "object") {
+            if (typeof value === 'object') {
                 value = snakeToCamel(value);
             }
             return value;
         });
     } else {
-        newO = {}
+        newO = {};
         for (let origKey in o) {
             if (o.hasOwnProperty(origKey)) {
                 const newKey = origKey.replace(/-./g, x => x[1].toUpperCase());
@@ -34,17 +35,17 @@ export function camelToSnake(o: any) {
     let newO: any;
     if (o instanceof Array) {
         return o.map(value => {
-            if (typeof value === "object") {
+            if (typeof value === 'object') {
                 value = camelToSnake(value);
             }
             return value;
         });
     } else {
-        newO = {}
+        newO = {};
         for (let origKey in o) {
             if (o.hasOwnProperty(origKey)) {
                 // The first character might be upper case
-                let newKey = origKey.charAt(0).toLowerCase() + origKey.substring(1).replace(/[A-Z]/g, x => '-' + x[0].toLowerCase())
+                let newKey = origKey.charAt(0).toLowerCase() + origKey.substring(1).replace(/[A-Z]/g, x => '-' + x[0].toLowerCase());
                 let value = o[origKey];
                 if (value instanceof Array || (value !== null && value.constructor === Object)) {
                     value = camelToSnake(value);
@@ -143,3 +144,8 @@ export function setsContainSameValues<T>(set1: Set<T>, set2: Set<T>) {
 
     return true;
 }
+
+export function getGroupsWhereEditor(privileges: { [key: string]: string }): string[] {
+    return Object.keys(privileges).filter(group => ['editor', 'admin'].includes(privileges[group]));
+}
+

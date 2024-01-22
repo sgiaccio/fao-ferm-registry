@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { onBeforeMount, onUnmounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { onBeforeRouteLeave, useRoute } from 'vue-router';
 
-import { storeToRefs } from 'pinia'
+import { storeToRefs } from 'pinia';
+
+import { ArrowRightCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/20/solid';
 
 import router from '@/router';
 
 import { useProjectStore } from '@/stores/project';
 
-import { ArrowRightCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/20/solid';
-
-import { onBeforeRouteLeave } from 'vue-router';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 
 const props = defineProps<{
@@ -24,6 +24,7 @@ const store = useProjectStore();
 
 const route = useRoute();
 
+const customAlert = useCustomAlert();
 
 function beforeUnloadHandler(event: BeforeUnloadEvent) {
     event.preventDefault();
@@ -34,7 +35,14 @@ onBeforeMount(async () => {
     if (route.params.id === 'new') {
         store.createEmptyProject(route.query.groupId as string);
     } else {
-        await store.fetchProject(route.params.id as string);
+        const loaded = route.query.loaded === 'true';
+        if (!loaded || !store.loaded) {
+            await store.fetchProject(route.params.id as string);
+        }
+        else {
+            // tell the user that the aurora indicators were loaded but the project is in an unsaved state
+            customAlert('Aurora Indicators Loaded', 'The Aurora indicators have been added to your project. Please save your work to retain these changes.', 'info');
+        }
     }
     window.addEventListener("beforeunload", beforeUnloadHandler);
 });

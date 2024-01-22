@@ -3,14 +3,13 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { useAuthStore } from '../../stores/auth'
-import { useUserPrefsStore } from '../../stores/userPreferences'
 
 import router from '../../router'
 
 import AlertModal from "@/views/AlertModal.vue";
 
 
-const { signInWithEmail, signInWithGoogle } = useAuthStore();
+const { signInWithEmail, signInWithGoogle, returnUrl } = useAuthStore();
 
 const loginForm = ref({
     email: null,
@@ -73,7 +72,7 @@ function onCloseLoginError() {
                                  src="@/assets/UNDecade_LOGO_MASTER_EN.svg"
                                  alt="UN Decade">
                             <h1 class="w-full text-center mt-8 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl font-akrobat uppercase">Welcome to the<br>FERM Registry</h1>
-                            <p class="mt-6 text-lg leading-8 text-gray-600">The Framework for Ecosystem Restoration Monitoring Registry aims to provide a register of ecosystem restoration initiatives and good practices, in the context of the
+                            <p class="mt-6 text-lg leading-8 text-gray-800">The Framework for Ecosystem Restoration Monitoring Registry aims to provide a register of ecosystem restoration initiatives and good practices, in the context of the
                                 <span class="font-bold">United Nations Decade on Ecosystem Restoration</span>,
                                 whilst ensuring interoperability with other restoration monitoring platforms and initiatives.
                             </p>

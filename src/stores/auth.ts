@@ -17,12 +17,8 @@ import router from '@/router';
 import { db, auth } from "@/firebase";
 
 
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
-
-// import { useUserPrefsStore } from './userPreferences';
-// import { useProjectStore } from './project';
-// import { useBestPracticesStore } from './bestpractices';
 
 
 const provider = new GoogleAuthProvider();
@@ -91,6 +87,7 @@ export const useAuthStore = defineStore({
     id: "auth",
     state: () => ({
         authLoaded: false,
+        uid: null as string | null,
         user: null as User | null,
         isAdmin: false,
         isGroupAdmin: false,
@@ -100,10 +97,8 @@ export const useAuthStore = defineStore({
     }),
     actions: {
         async signInWithEmail(email: string) {
-            // const auth = getAuth();
-
-            // actionCodeSettings.url = baseUrl + this.returnUrl;
-            actionCodeSettings.url = baseUrl + '/registry/initiatives'; // TODO
+            actionCodeSettings.url = baseUrl + this.returnUrl;
+            // actionCodeSettings.url = baseUrl + '/registry/initiatives'; // TODO
             await sendSignInLinkToEmail(auth, email, actionCodeSettings)
             window.localStorage.setItem('emailForSignIn', email);
         },
@@ -112,19 +107,10 @@ export const useAuthStore = defineStore({
             await signOut(auth);
 
             this.user = null;
+            this.uid = null;
             this.isAdmin = false;
             this.isGroupAdmin = false;
             this.privileges = {};
-
-
-            // const projectStore = useProjectStore();
-            // projectStore.resetProjectState();
-
-            // const userPrefsStore = useUserPrefsStore();
-            // userPrefsStore.resetUserPrefsState();
-
-            // const bestPracticesStore = useBestPracticesStore();
-            // bestPracticesStore.resetBestPracticesState();
 
             router.push('/login');
         },
@@ -133,6 +119,7 @@ export const useAuthStore = defineStore({
                 // console.debug('User is null');
             } else {
                 this.user = user;
+                this.uid = user.uid;
 
                 // Get user privileges
                 const idToken = await user.getIdTokenResult(true);
@@ -243,13 +230,12 @@ export const useAuthStore = defineStore({
             // This is a repetition from main.ts
             // It is needed because we are using a popup so the page is not laaded again
             // Will find a better way to do this
-            await this.fetchUser()
+            await this.fetchUser();
             await router.isReady();
-            if (router.currentRoute.value.path === "/login") {
+            // if (router.currentRoute.value.path === "/login") {
                 this.authLoaded = true;
-                // router.push(this.returnUrl);
-                router.push('/registry/initiatives');
-            }
+                router.push(this.returnUrl);
+            // }
         },
 
         async signUp(email: string, fullName: string) {

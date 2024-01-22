@@ -331,7 +331,8 @@ provide('applyToAll', () => {
                 </LabelFormGroup>
                 <div v-if="countries"
                      class="flex flex-wrap w-full gap-2 mb-4 whitespace-nowrap">
-                    <div class="border rounded-md px-4 py-1 flex flex-row gap-x-1 items-center bg-white"
+                    <div
+                        class="border rounded-md px-4 py-1 flex flex-row gap-x-1 items-center bg-white"
                          v-for="(area, i) in (store.project.project.countries || []).map(getCountryName)">
                         <div>{{ area }}</div>
                         <XCircleIcon v-if="edit"

@@ -38,12 +38,14 @@ onBeforeMount(async () => {
 
     const collaboratorsIds = store.project.collaborators || [];
 
-    const allGroupEditors = users.users.map((u: any) => ({
-        uid: u.uid,
-        displayName: u.displayName || 'no name',
-    })).sort((a: any, b: any) => a.displayName.localeCompare(b.displayName));
+    const allGroupEditors = users.users
+        .filter((u: any) => u.displayName) // filter out users without displayName as there's no way to identify them
+        .map((u: any) => ({
+            uid: u.uid,
+            displayName: u.displayName
+        }))
+        .sort((a: any, b: any) => a.displayName.localeCompare(b.displayName));
 
-    console.log(JSON.stringify(users.users.filter(u => !u.displayName), null, 2));
     availableUsers.value = allGroupEditors.filter((user: any) => {
         return !collaboratorsIds.includes(user.uid) && user.uid !== authStore.user?.uid && user.uid !== store.project.created_by;
     });
