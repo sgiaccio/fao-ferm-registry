@@ -285,8 +285,8 @@ function getCountryNames(countries: string[]) {
                 class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow mt-10 border border-gray-200">
                 <div
                     class="px-4 py-5 sm:px-6 sm:mt-2 font-akrobat text-xl text-center font-bold _leading-6 text-ferm-blue-light-800">
-                    Import the following indicators from the
-                    <span class="font-extrabold">{{ auroraProject.name }}</span>
+                    Import indicators from the
+                    <span class="font-extrabold italic ">{{ auroraProject.name }}</span>
                     AURORA project
                 </div>
                 <div class="px-4 py-5 sm:p-6">
@@ -316,7 +316,7 @@ function getCountryNames(countries: string[]) {
                 </div>
                 <div class="px-4 py-4 sm:px-6 w-full">
                     <button
-                        class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
+                        class="w-full sm:w-auto inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         @click="open = true">Choose initiative
                     </button>
                 </div>

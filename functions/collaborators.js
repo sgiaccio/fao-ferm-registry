@@ -1,7 +1,7 @@
 const functions = require("firebase-functions");
 const { FieldValue } = require("firebase-admin/firestore");
 
-const { newCollaborator: newCollaboratorTemplate, newCollaborator } = require("./emailTemplates");
+const { newCollaborator: newCollaboratorTemplate } = require("./emailTemplates");
 
 const util = require("./util");
 
@@ -16,7 +16,11 @@ function validateInputs(projectId, collaboratorsUids) {
 }
 
 
-async function getNewCollaborators(project, collaboratorsUids) {
+async function getCollaboratorsFromUids(collaboratorsUids) {
+    return await Promise.all(collaboratorsUids.map(uid => util.getUser(uid)));
+}
+
+async function getCollaborators(project, collaboratorsUids) {
     // get the new collaborators uids
     const oldCollaboratorsUids = project.collaborators || [];
     const newCollaboratorsUids = collaboratorsUids.filter(uid => !oldCollaboratorsUids.includes(uid));
@@ -25,12 +29,11 @@ async function getNewCollaborators(project, collaboratorsUids) {
     return await Promise.all(newCollaboratorsUids.map(uid => util.getUser(uid)));
 }
 
-function checkNewCollaborators(newCollaborators, project) {
-    // This function checks that the new collaborators are editors of the project
-    const areEditors = newCollaborators.map(user => {
+function checkCollaborators(collaborators, project) {
+    // This function checks that the collaborators are editors of the project
+    const areEditors = collaborators.map(user => {
         const privileges = user.customClaims?.privileges || {};
         return privileges[project.group] === "editor";
-
     });
 
     // throw an exception if any of the new collaborators is not an editor
@@ -40,10 +43,10 @@ function checkNewCollaborators(newCollaborators, project) {
     }
 }
 
-async function saveNewCollaborators(projectRef, collaboratorsUids) {
+async function saveCollaborators(projectRef, collaboratorsUids) {
     try {
         await projectRef.update({
-            collaborators: collaboratorsUids
+            collaborators: collaboratorsUids,
         });
     } catch (error) {
         console.error("Failed to save collaborators", error);
@@ -51,12 +54,9 @@ async function saveNewCollaborators(projectRef, collaboratorsUids) {
     }
 }
 
-async function notifyNewCollaborators(newCollaborators, project) {
-    const projectId = project.id;
-    console.log("projectId", projectId);
+async function notifyNewCollaborators(newCollaborators, projectId, project) {
     if (newCollaborators.length > 0) {
         const mailPromises = newCollaborators.map(collaborator => {
-            // email, displayName, projectName, projectId
             const mailDoc = newCollaboratorTemplate(collaborator.email, collaborator.displayName, project.project.title, projectId);
             return util.mailCollection.add(mailDoc);
         });
@@ -78,14 +78,15 @@ exports.saveProjectCollaborators = functions.https.onCall(async ({ projectId, co
 
     const project = await checkSaveCollaboratorPrivileges(context, projectRef);
 
-    const newCollaborators = await getNewCollaborators(project, collaboratorsUids);
-    checkNewCollaborators(newCollaborators, project);
-    const newCollaboratosUuids = newCollaborators.map(collaborator => collaborator.uid);
+    const collaborators = await getCollaboratorsFromUids(collaboratorsUids);
+    checkCollaborators(collaborators, project);
+    await saveCollaborators(projectRef, collaboratorsUids);
 
-    await saveNewCollaborators(projectRef, newCollaboratosUuids);
+    const newCollaboratorUuids = collaboratorsUids.filter(uid => !project.collaborators.includes(uid));
+    const newCollaborators = collaborators.filter(collaborator => newCollaboratorUuids.includes(collaborator.uid));
 
     // Email the new collaborators
-    await notifyNewCollaborators(newCollaborators, project);
+    await notifyNewCollaborators(newCollaborators, projectId, project);
 
     return { message: "Collaborators saved" };
 });
