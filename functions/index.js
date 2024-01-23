@@ -934,7 +934,7 @@ exports.checkEmailSend = applicationStatus.checkEmailSend;
 
 /************************************************
  * 
- * PRIVILEGES
+ * Collaborators
  * 
  * **********************************************/
 const collaborators = require("./collaborators");

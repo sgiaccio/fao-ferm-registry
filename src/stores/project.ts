@@ -343,7 +343,8 @@ export const useProjectStore = defineStore({
                 created_by: authStore.user!.uid,
                 termsAndConditionsAccepted: termsAndConditionsAccepted,
                 createTime: serverTimestamp(),
-                updateTime: serverTimestamp()
+                updateTime: serverTimestamp(),
+                status: 'draft'
             });
 
             // Create an empty area collection
