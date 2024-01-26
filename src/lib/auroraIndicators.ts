@@ -141,3 +141,9 @@ export function groupByGoal(goalIndicators: GoalIndicator[]) {
     }
     return indicatorByGoal;
 }
+
+export interface CustomIndicator {
+    indicator: string;
+    metric: string;
+    unit: string;
+}

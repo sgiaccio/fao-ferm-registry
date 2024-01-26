@@ -3,6 +3,7 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 import { CheckIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue';
 
+
 withDefaults(defineProps<{
     open: boolean
     type?: 'success' | 'error' | 'warning' | 'info'
@@ -22,7 +23,7 @@ withDefaults(defineProps<{
 const emit = defineEmits(['closed', 'cancel']); // TODO: add 'close' event
 
 // 2x closing is needed because of the 2x TransitionChild and 1 in TransitionRoot.
-// Setting after-leave in TransitionRoot only causes it to be called three times. I don't know why.
+// Setting after-leave in TransitionRoot only, causes it to be called three times. I don't know why.
 const closingCount = ref(0);
 function closing() {
     closingCount.value++;
@@ -50,10 +51,9 @@ function cancel() {
                              leave-from="opacity-100"
                              leave-to="opacity-0"
                              @after-leave="closing">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
             </TransitionChild>
 
-            <!-- backgroound with gradient -->
             <div class="fixed inset-0 z-10 overflow-y-auto">
                 <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <TransitionChild as="template"

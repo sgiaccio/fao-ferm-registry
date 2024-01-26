@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { fetchEditableProjects } from '@/firebase/firestore';
@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useProjectStore } from '@/stores/project';
 import { useUserGroups } from '@/hooks/useUserGroups';
 
-import { GoalIndicator, type RawGoalIndicator } from '@/lib/auroraIndicators';
+import { GoalIndicator, type RawGoalIndicator, type CustomIndicator } from '@/lib/auroraIndicators';
 
 import IndicatorsList from '@/views/project/IndicatorsList.vue';
 
@@ -18,7 +18,6 @@ import { XCircleIcon } from '@heroicons/vue/20/solid';
 import {
     Combobox,
     ComboboxInput,
-    ComboboxButton,
     ComboboxOptions,
     ComboboxOption,
     Dialog,
@@ -40,7 +39,7 @@ const projectStore = useProjectStore();
 
 const auroraProject = ref<any>();
 const goalIndicators = ref<GoalIndicator[]>([]);
-const customIndicators = ref<any>([]);
+const customIndicators = ref<CustomIndicator[]>([]);
 const editableProjects = ref<any>();
 const indicatorsListModelValue = ref();
 
@@ -93,11 +92,26 @@ onMounted(async () => {
     }
 });
 
-async function importAuroraIndicators(project) {
-    // close the action menu
-    open.value = false;
+const closeCount = ref(0);
 
+async function closeActionMenu(): Promise<void> {
+    open.value = false;
+    return new Promise(resolve => {
+        const w = watch(closeCount, () => {
+            if (closeCount.value === 2) {
+                closeCount.value = 0;
+                w();
+                resolve();
+            }
+        });
+    });
+}
+
+async function importAuroraIndicators(project) {
     await projectStore.fetchProject(project.id);
+
+    // close the action menu
+    await closeActionMenu();
 
     const projectAreas = projectStore.projectAreas;
     if (!projectAreas?.length) {
@@ -107,16 +121,37 @@ async function importAuroraIndicators(project) {
 
     // Only change the first area of the project (projectAreas[0]).
     const areaObj: any = Object.values(projectAreas[0])[0];
-    areaObj.goalIndicators = goalIndicators.value.map((i: any) => ({ indicator: i }));
-    areaObj.customIndicators = customIndicators.value.map((i: any) => ({
-        indicator: {
-            indicator: i.indicator,
-            metric: i.metric,
-            unit: i.unit
-        }
+
+    const oldIndicators = areaObj.goalIndicators as { indicator: GoalIndicator, monitoring: any }[];
+    const oldCustomIndicators = areaObj.customIndicators as { indicator: CustomIndicator, monitoring: any }[];
+
+    const intersection = oldIndicators.filter(i => !!goalIndicators.value.find(oi => oi.equals(i.indicator)));
+    const customIntersection = oldCustomIndicators.filter(i => !!customIndicators.value.find(oi => {
+        return oi.indicator === i.indicator.indicator
+            && oi.metric === i.indicator.metric
+            && oi.unit === i.indicator.unit;
+    }));
+    const difference = goalIndicators.value.filter(i => !oldIndicators.find(oi => oi.indicator.equals(i)));
+    const customDifference = customIndicators.value.filter(i => !oldCustomIndicators.find(oi => {
+        return oi.indicator.indicator === i.indicator
+            && oi.indicator.metric === i.metric
+            && oi.indicator.unit === i.unit;
     }));
 
-    await router.push({ name: 'projectIndicatorsEdit', params: { id: project.id }, query: { loaded: 'true' } });
+    areaObj.goalIndicators = [...intersection, ...difference.map(i => ({ indicator: i }))];
+    areaObj.customIndicators = [...customIntersection, ...customDifference.map(indicator => ({ indicator }))];
+
+    // wait 100 ms
+    if (intersection.length || customIntersection.length) {
+        nextTick(() => {
+            customAlert(
+                'Merging indicators',
+                'Some indicators already exist in this project. They will be merged and monitoring data will not be affected.',
+                'info',
+                { onClose: () => router.push({ name: 'projectIndicatorsEdit', params: { id: project.id }, query: { loaded: 'true' } })}
+            );
+        });
+    }
 }
 
 const open = ref(false);
@@ -141,27 +176,40 @@ function getCountryNames(countries: string[]) {
     <TransitionRoot :show="open" as="template" @after-leave="query = ''" appear>
         <Dialog as="div" class="relative z-10" @close="open = false">
             <TransitionChild
-                as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
-                leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+                @after-leave="closeCount++"
+                as="template"
+                enter="ease-out duration-300"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="ease-in duration-200"
+                leave-from="opacity-100"
+                leave-to="opacity-0">
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-25 transition-opacity" />
             </TransitionChild>
 
             <div class="fixed inset-0 z-10 w-screen overflow-y-auto p-4 sm:p-6 md:p-20">
                 <TransitionChild
+                    @after-leave="closeCount++"
                     as="template"
-                    enter="ease-out duration-300" enter-from="opacity-0 scale-95"
-                    enter-to="opacity-100 scale-100" leave="ease-in duration-200" leave-from="opacity-100 scale-100"
+                    enter="ease-out duration-300"
+                    enter-from="opacity-0 scale-95"
+                    enter-to="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leave-from="opacity-100 scale-100"
                     leave-to="opacity-0 scale-95">
                     <DialogPanel
                         class="mx-auto max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
-                        <Combobox v-slot="{ activeOption }" @update:modelValue="importAuroraIndicators">
+                        <Combobox
+                            v-slot="{ activeOption }"
+                            @update:modelValue="importAuroraIndicators">
                             <div class="relative">
                                 <MagnifyingGlassIcon
                                     class="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400"
                                     aria-hidden="true" />
                                 <ComboboxInput
                                     class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                                    placeholder="Search..." @change="query = $event.target.value" />
+                                    placeholder="Search..."
+                                    change="query = $event.target.value" />
                             </div>
 
                             <ComboboxOptions
@@ -180,8 +228,11 @@ function getCountryNames(countries: string[]) {
                                         class="mb-4 mt-2 text-sm font-semibold text-gray-500">You are currently not an editor or collaborator of any initiative.</h2>
                                     <div hold class="-mx-2 text-sm text-gray-700">
                                         <ComboboxOption
-                                            v-for="project in filteredProjects" :key="project.id"
-                                            :value="project" as="template" v-slot="{ active }">
+                                            v-for="project in filteredProjects"
+                                            :key="project.id"
+                                            :value="project"
+                                            as="template"
+                                            v-slot="{ active }">
                                             <div
                                                 :class="['group flex cursor-default select-none items-center rounded-md p-2', active && 'bg-gray-100 text-gray-900']">
                                                 <!--                                                <img-->
@@ -232,7 +283,9 @@ function getCountryNames(countries: string[]) {
                             <div
                                 v-if="query !== '' && filteredProjects.length === 0"
                                 class="px-6 py-14 text-center text-sm sm:px-14">
-                                <DocumentIcon class="mx-auto h-6 w-6 text-gray-400" aria-hidden="true" />
+                                <DocumentIcon
+                                    class="mx-auto h-6 w-6 text-gray-400"
+                                    aria-hidden="true" />
                                 <p class="mt-4 font-semibold text-gray-900">No initiatives found</p>
                                 <p class="mt-2 text-gray-500">We couldn’t find anything with that term. Please try again.</p>
                             </div>

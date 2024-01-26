@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
@@ -10,18 +10,19 @@ const open = ref(false);
 const type = ref<string>('info');
 const title = ref<string>('');
 const message = ref<string>('');
-let closedCallback: (() => void) | undefined;
+let closedCallback = ref<(() => void)>(() => {});
 
 function show(t: string, m: string, ty: string = 'info', options: any = {}) {
     type.value = ty;
     open.value = true;
     title.value = t;
     message.value = m;
-    closedCallback = options.onClose;
+    closedCallback.value = options.onClose || (() => {});
 }
 
 defineExpose({
-    show
+    show,
+    closedCallback
 });
 
 function close() {
@@ -32,18 +33,15 @@ function closed() {
     type.value = 'info';
     title.value = '';
     message.value = '';
-
-    if (closedCallback) {
-        closedCallback();
-        closedCallback = undefined;
-    }
+    closedCallback.value();
 }
 </script>
 
 <template>
     <TransitionRoot
         as="template"
-        :show="open">
+        :show="open"
+        @after-leave="closed">
         <Dialog
             as="div"
             class="relative z-10">
@@ -54,8 +52,7 @@ function closed() {
                 enter-to="opacity-100"
                 leave="ease-in duration-200"
                 leave-from="opacity-100"
-                leave-to="opacity-0"
-                @after-leave="closed">
+                leave-to="opacity-0">
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
             </TransitionChild>
 

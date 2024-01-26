@@ -249,11 +249,22 @@ router.beforeEach(async (to) => {
         return { name: 'initiatives' };
     }
 
-    // If the user is not logged in and tries to access a page that requires auth, redirect to login
-    if (to.matched.some(record => !record.meta.public) && authStore.authLoaded && !authStore.user) {
-        authStore.returnUrl = to.fullPath;
-        return { name: 'login' };
+    // if the user requested a page that requires auth and the auth store is not loaded, wait for it to load
+    if (to.matched.some(record => !record.meta.public) && !authStore.authLoaded) {
+        await authStore.fetchUser();
+        // if the user is not logged in, redirect to login
+        if (!authStore.user) {
+            authStore.returnUrl = to.fullPath;
+            return { name: 'login' };
+        }
     }
+
+    // // If the user is not logged in and tries to access a page that requires auth, redirect to login
+    // if (to.matched.some(record => !record.meta.public) && authStore.authLoaded && !authStore.user) {
+    //     authStore.returnUrl = to.fullPath;
+    //     return { name: 'login' };
+    // }
+
 });
 
 export default router;

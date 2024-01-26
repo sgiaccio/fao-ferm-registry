@@ -1,24 +1,24 @@
 import { defineStore } from "pinia";
 
-import { functions } from '../firebase'
-
 import {
     signOut,
     sendSignInLinkToEmail,
     isSignInWithEmailLink,
     signInWithEmailLink,
+    GoogleAuthProvider,
+    signInWithPopup,
     type User,
 } from "firebase/auth";
-import { collection, query, getDocs, where, documentId } from "firebase/firestore/lite";
-
-
-import router from '@/router';
 
 import { db, auth } from "@/firebase";
 
-
-import { GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
+
+import { collection, query, getDocs, where, documentId } from "firebase/firestore/lite";
+
+import router from '@/router';
+
+import { functions } from '../firebase'
 
 
 const provider = new GoogleAuthProvider();
@@ -30,20 +30,8 @@ const provider = new GoogleAuthProvider();
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const actionCodeSettings = {
-    // URL you want to redirect back to. The domain (www.example.com) for this
-    // URL must be in the authorized domains list in the Firebase Console.
     url: baseUrl,
-    // This must be true.
     handleCodeInApp: true,
-    // iOS: {
-    //   bundleId: 'com.example.ios'
-    // },
-    // android: {
-    //   packageName: 'com.example.android',
-    //   installApp: true,
-    //   minimumVersion: '12'
-    // },
-    // dynamicLinkDomain: 'example.page.link'
 };
 
 //   auth.onAuthStateChanged(async user => {
@@ -98,7 +86,6 @@ export const useAuthStore = defineStore({
     actions: {
         async signInWithEmail(email: string) {
             actionCodeSettings.url = baseUrl + this.returnUrl;
-            // actionCodeSettings.url = baseUrl + '/registry/initiatives'; // TODO
             await sendSignInLinkToEmail(auth, email, actionCodeSettings)
             window.localStorage.setItem('emailForSignIn', email);
         },
@@ -112,7 +99,7 @@ export const useAuthStore = defineStore({
             this.isGroupAdmin = false;
             this.privileges = {};
 
-            router.push('/login');
+            await router.push('/login');
         },
         async setUserData(user: User | null) {
             if (user === null) {
@@ -125,7 +112,7 @@ export const useAuthStore = defineStore({
                 const idToken = await user.getIdTokenResult(true);
                 if (idToken) {
                     this.isAdmin = idToken.claims.admin as unknown as boolean,
-                        this.privileges = idToken.claims.privileges || {};
+                        this.privileges = idToken.claims.privileges as any || {};
 
                     this.isGroupAdmin = Object.values(this.privileges).some((priv: any) => priv === 'admin');
                 }
@@ -233,8 +220,8 @@ export const useAuthStore = defineStore({
             await this.fetchUser();
             await router.isReady();
             // if (router.currentRoute.value.path === "/login") {
-                this.authLoaded = true;
-                router.push(this.returnUrl);
+            this.authLoaded = true;
+            await router.push(this.returnUrl);
             // }
         },
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onUnmounted, watch } from 'vue';
+import { onBeforeMount, onMounted, onUnmounted, watch } from 'vue';
 import { onBeforeRouteLeave, useRoute } from 'vue-router';
 
 import { storeToRefs } from 'pinia';
@@ -39,27 +39,30 @@ onBeforeMount(async () => {
         if (!loaded || !store.loaded) {
             await store.fetchProject(route.params.id as string);
         }
-        else {
-            // tell the user that the aurora indicators were loaded but the project is in an unsaved state
-            customAlert('Aurora Indicators Loaded', 'The Aurora indicators have been added to your project. Please save your work to retain these changes.', 'info');
-        }
     }
-    window.addEventListener("beforeunload", beforeUnloadHandler);
+    window.addEventListener('beforeunload', beforeUnloadHandler);
+});
+
+onMounted(() => {
+    if (route.query.loaded === 'true' && store.loaded) {
+        // tell the user that the aurora indicators were loaded but the project is in an unsaved state
+        customAlert('Aurora Indicators Loaded', 'The Aurora indicators have been added to your project. Please save your work to retain these changes.', 'info');
+    }
 });
 
 onUnmounted(() => {
-    window.removeEventListener("beforeunload", beforeUnloadHandler);
+    window.removeEventListener('beforeunload', beforeUnloadHandler);
 });
 
 
 onBeforeRouteLeave((to, from) => {
-    if (!store.loaded) return true
+    if (!store.loaded) return true;
 
     const answer = window.confirm(
         'Do you really want to leave? you have unsaved changes!'
-    )
-    if (!answer) return false
-})
+    );
+    if (!answer) return false;
+});
 
 
 // const showJson = ref(false);
@@ -85,7 +88,7 @@ async function cancel() {
     }
 }
 
-const { projectAreas } = storeToRefs(store)
+const { projectAreas } = storeToRefs(store);
 watch(projectAreas, (projectAreas, oldProjectAreas) => {
     if (!store.project) return;
 
@@ -100,36 +103,42 @@ watch(projectAreas, (projectAreas, oldProjectAreas) => {
     <!-- buttons -->
     <div class="w-full pb-8 flex gap-x-6">
         <div class="shrink">
-            <button @click="saveAndExit"
-                    type="button"
-                    class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500">
-                <ArrowRightOnRectangleIcon class="-ml-0.5 h-5 w-5"
-                                           aria-hidden="true" />
+            <button
+                @click="saveAndExit"
+                type="button"
+                class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500">
+                <ArrowRightOnRectangleIcon
+                    class="-ml-0.5 h-5 w-5"
+                    aria-hidden="true" />
                 Save and Exit
             </button>
         </div>
         <div class="shrink">
-            <button @click="saveAndNext"
-                    type="button"
-                    :disabled="last"
-                    :class="[last ? 'bg-gray-300 text-gray-400' : 'bg-indigo-600 hover:bg-indigo-700 text-white', 'inline-flex items-center gap-x-1.5 rounded-md py-2 px-3 text-sm font-semibold shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500']">
-                <ArrowRightCircleIcon class="-ml-0.5 h-5 w-5"
-                                      aria-hidden="true" />
+            <button
+                @click="saveAndNext"
+                type="button"
+                :disabled="last"
+                :class="[last ? 'bg-gray-300 text-gray-400' : 'bg-indigo-600 hover:bg-indigo-700 text-white', 'inline-flex items-center gap-x-1.5 rounded-md py-2 px-3 text-sm font-semibold shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500']">
+                <ArrowRightCircleIcon
+                    class="-ml-0.5 h-5 w-5"
+                    aria-hidden="true" />
                 Save and Next
             </button>
         </div>
         <div class="grow relative flex flex-row">
             <div class="grow"></div>
-            <button @click="cancel"
-                    type="button"
-                    class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <button
+                @click="cancel"
+                type="button"
+                class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                 Cancel
             </button>
         </div>
     </div>
 
-    <router-view v-if="store.loaded"
-                 :edit="true" />
+    <router-view
+        v-if="store.loaded"
+        :edit="true" />
     <!-- <router-view v-slot="{ Component }" v-if="store.loaded">
         <keep-alive>
             <component :is="Component"
@@ -140,29 +149,34 @@ watch(projectAreas, (projectAreas, oldProjectAreas) => {
     <!-- buttons -->
     <div class="w-full pb-8 flex gap-x-6">
         <div class="shrink">
-            <button @click="saveAndExit"
-                    type="button"
-                    class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500">
-                <ArrowRightOnRectangleIcon class="-ml-0.5 h-5 w-5"
-                                           aria-hidden="true" />
+            <button
+                @click="saveAndExit"
+                type="button"
+                class="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500">
+                <ArrowRightOnRectangleIcon
+                    class="-ml-0.5 h-5 w-5"
+                    aria-hidden="true" />
                 Save and Exit
             </button>
         </div>
         <div class="shrink">
-            <button @click="saveAndNext"
-                    type="button"
-                    :disabled="last"
-                    :class="[last ? 'bg-gray-300 text-gray-400' : 'bg-indigo-600 hover:bg-indigo-700 text-white', 'inline-flex items-center gap-x-1.5 rounded-md py-2 px-3 text-sm font-semibold shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500']">
-                <ArrowRightCircleIcon class="-ml-0.5 h-5 w-5"
-                                      aria-hidden="true" />
+            <button
+                @click="saveAndNext"
+                type="button"
+                :disabled="last"
+                :class="[last ? 'bg-gray-300 text-gray-400' : 'bg-indigo-600 hover:bg-indigo-700 text-white', 'inline-flex items-center gap-x-1.5 rounded-md py-2 px-3 text-sm font-semibold shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500']">
+                <ArrowRightCircleIcon
+                    class="-ml-0.5 h-5 w-5"
+                    aria-hidden="true" />
                 Save and Next
             </button>
         </div>
         <div class="grow relative flex flex-row">
             <div class="grow"></div>
-            <button @click="cancel"
-                    type="button"
-                    class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <button
+                @click="cancel"
+                type="button"
+                class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                 Cancel
             </button>
         </div>

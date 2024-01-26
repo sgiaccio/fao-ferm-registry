@@ -17,6 +17,8 @@ import { GoalIndicator } from '@/lib/auroraIndicators';
 import IndicatorsList from './IndicatorsList.vue';
 import CustomIndicatorsList from './CustomIndicatorsList.vue';
 
+import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
+
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
