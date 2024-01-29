@@ -148,4 +148,3 @@ export function setsContainSameValues<T>(set1: Set<T>, set2: Set<T>) {
 export function getGroupsWhereEditor(privileges: { [key: string]: string }): string[] {
     return Object.keys(privileges).filter(group => ['editor', 'admin'].includes(privileges[group]));
 }
-

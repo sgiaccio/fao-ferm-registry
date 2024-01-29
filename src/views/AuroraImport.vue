@@ -2,13 +2,16 @@
 import { ref, onMounted, nextTick, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
+import { storeToRefs } from 'pinia';
+
 import { fetchEditableProjects } from '@/firebase/firestore';
 
 import { useAuthStore } from '@/stores/auth';
 import { useProjectStore } from '@/stores/project';
 import { useUserGroups } from '@/hooks/useUserGroups';
+import { useAuroraStore } from '@/stores/aurora';
 
-import { GoalIndicator, type RawGoalIndicator, type CustomIndicator } from '@/lib/auroraIndicators';
+import { GoalIndicator, type CustomIndicator } from '@/lib/auroraIndicators';
 
 import IndicatorsList from '@/views/project/IndicatorsList.vue';
 
@@ -36,16 +39,12 @@ import { useGaul } from '@/hooks/useGaul';
 const route = useRoute();
 const authStore = useAuthStore();
 const projectStore = useProjectStore();
+const auroraStore = useAuroraStore();
 
-const auroraProject = ref<any>();
-const goalIndicators = ref<GoalIndicator[]>([]);
-const customIndicators = ref<CustomIndicator[]>([]);
 const editableProjects = ref<any>();
 const indicatorsListModelValue = ref();
 
 const { findGaulByIso2 } = useGaul();
-
-let auroraProjectRawGoalIndicators: RawGoalIndicator[];
 
 const loadError = ref<string>('');
 
@@ -54,42 +53,27 @@ const customAlert = useCustomAlert();
 const { getGroupName } = useUserGroups();
 
 
+const { goalIndicators, customIndicators } = storeToRefs(useAuroraStore());
+
 onMounted(async () => {
-    const userKey = route.params.userKey;
-    const auroraProjectId = route.params.auroraProjectId;
+    const userKey = route.params.userKey as string;
+    const auroraProjectId = route.params.auroraProjectId as string;
 
-    try {
-        const auroraProjectPromise = fetch(`https://aurora.b4a.app/get_projects/${userKey}/${auroraProjectId}`)
-            .then(res => res.json());
-        const myProjectsPromise = fetchEditableProjects(authStore.uid!, authStore.privileges);
-        await Promise.allSettled([auroraProjectPromise, myProjectsPromise]).then(([auroraProjectObj, myProjectsObj]) => {
-            if (auroraProjectObj.status === 'rejected') {
-                loadError.value = `The AURORA project could not be loaded: "${auroraProjectObj.reason}"`;
-                return;
-            }
-            if (myProjectsObj.status === 'rejected') {
-                loadError.value = `Your initiatives could not be loaded: "${myProjectsObj.reason}"`;
-                return;
-            }
+    const auroraProjectPromise = auroraStore.fetchAuroraProject(userKey, auroraProjectId);
+    const myProjectsPromise = fetchEditableProjects(authStore.uid!, authStore.privileges);
+    await Promise.allSettled([auroraProjectPromise, myProjectsPromise]).then(([auroraProjectObj, myProjectsObj]) => {
+        if (auroraProjectObj.status === 'rejected') {
+            loadError.value = `The AURORA project could not be loaded: "${auroraProjectObj.reason}"`;
+            return;
+        }
+        if (myProjectsObj.status === 'rejected') {
+            loadError.value = `Your initiatives could not be loaded: "${myProjectsObj.reason}"`;
+            return;
+        }
 
-            auroraProject.value = auroraProjectObj.value;
-            auroraProjectRawGoalIndicators = auroraProjectObj.value.indicators;
-            goalIndicators.value = auroraProjectRawGoalIndicators.map(i => new GoalIndicator(i));
-
-            editableProjects.value = myProjectsObj.value;
-            // indicatorsListModelValue is only used to show the indicators using the IndicatorsList component
-            indicatorsListModelValue.value = goalIndicators.value.map(i => ({ indicator: i }));
-
-            customIndicators.value = auroraProjectObj.value.customIndicators.map((i: any) => ({
-                indicator: i.indicator,
-                metric: i.metric,
-                unit: i.unit
-            }));
-        });
-    } catch (e) {
-        console.error(e);
-        loadError.value = e.message;
-    }
+        editableProjects.value = myProjectsObj.value;
+        indicatorsListModelValue.value = auroraStore.goalIndicators.map(i => ({ indicator: i }));
+    });
 });
 
 const closeCount = ref(0);
@@ -107,7 +91,7 @@ async function closeActionMenu(): Promise<void> {
     });
 }
 
-async function importAuroraIndicators(project) {
+async function importAuroraIndicators(project: any) {
     await projectStore.fetchProject(project.id);
 
     // close the action menu
@@ -118,40 +102,50 @@ async function importAuroraIndicators(project) {
         customAlert('', 'This project has no areas defined. Please add at least one area to the project before importing indicators.', 'error');
         return;
     }
-
-    // Only change the first area of the project (projectAreas[0]).
-    const areaObj: any = Object.values(projectAreas[0])[0];
-
-    const oldIndicators = areaObj.goalIndicators as { indicator: GoalIndicator, monitoring: any }[];
-    const oldCustomIndicators = areaObj.customIndicators as { indicator: CustomIndicator, monitoring: any }[];
-
-    const intersection = oldIndicators.filter(i => !!goalIndicators.value.find(oi => oi.equals(i.indicator)));
-    const customIntersection = oldCustomIndicators.filter(i => !!customIndicators.value.find(oi => {
-        return oi.indicator === i.indicator.indicator
-            && oi.metric === i.indicator.metric
-            && oi.unit === i.indicator.unit;
-    }));
-    const difference = goalIndicators.value.filter(i => !oldIndicators.find(oi => oi.indicator.equals(i)));
-    const customDifference = customIndicators.value.filter(i => !oldCustomIndicators.find(oi => {
-        return oi.indicator.indicator === i.indicator
-            && oi.indicator.metric === i.metric
-            && oi.indicator.unit === i.unit;
-    }));
-
-    areaObj.goalIndicators = [...intersection, ...difference.map(i => ({ indicator: i }))];
-    areaObj.customIndicators = [...customIntersection, ...customDifference.map(indicator => ({ indicator }))];
-
-    // wait 100 ms
-    if (intersection.length || customIntersection.length) {
-        nextTick(() => {
-            customAlert(
-                'Merging indicators',
-                'Some indicators already exist in this project. They will be merged and monitoring data will not be affected.',
-                'info',
-                { onClose: () => router.push({ name: 'projectIndicatorsEdit', params: { id: project.id }, query: { loaded: 'true' } })}
-            );
-        });
-    }
+    //
+    // // Only change the first area of the project (projectAreas[0]).
+    // const areaObj: any = Object.values(projectAreas[0])[0];
+    //
+    // const oldIndicators = areaObj.goalIndicators as { indicator: GoalIndicator, monitoring: any }[];
+    // const oldCustomIndicators = areaObj.customIndicators as { indicator: CustomIndicator, monitoring: any }[];
+    //
+    // const intersection = oldIndicators.filter(i => !!auroraStore.goalIndicators.find(oi => oi.equals(i.indicator)));
+    // const customIntersection = oldCustomIndicators.filter(i => !!auroraStore.customIndicators.find(oi => {
+    //     return oi.indicator === i.indicator.indicator
+    //         && oi.metric === i.indicator.metric
+    //         && oi.unit === i.indicator.unit;
+    // }));
+    // const difference = auroraStore.goalIndicators.filter(i => !oldIndicators.find(oi => oi.indicator.equals(i)));
+    // const customDifference = auroraStore.customIndicators.filter(i => !oldCustomIndicators.find(oi => {
+    //     return oi.indicator.indicator === i.indicator
+    //         && oi.indicator.metric === i.metric
+    //         && oi.indicator.unit === i.unit;
+    // }));
+    //
+    // areaObj.goalIndicators = [...intersection, ...difference.map(i => ({ indicator: i }))];
+    // areaObj.customIndicators = [...customIntersection, ...customDifference.map(indicator => ({ indicator }))];
+    //
+    // if (intersection.length || customIntersection.length) {
+    //     nextTick(() => {
+    //         customAlert(
+    //             'Merging indicators',
+    //             'Some indicators already exist in this project. They will be merged and monitoring data will not be affected.',
+    //             'info',
+    //             {
+    //                 onClose: () => router.push({
+    //                     name: 'projectIndicatorsEdit',
+    //                     params: { id: project.id },
+    //                     query: { loaded: 'true' }
+    //                 })
+    //             }
+    //         );
+    //     });
+    // }
+    await router.push({
+        name: 'projectIndicatorsEdit',
+        params: { id: project.id },
+        query: { importAurora: 'true' }
+    });
 }
 
 const open = ref(false);
@@ -331,7 +325,7 @@ function getCountryNames(countries: string[]) {
         </div>
     </div>
     <div
-        v-if="auroraProject"
+        v-if="auroraStore.auroraProject"
         class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-2xl">
             <div
@@ -339,7 +333,7 @@ function getCountryNames(countries: string[]) {
                 <div
                     class="px-4 py-5 sm:px-6 sm:mt-2 font-akrobat text-xl text-center font-bold _leading-6 text-ferm-blue-light-800">
                     Import indicators from the
-                    <span class="font-extrabold italic ">{{ auroraProject.name }}</span>
+                    <span class="font-extrabold italic ">{{ auroraStore.auroraProject.name }}</span>
                     AURORA project
                 </div>
                 <div class="px-4 py-5 sm:p-6">
@@ -356,7 +350,7 @@ function getCountryNames(countries: string[]) {
                         <div
                             class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-black">
                             <div
-                                v-for="(indicator, i) in customIndicators"
+                                v-for="(indicator, i) in auroraStore.customIndicators"
                                 class="rounded px-3 py-2 flex shadow-sm shadow-gray-300 bg-gray-200">
                                 <div class="flex-grow ">
                                     {{ indicator.indicator }} &mdash;

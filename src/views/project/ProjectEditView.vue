@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, onUnmounted, watch } from 'vue';
+import { onBeforeMount, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { onBeforeRouteLeave, useRoute } from 'vue-router';
 
 import { storeToRefs } from 'pinia';
@@ -9,8 +9,10 @@ import { ArrowRightCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/
 import router from '@/router';
 
 import { useProjectStore } from '@/stores/project';
+import { useAuroraStore } from '@/stores/aurora';
 
 import { useCustomAlert } from '@/hooks/useCustomAlert';
+import { type CustomIndicator, GoalIndicator } from '@/lib/auroraIndicators';
 
 
 const props = defineProps<{
@@ -21,6 +23,7 @@ const props = defineProps<{
 }>();
 
 const store = useProjectStore();
+const auroraStore = useAuroraStore();
 
 const route = useRoute();
 
@@ -35,20 +38,25 @@ onBeforeMount(async () => {
     if (route.params.id === 'new') {
         store.createEmptyProject(route.query.groupId as string);
     } else {
-        const loaded = route.query.loaded === 'true';
-        if (!loaded || !store.loaded) {
-            await store.fetchProject(route.params.id as string);
-        }
+        // const loaded = route.query.loaded === 'true';
+        // if (!loaded || !store.loaded) {
+        await store.fetchProject(route.params.id as string);
+        // }
     }
     window.addEventListener('beforeunload', beforeUnloadHandler);
-});
 
-onMounted(() => {
-    if (route.query.loaded === 'true' && store.loaded) {
-        // tell the user that the aurora indicators were loaded but the project is in an unsaved state
-        customAlert('Aurora Indicators Loaded', 'The Aurora indicators have been added to your project. Please save your work to retain these changes.', 'info');
+    if (route.query.importAurora === 'true' && auroraStore.customIndicators && auroraStore.goalIndicators) {
+        await importAuroraIndicators();
     }
 });
+
+// onMounted(() => {
+//     if (route.query.importAurora === 'true' && auroraStore.customIndicators && auroraStore.goalIndicators) {
+//         importAuroraIndicators();
+//         // tell the user that the aurora indicators were loaded but the project is in an unsaved state
+//         customAlert('Aurora Indicators Loaded', 'The Aurora indicators have been added to your project. Please save your work to retain these changes.', 'info');
+//     }
+// });
 
 onUnmounted(() => {
     window.removeEventListener('beforeunload', beforeUnloadHandler);
@@ -63,7 +71,6 @@ onBeforeRouteLeave((to, from) => {
     );
     if (!answer) return false;
 });
-
 
 // const showJson = ref(false);
 // function toggleJson() {
@@ -97,6 +104,53 @@ watch(projectAreas, (projectAreas, oldProjectAreas) => {
         store.updateCountries();
     }
 });
+
+async function importAuroraIndicators() {
+    store.project.auroraProject = {
+        userKey: auroraStore.userKey,
+        projectId: auroraStore.projectId,
+    };
+
+    const projectAreas = store.projectAreas;
+    const areaObj: any = Object.values(projectAreas[0])[0];
+
+    const oldIndicators = (areaObj.goalIndicators  || []) as { indicator: GoalIndicator, monitoring: any }[];
+    const oldCustomIndicators = (areaObj.customIndicators || []) as { indicator: CustomIndicator, monitoring: any }[];
+
+    const intersection = oldIndicators.filter(i => !!auroraStore.goalIndicators.find(oi => oi.equals(i.indicator)));
+    const customIntersection = oldCustomIndicators.filter(i => !!auroraStore.customIndicators.find(oi => {
+        return oi.indicator === i.indicator.indicator
+            && oi.metric === i.indicator.metric
+            && oi.unit === i.indicator.unit;
+    }));
+    const difference = auroraStore.goalIndicators.filter(i => !oldIndicators.find(oi => oi.indicator.equals(i)));
+    const customDifference = auroraStore.customIndicators.filter(i => !oldCustomIndicators.find(oi => {
+        return oi.indicator.indicator === i.indicator
+            && oi.indicator.metric === i.metric
+            && oi.indicator.unit === i.unit;
+    }));
+
+    areaObj.goalIndicators = [...intersection, ...difference.map(i => ({ indicator: i }))];
+    areaObj.customIndicators = [...customIntersection, ...customDifference.map(indicator => ({ indicator }))];
+
+    nextTick(() => {
+        if (intersection.length || customIntersection.length) {
+            customAlert(
+                'Importing indicators',
+                'Some indicators already exist in this project. They will be merged and monitoring data will not be affected. Please save your work to retain these changes.',
+                'info',
+            );
+        } else {
+            customAlert(
+                'Importing indicators',
+                'The Aurora indicators have been added to your project. Please save your work to retain these changes.',
+                'info',
+            );
+        }
+    })
+
+    auroraStore.reset();
+}
 </script>
 
 <template>

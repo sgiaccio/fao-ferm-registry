@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { reactive, computed, watch, ref, nextTick, onBeforeMount } from "vue";
-import { storeToRefs } from 'pinia'
+import { reactive, computed, ref, onBeforeMount } from "vue";
 
-// import { useAuthStore } from '@/stores/auth'
 import { useUserPrefsStore, type RegistrationData } from '@/stores/userPreferences'
 import router from "@/router";
 
 import AlertModal from "@/views/AlertModal.vue";
 import { fetchAllGroupNames } from "@/firebase/firestore";
 
-
-// const authStore = useAuthStore();
 
 const userPrefsStore = useUserPrefsStore();
 const { register } = userPrefsStore;
