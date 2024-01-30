@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import { onBeforeMount, onUnmounted, watch, nextTick } from 'vue';
 import { onBeforeRouteLeave, useRoute } from 'vue-router';
 
 import { storeToRefs } from 'pinia';
@@ -49,14 +49,6 @@ onBeforeMount(async () => {
         await importAuroraIndicators();
     }
 });
-
-// onMounted(() => {
-//     if (route.query.importAurora === 'true' && auroraStore.customIndicators && auroraStore.goalIndicators) {
-//         importAuroraIndicators();
-//         // tell the user that the aurora indicators were loaded but the project is in an unsaved state
-//         customAlert('Aurora Indicators Loaded', 'The Aurora indicators have been added to your project. Please save your work to retain these changes.', 'info');
-//     }
-// });
 
 onUnmounted(() => {
     window.removeEventListener('beforeunload', beforeUnloadHandler);
@@ -123,38 +115,40 @@ async function importAuroraIndicators() {
             && oi.metric === i.indicator.metric
             && oi.unit === i.indicator.unit;
     }));
-    const difference = auroraStore.goalIndicators.filter(i => !oldIndicators.find(oi => oi.indicator.equals(i)));
-    const customDifference = auroraStore.customIndicators.filter(i => !oldCustomIndicators.find(oi => {
+
+    const added = auroraStore.goalIndicators.filter(i => !oldIndicators.find(oi => oi.indicator.equals(i)));
+    const customAdded = auroraStore.customIndicators.filter(i => !oldCustomIndicators.find(oi => {
         return oi.indicator.indicator === i.indicator
             && oi.indicator.metric === i.metric
             && oi.indicator.unit === i.unit;
     }));
 
-    areaObj.goalIndicators = [...intersection, ...difference.map(i => ({ indicator: i }))];
-    areaObj.customIndicators = [...customIntersection, ...customDifference.map(indicator => ({ indicator }))];
+    const discarded = oldIndicators.filter(i => !intersection.find(oi => oi.indicator.equals(i.indicator)));
+    const customDiscarded = oldCustomIndicators.filter(i => !customIntersection.find(oi => {
+        return oi.indicator.indicator === i.indicator.indicator
+            && oi.indicator.metric === i.indicator.metric
+            && oi.indicator.unit === i.indicator.unit;
+    }));
 
-    nextTick(() => {
-        if (intersection.length || customIntersection.length) {
-            customAlert(
-                'Importing indicators',
-                'Some indicators already exist in this project. They will be merged and monitoring data will not be affected. Please save your work to retain these changes.',
-                'info',
-            );
-        } else {
-            customAlert(
-                'Importing indicators',
-                'The Aurora indicators have been added to your project. Please save your work to retain these changes.',
-                'info',
-            );
-        }
-    })
+    areaObj.goalIndicators = [...intersection, ...added.map(i => ({ indicator: i }))];
+    areaObj.customIndicators = [...customIntersection, ...customAdded.map(indicator => ({ indicator }))];
 
     auroraStore.reset();
+
+    let message = '';
+    if (intersection.length || customIntersection.length) {
+        message += 'Indicators that already existed in this initiative were merged and monitoring data was not affected.';
+    }
+    if (discarded.length || customDiscarded.length) {
+        if (message) message += '\n';
+        message += 'Indicators that existed in this initiative and were not in the Aurora project were discarded, together with their monitoring data.';
+    }
+    if (message) message += '\n\n'
+    message += 'Please save your work to retain these changes.';
 }
 </script>
 
 <template>
-    <!-- buttons -->
     <div class="w-full pb-8 flex gap-x-6">
         <div class="shrink">
             <button
@@ -193,14 +187,6 @@ async function importAuroraIndicators() {
     <router-view
         v-if="store.loaded"
         :edit="true" />
-    <!-- <router-view v-slot="{ Component }" v-if="store.loaded">
-        <keep-alive>
-            <component :is="Component"
-                       :key="$route.fullPath"></component>
-        </keep-alive>
-    </router-view> -->
-
-    <!-- buttons -->
     <div class="w-full pb-8 flex gap-x-6">
         <div class="shrink">
             <button

@@ -106,7 +106,7 @@ function closed() {
                                     </DialogTitle>
                                     <div
                                         v-if="message"
-                                        class="mt-2">
+                                        class="mt-2 whitespace-pre-wrap">
                                         {{ message }}
                                     </div>
                                 </div>
