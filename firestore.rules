@@ -23,7 +23,7 @@ service cloud.firestore {
 
         function isOneOfRoles(rsc, array) {
             // Determine if the user has one of an array of roles in the resource group
-            return getRole(rsc.data.group) in array
+            return "group" in rsc.data && getRole(rsc.data.group) in array
         }
 
         function getStatus(rsc) {

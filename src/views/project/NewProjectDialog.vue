@@ -15,7 +15,7 @@ const emit = defineEmits(['cancel', 'confirm']);
 const authStore = useAuthStore();
 
 // const groups = authStore.privileges;
-const groups = ref({});
+const groups = ref();
 
 onMounted(async () => {
     const allGroups = await fetchAllGroupNames();

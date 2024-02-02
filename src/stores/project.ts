@@ -140,7 +140,7 @@ export const useProjectStore = defineStore({
                     this.isLastPage = true;
                     return;
                 }
-
+                filterConstraints.push(where('group', 'in', userGroups));
             }
             // if (projectId) {
             //     // if a group is selected, get only the projects from that group
