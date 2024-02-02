@@ -99,7 +99,7 @@ export const useProjectStore = defineStore({
             // because projectAreas is never null so it cannot be used to check if all the data is loaded
             this.loaded = true
         },
-        async fetchNextProjects(groupId: string | null, freeTextSearch = null, nProjects: number = 25, reset: boolean = false) {
+        async fetchNextProjects(nProjects: number = 25, reset: boolean = false, searchOptions: { group?: string, country?: string, gefCycle?: string } = {}) {
             // if we are on the last page and getting the next page, do nothing
             if (this.isLastPage && !reset) {
                 return;
@@ -119,11 +119,18 @@ export const useProjectStore = defineStore({
                 pagingConstraints.push(startAfter(this.lastVisible));
             }
 
-            // set the filter constraints (group)
             const filterConstraints: QueryConstraint[] = [];
-            if (groupId) {
+            if (searchOptions.country) {
+                // if a country is selected, get only the projects from that country
+                filterConstraints.push(where('project.countries', 'array-contains', searchOptions.country));
+            }
+            if (searchOptions.gefCycle) {
+                // if a gefCycle is selected, get only the projects from that gefCycle
+                filterConstraints.push(where('project.gefCycle', '==', searchOptions.gefCycle));
+            }
+            if (searchOptions.group) {
                 // if a group is selected, get only the projects from that group
-                filterConstraints.push(where('group', '==', groupId));
+                filterConstraints.push(where('group', '==', searchOptions.group));
             } else if (!authStore.isAdmin) {
                 // otherwise if user is not admin, get the projects only from the groups they belong to
                 let userGroups: string[] = authStore.privileges ? Object.keys(authStore.privileges) : [];
@@ -133,7 +140,7 @@ export const useProjectStore = defineStore({
                     this.isLastPage = true;
                     return;
                 }
-                filterConstraints.push(where('group', 'in', userGroups));
+
             }
             // if (projectId) {
             //     // if a group is selected, get only the projects from that group
@@ -149,7 +156,9 @@ export const useProjectStore = defineStore({
             const q = query(projectsCollection, ...filterConstraints, orderBy('updateTime', 'desc'), ...pagingConstraints);
 
             this.loadingNext = true;
-            getDocs(q).then(querySnapshot => {
+
+            try {
+                const querySnapshot = await getDocs(q)
                 const docs = querySnapshot.docs;
                 if (docs.length <= nProjects) {
                     this.isLastPage = true;
@@ -165,12 +174,15 @@ export const useProjectStore = defineStore({
                 this.projects = [...this.projects, ...newProjects];
 
                 this.loadingNext = false;
-            });
 
-            const countQ = query(projectsCollection, ...filterConstraints);
-            getCount(countQ).then(countSnapshot => {
+                const countQ = query(projectsCollection, ...filterConstraints);
+                const countSnapshot = await getCount(countQ);
                 this.nProjectsFound = countSnapshot.data().count;
-            });
+            } catch (e) {
+                console.error('Error fetching projects', e);
+                alert('Error fetching projects' + e.message);
+                this.loadingNext = false;
+            }
         },
         async refetchProject(projectId: string) {
             // find the index of the project in the list
@@ -408,7 +420,6 @@ export const useProjectStore = defineStore({
             this.resetProjectState();
         },
         polygonsArea() {
-            // const getType = (area: any) => Object.keys(area)[0];
             const getValue = (area: any) => Object.values(area)[0];
             try {
                 const areas = this.projectAreas

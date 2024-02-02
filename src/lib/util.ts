@@ -3,7 +3,11 @@ import { sortedGoalIndicators } from './auroraIndicators';
 
 
 export function fbTimestampToString(ts: any) {
-    return ts.toDate().toLocaleDateString('default');
+    return ts.toDate().toLocaleDateString('EN-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
 }
 
 export function snakeToCamel(o: any) {

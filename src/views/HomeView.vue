@@ -6,7 +6,7 @@ import {
     GlobeEuropeAfricaIcon,
 } from '@heroicons/vue/24/outline'
 
-import { ArrowSmallRightIcon, GlobeAltIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/solid'
+import { ArrowSmallRightIcon, GlobeAltIcon, MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/vue/24/solid'
 
 import WavyDivider from '@/views/WavyDivider.vue';
 import Footer from '@/views/Footer.vue'
@@ -48,191 +48,6 @@ async function initMap() {
         zoom: 1,
         disableDefaultUI: true,
         mapId: 'acfd9aecb62ff17c'
-        // styles: [
-        //     {
-        //         featureType: "administrative",
-        //         "elementType": "labels",
-        //         "stylers": [
-        //             {
-        //                 "visibility": "off"
-        //             }
-        //         ]
-        //     },
-        //     // {
-        //     //     "elementType": "geometry",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#f5f5f5",
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "elementType": "labels",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "visibility": "off"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "elementType": "labels.icon",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "visibility": "off"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "elementType": "labels.text.fill",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#616161"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "elementType": "labels.text.stroke",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#f5f5f5"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "administrative.land_parcel",
-        //     //     "elementType": "labels.text.fill",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#bdbdbd"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "administrative.neighborhood",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "visibility": "off"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "poi",
-        //     //     "elementType": "geometry",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#eeeeee"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "poi",
-        //     //     "elementType": "labels.text.fill",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#757575"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "poi.park",
-        //     //     "elementType": "geometry",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#e5e5e5"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "poi.park",
-        //     //     "elementType": "labels.text.fill",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#9e9e9e"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "road",
-        //     //     "elementType": "geometry",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#ffffff"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "road.arterial",
-        //     //     "elementType": "labels.text.fill",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#757575"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "road.highway",
-        //     //     "elementType": "geometry",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#dadada"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "road.highway",
-        //     //     "elementType": "labels.text.fill",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#616161"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "road.local",
-        //     //     "elementType": "labels.text.fill",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#9e9e9e"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "transit.line",
-        //     //     "elementType": "geometry",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#e5e5e5"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "transit.station",
-        //     //     "elementType": "geometry",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#eeeeee"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "water",
-        //     //     "elementType": "geometry",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#c9c9c9"
-        //     //         }
-        //     //     ]
-        //     // },
-        //     // {
-        //     //     "featureType": "water",
-        //     //     "elementType": "labels.text.fill",
-        //     //     "stylers": [
-        //     //         {
-        //     //             "color": "#9e9e9e"
-        //     //         }
-        //     //     ]
-        //     // }
-        // ]
     });
 
     // Add marks from the points array
@@ -267,8 +82,10 @@ onMounted(async () => {
     <div class="bg-white">
         <header class="inset-x-0 top-0">
             <div class="overflow-hidden bg-none relative">
-                <img src="/seashore.jpg"
-                     class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-50">
+                <img
+                    src="/seashore.jpg"
+                    class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-50"
+                >
                 <wavy-divider class="absolute -left-1 bottom-0" />
                 <div class="px-4 sm:px-12 pt-12 pb-28">
                     <!-- Logos -->
@@ -276,26 +93,34 @@ onMounted(async () => {
                         <div class="mb-2 sm:mb-5 mt-2 grid grid-flow-col gap-x-6 mx-auto md:mx-0 divide-x divide-gray-300">
                             <div class="-ml-10 mr-3">
                                 <a href="/">
-                                    <img src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg"
-                                         alt="FERM logo"
-                                         class="h-12 sm:h-16 w-auto scale-125" />
+                                    <img
+                                        src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg"
+                                        alt="FERM logo"
+                                        class="h-12 sm:h-16 w-auto scale-125"
+                                    />
                                 </a>
                             </div>
                             <div>
-                                <a href="https://www.decadeonrestoration.org"
-                                   target="_blank">
-                                    <img src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
-                                         alt="FERM logo"
-                                         class="h-12 sm:h-16 w-auto scale-150 ml-10" />
+                                <a
+                                    href="https://www.decadeonrestoration.org"
+                                    target="_blank"
+                                >
+                                    <img
+                                        src="@/assets/UNDecade_LOGO_MASTER_EN_dark_bg.svg"
+                                        alt="FERM logo"
+                                        class="h-12 sm:h-16 w-auto scale-150 ml-10"
+                                    />
                                 </a>
                             </div>
                         </div>
                     </div>
                     <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-5xl md:text-6xl lg:text-7xl uppercase shadow-black text-shadow-sm">Framework for Ecosystem<br>Restoration Monitoring</div>
 
-                    <div class="relative text-white mt-20 max-w-sm md:max-w-3xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-0 md:grid-rows-none md:grid-cols-3 md:gap-x-5">
-                        <router-link :to="{ name: 'initiatives' }"
-                                     class="bg-ferm-green-light/70 border-ferm-green-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur">
+                    <div class="relative text-white mt-20 max-w-sm md:max-w-3xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-5 md:grid-rows-none md:grid-cols-3 md:gap-x-5">
+                        <router-link
+                            :to="{ name: 'initiatives' }"
+                            class="bg-ferm-green-light/70 border-ferm-green-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur"
+                        >
                             <div class="flex flex-row gap-x-2">
                                 <div class="mt-0.5">
                                     <ArrowSmallRightIcon class="w-6 h-6" />
@@ -307,9 +132,11 @@ onMounted(async () => {
                             </div>
                         </router-link>
 
-                        <a href="https://data.apps.fao.org/ferm/"
-                           target="_blank"
-                           class="bg-ferm-blue-dark/80 border-ferm-blue-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-blue-light shadow backdrop-blur">
+                        <a
+                            href="https://data.apps.fao.org/ferm/"
+                            target="_blank"
+                            class="bg-ferm-blue-dark/80 border-ferm-blue-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-blue-light shadow backdrop-blur"
+                        >
                             <div class="flex flex-row gap-x-2">
                                 <div>
                                     <GlobeAltIcon class="w-6 h-6" />
@@ -321,8 +148,10 @@ onMounted(async () => {
                             </div>
                         </a>
 
-                        <a href="https://ferm-search.fao.org/search"
-                           class="bg-ferm-mustard-dark/90 hover:bg-ferm-mustard-light border-ferm-mustard-dark_ border-4_ rounded-lg px-4 py-4 text-left transition-colors shadow backdrop-blur">
+                        <a
+                            href="https://ferm-search.fao.org/search"
+                            class="bg-ferm-mustard-dark/90 hover:bg-ferm-mustard-light rounded-lg px-4 py-4 text-left transition-colors shadow backdrop-blur"
+                        >
                             <div class="flex flex-row gap-x-2">
                                 <div>
                                     <MagnifyingGlassIcon class="w-6 h-6" />
@@ -333,11 +162,21 @@ onMounted(async () => {
                                 </div>
                             </div>
                         </a>
-                    </div>
-                    <div class="flex flex-row items-center justify-center mt-8">
-                        <a href="/docs/FERM guidance version nov2023 draft.pdf"
-                           class="flex-shrink relative text-center font-medium text-gray-50 text-base md:text-lg lg:text-xltext-shadow-sm bg-ferm-blue-dark/80 hover:bg-ferm-blue-light border-ferm-mustard-dark_ border-4_ rounded-lg px-5 py-2 transition-colors shadow backdrop-blur cursor-pointer"
-                           download>Download the FERM user guide</a>
+                        <a
+                            href="/docs/FERM guidance version nov2023 draft.pdf"
+                            target="_blank"
+                            class="col-start-2 bg-ferm-green-light/70 border-ferm-green-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur"
+                        >
+                            <div class="flex flex-row gap-x-2">
+                                <div>
+                                    <BookOpenIcon class="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <div class="text-xl font-semibold uppercase">Download</div>
+                                    <div class="text-sm mt-3">The FERM user guide</div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -350,7 +189,6 @@ onMounted(async () => {
             <div class="px-4 lg:px-0 mt-10 text-lg leading-snug font-akrobat font-semibold text-center max-w-2xl mx-auto text-gray-700 tracking-wide">The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.</div>
 
             <div class="px-4 sm:px-0 mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
-
                 <div class="bg-ferm-blue-light p-4 rounded-lg text-sm font-base flex flex-col shadow">
                     <div>
                         The <span class="font-semibold">FERM Registry</span> provides a harmodized data collection mechanism to aggregate data from restoration platforms.
@@ -372,20 +210,26 @@ onMounted(async () => {
 
                 <div class="p-4 font-akrobat font-semibold text-white col-span-2 rounded-lg text-sm bg-[url('/soil.jpg')] bg-cover bg-center flex lg:h-full justify-end items-end h-48">
                     <div class="px-16 aligh-bottom text-center bottom-3 text-lg sm:text-xl brightness-100 z-50 sm:leading-tight text-shadow-sm shadow-black">
-                        Join <a href="https://twitter.com/hashtag/GenerationRestoration"
-                           class="underline hover:text-yellow-300"
-                           target="_blank">#GenerationRestoration</a> and share your restoration initiative and good practices with the world.
+                        Join <a
+                            href="https://twitter.com/hashtag/GenerationRestoration"
+                            class="underline hover:text-yellow-300"
+                            target="_blank"
+                        >#GenerationRestoration</a> and share your restoration initiative and good practices with the world.
                     </div>
                 </div>
 
                 <div class="col-span-2 h-72 rounded-lg bg-white border-2 border-ferm-blue-dark-300 overflow-hidden shadow flex flex-col">
                     <div class="py-4 px-8 font-akrobat font-bold text-xl bg-ferm-blue-light-50">New Initiatives</div>
                     <div class="overflow-y-auto px-4 py-2">
-                        <ul role="list"
-                            class="divide-y divide-gray-200 text-sm">
-                            <li v-for="flagship in lastFlagships"
+                        <ul
+                            role="list"
+                            class="divide-y divide-gray-200 text-sm"
+                        >
+                            <li
+                                v-for="flagship in lastFlagships"
                                 :key="flagship.name"
-                                class="px-4 py-3 sm:px-4">
+                                class="px-4 py-3 sm:px-4"
+                            >
                                 <div class="flex flex-col">
                                     <div class="font-bold text-ferm-blue-dark">{{ flagship.name }}</div>
                                     <div><span class="font-semibold text-ferm-blue-dark-900">Countries: </span>{{ flagship.memberStates }}</div>
@@ -397,8 +241,10 @@ onMounted(async () => {
                 </div>
 
                 <div class="col-span-2 h-72 rounded-lg shadow">
-                    <div id="map"
-                         class="overflow-hidden rounded-lg"></div>
+                    <div
+                        id="map"
+                        class="overflow-hidden rounded-lg"
+                    ></div>
                 </div>
             </div>
         </div>

@@ -18,14 +18,6 @@ const emit = defineEmits(['update:modelValue']);
 
 const showValidation = ref(false);
 
-// function onInput(event: Event) {
-//     console.log((event.target as HTMLInputElement).id); // DEBUG
-//     let value: string = (event.target as HTMLInputElement).id;
-//     emit('update:modelValue', value !== "" ? value : undefined);
-
-//     showValidation.value = true
-// }
-
 const errorMessages = computed(() => {
     if (props.required && !props.modelValue) {
         return ["This field is mandatory."];
@@ -64,7 +56,7 @@ const selectedOption = computed(() => {
         <template v-if="showValidation && errorMessages.length">
             <p v-for="message in errorMessages"
                class="mt-2 text-sm text-red-600"
-               id="email-error">{{ message }}</p>
+               id="error">{{ message }}</p>
         </template>
     </template>
     <div v-else>

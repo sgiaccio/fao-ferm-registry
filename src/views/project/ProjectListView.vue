@@ -1,21 +1,30 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 
 import { fbTimestampToString } from '@/lib/util';
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
+import { Combobox, ComboboxInput, ComboboxButton, ComboboxLabel, ComboboxOption, ComboboxOptions } from '@headlessui/vue';
+import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
+
 import {
     CalendarIcon,
     Cog6ToothIcon,
     ChevronDownIcon,
     PencilSquareIcon,
     MegaphoneIcon,
-    DocumentMagnifyingGlassIcon
+    DocumentMagnifyingGlassIcon,
+    CheckIcon,
+    ChevronUpDownIcon
 } from '@heroicons/vue/20/solid';
+
+import { FaceFrownIcon } from '@heroicons/vue/24/outline';
 
 import { useAuthStore } from '@/stores/auth';
 import { useProjectStore } from '@/stores/project';
 import { useBestPracticesStore } from '@/stores/bestpractices';
+
+import { useGaul } from '@/hooks/useGaul';
 
 import { fetchAllGroupNames } from '@/firebase/firestore';
 
@@ -28,18 +37,31 @@ import ConfirmModal from '@/views/ConfirmModal.vue';
 import * as projectUtils from '@/lib/project';
 import ActionsMenu from './ActionsMenu.vue';
 
+import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
+
+import { useMenusStore } from '@/stores/menus';
+
 
 const projectStore = useProjectStore();
 const authStore = useAuthStore();
 const bestPracticesStore = useBestPracticesStore();
+const menusStore = useMenusStore().menus;
 
-const userGroups = ref([]);
-const users = ref([]);
+const userGroups = ref<any[]>([]);
+
+const groupQuery = ref('')
+const selectedGroup = ref<string>('');
+const countryQuery = ref('')
+const selectedCountry = ref<string>('');
+const selectedGefCycle = ref<string>('');
+
+const fermGroupId = 'mrrzmcKjPQQOqB8uZBKU';
 
 onMounted(async () => {
     try {
         await Promise.all([
-            projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true),
+            // (nProjects: number = 25, reset: boolean = false, searchOptions: any = {})
+            projectStore.fetchNextProjects(undefined, true, { group: selectedGroup.value, country: selectedCountry.value, gefCycle: selectedGefCycle.value }),
             // get all groups if admin, otherwise get only the groups the user is part of
             await (async () => userGroups.value = authStore.isAdmin ? await fetchAllGroupNames() : authStore.userGroups)()
         ]);
@@ -54,17 +76,14 @@ async function showBestPractices(projectId: string) {
     bestPractices.value = await bestPracticesStore.fetchProjectBestPractices(projectId);
 }
 
-function getAccessLevel(group: string): string {
-    if (authStore.isAdmin) return 'admin';
-    return authStore.privileges[group];
-}
-
-const filterGroup = ref<string | null>(null);
-
-watch(filterGroup, (newValue, oldValue) => {
-    if (newValue !== oldValue) {
+watch([selectedGroup, selectedCountry, selectedGefCycle], ([newGroup, newCountry, newGefCycle], [oldGroup, oldCountry, oldGefCycle]) => {
+    if (newGroup !== 'mrrzmcKjPQQOqB8uZBKU' && selectedGefCycle.value !== '') {
+        selectedGefCycle.value = ''; // this will trigger another watch
+        return;
+    }
+    if (newGroup !== oldGroup || newCountry !== oldCountry || newGefCycle !== oldGefCycle) {
         if (authStore.isAdmin || Object.keys(authStore.userGroups).length) {
-            projectStore.fetchNextProjects(filterGroup.value, undefined, undefined, true);
+            projectStore.fetchNextProjects(undefined, true, { group: newGroup, country: selectedCountry.value, gefCycle: selectedGefCycle.value });
         }
     }
 });
@@ -113,18 +132,47 @@ async function checkTermsAndConditionsAndShowDialog() {
     showNewInitiativeDialog.value = termsAndConditionAccepted.value;
 }
 
+const filteredGroups = computed(() => {
+    return groupQuery.value === ''
+        ? userGroups.value
+        : Object.entries(userGroups.value)
+            .filter(([id, name]) => name.toLowerCase().includes(groupQuery.value.toLowerCase()))
+            .reduce((obj, [id, name]) => {
+                obj[id] = name;
+                return obj;
+            }, {});
+});
+
+// get the list of countries with iso 2 names
+const { gaulLevel0 } = useGaul();
+
+const filteredCountries = computed(() => {
+    return countryQuery.value === ''
+        ? gaulLevel0.value
+        : gaulLevel0.value
+            .filter(({ label }) => label.toLowerCase().includes(countryQuery.value.toLowerCase()))
+});
+
+function resetFilters() {
+    selectedGroup.value = '';
+    selectedCountry.value = '';
+    selectedGefCycle.value = '';
+}
+
 </script>
 
 <template>
     <!-- Terms and conditions dialog -->
-    <ConfirmModal :open="showTermsAndConditions"
-                  title="Terms and Conditions for Adding an Initiative to the FERM Registry"
-                  ok-button-text="Accept"
-                  cancel-button-text="Reject"
-                  :ok-button-enabled=true
-                  @confirm="acceptTermsAndConditions"
-                  @closed="checkTermsAndConditionsAndShowDialog"
-                  @cancel="rejectTermsAndConditions">
+    <ConfirmModal
+        :open="showTermsAndConditions"
+        title="Terms and Conditions for Adding an Initiative to the FERM Registry"
+        ok-button-text="Accept"
+        cancel-button-text="Reject"
+        :ok-button-enabled=true
+        @confirm="acceptTermsAndConditions"
+        @closed="checkTermsAndConditionsAndShowDialog"
+        @cancel="rejectTermsAndConditions"
+    >
         <!-- <h1 class="font-akrobat text-xl font-bold ">Terms and Conditions for Adding a Project/Initiative to the FERM Registry</h1> -->
         <div class="mt-3 max-w-xl text-sm text-gray-500 text-left">
             <p>By adding your initiative to the Framework for Ecosystem Restoration Monitoring (FERM) Registry, you
@@ -154,15 +202,19 @@ async function checkTermsAndConditionsAndShowDialog() {
             </ul>
             <p class="mt-3">By clicking "Accept", you agree to these terms and conditions.</p>
 
-            <p class="mt-3">For any further questions regarding these terms, please contact us at <a class="font-bold underline"
-                   href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>.</p>
+            <p class="mt-3">For any further questions regarding these terms, please contact us at <a
+                    class="font-bold underline"
+                    href="mailto:ferm-support@fao.org"
+                >ferm-support@fao.org</a>.</p>
         </div>
     </ConfirmModal>
 
     <!-- New initiative dialog -->
-    <NewProjectDialog :show="showNewInitiativeDialog"
-                      @cancel="() => { showNewInitiativeDialog = false }"
-                      @confirm="createProject" />
+    <NewProjectDialog
+        :show="showNewInitiativeDialog"
+        @cancel="() => { showNewInitiativeDialog = false }"
+        @confirm="createProject"
+    />
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
             <h1 class="mt-12 font-akrobat text-4xl text-gray-800 mb-8 font-extrabold uppercase">
@@ -170,94 +222,206 @@ async function checkTermsAndConditionsAndShowDialog() {
 
             <p>Restoration projects, programs, and initiatives at all spatial scales, from individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for sustaining life on Earth. The FERM registry allows for consistent and transparent monitoring, reporting, and sharing information on restoration initiatives and good practices. The information published in the FERM Registry will be used to officially report on areas under restoration during the United Nations Decade on Ecosystem Restoration and towards the data collection for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework Target 2.</p>
             <!-- If the user is not an admin and not part of any group, show a message -->
-            <!-- <div v-if="true" -->
-            <div v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
-                 class="mt-10">
+            <div
+                v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
+                class="mt-10"
+            >
                 <InstitutionsAssignment />
             </div>
 
             <!-- If the user is an admin or part of a group, show the initiatives -->
             <template v-else>
-                <div class="flex mt-6 space-x-4">
-                    <!-- Search -->
-                    <div class="flex-grow">
-                        <Menu as="div"
-                              class="relative inline-block text-left">
-                            <div>
-                                <MenuButton class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100">
-                                    Filter by institution
-                                    <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
-                                                     aria-hidden="true" />
-                                </MenuButton>
-                            </div>
-                            <transition v-if="userGroups"
-                                        enter-active-class="transition ease-out duration-100"
-                                        enter-from-class="transform opacity-0 scale-95"
-                                        enter-to-class="transform opacity-100 scale-100"
-                                        leave-active-class="transition ease-in duration-75"
-                                        leave-from-class="transform opacity-100 scale-100"
-                                        leave-to-class="transform opacity-0 scale-95">
-                                <menu-items class="absolute left-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    <div class="py-1">
-                                        <menu-item v-slot="{ active }">
-                                            <span :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-12 py-2 text-sm', 'cursor-default']"
-                                                  @click="filterGroup = null">
-                                                All
-                                            </span>
-                                        </menu-item>
-                                        <menu-item v-for="[id, name] in Object.entries(userGroups).sort((a, b) => a[1].localeCompare(b[1]))"
-                                                   v-slot="{ active }">
-                                            <div @click="filterGroup = id"
-                                                 :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm', 'cursor-default flex flex-row']">
-                                                <div class="w-5 mr-3">
-                                                    <PencilSquareIcon v-if="['admin', 'editor'].includes(getAccessLevel(id))"
-                                                                      class="h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                      aria-hidden="true" />
-                                                </div>
-                                                <!-- <EyeIcon v-else class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" /> -->
-                                                <div>{{ name }}</div>
-                                            </div>
-                                        </menu-item>
-                                    </div>
-                                </menu-items>
-                            </transition>
-                        </Menu>
-                    </div>
+                <div class="flex mt-6 space-x-4 justify-end">
                     <!-- Join/create an institution -->
-                    <button v-if="authStore.isAdmin || Object.keys(authStore.userGroups).length"
-                            type="button"
-                            class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                            @click="() => router.push({ name: 'newOrganization' })">
+                    <button
+                        v-if="authStore.isAdmin || Object.keys(authStore.userGroups).length"
+                        type="button"
+                        class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        @click="() => router.push({ name: 'newOrganization' })"
+                    >
                         Join or create institution
                     </button>
                     <!-- Create new initiative -->
-                    <button v-if="authStore.isAdmin || Object.keys(authStore.userGroups).length"
-                            type="button"
-                            class="ml-auto inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            @click="showTermsAndConditions = true">
+                    <button
+                        v-if="authStore.isAdmin || Object.keys(authStore.userGroups).length"
+                        type="button"
+                        class="ml-auto inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        @click="showTermsAndConditions = true"
+                    >
                         Create new initiative
                     </button>
                 </div>
+                <!-- Search -->
+                <div
+                    class="mt-6 mb-6"
+                    v-if="Object.keys(userGroups).length"
+                >
+                    <div class="flex flex-col md:flex-row gap-x-4">
+                        <!-- countries -->
+                        <Combobox
+                            as="div"
+                            class="max-w-sm"
+                            v-model="selectedCountry"
+                            :nullable="true"
+                        >
+                            <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-700">Filter by country</ComboboxLabel>
+                            <div class="relative mt-2">
+                                <ComboboxInput
+                                    class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    @change="countryQuery = $event.target.value"
+                                    :display-value="() => gaulLevel0.find(c => c.iso2 === selectedCountry)?.label"
+                                />
+                                <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                    <ChevronUpDownIcon
+                                        class="h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                    />
+                                </ComboboxButton>
+
+                                <ComboboxOptions
+                                    v-if="[1].length > 0"
+                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                                >
+                                    <ComboboxOption
+                                        v-for="{ label, iso2 } in filteredCountries.sort((a, b) => a.label.localeCompare(b.label))"
+                                        :key="iso2"
+                                        :value="iso2"
+                                        as="template"
+                                        v-slot="{ active, selected }"
+                                    >
+                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                            <span :class="['block truncate', selected && 'font-semibold']">
+                                                {{ label }}
+                                            </span>
+
+                                            <span
+                                                v-if="selected"
+                                                :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']"
+                                            >
+                                                <CheckIcon
+                                                    class="h-5 w-5"
+                                                    aria-hidden="true"
+                                                />
+                                            </span>
+                                        </li>
+                                    </ComboboxOption>
+                                </ComboboxOptions>
+                            </div>
+                        </Combobox>
+
+                        <!-- institutions -->
+                        <Combobox
+                            as="div"
+                            class="max-w-sm pt-3 md:pt-0"
+                            v-model="selectedGroup"
+                            :nullable=true
+                        >
+                            <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-700">Filter by institution</ComboboxLabel>
+                            <div class="relative mt-2">
+                                <ComboboxInput
+                                    class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    @change="groupQuery = $event.target.value"
+                                    :display-value="() => userGroups[selectedGroup]"
+                                />
+                                <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                    <ChevronUpDownIcon
+                                        class="h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                    />
+                                </ComboboxButton>
+
+                                <ComboboxOptions
+                                    v-if="[1].length > 0"
+                                    class="absolute z-10 mt-1 max-h-60 w-auto max-w-md overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                                >
+                                    <ComboboxOption
+                                        v-for="[id, name] in Object.entries(filteredGroups).sort((a, b) => a[1].localeCompare(b[1]))"
+                                        :key="id"
+                                        :value="id"
+                                        as="template"
+                                        v-slot="{ active, selected }"
+                                    >
+                                        <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+                                            <span :class="['block truncate', selected && 'font-semibold']">
+                                                {{ name }}
+                                            </span>
+
+                                            <span
+                                                v-if="selected"
+                                                :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']"
+                                            >
+                                                <CheckIcon
+                                                    class="h-5 w-5"
+                                                    aria-hidden="true"
+                                                />
+                                            </span>
+                                        </li>
+                                    </ComboboxOption>
+                                </ComboboxOptions>
+                            </div>
+                        </Combobox>
+
+                        <div v-if="selectedGroup === fermGroupId" class="max-w-xs  pt-3 md:pt-0">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-sm font-medium leading-6 text-gray-700">GEF cycle</h2>
+                            </div>
+
+                            <RadioGroup
+                                v-model="selectedGefCycle"
+                                class="mt-2"
+                            >
+                                <RadioGroupLabel class="sr-only">Filter by GEF cycle</RadioGroupLabel>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <RadioGroupOption
+                                        as="template"
+                                        v-for="option in [{ value: 6, label: 'GEF 6' }, { value: 7, label: 'GEF 7' }, { value: 8, label: 'GEF 8' }]"
+                                        :key="option.value"
+                                        :value="option.value"
+                                        v-slot="{ active, checked }"
+                                    >
+                                        <div :class="['cursor-pointer focus:outline-none', active ? 'ring-2 ring-indigo-600 ring-offset-2' : '', checked ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'ring-1 ring-inset ring-gray-300 bg-white text-gray-700 hover:bg-gray-50', 'flex items-center justify-center rounded-md py-2 px-3 text-sm font-semibold uppercase sm:flex-1']">
+                                            <RadioGroupLabel as="span">{{ option.label }}</RadioGroupLabel>
+                                        </div>
+                                    </RadioGroupOption>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                    </div>
+                    <!-- <div v-if="selectedGroup === 'mrrzmcKjPQQOqB8uZBKU'">
+                        <SmallCardsFormGroup
+                            v-model="selectedGefCycle"
+                            :options="menusStore.gefCycles"
+                            :edit="true"
+                        />
+                    </div> -->
+                </div>
 
                 <template v-if="projectStore.projects && projectStore.projects.length">
-
-                    <div class="text-lg text-center mt-2 mb-2 text-gray-900">{{ projectStore.projects.length }} of
+                    <div class="text-md font-bold text-center mt-2 mb-2 text-gray-700">{{ projectStore.projects.length }} of
                         {{ projectStore.nProjectsFound }} initiatives
                     </div>
 
                     <div class="mt-8 overflow-hidden_ bg-white shadow sm:rounded-md">
-                        <ul role="list"
-                            class="divide-y divide-gray-200">
-                            <li v-for="project in projectStore.projects"
-                                :key="project.id">
+                        <ul
+                            role="list"
+                            class="divide-y divide-gray-200"
+                        >
+                            <li
+                                v-for="project in projectStore.projects"
+                                :key="project.id"
+                            >
                                 <div class="flex flex-row">
                                     <div class="px-4 py-4 sm:px-6 grow overflow-hidden">
                                         <div>
                                             <div class="flex items-center justify-between">
-                                                <label :title="project.data.project?.title || 'No title'"
-                                                       class="truncate">
-                                                    <router-link :to="{ name: 'projectInfo', params: { id: project.id } }"
-                                                                 :class="[project.data.project?.title ? 'text-ferm-blue-dark-800' : 'italic text-gray-400', 'text-sm font-medium hover:text-indigo-500 project-link']">
+                                                <label
+                                                    :title="project.data.project?.title || 'No title'"
+                                                    class="truncate"
+                                                >
+                                                    <router-link
+                                                        :to="{ name: 'projectInfo', params: { id: project.id } }"
+                                                        :class="[project.data.project?.title ? 'text-ferm-blue-dark-800' : 'italic text-gray-400', 'text-sm font-medium hover:text-indigo-500 project-link']"
+                                                    >
                                                         {{ project.data.project?.title || 'No title' }}
                                                     </router-link>
                                                 </label>
@@ -275,60 +439,86 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                 <div class="sm:flex">
                                                     <p class="flex items-center text-sm text-gray-500">
                                                         <template v-if="projectUtils.getStatus(project) === 'draft'">
-                                                            <Cog6ToothIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                                           aria-hidden="true" />
+                                                            <Cog6ToothIcon
+                                                                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                                aria-hidden="true"
+                                                            />
                                                             Draft
                                                         </template>
                                                         <template v-if="projectUtils.getStatus(project) === 'submitted'">
-                                                            <DocumentMagnifyingGlassIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                                                         aria-hidden="true" />
+                                                            <DocumentMagnifyingGlassIcon
+                                                                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                                aria-hidden="true"
+                                                            />
                                                             Under review
                                                         </template>
                                                         <template v-if="projectUtils.getStatus(project) === 'public'">
-                                                            <MegaphoneIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                                           aria-hidden="true" />
+                                                            <MegaphoneIcon
+                                                                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                                aria-hidden="true"
+                                                            />
                                                             Public
                                                         </template>
                                                     </p>
                                                     <!-- Best practices menu -->
-                                                    <Menu v-if="project.data.bestPracticesCount"
-                                                          as="div"
-                                                          class="relative_ inline-block text-left">
+                                                    <Menu
+                                                        v-if="project.data.bestPracticesCount"
+                                                        as="div"
+                                                        class="relative_ inline-block text-left"
+                                                    >
                                                         <div class="sm:mt-0 sm:ml-6 text-sm">
-                                                            <MenuButton @click="showBestPractices(project.id)"
-                                                                        class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none">
+                                                            <MenuButton
+                                                                @click="showBestPractices(project.id)"
+                                                                class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none"
+                                                            >
                                                                 <span class="text-gray-600">{{ project.data.bestPracticesCount
                                                                 }} good
                                                                     practice{{ project.data.bestPracticesCount === 1 ? '' : 's'
                                                                     }}</span>
-                                                                <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"
-                                                                                 aria-hidden="true" />
+                                                                <ChevronDownIcon
+                                                                    class="-mr-1 ml-2 h-5 w-5"
+                                                                    aria-hidden="true"
+                                                                />
                                                             </MenuButton>
                                                         </div>
-                                                        <transition enter-active-class="transition ease-out duration-100"
-                                                                    enter-from-class="transform opacity-0 scale-95"
-                                                                    enter-to-class="transform opacity-100 scale-100"
-                                                                    leave-active-class="transition ease-in duration-75"
-                                                                    leave-from-class="transform opacity-100 scale-100"
-                                                                    leave-to-class="transform opacity-0 scale-95">
+                                                        <transition
+                                                            enter-active-class="transition ease-out duration-100"
+                                                            enter-from-class="transform opacity-0 scale-95"
+                                                            enter-to-class="transform opacity-100 scale-100"
+                                                            leave-active-class="transition ease-in duration-75"
+                                                            leave-from-class="transform opacity-100 scale-100"
+                                                            leave-to-class="transform opacity-0 scale-95"
+                                                        >
                                                             <menu-items class="absolute z-10 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                                <div v-if="bestPractices.length"
-                                                                     class="py-1">
-                                                                    <menu-item v-slot="{ active }"
-                                                                               v-for="bp in bestPractices">
-                                                                        <router-link :to="`/registry/good-practices/${project.id}/${bp.id}/objectives`"
-                                                                                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'px-4 py-2 text-sm block']">
+                                                                <div
+                                                                    v-if="bestPractices.length"
+                                                                    class="py-1"
+                                                                >
+                                                                    <menu-item
+                                                                        v-slot="{ active }"
+                                                                        v-for="bp in bestPractices"
+                                                                    >
+                                                                        <router-link
+                                                                            :to="`/registry/good-practices/${project.id}/${bp.id}/objectives`"
+                                                                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'px-4 py-2 text-sm block']"
+                                                                        >
                                                                             <div class="flex flex-row">
                                                                                 <div>
-                                                                                    <PencilSquareIcon v-if="!bp.data.status || bp.data.status === 'draft'"
-                                                                                                      class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                                      aria-hidden="true" />
-                                                                                    <DocumentMagnifyingGlassIcon v-else-if="bp.data.status === 'submitted'"
-                                                                                                                 class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                                                 aria-hidden="true" />
-                                                                                    <MegaphoneIcon v-else-if="bp.data.status === 'published'"
-                                                                                                   class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                                                                   aria-hidden="true" />
+                                                                                    <PencilSquareIcon
+                                                                                        v-if="!bp.data.status || bp.data.status === 'draft'"
+                                                                                        class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                        aria-hidden="true"
+                                                                                    />
+                                                                                    <DocumentMagnifyingGlassIcon
+                                                                                        v-else-if="bp.data.status === 'submitted'"
+                                                                                        class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                        aria-hidden="true"
+                                                                                    />
+                                                                                    <MegaphoneIcon
+                                                                                        v-else-if="bp.data.status === 'published'"
+                                                                                        class="mr-2 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                                                        aria-hidden="true"
+                                                                                    />
                                                                                 </div>
                                                                                 <div class="truncate">
                                                                                     {{ bp.data.title || 'No title' }}
@@ -346,21 +536,27 @@ async function checkTermsAndConditionsAndShowDialog() {
                                                             </menu-items>
                                                         </transition>
                                                     </Menu>
-                                                    <div v-else
-                                                         class="sm:mt-0 sm:ml-6 text-sm">
-                                                        <router-link :to="{ name: 'goodPracticesObjectivesEdit', params: { projectId: project.id, id: 'new' } }"
-                                                                     type="button"
-                                                                     class="inline-flex items-center text-sm font-normal text-ferm-blue-dark-700">
+                                                    <div
+                                                        v-else
+                                                        class="sm:mt-0 sm:ml-6 text-sm"
+                                                    >
+                                                        <router-link
+                                                            :to="{ name: 'goodPracticesObjectivesEdit', params: { projectId: project.id, id: 'new' } }"
+                                                            type="button"
+                                                            class="inline-flex items-center text-sm font-normal text-ferm-blue-dark-700"
+                                                        >
                                                             Add good practice
                                                         </router-link>
                                                     </div>
                                                 </div>
 
                                                 <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                                                    <CalendarIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                                  aria-hidden="true" />
+                                                    <!-- <CalendarIcon
+                                                        class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                        aria-hidden="true"
+                                                    /> -->
                                                     <p>
-                                                        Last updated on
+                                                        Date modified:
                                                         {{ ' ' }}
                                                         <time :datetime="fbTimestampToString(project.data['updateTime'])">
                                                             {{ fbTimestampToString(project.data['updateTime']) }}
@@ -379,20 +575,74 @@ async function checkTermsAndConditionsAndShowDialog() {
                         </ul>
                     </div>
                 </template>
+
+                <div v-if="projectStore.projects && !projectStore.projects.length && !projectStore.loadingNext">
+                    <div class="mt-8">
+                        <div class="flex flex-col items-center">
+                            <div class="flex-shrink-0">
+                                <FaceFrownIcon
+                                    class="h-12 w-12 text-gray-400"
+                                    aria-hidden="true"
+                                />
+                                <!-- <svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg> -->
+                            </div>
+                            <div class="mt-3 text-center sm:mt-5">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                                    No initiatives found
+                                </h3>
+                                <!-- <div class="mt-2">
+                                    <p class="text-sm text-gray-500">
+                                        Get started by creating a new initiative.
+                                    </p>
+                                </div> -->
+                                <!-- <div class="mt-4">
+                                    <button
+                                        type="button"
+                                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        @click="showTermsAndConditions = true"
+                                    >
+                                        Create new initiative
+                                    </button> -->
+                                <div class="mt-4">
+                                    <button
+                                        type="button"
+                                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        @click="resetFilters"
+                                    >
+                                        Reset filters
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </template>
 
             <div class="text-center mt-8">
-                <div v-if="projectStore.projects.length > 10"
-                     class="text-lg text-center mb-4 text-gray-900">{{ projectStore.projects.length }} of
+                <div
+                    v-if="projectStore.projects.length > 10"
+                    class="text-md font-bold text-center mb-4 text-gray-700"
+                >{{ projectStore.projects.length }} of
                     {{ projectStore.nProjectsFound }} initiatives
                 </div>
-                <button v-if="!projectStore.isLastPage && !projectStore.loadingNext"
-                        @click="projectStore.fetchNextProjects(filterGroup)"
-                        class="rounded-md bg-ferm-blue-dark-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ferm-blue-dark-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ferm-blue-dark-500">
+                <button
+                    v-if="!projectStore.isLastPage && !projectStore.loadingNext"
+                    @click="projectStore.fetchNextProjects(undefined, undefined, { group: selectedGroup, country: selectedCountry })"
+                    class="rounded-md bg-ferm-blue-dark-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ferm-blue-dark-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ferm-blue-dark-500"
+                >
                     Load more
                 </button>
-                <template v-if="projectStore.loadingNext"
-                          class="text-gray-500 text-lg">Loading...
+                <template
+                    v-if="projectStore.loadingNext"
+                    class="text-gray-500 text-lg"
+                >Loading...
                 </template>
             </div>
         </div>

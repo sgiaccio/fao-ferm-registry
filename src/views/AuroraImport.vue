@@ -1,22 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watch } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { storeToRefs } from 'pinia';
-
-import { fetchEditableProjects } from '@/firebase/firestore';
-
-import { useAuthStore } from '@/stores/auth';
-import { useProjectStore } from '@/stores/project';
-import { useUserGroups } from '@/hooks/useUserGroups';
-import { useAuroraStore } from '@/stores/aurora';
-
-import { GoalIndicator, type CustomIndicator } from '@/lib/auroraIndicators';
-
-import IndicatorsList from '@/views/project/IndicatorsList.vue';
-
-import { computed } from 'vue';
-import { DocumentIcon } from '@heroicons/vue/24/outline';
+import { DocumentIcon, MagnifyingGlassIcon, ChevronRightIcon } from '@heroicons/vue/24/outline';
 import { XCircleIcon } from '@heroicons/vue/20/solid';
 import {
     Combobox,
@@ -29,22 +15,31 @@ import {
     TransitionRoot
 } from '@headlessui/vue';
 
+import { fetchEditableProjects } from '@/firebase/firestore';
+
+import { useAuthStore } from '@/stores/auth';
+import { useProjectStore } from '@/stores/project';
+import { useUserGroups } from '@/hooks/useUserGroups';
+import { useAuroraStore } from '@/stores/aurora';
+
+import IndicatorsList from '@/views/project/IndicatorsList.vue';
+
 import router from '@/router';
 
 import { useCustomAlert } from '@/hooks/useCustomAlert';
-
 import { useGaul } from '@/hooks/useGaul';
 
 
 const route = useRoute();
+
 const authStore = useAuthStore();
 const projectStore = useProjectStore();
 const auroraStore = useAuroraStore();
 
+const { findGaulByIso2 } = useGaul();
+
 const editableProjects = ref<any>();
 const indicatorsListModelValue = ref();
-
-const { findGaulByIso2 } = useGaul();
 
 const loadError = ref<string>('');
 
@@ -52,15 +47,13 @@ const customAlert = useCustomAlert();
 
 const { getGroupName } = useUserGroups();
 
-
-const { goalIndicators, customIndicators } = storeToRefs(useAuroraStore());
-
 onMounted(async () => {
     const userKey = route.params.userKey as string;
     const auroraProjectId = route.params.auroraProjectId as string;
 
     const auroraProjectPromise = auroraStore.fetchAuroraProject(userKey, auroraProjectId);
     const myProjectsPromise = fetchEditableProjects(authStore.uid!, authStore.privileges);
+
     await Promise.allSettled([auroraProjectPromise, myProjectsPromise]).then(([auroraProjectObj, myProjectsObj]) => {
         if (auroraProjectObj.status === 'rejected') {
             loadError.value = `The AURORA project could not be loaded: "${auroraProjectObj.reason}"`;
@@ -81,10 +74,10 @@ const closeCount = ref(0);
 async function closeActionMenu(): Promise<void> {
     open.value = false;
     return new Promise(resolve => {
-        const w = watch(closeCount, () => {
+        const unwatch = watch(closeCount, () => {
             if (closeCount.value === 2) {
                 closeCount.value = 0;
-                w();
+                unwatch();
                 resolve();
             }
         });
@@ -92,55 +85,15 @@ async function closeActionMenu(): Promise<void> {
 }
 
 async function importAuroraIndicators(project: any) {
-    await projectStore.fetchProject(project.id);
-
-    // close the action menu
-    await closeActionMenu();
+    const p1 = projectStore.fetchProject(project.id);
+    const p2 = closeActionMenu();
+    await Promise.all([p1, p2]);
 
     const projectAreas = projectStore.projectAreas;
     if (!projectAreas?.length) {
         customAlert('', 'This project has no areas defined. Please add at least one area to the project before importing indicators.', 'error');
         return;
     }
-    //
-    // // Only change the first area of the project (projectAreas[0]).
-    // const areaObj: any = Object.values(projectAreas[0])[0];
-    //
-    // const oldIndicators = areaObj.goalIndicators as { indicator: GoalIndicator, monitoring: any }[];
-    // const oldCustomIndicators = areaObj.customIndicators as { indicator: CustomIndicator, monitoring: any }[];
-    //
-    // const intersection = oldIndicators.filter(i => !!auroraStore.goalIndicators.find(oi => oi.equals(i.indicator)));
-    // const customIntersection = oldCustomIndicators.filter(i => !!auroraStore.customIndicators.find(oi => {
-    //     return oi.indicator === i.indicator.indicator
-    //         && oi.metric === i.indicator.metric
-    //         && oi.unit === i.indicator.unit;
-    // }));
-    // const difference = auroraStore.goalIndicators.filter(i => !oldIndicators.find(oi => oi.indicator.equals(i)));
-    // const customDifference = auroraStore.customIndicators.filter(i => !oldCustomIndicators.find(oi => {
-    //     return oi.indicator.indicator === i.indicator
-    //         && oi.indicator.metric === i.metric
-    //         && oi.indicator.unit === i.unit;
-    // }));
-    //
-    // areaObj.goalIndicators = [...intersection, ...difference.map(i => ({ indicator: i }))];
-    // areaObj.customIndicators = [...customIntersection, ...customDifference.map(indicator => ({ indicator }))];
-    //
-    // if (intersection.length || customIntersection.length) {
-    //     nextTick(() => {
-    //         customAlert(
-    //             'Merging indicators',
-    //             'Some indicators already exist in this project. They will be merged and monitoring data will not be affected.',
-    //             'info',
-    //             {
-    //                 onClose: () => router.push({
-    //                     name: 'projectIndicatorsEdit',
-    //                     params: { id: project.id },
-    //                     query: { loaded: 'true' }
-    //                 })
-    //             }
-    //         );
-    //     });
-    // }
     await router.push({
         name: 'projectIndicatorsEdit',
         params: { id: project.id },
@@ -156,19 +109,23 @@ const filteredProjects = computed(() => query.value === ''
         return p.data.project.title.toLowerCase().includes(query.value.toLowerCase());
     }));
 
-
-import { MagnifyingGlassIcon } from '@heroicons/vue/20/solid';
-import { ChevronRightIcon } from '@heroicons/vue/24/outline';
-
-
 function getCountryNames(countries: string[]) {
     return countries ? countries.map(c => findGaulByIso2(c)).map(c => c?.label) : null;
 }
 </script>
 
 <template>
-    <TransitionRoot :show="open" as="template" @after-leave="query = ''" appear>
-        <Dialog as="div" class="relative z-10" @close="open = false">
+    <TransitionRoot
+        :show="open"
+        as="template"
+        @after-leave="query = ''"
+        appear
+    >
+        <Dialog
+            as="div"
+            class="relative z-10"
+            @close="open = false"
+        >
             <TransitionChild
                 @after-leave="closeCount++"
                 as="template"
@@ -177,7 +134,8 @@ function getCountryNames(countries: string[]) {
                 enter-to="opacity-100"
                 leave="ease-in duration-200"
                 leave-from="opacity-100"
-                leave-to="opacity-0">
+                leave-to="opacity-0"
+            >
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-25 transition-opacity" />
             </TransitionChild>
 
@@ -190,20 +148,23 @@ function getCountryNames(countries: string[]) {
                     enter-to="opacity-100 scale-100"
                     leave="ease-in duration-200"
                     leave-from="opacity-100 scale-100"
-                    leave-to="opacity-0 scale-95">
-                    <DialogPanel
-                        class="mx-auto max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
+                    leave-to="opacity-0 scale-95"
+                >
+                    <DialogPanel class="mx-auto max-w-3xl transform divide-y divide-gray-100 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 transition-all">
                         <Combobox
                             v-slot="{ activeOption }"
-                            @update:modelValue="importAuroraIndicators">
+                            @update:modelValue="importAuroraIndicators"
+                        >
                             <div class="relative">
                                 <MagnifyingGlassIcon
                                     class="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-gray-400"
-                                    aria-hidden="true" />
+                                    aria-hidden="true"
+                                />
                                 <ComboboxInput
                                     class="h-12 w-full border-0 bg-transparent pl-11 pr-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
                                     placeholder="Search..."
-                                    change="query = $event.target.value" />
+                                    change="query = $event.target.value"
+                                />
                             </div>
 
                             <ComboboxOptions
@@ -211,32 +172,35 @@ function getCountryNames(countries: string[]) {
                                 class="flex transform-gpu divide-x divide-gray-100"
                                 as="div"
                                 static
-                                hold>
-                                <div
-                                    :class="['max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4', activeOption && 'sm:h-96']">
+                                hold
+                            >
+                                <div :class="['max-h-96 min-w-0 flex-auto scroll-py-4 overflow-y-auto px-6 py-4', activeOption && 'sm:h-96']">
                                     <h2
                                         v-if="filteredProjects.length > 0"
-                                        class="mb-4 mt-2 text-xs font-semibold text-gray-500">Your initiatives</h2>
+                                        class="mb-4 mt-2 text-xs font-semibold text-gray-500"
+                                    >Your initiatives</h2>
                                     <h2
                                         v-else
-                                        class="mb-4 mt-2 text-sm font-semibold text-gray-500">You are currently not an editor or collaborator of any initiative.</h2>
-                                    <div hold class="-mx-2 text-sm text-gray-700">
+                                        class="mb-4 mt-2 text-sm font-semibold text-gray-500"
+                                    >You are currently not an editor or collaborator of any initiative.</h2>
+                                    <div
+                                        hold
+                                        class="-mx-2 text-sm text-gray-700"
+                                    >
                                         <ComboboxOption
                                             v-for="project in filteredProjects"
                                             :key="project.id"
                                             :value="project"
                                             as="template"
-                                            v-slot="{ active }">
-                                            <div
-                                                :class="['group flex cursor-default select-none items-center rounded-md p-2', active && 'bg-gray-100 text-gray-900']">
-                                                <!--                                                <img-->
-                                                <!--                                                    :src="project.imageUrl" alt=""-->
-                                                <!--                                                    class="h-6 w-6 flex-none rounded-full" />-->
-                                                <span
-                                                    class="ml-3 flex-auto truncate">{{ project.data.project.title }}</span>
+                                            v-slot="{ active }"
+                                        >
+                                            <div :class="['group flex cursor-default select-none items-center rounded-md p-2', active && 'bg-gray-100 text-gray-900']">
+                                                <span class="ml-3 flex-auto truncate">{{ project.data.project.title }}</span>
                                                 <ChevronRightIcon
-                                                    v-if="active" class="ml-3   h-5 w-5 flex-none text-gray-400"
-                                                    aria-hidden="true" />
+                                                    v-if="active"
+                                                    class="ml-3   h-5 w-5 flex-none text-gray-400"
+                                                    aria-hidden="true"
+                                                />
                                             </div>
                                         </ComboboxOption>
                                     </div>
@@ -244,12 +208,12 @@ function getCountryNames(countries: string[]) {
 
                                 <div
                                     v-if="activeOption"
-                                    class="hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex">
+                                    class="hidden h-96 w-1/2 flex-none flex-col divide-y divide-gray-100 overflow-y-auto sm:flex"
+                                >
                                     <div class="flex-none p-6 text-center">
                                         <h2 class="mt-3 font-semibold text-gray-900">
                                             {{ activeOption.data.project.title }}
                                         </h2>
-                                        <!--                                        <p class="text-sm leading-6 text-gray-500">{{ activeOption.role }}</p>-->
                                     </div>
                                     <div class="flex flex-auto flex-col justify-between p-6">
                                         <dl class="grid grid-cols-1 gap-x-6 gap-y-3 text-sm text-gray-700">
@@ -267,7 +231,8 @@ function getCountryNames(countries: string[]) {
                                         <button
                                             @click="importAuroraIndicators(activeOption)"
                                             type="button"
-                                            class="mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                            class="mt-6 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        >
                                             Import indicators
                                         </button>
                                     </div>
@@ -276,10 +241,12 @@ function getCountryNames(countries: string[]) {
 
                             <div
                                 v-if="query !== '' && filteredProjects.length === 0"
-                                class="px-6 py-14 text-center text-sm sm:px-14">
+                                class="px-6 py-14 text-center text-sm sm:px-14"
+                            >
                                 <DocumentIcon
                                     class="mx-auto h-6 w-6 text-gray-400"
-                                    aria-hidden="true" />
+                                    aria-hidden="true"
+                                />
                                 <p class="mt-4 font-semibold text-gray-900">No initiatives found</p>
                                 <p class="mt-2 text-gray-500">We couldn’t find anything with that term. Please try again.</p>
                             </div>
@@ -292,13 +259,16 @@ function getCountryNames(countries: string[]) {
 
     <div
         v-if="loadError !== ''"
-        class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex justify-center items-center h-screen">
-        <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
+        class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex justify-center items-center h-screen"
+    >
         <div class="mx-auto max-w-xl">
             <div class="rounded-md bg-red-50 p-4">
                 <div class="flex">
                     <div class="flex-shrink-0">
-                        <XCircleIcon class="h-5 w-5 text-red-400" aria-hidden="true" />
+                        <XCircleIcon
+                            class="h-5 w-5 text-red-400"
+                            aria-hidden="true"
+                        />
                     </div>
                     <div class="ml-3">
                         <h3 class="text-sm font-medium text-red-800">Error</h3>
@@ -310,12 +280,14 @@ function getCountryNames(countries: string[]) {
                                 <button
                                     @click="router.push({ 'name': 'registry' })"
                                     type="button"
-                                    class="rounded-md bg-red-50 px-2 py-1.5 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 focus:ring-offset-red-50">Enter the registry
+                                    class="rounded-md bg-red-50 px-2 py-1.5 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 focus:ring-offset-red-50"
+                                >Enter the registry
                                 </button>
                                 <button
                                     @click="router.push({ 'name': 'support' })"
                                     type="button"
-                                    class="ml-3 rounded-md bg-red-50 px-2 py-1.5 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 focus:ring-offset-red-50">Support
+                                    class="ml-3 rounded-md bg-red-50 px-2 py-1.5 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-offset-2 focus:ring-offset-red-50"
+                                >Support
                                 </button>
                             </div>
                         </div>
@@ -324,48 +296,53 @@ function getCountryNames(countries: string[]) {
             </div>
         </div>
     </div>
-    <div
-        v-if="auroraStore.auroraProject"
-        class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-2xl">
-            <div
-                class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow mt-10 border border-gray-200">
-                <div
-                    class="px-4 py-5 sm:px-6 sm:mt-2 font-akrobat text-xl text-center font-bold _leading-6 text-ferm-blue-light-800">
-                    Import indicators from the
-                    <span class="font-extrabold italic ">{{ auroraStore.auroraProject.name }}</span>
-                    AURORA project
-                </div>
-                <div class="px-4 py-5 sm:p-6">
-                    <!-- goal indicators -->
-                    <IndicatorsList
-                        v-if="indicatorsListModelValue"
-                        v-model="indicatorsListModelValue"
-                        :edit="false" />
-                    <!-- custom indicators -->
-                    <div
-                        v-if="customIndicators"
-                        class="border-2 border-gray-300 rounded-md px-4 py-4 bg-red-50 mt-4">
-                        <h1 class="font-bold text-gray-700 text-lg pb-3">Custom indicators</h1>
+            <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow mt-10 border border-gray-200">
+                <template v-if="auroraStore.auroraProject">
+                    <div class="px-4 py-5 sm:px-6 sm:mt-2 font-akrobat text-xl text-center font-bold text-ferm-blue-light-800">
+                        Import indicators from the
+                        <span class="font-extrabold italic ">{{ auroraStore.auroraProject.name }}</span>
+                        AURORA project
+                    </div>
+                    <div class="px-4 py-5 sm:p-6">
+                        <!-- goal indicators -->
+                        <IndicatorsList
+                            v-if="indicatorsListModelValue"
+                            v-model="indicatorsListModelValue"
+                            :edit="false"
+                        />
+                        <!-- custom indicators -->
                         <div
-                            class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-black">
-                            <div
-                                v-for="(indicator, i) in auroraStore.customIndicators"
-                                class="rounded px-3 py-2 flex shadow-sm shadow-gray-300 bg-gray-200">
-                                <div class="flex-grow ">
-                                    {{ indicator.indicator }} &mdash;
-                                    {{ indicator.metric }} &mdash;
-                                    {{ indicator.unit }}
+                            v-if="auroraStore.customIndicators"
+                            class="border-2 border-gray-300 rounded-md px-4 py-4 bg-red-50 mt-4"
+                        >
+                            <h1 class="font-bold text-gray-700 text-lg pb-3">Custom indicators</h1>
+                            <div class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-black">
+                                <div
+                                    v-for="(indicator, i) in auroraStore.customIndicators"
+                                    class="rounded px-3 py-2 flex shadow-sm shadow-gray-300 bg-gray-200"
+                                >
+                                    <div class="flex-grow ">
+                                        {{ indicator.indicator }} &mdash;
+                                        {{ indicator.metric }} &mdash;
+                                        {{ indicator.unit }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="px-4 py-4 sm:px-6 w-full">
-                    <button
-                        class="w-full sm:w-auto inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        @click="open = true">Choose initiative
-                    </button>
+                    <div class="px-4 py-4 sm:px-6 w-full">
+                        <button
+                            class="w-full sm:w-auto inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            @click="open = true"
+                        >Choose initiative
+                        </button>
+                    </div>
+                </template>
+                <div v-else
+                class="font-akrobat text-xl text-center font-bold text-ferm-blue-light-800 py-10">
+                    Loading the AURORA project...
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getStorage, ref, uploadBytes, listAll, deleteObject } from 'firebase/storage';
+import { getStorage, ref, listAll } from 'firebase/storage';
 
 import { ref as vueRef, watch, computed } from 'vue';
 
@@ -22,8 +22,6 @@ import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioForm
 import RecursiveMenuFormGroup from '@/components/inputs/base/RecursiveMenuFormGroup.vue';
 import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
-
-// import { gefCycles, objectives, gefFocalAreas } from "@/components/project/menus";
 
 
 withDefaults(defineProps<{
@@ -60,32 +58,7 @@ const store = useProjectStore();
 const menus = useMenusStore().menus;
 const authStore = useAuthStore();
 
-// const selectedFile = vueRef<File | null>(null);
-// const uploadStatus = vueRef<'idle' | 'uploading' | 'uploaded'>('idle');
-
-// function setSelectedFile(event: Event) {
-//     selectedFile.value = (event.target as HTMLInputElement).files![0];
-// }
-
 const storage = getStorage();
-
-// function uploadFile(projectId: string | null) {
-//     if (projectId === null) return;
-
-//     if (uploadStatus.value !== 'idle') return;
-
-//     const storageRef = ref(storage, `${projectId}/documents/${selectedFile.value!.name}`);
-//     const uploadTask = uploadBytes(storageRef, selectedFile.value!);
-
-//     uploadStatus.value = 'uploading';
-//     uploadTask.then(snapshot => {
-//         getFiles(projectId);
-//         selectedFile.value = null;
-//         uploadStatus.value = 'uploaded';
-//     }).catch(error => {
-//         uploadStatus.value = 'idle';
-//     });
-// }
 
 async function listFiles(projectId: string) {
     const dirRef = ref(storage, projectId + '/documents/');
@@ -99,18 +72,6 @@ async function getFiles(id: string) {
     fileName.value = fList.items && fList.items.length && fList.items[0].name || null; // only one file can be uploaded
 }
 
-// function deleteFile(projectId: string | null, fileName: string) {
-//     if (projectId === null) return;
-
-//     if (!confirm(`Are you sure you want to delete the file ${fileName}`)) return;
-//     const fRef = ref(storage, `${projectId}/documents/${fileName}`);
-//     deleteObject(fRef).then(() => {
-//         getFiles(projectId);
-//     }).catch((error) => {
-//         alert('Error deleting the file');
-//     });
-// }
-
 watch(() => store.id as string, async id => {
     if (id) {
         getFiles(id);
@@ -121,6 +82,9 @@ const gefPrograms = vueRef<any>(null);
 
 // Handle deletion based on gefType
 function handleDeletionByGefType(gefType: string | null) {
+    if (!store.project) {
+        return;
+    }
     if (gefType === 'program') {
         delete store.project.project.gefFocalAreas;
     } else if (gefType === 'project') {
@@ -170,6 +134,9 @@ watch(gefInvestmentType, (type, oldType) => {
 
 // Watch gefCycle
 watch(gefCycle, (cycle, oldCycle) => {
+    if (!store.project) {
+        return;
+    }
     if (oldCycle) {
         delete store.project.project.gefProgram;
     }
@@ -280,23 +247,6 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                            label="Website"
                            description="Website of the initiative"
                            placeholder="www.example.com" />
-
-
-            <!--
-        <template v-if="store.project.reportingLine === 'GEF'" v-slot:info >
-            <p>Please include the land (in ha) committed in project design phase and updated in MTR/TE (sum of GEF 7 Indicators 1-5)</p>
-        </template>
-        -->
-
-            <!--        <DateFormGroup :edit="edit"-->
-            <!--                       v-model="store.project.project.startingDate"-->
-            <!--                       label="Starting date"-->
-            <!--                       description="Date when the initiative started" />-->
-            <!--        <DateFormGroup :edit="edit"-->
-            <!--                       v-model="store.project.project.endingDate"-->
-            <!--                       label="Ending date"-->
-            <!--                       description="Date when the initiative finished or is expected to finish" />-->
-
             <SelectFormGroup class="px-4 odd:bg-white even:bg-slate-50"
                              :edit="edit"
                              v-model="store.project.project.startingYear"
@@ -404,63 +354,6 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                   :edit="edit"
                                   :accessToken="authStore!.user!.accessToken">
             </FileUploadFormGroup2>
-            <!-- <FormGroup class="px-4 odd:bg-white even:bg-slate-50"
-                       :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'">
-                <div v-if="edit">
-                    <div v-if="!fileName">
-                        <label for="file"
-                               class="block text-sm font-medium text-gray-700" />
-                        <div class="mt-1 flex rounded-md shadow-sm">
-                            <div class="flex-grow focus-within:z-10">
-                                <input type="file"
-                                       name="file"
-                                       class="pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
-                                       @change="setSelectedFile">
-                            </div>
-                            <button type="button"
-                                    class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none"
-                                    :class="['idle' === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
-                                    @click="uploadFile(store.id)">
-                                <svg v-if="uploadStatus === 'idle'"
-                                     xmlns="http://www.w3.org/2000/svg"
-                                     :class="[selectedFile ? 'text-red-600 animate-pulse' : 'text-gray-400', 'h-5 w-5']"
-                                     viewBox="0 0 20 20"
-                                     fill="currentColor"
-                                     d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                                     clip-rule="evenodd">
-                                    <path fill-rule="evenodd"
-                                          d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                                          clip-rule="evenodd"></path>
-
-                                </svg>
-                                <svg v-else
-                                     xmlns="http://www.w3.org/2000/svg"
-                                     viewBox="0 0 20 20"
-                                     fill="currentColor"
-                                     class="w-5 h-5 animate-spin">
-                                    <path fill-rule="evenodd"
-                                          d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
-                                          clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div v-if="selectedFile"
-                             class="text-red-500 text-sm">Remember to click the upload button before saving.
-                        </div>
-                    </div>
-
-                    <div v-else>Initiative file: {{ fileName }} <span @click="deleteFile(store.id, fileName!)">[delete]</span></div>
-                </div>
-                <template v-else>
-                    <div v-if="selectedFile">Initiative file: {{ fileName }}</div>
-                    <div v-else>File not uploaded</div>
-                </template>
-            </FormGroup> -->
-            <!-- <MultiSelectFormGroup :edit="edit"
-                              :options="menus.objectives"
-                              v-model="store.project.project.objectives"
-                              label="Objectives"
-                              description="Objectives of the initiatives" /> -->
             <MultiInputFormGroup class="px-4 odd:bg-white even:bg-slate-50 "
                                  :edit="edit"
                                  label="Points of contact"

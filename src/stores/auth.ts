@@ -98,8 +98,9 @@ export const useAuthStore = defineStore({
             this.isAdmin = false;
             this.isGroupAdmin = false;
             this.privileges = {};
-
-            await router.push('/login');
+            this.authLoaded = false;
+            
+            await router.push('/');
         },
         async setUserData(user: User | null) {
             if (user === null) {

@@ -13,5 +13,5 @@ export function useGaul() {
         return gaulLevel0.value.find(i => i.iso2 === iso2);
     }
 
-    return { findGaulByIso2 };
+    return { gaulLevel0, findGaulByIso2 };
 }

@@ -156,7 +156,7 @@ const router = createRouter({
                 }, {
                     path: 'initiatives/:id/collaborators',
                     name: 'projectCollaborators',
-                    component: () => import('../views/project/CollaboratorsView.vue'),  
+                    component: () => import('../views/project/CollaboratorsView.vue'),
                 }, {
                     path: 'initiatives/:id',
                     component: () => import('../views/project/ProjectView.vue'),
@@ -178,6 +178,10 @@ const router = createRouter({
                             children: projectTabs.map(tab => ({ ...tab, name: `${tab.name}Edit` }))
                         },
                     ]
+                }, {
+                    path: 'auroraImport/:userKey/:auroraProjectId',
+                    name: 'auroraImport',
+                    component: () => import('../views/AuroraImport.vue'),
                 },
 
                 // Good Practices
@@ -213,10 +217,6 @@ const router = createRouter({
             name: 'support',
             component: () => import('../views/SupportView.vue'),
             meta: { public: true }
-        }, {
-            path: '/auroraImport/:userKey/:auroraProjectId',
-            name: 'auroraImport',
-            component: () => import('../views/AuroraImport.vue'),
         }, {
             path: '/:pathMatch(.*)',
             component: () => import('../views/NotFoundView.vue'),
