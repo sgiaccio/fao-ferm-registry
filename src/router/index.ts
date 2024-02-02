@@ -264,7 +264,6 @@ router.beforeEach(async (to) => {
     //     authStore.returnUrl = to.fullPath;
     //     return { name: 'login' };
     // }
-
 });
 
 export default router;

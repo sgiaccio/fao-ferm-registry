@@ -11,6 +11,8 @@ import LandProductivityDynamics from './LandProductivityDynamics.vue';
 
 import { getPolygonZonalStats } from '@/firebase/functions';
 
+import { InformationCircleIcon } from '@heroicons/vue/20/solid';
+
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -356,11 +358,15 @@ function fetchIndicators(area: any) {
 
                     <div class="grid grid-cols-4 gap-x-4 gap-y-4">
                         <template v-for="stats in statistics">
-                            <div class="font-bold">{{ stats.label }}</div>
+                            <div class="font-bold">
+                                {{ stats.label }}
+                                <InformationCircleIcon  @click="() => {}"
+                                        class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 cursor-pointer" />
+                            </div>
                             <div v-if="area[Object.keys(area)[0]].characteristics && area[Object.keys(area)[0]].characteristics[stats.dbId]"
                                  class="col-span-3">
                                 <component :is="stats.template"
-                                           :value="area[Object.keys(area)[0]].characteristics[stats.dbId]"></component>
+                                           :value="area[Object.keys(area)[0]].characteristics[stats.dbId]" />
                             </div>
                             <template v-else>
                                 <div class="col-span-3"

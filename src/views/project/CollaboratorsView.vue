@@ -94,14 +94,14 @@ async function save() {
         saving.value = true;
         try {
             await saveProjectCollaborators(store.id, collaborators.value.map((u: any) => u.uid));
+            customAlert('Collaborators saved', 'The collaborators have been saved', 'success', {
+                onClose: () => router.push({ name: 'initiatives' })
+            });
         } catch (e) {
             alert('Error saving collaborators');
             console.error(e);
         } finally {
             saving.value = false;
-            customAlert('Collaborators saved', 'The collaborators have been saved', 'success', {
-                onClose: () => router.push({ name: 'initiatives' })
-            });
         }
     }
 }

@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import { watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
 
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 
-
 import { useAuthStore } from "../stores/auth"
-import { useUserPrefsStore } from "../stores/userPreferences"
 
 
 const authStore = useAuthStore();
-const prefsStore = useUserPrefsStore();
 
 const route = useRoute();
 

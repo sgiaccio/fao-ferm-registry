@@ -107,7 +107,7 @@ export function canAddCollaborators(project) {
     const authStore = useAuthStore();
 
     // Superadmins can add collaborators to any project
-    if (authStore.isAdmin) return true;
+    // if (authStore.isAdmin) return true;
 
     // If the user is not an admin, check if they are an editor of the project's group
     return ['admin'].includes(getPrivileges(project)) || (['editor'].includes(getPrivileges(project)) &&isOwner(project));

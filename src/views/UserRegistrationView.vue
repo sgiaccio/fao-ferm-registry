@@ -14,7 +14,6 @@ const { register } = userPrefsStore;
 // Stores all groups in a reactive object.
 const groups = reactive<{ [key: string]: string }>({});
 
-
 // Fetches all groups from the auth store
 onBeforeMount(async () => {
     Object.assign(groups, await fetchAllGroupNames())
@@ -23,58 +22,9 @@ onBeforeMount(async () => {
 // The form data is stored in a reactive object.
 const formData = reactive<RegistrationData>({
     name: '',
-    // affiliation: {
-    //     ecosystem: false,
-    //     flagship: false,
-    //     partner: false,
-    //     otherAffiliationText: ''
-    // },
     purpose: '',
-    // group: null,
-    // otherGroupText: ''
 });
 
-// Stores the selected group in a reactive object.
-// We are storing it here so that we can watch it and save both group id and name in the form data.
-// const selectedGroup = ref<string>('');
-
-// Stores the value of the other affiliation checkbox in a reactive object. We don't need to save this value in the form data.
-// const otherAffiliation = ref<boolean>(false);
-
-// const otherInstitutionTextRef = ref<HTMLInputElement>();
-// const otherGroupTextRef = ref<HTMLInputElement>();
-
-// Focuses the other institution text input field when the other affiliation checkbox is checked.
-// watch(() => otherAffiliation.value, newVal => {
-//     if (newVal) {
-//         nextTick(() => otherInstitutionTextRef.value?.focus());
-//     } else {
-//         formData.affiliation.otherAffiliationText = '';
-//     }
-// });
-
-// Handles change in the selected group.
-// watch(selectedGroup, newGroup => {
-//     // Sets the group id and name in the form data.
-//     if (newGroup === '' || newGroup === 'other') {
-//         formData.group = null;
-//     } else {
-//         formData.group = { id: newGroup, name: groups[newGroup] };
-//     }
-
-//     // Focuses the other group text input field when the other group is selected.
-//     if (newGroup === 'other') {
-//         nextTick(() => otherGroupTextRef.value?.focus());
-//     } else {
-//         formData.otherGroupText = '';
-//     }
-// });
-
-// The form is submitted when the submit button is clicked or the enter key is pressed.
-// The form is validated before submission.
-// If the form is not valid, an error message is displayed.
-// If the form is valid, the form data is sent to the auth store.
-// If the submission is successful, the user is redirected to the home page.
 async function submitForm() {
     try {
         await register(formData);
@@ -87,12 +37,6 @@ async function submitForm() {
 // The form is validated by checking that the name and email fields are not empty.
 function validateForm() {
     return formData.name !== ''
-        // (formData.affiliation.ecosystem ||
-        //     formData.affiliation.flagship ||
-        //     formData.affiliation.partner ||
-        //     otherAffiliation.value && formData.affiliation.otherAffiliationText !== '')
-        // && !(otherAffiliation.value && formData.affiliation.otherAffiliationText === '')
-        // && (formData.group || !formData.group && formData.otherGroupText !== '')
         && formData.purpose !== '';
 };
 
@@ -167,113 +111,6 @@ function onClose() {
                                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
                         </div>
                     </div>
-
-                    <!-- <div>
-                        <label for="institution"
-                               class="block text-base font-medium leading-6 text-gray-900">Institution <span class="text-red-600">*</span></label>
-                        <select v-model="selectedGroup"
-                                id="institution"
-                                name="institution"
-                                class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                            <option value=""
-                                    disabled>Select an institution</option>
-                            <option v-for="[id, label] in Object.entries(groups).sort((a, b) => a[1].localeCompare(b[1]))"
-                                    :value="id">{{ label }}</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div> -->
-                    <!-- <div v-if="selectedGroup === 'other'">
-                        <label for="other-group"
-                               class="block text-base font-medium leading-6 text-gray-900">Please specify your institution <span class="text-red-600">*</span></label>
-                        <div class="mt-2">
-                            <input v-model="formData.otherGroupText"
-                                   ref="otherGroupTextRef"
-                                   type="text"
-                                   name="other institution"
-                                   id="other-group"
-                                   class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                   placeholder="Your institution" />
-                        </div>
-                    </div> -->
-                    <!-- <div>
-                        <fieldset>
-                            <legend class="sr-only">Institution affiliation</legend>
-                            <div class="block text-base font-medium leading-6 text-gray-900"
-                                 aria-hidden="true">Institution affiliation <span class="text-red-600">*</span></div>
-                            <div class="mt-2 space-y-2">
-                                <div class="relative flex items-start">
-                                    <div class="flex h-6 items-center">
-                                        <input v-model="formData.affiliation.ecosystem"
-                                               id="ecosystem"
-                                               name="ecosystem"
-                                               type="checkbox"
-                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                    </div>
-                                    <div class="ml-3 text-sm leading-6">
-                                        <label for="ecosystem"
-                                               class="font-normal text-gray-900">UN Decade on Ecosystem Restoration partner or actor</label>
-                                    </div>
-                                </div>
-                                <div class="relative flex items-start">
-                                    <div class="flex h-6 items-center">
-                                        <input v-model="formData.affiliation.flagship"
-                                               id="flagship"
-                                               name="flagship"
-                                               type="checkbox"
-                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                    </div>
-                                    <div class="ml-3 text-sm leading-6">
-                                        <label for="flagship"
-                                               class="font-normal text-gray-900">UN Decade flagship</label>
-                                    </div>
-                                </div>
-                                <div class="relative flex items-start">
-                                    <div class="flex h-6 items-center">
-                                        <input v-model="formData.affiliation.partner"
-                                               id="partner"
-                                               name="partner"
-                                               type="checkbox"
-                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                    </div>
-                                    <div class="ml-3 text-sm leading-6">
-                                        <label for="partner"
-                                               class="font-normal text-gray-900">FERM partner government or initiative</label>
-                                    </div>
-                                </div>
-                                <div class="relative flex items-start">
-                                    <div class="flex h-6 items-center">
-                                        <input v-model="otherAffiliation"
-                                               id="other"
-                                               name="other"
-                                               type="checkbox"
-                                               class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
-                                    </div>
-                                    <div class="ml-3 text-sm leading-6">
-                                        <label for="other"
-                                               class="font-normal text-gray-900">Other <span v-if="otherAffiliation"
-                                                  class="text-red-600">*</span></label>
-                                    </div>
-
-                                    <div>
-                                        <div class="relative ml-2">
-                                            <input v-model="formData.affiliation.otherAffiliationText"
-                                                   ref="otherInstitutionTextRef"
-                                                   :disabled="!otherAffiliation"
-                                                   :placeholder="otherAffiliation ? 'Please specify' : ''"
-                                                   type="text"
-                                                   name="otherText"
-                                                   id="otherText"
-                                                   class="bg-transparent peer block w-full border-0 py-0 text-gray-900 focus:ring-0 sm:text-sm sm:leading-6" />
-                                            <div :class="[otherAffiliation ? 'border-t border-gray-300' : '', 'absolute inset-x-0 bottom-0 peer-focus:border-t-2 peer-focus:border-indigo-600']"
-                                                 aria-hidden="true" />
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </fieldset>
-                    </div> -->
-
                     <div>
                         <label for="purpose"
                                class="block text-base font-medium leading-6 text-gray-900">How you would like to use the FERM platform? <span class="text-red-600">*</span></label>
