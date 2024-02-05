@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import baseProps from './formGroupProps';
-import { ref, computed } from 'vue';
-import AlertModal from '@/views/AlertModal.vue';
+import { computed } from 'vue';
 
-import { InformationCircleIcon } from '@heroicons/vue/20/solid';
+import baseProps from './formGroupProps';
+
+import InfoButton from '@/components/InfoButton.vue';
 
 
 const props = defineProps(baseProps);
 
 const emit = defineEmits(['focusout']);
-
-const showAlertModal = ref(false);
 
 const labelWithoutLastWord = computed(() => {
     if (!props.label) {
@@ -34,26 +32,16 @@ const lastWord = computed(() => {
 
 <template>
     <div>
-        <AlertModal v-if="$slots.info"
-                    type="info"
-                    :onClose="() => showAlertModal = false"
-                    :open="showAlertModal"
-                    :title="label"
-                    buttonText="Close">
-            <div class="text-left text-sm">
-                <slot name="info" />
-            </div>
-        </AlertModal>
+
         <fieldset @focusout="emit('focusout')">
             <div class="sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start py-5 sm:content-center">
                 <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
                     {{ labelWithoutLastWord }}
                     <span class="whitespace-nowrap">
                         {{ lastWord }}
-                        <template v-if="$slots.info">
-                            <InformationCircleIcon @click="() => showAlertModal = true"
-                                                    class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 cursor-pointer" />
-                        </template>
+                            <InfoButton v-if="$slots.info" :title="label">
+                                <slot name="info" />
+                            </InfoButton>
                     </span>
                 </legend>
                 <div class="sm:col-span-3">

@@ -27,7 +27,6 @@ watch(user, async () => {
 </script>
 
 <template>
-    <div id="modal" />
-    <CustomAlert ref="customAlert"></CustomAlert>
+    <CustomAlert ref="customAlert" />
     <RouterView />
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, h } from 'vue';
 
 import { useProjectStore } from '../../../stores/project';
 
@@ -11,7 +11,7 @@ import LandProductivityDynamics from './LandProductivityDynamics.vue';
 
 import { getPolygonZonalStats } from '@/firebase/functions';
 
-import { InformationCircleIcon } from '@heroicons/vue/20/solid';
+import InfoButton from '@/components/InfoButton.vue';
 
 
 withDefaults(defineProps<{
@@ -80,7 +80,8 @@ interface Statistics {
     dbId: string,
     label: string,
     transformFn: any, // TODO: function
-    template: any // TODO vue template
+    template: any, // TODO vue template
+    infoTemplate?: any
 }
 
 function calculateAverages(values: any[], trunc = true): { mean: number, min: number, max: number } {
@@ -116,7 +117,31 @@ const statistics: Statistics[] = [{
         }));
         return camelized;
     },
-    template: LandProductivityDynamics
+    template: LandProductivityDynamics,
+    infoTemplate: () => {
+        return h('div', {
+            class: 'class="font-light mt-4 text-sm"',
+            innerHTML: `<p class="4">
+                    <span class="font-bold">Land Productivity Dynamics:</span> The dynamics in the land productivity indicator are related to changes in the health and productive capacity of the land and reflects the net effects of changes in ecosystem functioning due to changes in plant phenology and biomass growth, where declining trends are often (but not always) a defining characteristic of land degradation. Understanding changes in the productive capacity of the land is critical for assessing the impact of land management interventions, its long-term sustainability, and the climate-derived impacts which could affect ecosystem resilience and human livelihoods. The categories correspond to the trends observed during the period 2001-2016.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Proportion of each category of land productivity dynamics within the area under restoration
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> Hectares
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial</span> resolution: 250 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Ivits E; Cherlet M. Land-Productivity Dynamics Towards integrated assessment of land degradation at global scales. EUR 26052. Luxembourg (Luxembourg): Publications Office of the European Union; 2013. JRC80541
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://earthmap.org/documents/LPD_Global.pdf">https://earthmap.org/documents/LPD_Global.pdf</a>
+                </p>` });
+    }
 }, {
     requestId: 'land_cover',
     dbId: 'landCover',
@@ -125,19 +150,63 @@ const statistics: Statistics[] = [{
         .map(([k, v]) => [+k, +v])
         .filter(entry => !isNaN(+entry[0]))
         .map(entry => ({ id: entry[0], value: Math.trunc(+entry[1]) })),
-    template: LandCover
+    template: LandCover,
+    infoTemplate: () => {
+        return h('div', {
+            class: 'class="font-light mt-4 text-sm"',
+            innerHTML: `<p class="4">
+                    <span class="font-bold">Land cover:</span>
+                    The type of land cover directly influences the composition of ecosystems and biodiversity, and also provide different ecosystem services, such as water regulation, carbon sequestration, or erosion control. This layer is the Dynamic Land Cover map (CGLS-LC100) for the year 2019.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Proportion of each category within the area under restoration.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> Hectares
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 100 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Buchhorn, M., Smets, B., Bertels, L., Roo, B. D., Lesiv, M., Tsendbazar, N.-E., Herold, M., & Fritz, S. (2020). Copernicus Global Land Service: Land Cover 100m: collection 3: epoch 2019: Globe (Version V3.0.1) [Data set]. Zenodo.
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global">https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global</a>
+                </p>` });
+    }
 }, {
     requestId: 'elevation',
     dbId: 'elevation',
     label: 'Elevation [m]',
     transformFn: calculateAverages,
-    template: MeanMinMax
-    // }, {
-    //     requestId: 'precipitation',
-    //     dbId: 'precipitation',
-    //     label: 'Precipitation [mm/pentad]',
-    //     transformFn: calculateAverages,
-    //     template: MeanMinMax
+    template: MeanMinMax,
+    infoTemplate: () => {
+        return h('div', {
+            class: 'class="font-light mt-4 text-sm"',
+            innerHTML: `<p class="4">
+                    <span class="font-bold">Elevation:</span>
+                    Elevation has an impact on various environmental factors such as microclimatic conditions, water flow and hydrology, species distribution, soil composition and ecosystem dynamics. This Digital Elevation Model (DEM) provides elevation values for the year 2000.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Minimum, maximum, and mean elevation values within the area under restoration.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 90 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Jarvis, A., H.I. Reuter, A. Nelson, E. Guevara. 2008. Hole-filled SRTM for the globe Version 4, available from the CGIAR-CSI SRTM 90m Database: <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://srtm.csi.cgiar.org">https://srtm.csi.cgiar.org</a>.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4">https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4</a>
+                </p>` });
+    }
 }, {
     requestId: 'temperature',
     dbId: 'temperature',
@@ -150,7 +219,34 @@ const statistics: Statistics[] = [{
             max: Math.trunc(+k.max - 273.15),
         }
     },
-    template: MeanMinMax
+    template: MeanMinMax,
+    infoTemplate: () => {
+        return h('div', {
+            class: 'class="font-light mt-4 text-sm"',
+            innerHTML: `<p class="4">
+                    <span class="font-bold">Temperature:</span>
+                    Temperature influences the distribution and range of species, growing season and phenology, resilience to climate change, soil health and nutrient cycling and has a direct impact in water availability and evapotranspiration. Estimates of temperature are computed from 2015 to 2019.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Minimum, maximum and mean monthly temperature of 5 years within the area under restoration
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> degree Celsius (°C)
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 27830 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://cds.climate.copernicus.eu/cdsapp#!/home">https://cds.climate.copernicus.eu/cdsapp#!/home</a>
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
+                </p>` });
+    }
 }];
 
 const t = statistics.reduce((prev, curr) => ({ ...prev, [curr.dbId]: 'idle' }), {})
@@ -255,7 +351,7 @@ function fetchIndicators(area: any) {
         <template #description>
             <p>In this section, you can access basic information about the characteristics of your area under restoration. Designing a restoration initiative starts with a local assessment of the area being considered for restoration, including a general description of its environmental, biophysical and socio-economic components that can be assessed in this section. The characteristics of a site can help restoration practitioners to make more informed decisions about which species to reintroduce, where to focus restoration efforts, and how to replicate or restore elsewhere based on similar characteristics. The degree of degradation, and its effects on biodiversity, ecological integrity, and human health and well-being must be identified as well (in progress).</p>
             <p class="mt-4">For each of the areas under restoration within your initiative a set of quantitative and qualitative statistics are calculated automatically using the following datasets. Details about these datasets, methods used for computation, and original sources are also provided.</p>
-            <div class="font-light mt-4 text-sm">
+            <!-- <div class="font-light mt-4 text-sm">
                 <p class="4">
                     <span class="font-bold">Land Productivity Dynamics:</span> The dynamics in the land productivity indicator are related to changes in the health and productive capacity of the land and reflects the net effects of changes in ecosystem functioning due to changes in plant phenology and biomass growth, where declining trends are often (but not always) a defining characteristic of land degradation. Understanding changes in the productive capacity of the land is critical for assessing the impact of land management interventions, its long-term sustainability, and the climate-derived impacts which could affect ecosystem resilience and human livelihoods. The categories correspond to the trends observed during the period 2001-2016.
                 </p>
@@ -272,9 +368,11 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">References:</span> Ivits E; Cherlet M. Land-Productivity Dynamics Towards integrated assessment of land degradation at global scales. EUR 26052. Luxembourg (Luxembourg): Publications Office of the European Union; 2013. JRC80541
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
-                       target="_blank"
-                       href="https://earthmap.org/documents/LPD_Global.pdf">https://earthmap.org/documents/LPD_Global.pdf</a>
+                    <span class="font-medium">Source:</span> <a
+                        class="text-blue-600 underline hover:text-blue-500"
+                        target="_blank"
+                        href="https://earthmap.org/documents/LPD_Global.pdf"
+                    >https://earthmap.org/documents/LPD_Global.pdf</a>
                 </p>
 
                 <p class="mt-4">
@@ -293,9 +391,11 @@ function fetchIndicators(area: any) {
                 <p class="mt-1">
                     <span class="font-medium">References:</span> Buchhorn, M., Smets, B., Bertels, L., Roo, B. D., Lesiv, M., Tsendbazar, N.-E., Herold, M., & Fritz, S. (2020). Copernicus Global Land Service: Land Cover 100m: collection 3: epoch 2019: Globe (Version V3.0.1) [Data set]. Zenodo.
 
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
-                       target="_blank"
-                       href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global">https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global</a>
+                    <span class="font-medium">Source:</span> <a
+                        class="text-blue-600 underline hover:text-blue-500"
+                        target="_blank"
+                        href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global"
+                    >https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global</a>
                 </p>
 
                 <p class="mt-4">
@@ -312,14 +412,18 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">Spatial resolution:</span> 90 meters
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">References:</span> Jarvis, A., H.I. Reuter, A. Nelson, E. Guevara. 2008. Hole-filled SRTM for the globe Version 4, available from the CGIAR-CSI SRTM 90m Database: <a class="text-blue-600 underline hover:text-blue-500"
-                       target="_blank"
-                       href="https://srtm.csi.cgiar.org">https://srtm.csi.cgiar.org</a>.
+                    <span class="font-medium">References:</span> Jarvis, A., H.I. Reuter, A. Nelson, E. Guevara. 2008. Hole-filled SRTM for the globe Version 4, available from the CGIAR-CSI SRTM 90m Database: <a
+                        class="text-blue-600 underline hover:text-blue-500"
+                        target="_blank"
+                        href="https://srtm.csi.cgiar.org"
+                    >https://srtm.csi.cgiar.org</a>.
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
-                       target="_blank"
-                       href="https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4">https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4</a>
+                    <span class="font-medium">Source:</span> <a
+                        class="text-blue-600 underline hover:text-blue-500"
+                        target="_blank"
+                        href="https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4"
+                    >https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4</a>
                 </p>
                 <p class="mt-4">
                     <span class="font-bold">Temperature:</span>
@@ -335,62 +439,93 @@ function fetchIndicators(area: any) {
                     <span class="font-medium">Spatial resolution:</span> 27830 meters
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 underline hover:text-blue-500"
-                       target="_blank"
-                       href="https://cds.climate.copernicus.eu/cdsapp#!/home">https://cds.climate.copernicus.eu/cdsapp#!/home</a>
+                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a
+                        class="text-blue-600 underline hover:text-blue-500"
+                        target="_blank"
+                        href="https://cds.climate.copernicus.eu/cdsapp#!/home"
+                    >https://cds.climate.copernicus.eu/cdsapp#!/home</a>
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
-                       target="_blank"
-                       href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
+                    <span class="font-medium">Source:</span> <a
+                        class="text-blue-600 underline hover:text-blue-500"
+                        target="_blank"
+                        href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations"
+                    >https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
                 </p>
-            </div>
+            </div> -->
         </template>
         <template #default>
-            <div v-if="store.projectAreas?.length"
-                 class="text-sm text-gray-800 flex flex-col gap-y-4 mt-6">
-                <div v-for="area, i in store.projectAreas"
-                     class="border-2 border-gray-300 px-3 py-2 rounded-lg">
+            <div
+                v-if="store.projectAreas?.length"
+                class="text-sm text-gray-800 flex flex-col gap-y-4 mt-6"
+            >
+                <div
+                    v-for="area, i in store.projectAreas"
+                    class="border-2 border-gray-300 px-3 py-2 rounded-lg"
+                >
                     <div class="text-gray-500 text-lg font-bold mb-2">
-                        Area {{ i + 1 }}<span class="text-black"
-                              v-if="area[Object.keys(area)[0]].siteName">: {{ area[Object.keys(area)[0]].siteName }}</span>
+                        Area {{ i + 1 }}<span
+                            class="text-black"
+                            v-if="area[Object.keys(area)[0]].siteName"
+                        >: {{ area[Object.keys(area)[0]].siteName }}</span>
                     </div>
 
                     <div class="grid grid-cols-4 gap-x-4 gap-y-4">
                         <template v-for="stats in statistics">
                             <div class="font-bold">
                                 {{ stats.label }}
-                                <InformationCircleIcon  @click="() => {}"
-                                        class="w-5 h-5 inline-block text-yellow-500 hover:text-yellow-400 cursor-pointer" />
+                                <InfoButton :title="stats.label">
+                                    <slot>
+                                        <component :is="stats.infoTemplate" />
+                                    </slot>
+                                </InfoButton>
                             </div>
-                            <div v-if="area[Object.keys(area)[0]].characteristics && area[Object.keys(area)[0]].characteristics[stats.dbId]"
-                                 class="col-span-3">
-                                <component :is="stats.template"
-                                           :value="area[Object.keys(area)[0]].characteristics[stats.dbId]" />
+                            <div
+                                v-if="area[Object.keys(area)[0]].characteristics && area[Object.keys(area)[0]].characteristics[stats.dbId]"
+                                class="col-span-3"
+                            >
+                                <component
+                                    :is="stats.template"
+                                    :value="area[Object.keys(area)[0]].characteristics[stats.dbId]"
+                                />
                             </div>
                             <template v-else>
-                                <div class="col-span-3"
-                                     v-if="areaStatStatus[i][stats.dbId] === 'loading'">
+                                <div
+                                    class="col-span-3"
+                                    v-if="areaStatStatus[i][stats.dbId] === 'loading'"
+                                >
                                     Loading{{ '.'.repeat(nDots) }}
                                 </div>
-                                <div v-else-if="areaStatStatus[i][stats.dbId] === 'error'"
-                                     class="text-red-500 col-span-3">Error getting statistics</div>
-                                <div class="col-span-3"
-                                     v-else>n/a</div>
+                                <div
+                                    v-else-if="areaStatStatus[i][stats.dbId] === 'error'"
+                                    class="text-red-500 col-span-3"
+                                >Error getting statistics</div>
+                                <div
+                                    class="col-span-3"
+                                    v-else
+                                >n/a</div>
                             </template>
                         </template>
                     </div>
-                    <div class="w-full flex place-content-end"
-                         v-if="edit && ['upload', 'draw', 'uploadKml'].includes(Object.keys(area)[0])">
-                        <button type="button"
-                                class="inline-flex items-center rounded border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                @click="fetchIndicators(area)">Get values</button>
+                    <div
+                        class="w-full flex place-content-end"
+                        v-if="edit && ['upload', 'draw', 'uploadKml'].includes(Object.keys(area)[0])"
+                    >
+                        <button
+                            type="button"
+                            class="inline-flex items-center rounded border border-transparent bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            @click="fetchIndicators(area)"
+                        >Get values</button>
                     </div>
                 </div>
             </div>
-            <div v-else
-                 class="text-red-600 font-bold text-lg pb-4">Please enter at least one area in the <router-link class="text-blue-400 underline hover:text-blue-600"
-                             :to="{ path: 'area' }">Area tab</router-link></div>
+            <div
+                v-else
+                class="text-red-600 font-bold text-lg pb-4"
+            >Please enter at least one area in the <router-link
+                    class="text-blue-400 underline hover:text-blue-600"
+                    :to="{ path: 'area' }"
+                >Area tab</router-link></div>
         </template>
     </TabTemplate>
 </template>
