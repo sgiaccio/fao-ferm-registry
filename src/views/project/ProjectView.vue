@@ -59,12 +59,13 @@ function gotoPreviousTab() {
                     <label for="tabs"
                            class="sr-only">Select a tab</label>
                     <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-                    <select @change="() => router.push($event.target.value)"
+                    <select @change="(a) => router.push(a.target.value)"
                             id="tabs"
                             name="tabs"
                             class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
                         <option v-for="tab in tabs"
                                 :key="tab.name"
+                                :value="tab.path"
                                 :selected="route.path.endsWith(tab.path)">{{ tab.name }}
                         </option>
                     </select>
