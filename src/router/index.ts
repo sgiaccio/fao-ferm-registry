@@ -229,34 +229,18 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
+    if (to.matched.every(record => record.meta.public)) {
+        return;
+    }
+    
     const { useAuthStore } = await import('../stores/auth');
     const { useUserPrefsStore } = await import('../stores/userPreferences');
 
     const authStore = useAuthStore();
     const userPrefsStore = useUserPrefsStore();
 
-    // Fetch the registration data if the user is logged in
-    if (authStore.user && !userPrefsStore.userPrefs.registrationData) {
-        await userPrefsStore.fetchUserPrefs();
-    }
-
-    // If the user is logged in and filled the registration form and tries to access the registration page, redirect to the registry
-    if (authStore.user && to.name === 'registration' && userPrefsStore.userPrefs.registrationData) {
-        return { name: 'initiatives' };
-    }
-
-    // If the user is logged in but didn't fill the registration form, redirect to registration
-    if (authStore.user && to.name !== 'registration' && !userPrefsStore.userPrefs.registrationData) {
-        return { name: 'registration' };
-    }
-
-    // If the user is logged in and tries to access the login page, redirect to the registry
-    if (authStore.user && to.name === 'login') {
-        return { name: 'initiatives' };
-    }
-
     // if the user requested a page that requires auth and the auth store is not loaded, wait for it to load
-    if (to.matched.some(record => !record.meta.public) && !authStore.authLoaded) {
+    if (!authStore.authLoaded) {
         await authStore.fetchUser();
         // if the user is not logged in, redirect to login
         if (!authStore.user) {
@@ -265,6 +249,27 @@ router.beforeEach(async (to) => {
         }
     }
 
+    // Fetch the registration data if the user is logged in
+    if (authStore.user) {
+        if (!userPrefsStore.userPrefs.registrationData) {
+            await userPrefsStore.fetchUserPrefs();
+        }
+
+        // If the user is logged in and filled the registration form and tries to access the registration page, redirect to the registry
+        if (to.name === 'registration' && userPrefsStore.userPrefs.registrationData) {
+            return { name: 'initiatives' };
+        }
+
+        // If the user is logged in but didn't fill the registration form, redirect to registration
+        if (to.name !== 'registration' && !userPrefsStore.userPrefs.registrationData) {
+            return { name: 'registration' };
+        }
+
+        // If the user is logged in and tries to access the login page, redirect to the registry
+        if (to.name === 'login') {
+            return { name: 'initiatives' };
+        }
+    }
     // // If the user is not logged in and tries to access a page that requires auth, redirect to login
     // if (to.matched.some(record => !record.meta.public) && authStore.authLoaded && !authStore.user) {
     //     authStore.returnUrl = to.fullPath;

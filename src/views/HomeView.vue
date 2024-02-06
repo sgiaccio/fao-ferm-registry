@@ -8,6 +8,8 @@ import {
 
 import { ArrowSmallRightIcon, GlobeAltIcon, MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/vue/24/solid'
 
+import { DocumentTextIcon } from '@heroicons/vue/20/solid'
+
 import WavyDivider from '@/views/WavyDivider.vue';
 import Footer from '@/views/Footer.vue'
 
@@ -79,26 +81,27 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="bg-white">
+    <div
+        class="bg-white"
+        v-once
+    >
         <header class="inset-x-0 top-0">
             <div class="overflow-hidden bg-none relative">
                 <img
                     src="/seashore.jpg"
-                    class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-50"
+                    class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-75"
                 >
                 <wavy-divider class="absolute -left-1 bottom-0" />
-                <div class="px-4 sm:px-12 pt-12 pb-28">
+                <div class="px-4 sm:px-12 pt-12 md:pb-4 pb-32">
                     <!-- Logos -->
                     <div class="relative w-full pl-10 flex mb-10">
                         <div class="mb-2 sm:mb-5 mt-2 grid grid-flow-col gap-x-6 mx-auto md:mx-0 divide-x divide-gray-300">
                             <div class="-ml-10 mr-3">
-                                <a href="/">
-                                    <img
-                                        src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg"
-                                        alt="FERM logo"
-                                        class="h-12 sm:h-16 w-auto scale-125"
-                                    />
-                                </a>
+                                <img
+                                    src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg"
+                                    alt="FERM logo"
+                                    class="h-12 sm:h-16 w-auto scale-125"
+                                />
                             </div>
                             <div>
                                 <a
@@ -116,26 +119,24 @@ onMounted(async () => {
                     </div>
                     <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-5xl md:text-6xl lg:text-7xl uppercase shadow-black text-shadow-sm">Framework for Ecosystem<br>Restoration Monitoring</div>
 
-                    <div class="relative text-white mt-20 max-w-sm md:max-w-3xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-5 md:grid-rows-none md:grid-cols-3 md:gap-x-5">
-                        <router-link
-                            :to="{ name: 'initiatives' }"
-                            class="bg-ferm-green-light/70 border-ferm-green-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur"
-                        >
-                            <div class="flex flex-row gap-x-2">
-                                <div class="mt-0.5">
-                                    <ArrowSmallRightIcon class="w-6 h-6" />
+                    <div class="relative text-white mt-16 max-w-sm md:max-w-xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-5 md:grid-cols-2 md:gap-x-5">
+                        <div class="bg-ferm-green-light/70 border-ferm-green-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur order-1 md:order-none">
+                            <router-link :to="{ name: 'initiatives' }">
+                                <div class="flex flex-row gap-x-2">
+                                    <div class="mt-0.5">
+                                        <ArrowSmallRightIcon class="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <div class="text-xl font-bold uppercase">Register</div>
+                                        <div class="text-sm mt-3">Your restoration initiative and good practices</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="text-xl font-bold uppercase">Register</div>
-                                    <div class="text-sm mt-3">Your restoration initiative and good practices</div>
-                                </div>
-                            </div>
-                        </router-link>
-
+                            </router-link>
+                        </div>
                         <a
                             href="https://data.apps.fao.org/ferm/"
                             target="_blank"
-                            class="bg-ferm-blue-dark/80 border-ferm-blue-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-blue-light shadow backdrop-blur"
+                            class="bg-ferm-blue-dark/80 border-ferm-blue-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-blue-light shadow backdrop-blur order-2 md:order-none"
                         >
                             <div class="flex flex-row gap-x-2">
                                 <div>
@@ -147,25 +148,10 @@ onMounted(async () => {
                                 </div>
                             </div>
                         </a>
-
                         <a
-                            href="https://ferm-search.fao.org/search"
-                            class="bg-ferm-mustard-dark/90 hover:bg-ferm-mustard-light rounded-lg px-4 py-4 text-left transition-colors shadow backdrop-blur"
-                        >
-                            <div class="flex flex-row gap-x-2">
-                                <div>
-                                    <MagnifyingGlassIcon class="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <div class="text-xl font-semibold uppercase">Search</div>
-                                    <div class="text-sm mt-3">For good practices on ecosystem restoration</div>
-                                </div>
-                            </div>
-                        </a>
-                        <a
-                            href="/docs/FERM guidance version nov2023 draft.pdf"
+                            href="/docs/FERM guidance version dec2023 draft.pdf"
                             target="_blank"
-                            class="col-start-2 bg-ferm-green-light/70 border-ferm-green-light_ border-4_ rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur"
+                            class="col-start-1_ bg-ferm-green-light/70_ border-ferm-green-light/70 border-4 rounded-lg px-4 py-4 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur order-4 md:order-none"
                         >
                             <div class="flex flex-row gap-x-2">
                                 <div>
@@ -174,6 +160,20 @@ onMounted(async () => {
                                 <div>
                                     <div class="text-xl font-semibold uppercase">Download</div>
                                     <div class="text-sm mt-3">The FERM user guide</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a
+                            href="https://ferm-search.fao.org/search"
+                            class="bg-ferm-mustard-dark/95 hover:bg-ferm-mustard-light rounded-lg px-4 py-4 text-left transition-colors shadow backdrop-blur order-3 md:order-none"
+                        >
+                            <div class="flex flex-row gap-x-2">
+                                <div>
+                                    <MagnifyingGlassIcon class="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <div class="text-xl font-semibold uppercase">Search</div>
+                                    <div class="text-sm mt-3">For good practices on ecosystem restoration</div>
                                 </div>
                             </div>
                         </a>
@@ -187,7 +187,6 @@ onMounted(async () => {
         <div class="mx-auto max-w-5xl">
 
             <div class="px-4 lg:px-0 mt-10 text-lg leading-snug font-akrobat font-semibold text-center max-w-2xl mx-auto text-gray-700 tracking-wide">The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.</div>
-
             <div class="px-4 sm:px-0 mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
                 <div class="bg-ferm-blue-light p-4 rounded-lg text-sm font-base flex flex-col shadow">
                     <div>

@@ -70,14 +70,22 @@ onBeforeRouteLeave((to, from) => {
 // }
 
 async function saveAndExit() {
-    await store.saveAndExit();
-    await router.push({ name: 'initiatives' });
+    try {
+        await store.saveAndExit();
+        await router.push({ name: 'initiatives' });
+    } catch (error) {
+        customAlert('Error', 'An error occurred while saving the project. Please try again. Contact support if the problem persists.', 'error');
+        return;
+    }
 }
 
 async function saveAndNext() {
-    await store.save();
-
-    props.next();
+    try {
+        await store.save();
+        props.next();
+    } catch (error) {
+        customAlert('Error', 'An error occurred while saving the project. Please try again. Contact support if the problem persists.', 'error');
+    }
 }
 
 async function cancel() {
