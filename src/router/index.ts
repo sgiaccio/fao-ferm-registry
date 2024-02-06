@@ -1,6 +1,6 @@
-import { useAuthStore } from "../stores/auth"
-import { useUserPrefsStore } from "../stores/userPreferences"
-import { useMenusStore } from "../stores/menus"
+// import { useAuthStore } from "../stores/auth"
+// import { useUserPrefsStore } from "../stores/userPreferences"
+// import { useMenusStore } from "../stores/menus"
 
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -135,7 +135,10 @@ const router = createRouter({
             name: 'registry',
             component: () => import('../views/RegistryView.vue'),
             beforeEnter: async (_to, _from) => {
+                // dynamically load the menus store to save bandwidth
+                const { useMenusStore } = await import('../stores/menus');
                 const menusStore = useMenusStore();
+
                 if (!menusStore.loaded) {
                     await menusStore.fetchMenus();
                 }
@@ -226,6 +229,9 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
+    const { useAuthStore } = await import('../stores/auth');
+    const { useUserPrefsStore } = await import('../stores/userPreferences');
+
     const authStore = useAuthStore();
     const userPrefsStore = useUserPrefsStore();
 
