@@ -146,10 +146,10 @@ exports.replicability = [
         label: "Yes, the practice has been tested and replicated in multiple contexts and scales and therefore, can be easily transferred and/or adapted to other initiatives with similar goals."
     }, {
         value: 2,
-        label: "No, the practice has been tested and replicated only in the same context and scale, but it is currently being proven for replicability and adaptability to various contexts."
+        label: "No, the practice has been tested only in the same context and scale, but it is currently being proven for replicability and adaptability to various contexts."
     }, {
         value: 3,
-        label: "No, the practice has been tested and replicated only in the same context and scale, it needs to be proven for replicability and adaptability to various contexts."
+        label: "No, the practice has been tested only in the same context and scale, it needs to be proven for replicability and adaptability to various contexts."
     }, {
         value: 4,
         label: "No, the practice has not been tested so it cannot be transferred and/or adapted to other initiatives. "
