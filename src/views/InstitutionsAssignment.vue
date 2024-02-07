@@ -5,7 +5,6 @@ import {
     Combobox,
     ComboboxButton,
     ComboboxInput,
-    // ComboboxLabel,
     ComboboxOption,
     ComboboxOptions
 } from '@headlessui/vue';
@@ -254,8 +253,8 @@ function cancelSubmit() {
     </AlertModal>
 
     <!-- Submit new institution modal -->
-    <ConfirmModal type="info"
-                  title="Submit new institution"
+    <ConfirmModal
+                  title="Submit a new institution"
                   :onConfirm="() => { confirmSubmit() }"
                   :onCancel="() => cancelSubmit()"
                   :open="showSubmitNew"

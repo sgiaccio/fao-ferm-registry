@@ -131,6 +131,19 @@ const router = createRouter({
                 }
             ]
         }, {
+            path: '/registry/initiatives/:id/print',
+            name: 'printInitiative',
+            component: () => import('../views/project/ProjectPrintView.vue'),
+            beforeEnter: async (_to, _from) => {
+                // dynamically load the menus store to save bandwidth
+                const { useMenusStore } = await import('../stores/menus');
+                const menusStore = useMenusStore();
+
+                if (!menusStore.loaded) {
+                    await menusStore.fetchMenus();
+                }
+            },
+        }, {
             path: '/registry',
             name: 'registry',
             component: () => import('../views/RegistryView.vue'),
@@ -170,10 +183,6 @@ const router = createRouter({
                             component: () => import('../views/project/ProjectViewView.vue'),
                             redirect: to => ({ name: 'projectInfo', params: { id: to.params.id } }),
                             children: [...projectTabs]
-                        }, {
-                            path: 'print',
-                            name: 'printInitiative',
-                            component: () => import('../views/project/ProjectPrintView.vue')
                         }, {
                             path: 'edit',
                             name: 'editInitiative',
@@ -232,7 +241,7 @@ router.beforeEach(async (to) => {
     if (to.matched.every(record => record.meta.public)) {
         return;
     }
-    
+
     const { useAuthStore } = await import('../stores/auth');
     const { useUserPrefsStore } = await import('../stores/userPreferences');
 

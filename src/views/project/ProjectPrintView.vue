@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
+import { useRoute, onBeforeRouteLeave } from 'vue-router'
 
 import RegistrationView from './RegistrationView.vue';
 import AoiView from './AoiView.vue';
@@ -24,6 +24,11 @@ onBeforeMount(async () => {
     store.fetchProject(route.params.id as string);
 });
 
+// This is a hack to reset the project state when the user navigates away from the project view
+onBeforeRouteLeave((_to, _from) => {
+    store.resetProjectState();
+});
+
 watch(loaded, l => {
     if (l) {
         // Use nextTick to wait for the DOM to be updated
@@ -35,6 +40,8 @@ watch(loaded, l => {
 </script>
 
 <template>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
     <template v-if="store.loaded">
         <RegistrationView :edit="false" />
         <AoiView :edit="false" />
@@ -44,4 +51,6 @@ watch(loaded, l => {
         <IndicatorsView :edit="false" />
         <ResultsView :edit="false" />
     </template>
+    </div>
+</div>
 </template>
