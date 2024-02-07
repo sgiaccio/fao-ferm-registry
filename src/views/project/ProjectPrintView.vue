@@ -11,7 +11,6 @@ import EcosystemsView from './EcosystemsView.vue';
 import IndicatorsView from './IndicatorsView.vue';
 import ResultsView from './ResultsView.vue';
 
-
 import { useProjectStore } from '@/stores/project';
 
 
@@ -32,8 +31,11 @@ onBeforeRouteLeave((_to, _from) => {
 watch(loaded, l => {
     if (l) {
         // Use nextTick to wait for the DOM to be updated
-        nextTick(() => {
+        nextTick(async () => {
             window.print();
+            // Wait 1 second before closing the window - it seems that Safari needs this otherwise it closes the window before the print dialog is shown
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            window.close();
         });
     }
 });
@@ -42,15 +44,15 @@ watch(loaded, l => {
 <template>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
-    <template v-if="store.loaded">
-        <RegistrationView :edit="false" />
-        <AoiView :edit="false" />
-        <CharacteristicsView :edit="false" />
-        <ActivitiesView :edit="false" />
-        <EcosystemsView :edit="false" />
-        <IndicatorsView :edit="false" />
-        <ResultsView :edit="false" />
-    </template>
+            <template v-if="store.loaded">
+                <RegistrationView :edit="false" />
+                <AoiView :edit="false" />
+                <CharacteristicsView :edit="false" />
+                <ActivitiesView :edit="false" />
+                <EcosystemsView :edit="false" />
+                <IndicatorsView :edit="false" />
+                <ResultsView :edit="false" />
+            </template>
+        </div>
     </div>
-</div>
 </template>
