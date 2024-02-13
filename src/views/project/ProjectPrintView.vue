@@ -33,7 +33,7 @@ watch(loaded, l => {
         // Use nextTick to wait for the DOM to be updated
         nextTick(async () => {
             window.print();
-            // Wait 1 second before closing the window - it seems that Safari needs this otherwise it closes the window before the print dialog is shown
+            // wait 1 second before closing the window - it seems that Safari needs this otherwise it closes the window before the print dialog is shown
             await new Promise(resolve => setTimeout(resolve, 1000));
             window.close();
         });

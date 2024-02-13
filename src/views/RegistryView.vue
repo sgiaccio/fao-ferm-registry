@@ -4,9 +4,9 @@
 </script>
 
 <template>
-    <div>
+    <div class="print:hidden">
         <Navbar />
     </div>
     <router-view />
-    <Footer />
+    <Footer class="print:hidden" />
 </template>

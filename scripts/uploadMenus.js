@@ -32,6 +32,5 @@ async function uploadData(collectionName, data) {
 
 
 Object.keys(menus).forEach(async (key) => {
-    console.log(JSON.parse(JSON.stringify(menus[key])));
     await uploadData(key, menus[key]);
 });

@@ -11,7 +11,7 @@ import { useProjectStore } from '@/stores/project';
 
 const projectStore = useProjectStore();
 
-import { submitForReview, publishProject, rejectProject, addProjectCollaboator } from '@/firebase/functions';
+import { submitForReview, publishProject, rejectProject } from '@/firebase/functions';
 
 import {
     EllipsisVerticalIcon,
@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<{
     excludeViewMenuItem: false
 });
 
-const emit = defineEmits(['done']);
+const emit = defineEmits([ 'done' ]);
 
 const route = useRoute();
 

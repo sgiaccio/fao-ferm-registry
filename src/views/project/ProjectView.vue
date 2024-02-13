@@ -54,7 +54,7 @@ function gotoPreviousTab() {
 <template>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
-            <div class="mt-4 md:mt-6 mb-6 md:mb-8">
+            <div class="mt-4 md:mt-6 mb-6 md:mb-8 print:hidden">
                 <div class="sm:hidden">
                     <label for="tabs"
                            class="sr-only">Select a tab</label>

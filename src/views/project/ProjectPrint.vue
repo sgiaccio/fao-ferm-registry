@@ -3,7 +3,6 @@ import { onMounted } from 'vue'
 
 import RegistrationView from './RegistrationView.vue';
 import AoiView from './AoiView.vue';
-import CharacteristicsView from './characteristics/CharacteristicsView.vue';
 import ActivitiesView from './ActivitiesView.vue';
 import EcosystemsView from './EcosystemsView.vue';
 import IndicatorsView from './IndicatorsView.vue';

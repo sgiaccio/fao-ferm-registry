@@ -24,7 +24,6 @@ export const useAuroraStore = defineStore('aurora', {
         setGoalIndicatorsFromRaw(rawGoalIndicators: RawGoalIndicator[]) {
             this.rawGoalIndicators = rawGoalIndicators;
             this.goalIndicators = rawGoalIndicators.map((goalIndicator: RawGoalIndicator) => new GoalIndicator(goalIndicator));
-            console.log('goalIndicators', this.goalIndicators);
         },
         setCustomIndicatorsFromRaw(rawCustomIndicators: CustomIndicator[]) {
             this.customIndicators = rawCustomIndicators.map((customIndicator: CustomIndicator) => ({

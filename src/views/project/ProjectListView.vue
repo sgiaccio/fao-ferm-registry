@@ -37,8 +37,6 @@ import ConfirmModal from '@/views/ConfirmModal.vue';
 import * as projectUtils from '@/lib/project';
 import ActionsMenu from './ActionsMenu.vue';
 
-import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
-
 import { useMenusStore } from '@/stores/menus';
 
 
