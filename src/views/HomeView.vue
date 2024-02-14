@@ -119,7 +119,7 @@ onMounted(async () => {
                     </div>
                     <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-5xl md:text-6xl lg:text-7xl uppercase shadow-black text-shadow-sm">Framework for Ecosystem<br>Restoration Monitoring</div>
 
-                    <div class="relative text-white mt-16 max-w-sm md:max-w-xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-5 md:grid-cols-2 md:gap-x-5">
+                    <div class="relative text-white mt-16 max-w-sm md:max-w-2xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-8 md:grid-cols-2 md:gap-x-10">
                         <div class="bg-ferm-green-light/70 rounded-lg p-4 md:px-5 md:py-6 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur order-1 md:order-none">
                             <router-link :to="{ name: 'initiatives' }">
                                 <div class="flex flex-row gap-x-2 h-full">
