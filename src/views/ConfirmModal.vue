@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { nextTick } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { CheckIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue';
@@ -25,11 +26,14 @@ const emit = defineEmits(['closed', 'cancel']); // TODO: add 'close' event
 // 2x closing is needed because of the 2x TransitionChild and 1 in TransitionRoot.
 // Setting after-leave in TransitionRoot only, causes it to be called three times. I don't know why.
 const closingCount = ref(0);
+
 function closing() {
     closingCount.value++;
-    if (closingCount.value === 2) {
+    if (closingCount.value === 3) {
         closingCount.value = 0;
-        emit('closed');
+        nextTick(() => {
+            emit('closed');
+        });
     }
 }
 
@@ -40,7 +44,8 @@ function cancel() {
 
 <template>
     <TransitionRoot as="template"
-                    :show="open">
+                    :show="open"
+                    @after-leave="closing">
         <Dialog as="div"
                 class="relative z-10">
             <TransitionChild as="template"
@@ -102,7 +107,7 @@ function cancel() {
                                 <button type="button"
                                         :disabled="!okButtonEnabled"
                                         :class="[okButtonEnabled ? 'bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600' : 'bg-gray-400', 'inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto']"
-                                        @click="onConfirm()">{{ okButtonText }}</button>
+                                        @click="onConfirm">{{ okButtonText }}</button>
                                 <button type="button"
                                         class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                                         @click="cancel()"

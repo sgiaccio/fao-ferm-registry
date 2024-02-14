@@ -167,7 +167,7 @@ function resetFilters() {
         ok-button-text="Accept"
         cancel-button-text="Reject"
         :ok-button-enabled=true
-        @confirm="acceptTermsAndConditions"
+        :onConfirm="acceptTermsAndConditions"
         @closed="checkTermsAndConditionsAndShowDialog"
         @cancel="rejectTermsAndConditions"
     >
