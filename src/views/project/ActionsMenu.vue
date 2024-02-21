@@ -190,7 +190,7 @@ function goToCollaboratorsRoute() {
             <div class="mt-3 max-w-xl text-sm text-gray-500">
                 <p>Are you sure you want to reject the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?
                 </p>
-                <p>If you proceed, please provide constructive feedback to the author regarding the rejection."
+                <p>If you proceed, please provide constructive feedback to the author regarding the rejection.
                     <textarea v-model="rejectReason"
                               rows="4"
                               class="mt-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

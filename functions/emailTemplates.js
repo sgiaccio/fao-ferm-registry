@@ -156,20 +156,30 @@ exports.initiativeRejected = function(emails, groupName, projectId, projectTitle
     return {
         to: emails,
         message: {
-            subject: `Notification: Rejection of Your Submitted Initiative`,
+            subject: `Additional Information Required for Your Initiative on FERM`,
             html: `
-                <p>Dear ${ownerName},</p>
+                <body>
+                <p>Hello ${ownerName},</p>
+                <p>Your initiative, "<strong>${projectTitle}</strong>", has undergone review on the FERM platform. While we appreciate the effort you've put into your submission, there are certain aspects that require additional information for a comprehensive review.
+
+
                 <p>We hope this message finds you well. We regret to inform you that your submitted initiative, titled "<strong>${projectTitle}</strong>," has been reviewed by our administrators and has been rejected for publication on the FERM Registry.</p>
                 <p>Please note the following reasons for the rejection as provided by the administrator:</p>
-                <p><strong>Reason for Rejection:</strong><br>
+                <p><strong>Specifically, we need more details regarding:</strong><br>
                 <span style="white-space: pre-wrap;font-style: italic;">${reason}</span></p>
-                <p>We understand that this news may be disappointing. However, we encourage you to revise and improve your initiative based on the feedback provided. You can make the necessary adjustments by accessing your initiative through your FERM Registry account.</p>
-                <p>If you have any questions or require further assistance, please don't hesitate to reach out to our support team at <a href="mailto:ferm-support@fao.org">ferm-support@fao.org</a>. We are here to assist you in enhancing the quality and impact of your initiative.</p>
-                <p>Thank you for your understanding and your continued commitment to the FERM Registry. We appreciate your efforts and encourage you to submit future initiatives that align with our platform's guidelines.</p>
-                <p>Best regards,</p>
-                
-                <p>The FERM Team<br>
-                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+
+                <p>Once you've updated the information, your initiative will be reevaluated.</p>
+
+                <p>If you encounter any challenges or have questions about the requested information, feel free to contact the FERM support team.</p>
+
+                <p>Thank you for your cooperation and commitment to enhancing the quality of initiatives on FERM.</p>
+
+                <p>Best regards,
+                <br>
+                The FERM Team</p>
+
+                <p><a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+                </body>
             `
         }
     }
@@ -217,6 +227,7 @@ exports.newGroupApproval = function(email, displayName, institutionName) {
         message: {
             subject: `Your request to create a new group ${institutionName} has been approved`,
             html: `
+                <body>
                 <p>Dear ${displayName || email},</p>
 
                 <p>We're writing to inform you that your proposal to create the new institution, 
@@ -239,51 +250,89 @@ exports.newGroupApproval = function(email, displayName, institutionName) {
                 
                 <p>The FERM Team<br>
                 <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
-
+                </body>
             `
         }
     };
 }
+
 
 exports.newGroupRejection = function(email, displayName, institutionName) {
     return {
         to: email,
         message: {
-            subject: `Your request to create a new group ${institutionName} has been rejected`,
+            subject: 'FERM notification: Request to review your institution request',
             html: `
-                <body>
+                <body style="font-camily: sans-serif">
 
-                <p>Dear ${displayName || email},</p>
+                <p>Dear User,</p>
 
-                <p>Thank you for your intrerest in creating a new institution, <strong${institutionName}</strong>, 
-                within our restoration community. We value your commitment and the initiative you have shown 
-                towards our shared goal of environmental conservation.</p>
+                <p>Thank you for your recent engagement on the FERM platform. However, it has come to our attention that your institution's registration on FERM did not meet acceptance criteria. Below, we highlighted the potential reasons for this:</p>
 
-                <p>After careful review, we regret to inform you that we are unable to approve the creation 
-                of <strong>${institutionName}</strong> at this time. This decision was made based on several 
-                criteria that we use to evaluate new institutions.</p>
+                <dl>
+                    <dt style="font-weight: bold;">Insufficient Information Regarding Organization's Role in Restoration:</dt>
+                    <dd>Your organization description lacks essential details about restoration efforts, a key requirement for inclusion in the FERM database. We take this opportunity to elaborate on FERM's objectives. FERM actively collects restoration data for monitoring and disseminating good practices in support of the UN Decade on Ecosystem Restoration and assisting countries in reporting Target 2 of the Global Biodiversity Framework. We are keenly interested in learning more about the restoration activities at your institution or organization. If you are currently engaged in projects related to restoration and have restoration data, we would appreciate additional details. This could include providing relevant project information and website links.</dd>
 
-                <p>We understand that this news may be disappointing, and we want to assure you that this 
-                decision is not a reflection of the value we place on your efforts. Each proposal is unique 
-                and is evaluated on its own merits, and while <strong>${institutionName}</strong> may not 
-                have met our criteria at this time, we encourage you to continue your involvement in our 
-                community and the cause of restoration.</p>
+                    <dt style="font-weight: bold;margin-top:1em">Lack of Linkage to UN Decade or Government:</dt>
+                    <dd>If your organization is not affiliated with the UN Decade or linked to government , we suggest exploring alternative platforms such as Restor or collaborating with organizations aligned with the UN Decade. Another viable option is becoming a UN Decade actor/partner/TF member. Please refer to the <a href="https://www.fao.org/3/cb5046en/cb5046en.pdf">FERM Guide</a> on how to become a UN Decade actor/partner/TF member.</dd>
+ 
+                    <dt style="font-weight: bold;margin-top:1em">Creation of Duplicate Institutions:</dt>
+                    <dd>Please ensure that you are not creating a new institution if your institution already exists on the platform. Check the existing institution list to avoid duplication. If your institution is already listed, register under the existing entry. When registering, please take note to register your institution name as the organization name (e.g., FAO). Alternatively, if you don't want to select the organization name because the project is distinct, you can use the organization name followed by the region, country or project name (e.g., FAO-Africa).</dd>
+                </dl>
 
-                <p>If you have any questions or wish to receive feedback about the decision, please feel free 
-                to contact us at <a href="mailto:ferm-support@fao.org">mailto:ferm-support@fao.org</a>. 
-                We're here to assist you and answer any queries you may have.</p>
+                <p>If none of these options apply to you and you still need further assistance, please feel free to contact us at <a href="mailto:FERM-Support@fao.org">FERM Support</a>.
+                We look forward to your response.</p>
 
-                <p>We truly appreciate your understanding and your continued support of our collective 
-                restoration efforts. We look forward to your future contributions within our community.</p>
+                <p>Best Regards,<br>
+                The FERM Team</p>
 
-                <p>Best regards,</p>
-                
-                <p>The FERM Team<br>
-                <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+                <p><a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+            </body>
             `
         }
     };
 }
+
+
+// exports.newGroupRejection = function(email, displayName, institutionName) {
+//     return {
+//         to: email,
+//         message: {
+//             subject: `Your request to create a new group ${institutionName} has been rejected`,
+//             html: `
+//                 <body>
+
+//                 <p>Dear ${displayName || email},</p>
+
+//                 <p>Thank you for your intrerest in creating a new institution, <strong${institutionName}</strong>, 
+//                 within our restoration community. We value your commitment and the initiative you have shown 
+//                 towards our shared goal of environmental conservation.</p>
+
+//                 <p>After careful review, we regret to inform you that we are unable to approve the creation 
+//                 of <strong>${institutionName}</strong> at this time. This decision was made based on several 
+//                 criteria that we use to evaluate new institutions.</p>
+
+//                 <p>We understand that this news may be disappointing, and we want to assure you that this 
+//                 decision is not a reflection of the value we place on your efforts. Each proposal is unique 
+//                 and is evaluated on its own merits, and while <strong>${institutionName}</strong> may not 
+//                 have met our criteria at this time, we encourage you to continue your involvement in our 
+//                 community and the cause of restoration.</p>
+
+//                 <p>If you have any questions or wish to receive feedback about the decision, please feel free 
+//                 to contact us at <a href="mailto:ferm-support@fao.org">mailto:ferm-support@fao.org</a>. 
+//                 We're here to assist you and answer any queries you may have.</p>
+
+//                 <p>We truly appreciate your understanding and your continued support of our collective 
+//                 restoration efforts. We look forward to your future contributions within our community.</p>
+
+//                 <p>Best regards,</p>
+                
+//                 <p>The FERM Team<br>
+//                 <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
+//             `
+//         }
+//     };
+// }
 
 exports.newCollaborator = function(email, displayName, projectTitle, projectId) {
     return {
