@@ -15,7 +15,8 @@
     "changeToProd": "firebase use prod",
     "changeToDev": "firebase use dev",
     "changeToStaging": "firebase use staging",
-    "loadMenus": "node scripts/uploadMenus.js"
+    "loadMenus": "node scripts/uploadMenus.js",
+    "deploy-prod": "run-s changeToProd build 'firebase deploy --only hosting'"
   },
   "dependencies": {
     "@google-cloud/firestore": "^6.5.0",
@@ -24,13 +25,13 @@
     "buffer": "^6.0.3",
     "d3": "^7.8.5",
     "firebase": "^10.6.0",
-    "joi": "^17.7.0",
     "jszip": "^3.10.1",
     "ol": "^7.1.0",
     "parsedbf": "^1.1.1",
     "pinia": "^2.0.16",
     "vue": "^3.2.37",
-    "vue-router": "^4.1.2"
+    "vue-router": "^4.1.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^3.0.1",

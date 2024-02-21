@@ -2,7 +2,6 @@
 import { ref, provide } from 'vue';
 import { RouterView } from 'vue-router';
 
-
 // import { useAuthStore } from './stores/auth';
 // import { useUserPrefsStore } from './stores/userPreferences';
 

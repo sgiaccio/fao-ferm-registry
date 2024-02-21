@@ -19,11 +19,11 @@ function logout() {
 
 <template>
     <Disclosure as="nav"
-                class="bg-gray-800"
+                class="bg-gray-800 z-40"
                 style="margin_:0;padding_:0"
                 v-slot="{ open }">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-            <div class="relative flex items-center justify-between h-16">
+            <div class="relative flex items-center justify-between h-12 sm:h-16">
                 <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
                     <!-- Mobile menu button-->
                     <DisclosureButton class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
@@ -39,15 +39,15 @@ function logout() {
                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="flex-shrink-0 flex items-center">
                         <router-link to="/">
-                            <img class="block lg:hidden h-8 w-auto"
+                            <img class="block h-6 md:h-8 lg:h-10 w-auto"
                                  src="@/assets/FERM_LOGO_MASTER_colour_small.svg"
                                  alt="FERM" />
                         </router-link>
-                        <router-link to="/">
+                        <!-- <router-link to="/">
                             <img class="hidden lg:block h-10 w-auto"
                                  src="@/assets/FERM_LOGO_MASTER_colour_small.svg"
                                  alt="FERM" />
-                        </router-link>
+                        </router-link> -->
                     </div>
 
                     <div class="hidden sm:block sm:ml-6">
