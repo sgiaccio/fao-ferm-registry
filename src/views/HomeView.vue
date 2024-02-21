@@ -149,7 +149,7 @@ onMounted(async () => {
                             </div>
                         </a>
                         <a
-                            href="/docs/FERM guidance version dec2023 draft.pdf"
+                            href="/docs/ferm_user_guide_draft.pdf"
                             target="_blank"
                             class="border-ferm-green-light/70 hover:border-transparent border-4 rounded-lg p-4 md:px-5 md:py-6 text-left transition-colors hover:bg-ferm-green-light/70 shadow backdrop-blur order-4 md:order-none"
                         >

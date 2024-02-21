@@ -3,7 +3,7 @@ import { defineComponent, h } from 'vue'
 
 const navigation = {
     main: [
-        { name: 'Guide', href: 'https://www.fao.org/3/cb5046en/cb5046en.pdf' },
+        { name: 'Guide', href: '/docs/ferm_user_guide_draft.pdf' },
         { name: 'Support', routeName: 'support' },
     ],
     social: [
