@@ -169,9 +169,11 @@ const statistics: Statistics[] = [{
                 </p>
                 <p class="mt-1">
                     <span class="font-medium">References:</span> Buchhorn, M., Smets, B., Bertels, L., Roo, B. D., Lesiv, M., Tsendbazar, N.-E., Herold, M., & Fritz, S. (2020). Copernicus Global Land Service: Land Cover 100m: collection 3: epoch 2019: Globe (Version V3.0.1) [Data set]. Zenodo.
-                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
-                       target="_blank"
-                       href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global">https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global</a>
+                </p>
+                <p>
+                <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+                    target="_blank"
+                    href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global">https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global</a>
                 </p>` });
     }
 }, {

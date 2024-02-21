@@ -3,6 +3,7 @@ import { filterByLabel } from '@/components/project/menus';
 import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
 import { computed, ref, watch, nextTick, onMounted } from 'vue';
 
+import { XCircleIcon } from '@heroicons/vue/20/solid';
 
 const props = withDefaults(defineProps<{
     uid?: string,
@@ -132,12 +133,17 @@ watch(() => props.modelValue, (newValue, oldValue) => {
                 <template v-else>None selected</template>
             </div>
             <div v-for="value in (props.modelValue || []).sort(sortCheckedValuesByLabel)"
-                 class="text-white m-0 flex items-center rounded-lg pl-2.5 pr-1 bg-blue-500 min-h-7 p-1 border border-stone-800">
+                 class="text-white m-0 flex items-center rounded-lg pl-2.5 pr-2.5 bg-blue-500 min-h-7 p-1 border border-stone-800">
                 <span class="align-middle">
                     {{ flattenedOptions[value] }}
                 </span>
-                <div v-if="edit">
-                    <svg @click="deleteOption(value)"
+                    <XCircleIcon @click="deleteOption(value)"
+                    v-if="edit"
+                         class="ml-1 -mr-1 w-5 h-5 text-gray-300 hover:text-gray-400 cursor-pointer"
+                         xmlns="http://www.w3.org/2000/svg"
+                         viewBox="0 0 20 20"
+                         fill="currentColor" />
+                    <!-- <svg @click="deleteOption(value)"
                          class="ml-0.5 w-5 h-5 text-gray-300 hover:text-gray-400 cursor-pointer"
                          xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 20 20"
@@ -145,8 +151,7 @@ watch(() => props.modelValue, (newValue, oldValue) => {
                         <path fill-rule="evenodd"
                               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
                               clip-rule="evenodd" />
-                    </svg>
-                </div>
+                    </svg> -->
             </div>
         </div>
     </div>
