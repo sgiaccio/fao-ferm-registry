@@ -120,7 +120,7 @@ onMounted(async () => {
                     <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-5xl md:text-6xl lg:text-7xl uppercase shadow-black text-shadow-sm">Framework for Ecosystem<br>Restoration Monitoring</div>
 
                     <div class="relative text-white mt-16 max-w-sm md:max-w-2xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-8 md:grid-cols-2 md:gap-x-10">
-                        <div class="bg-ferm-green-light/70 rounded-lg p-4 md:px-5 md:py-6 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur order-1 md:order-none">
+                        <div class="bg-ferm-green-light/70 rounded-lg p-4 md:py-5 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur order-1 md:order-none">
                             <router-link :to="{ name: 'initiatives' }">
                                 <div class="flex flex-row gap-x-2 h-full">
                                     <div class="mt-0.5">
@@ -136,7 +136,7 @@ onMounted(async () => {
                         <a
                             href="https://data.apps.fao.org/ferm/"
                             target="_blank"
-                            class="bg-ferm-blue-dark/80 rounded-lg p-4 md:px-5 md:py-6 text-left transition-colors hover:bg-ferm-blue-light shadow backdrop-blur order-2 md:order-none"
+                            class="bg-ferm-blue-dark/80 rounded-lg p-4 md:py-5 text-left transition-colors hover:bg-ferm-blue-light shadow backdrop-blur order-2 md:order-none"
                         >
                             <div class="flex flex-row gap-x-2 h-full">
                                 <div>
@@ -151,7 +151,7 @@ onMounted(async () => {
                         <a
                             href="/docs/ferm_user_guide_draft.pdf"
                             target="_blank"
-                            class="border-ferm-green-light/70 hover:border-transparent border-4 rounded-lg p-4 md:px-5 md:py-6 text-left transition-colors hover:bg-ferm-green-light/70 shadow backdrop-blur order-4 md:order-none"
+                            class="border-ferm-green-light/70 hover:border-transparent border-4 rounded-lg p-4 md:py-5 text-left transition-colors hover:bg-ferm-green-light/70 shadow backdrop-blur order-4 md:order-none"
                         >
                             <div class="flex flex-row gap-x-2 h-full -m-1">
                                 <div>
@@ -165,7 +165,7 @@ onMounted(async () => {
                         </a>
                         <a
                             href="https://ferm-search.fao.org/search"
-                            class="bg-ferm-mustard-dark/95 hover:bg-ferm-mustard-light rounded-lg p-4 md:px-5 md:py-6 text-left transition-colors shadow backdrop-blur order-3 md:order-none"
+                            class="bg-ferm-mustard-dark/95 hover:bg-ferm-mustard-light rounded-lg p-4 md:py-5 text-left transition-colors shadow backdrop-blur order-3 md:order-none"
                         >
                             <div class="flex flex-row gap-x-2 h-full">
                                 <div>

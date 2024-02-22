@@ -70,6 +70,9 @@ watch(admin0, async (val, prev) => {
         admin1Menu.value = undefined;
     }
 
+}, { immediate: true });
+
+watch(admin0, async (val, prev) => {
     // if prev is null it means that the page was just loaded, don't change values
     // only change values when the selection was changed by the user
     if (prev) {
@@ -84,46 +87,40 @@ watch(admin0, async (val, prev) => {
         admin1: admin1.value || undefined,
         admin2: admin2.value || undefined
     });
-}, { immediate: true });
+});
 
 watch(admin1, async (val, prev) => {
     if (val) {
-        // const t0 = findInJson(json, admin0.value);
-        // if (!t0) return
-        // const t1 = findInJson(t0, val);
-        // if (!t1) return
         if (!admin0.value) return
         admin2Menu.value = await getGaulLevel2(admin0.value, val);
     } else {
         admin2Menu.value = undefined;
     }
+}, { immediate: true });
 
+watch(admin1, (val, prev) => {
     if (prev) {
         admin2.value = undefined;
     }
 
     if (!admin0.value && !val) emit('update:modelValue', undefined);
     emit('update:modelValue', {
-        // activities: props.modelValue.activities,
-        // siteName: props.modelValue.siteName,
         ...props.modelValue,
         admin0: admin0.value || undefined,
         admin1: admin1.value || undefined,
         admin2: admin2.value || undefined
     });
-}, { immediate: true });
+});
 
 watch(admin2, val => {
     if (!admin0.value && !admin1.value && !val) emit('update:modelValue', undefined);
     emit('update:modelValue', {
-        // activities: props.modelValue.activities,
-        // siteName: props.modelValue.siteName,
         ...props.modelValue,
         admin0: admin0.value || undefined,
         admin1: admin1.value || undefined,
         admin2: admin2.value || undefined
     });
-}, { immediate: true });
+});
 </script>
 
 <template>
@@ -136,20 +133,17 @@ watch(admin2, val => {
             <template v-if="edit">
                 <div class="mt-2 flex rounded-md shadow-sm">
                     <div class="relative flex flex-grow items-stretch focus-within:z-10">
-                        <input type="text"
-                               v-model="modelValue.siteName"
-                               name="siteName"
-                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        <input
+                            type="text"
+                            v-model="modelValue.siteName"
+                            name="siteName"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        />
                     </div>
                 </div>
             </template>
             <div v-else>{{ modelValue.siteName }}</div>
         </div>
-        <!-- <FormGroup label="Site name">
-                <TextInput :edit="edit"
-                           v-model="modelValue.siteName" />
-            </FormGroup> -->
-
         <div>
             <legend class="block text-sm font-medium leading-6 text-gray-900">
                 Area [{{ getMenuSelectedLabel(store.project.project.areaUnits, menus.units) }}]
@@ -157,37 +151,43 @@ watch(admin2, val => {
             <template v-if="edit">
                 <div class="mt-2 flex rounded-md shadow-sm">
                     <div class="relative flex flex-grow items-stretch focus-within:z-10">
-                        <input type="number"
-                               v-model="modelValue.area"
-                               name="area"
-                               class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                        <input
+                            type="number"
+                            v-model="modelValue.area"
+                            name="area"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        />
                     </div>
                 </div>
             </template>
             <div v-else>{{ modelValue.area }}</div>
         </div>
-        <!-- <FormGroup label="Area [ha]">
-                <NumberInput :edit="edit"
-                             v-model="modelValue.area" />
-            </FormGroup> -->
-
         <div class="block text-sm font-medium leading-6 text-gray-900">Administrative area</div>
-        <SelectInput :edit="edit"
-                     v-model="admin0"
-                     :options="admin0Menu"
-                     placeholder="Please select Country" />
-        <SelectInput :edit="edit"
-                     v-model="admin1"
-                     :options="admin1Menu"
-                     placeholder="Please select Region" />
-        <SelectInput :edit="edit"
-                     v-model="admin2"
-                     :options="admin2Menu"
-                     placeholder="Please select Province" />
-        <AreaEcosystemsView :edit="edit"
-                            :area="modelValue"
-                            :index="index"
-                            :nAreas="nAreas" />
+        <SelectInput
+            :edit="edit"
+            v-model="admin0"
+            :options="admin0Menu"
+            placeholder="Please select Country"
+            @change="azzo"
+        />
+        <SelectInput
+            :edit="edit"
+            v-model="admin1"
+            :options="admin1Menu"
+            placeholder="Please select Region"
+        />
+        <SelectInput
+            :edit="edit"
+            v-model="admin2"
+            :options="admin2Menu"
+            placeholder="Please select Province"
+        />
+        <AreaEcosystemsView
+            :edit="edit"
+            :area="modelValue"
+            :index="index"
+            :nAreas="nAreas"
+        />
         <!-- <pre>{{ JSON.stringify(modelValue, null, 2) }}</pre> -->
     </div>
 </template>

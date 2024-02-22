@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, type PropType } from "vue";
 
-import type { Menu, MenuValue } from '../../project/menus'
+import type { Menu } from '../../project/menus'
 
 
 const props = defineProps({

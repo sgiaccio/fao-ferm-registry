@@ -354,7 +354,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                   :edit="edit"
                                   :accessToken="authStore!.user!.accessToken">
             </FileUploadFormGroup2>
-            <MultiInputFormGroup class="px-4 odd:bg-white even:bg-slate-50 "
+            <MultiInputFormGroup class="px-4 odd:bg-white even:bg-slate-50"
                                  :edit="edit"
                                  label="Points of contact"
                                  :inputComponents="pointsOfContact"

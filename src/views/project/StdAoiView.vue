@@ -16,9 +16,7 @@ import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
 import KmlKmzUploadDialog from './KmlKmzUploadDialog.vue';
 import FormGroup from '@/components/inputs/FormGroup.vue';
 import NumberInput from '@/components/inputs/base/NumberInput.vue';
-// import AreaFormGroup from '@/components/inputs/AreaFormGroup.vue';
 import SelectInput from '@/components/inputs/base/SelectInput.vue';
-// import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
 
@@ -26,7 +24,6 @@ import ConfirmModal from '@/views/ConfirmModal.vue';
 
 import { getMenuSelectedLabel } from '@/components/project/menus';
 
-// import { getIso2Name, countries as iso2countries } from '@/lib/gaul2iso';
 import { getGaulLevel0 } from '@/firebase/firestore';
 
 
