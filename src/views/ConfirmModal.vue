@@ -47,7 +47,7 @@ function cancel() {
                     :show="open"
                     @after-leave="closing">
         <Dialog as="div"
-                class="relative z-10">
+                class="relative z-50">
             <TransitionChild as="template"
                              enter="ease-out duration-300"
                              enter-from="opacity-0"
