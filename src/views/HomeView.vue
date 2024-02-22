@@ -6,7 +6,7 @@ import {
     GlobeEuropeAfricaIcon,
 } from '@heroicons/vue/24/outline'
 
-import { ArrowSmallRightIcon, GlobeAltIcon, MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/vue/24/solid'
+import { ArrowRightIcon, GlobeAltIcon, MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/vue/24/solid'
 
 import { DocumentTextIcon } from '@heroicons/vue/20/solid'
 
@@ -124,7 +124,7 @@ onMounted(async () => {
                             <router-link :to="{ name: 'initiatives' }">
                                 <div class="flex flex-row gap-x-2 h-full">
                                     <div class="mt-0.5">
-                                        <ArrowSmallRightIcon class="w-6 h-6" />
+                                        <ArrowRightIcon class="w-6 h-6" />
                                     </div>
                                     <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
                                         <div class="text-xl font-bold uppercase md:tracking-wide">Register</div>
