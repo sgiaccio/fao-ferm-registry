@@ -404,7 +404,7 @@ function isValidUuid(uuid) {
 // exports.setProjectAreas_____d3fe = functions
 //     .https
 //     .onRequest(async (_req, _res) => {
-//         return ({ test: 'caz' });
+//         return ({ test: 'test' });
 //         functions.logger.info("getting list of countries");
 
 //         const areasSnapshot = areasCollection.get();

@@ -247,9 +247,10 @@ provide('applyToAll', () => {
 
                 <MultiInput :edit="edit"
                             :numbering="(n, v) => numbering(n, v)"
-                            :inputComponents="multiInputComponents"
+                            :input-components="multiInputComponents"
                             v-model="store.projectAreas"
-                            deleteConfirmMessage="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted." />
+                            :paging-size="25"
+                            delete-confirm-message="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted." />
                 <button v-if="store.projectAreas.length > 0 && edit"
                         @click="() => { showDeleteAreasConfirm = true }"
                         type="button"

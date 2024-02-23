@@ -23,6 +23,7 @@ const props = withDefaults(defineProps<{
     deleteConfirmMsg?: string,
     required?: boolean,
     edit?: boolean,
+    pagingSize?: number
 }>(), {
     deleteConfirmMessage: "Are you sure you want to delete this item?",
     required: false,
@@ -93,50 +94,93 @@ const errorMessages = computed(() => {
     }
     return [];
 });
+
+const nShow = ref(props.pagingSize);
+
+const hasMorePages = computed(() => nShow.value && nShow.value < props.modelValue.length);
+
+function showMore() {
+    if (hasMorePages.value && props.pagingSize && nShow.value) {
+        nShow.value += props.pagingSize;
+    }
+}
+
 </script>
 
 <template>
-    <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 bg-white">
-        <component v-for="([k, d]) in dialogs"
-                   class="p-3"
-                   :is="d.addDialog"
-                   :open="openedDialog === k"
-                   @cancel="openedDialog = null"
-                   @done="(newData: any) => addItemFromDialog(k, newData)" />
-        <div v-for="(v, i) in modelValue"
-             class="p-3">
+    <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 bg-white overflow-hidden">
+        <component
+            v-for="([k, d]) in dialogs"
+            class="p-3"
+            :is="d.addDialog"
+            :open="openedDialog === k"
+            @cancel="openedDialog = null"
+            @done="(newData: any) => addItemFromDialog(k, newData)"
+        />
+        <div
+            v-for="(v, i) in nShow ? props.modelValue.slice(0, nShow) : props.modelValue"
+            class="p-3"
+        >
 
-            <div class="text-gray-400 text-lg font-bold"
-                 v-if="numbering">{{ numbering(i, v) }}</div>
-            <component :key="v"
-                       :is="inputComponents[getKey(v)].component"
-                       v-bind="{ ...inputComponents[getKey(v)].props, edit, ...((inputComponents[getKey(v)].calculatedProps || []).reduce((acc: any[], prop: any) => ({ ...acc, [prop.key]: prop.f(modelValue, i) }), {})) }"
-                       v-model="v[getKey(v)]" />
+            <div
+                class="text-gray-400 text-lg font-bold"
+                v-if="numbering"
+            >{{ numbering(i, v) }}</div>
+            <component
+                :key="v"
+                :is="inputComponents[getKey(v)].component"
+                v-bind="{ ...inputComponents[getKey(v)].props, edit, ...((inputComponents[getKey(v)].calculatedProps || []).reduce((acc: any[], prop: any) => ({ ...acc, [prop.key]: prop.f(modelValue, i) }), {})) }"
+                v-model="v[getKey(v)]"
+            />
             <!-- <component
                 :key="v"
                 :is="inputComponents[getKey(v)].component"
                 v-bind="{ ...inputComponents[getKey(v)].props, edit }"
                 v-model="v[getKey(v)]" /> -->
-            <div v-if="edit"
-                 class="w-full text-orange-600 text-right hover:text-orange-500">
-                <button type="button"
-                        @click="deleteItem(i)">
+            <div
+                v-if="edit"
+                class="w-full text-orange-600 text-right hover:text-orange-500"
+            >
+                <button
+                    type="button"
+                    @click="deleteItem(i)"
+                >
                     <TrashIcon class="h-5 w-5" />
                 </button>
             </div>
         </div>
-        <div v-if="edit"
-             class="flex p-3 gap-x-3">
-            <button v-for="(componentDef, key) in props.inputComponents"
-                    type="button"
-                    @click="addButtonPushed('' + key)"
-                    class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <div
+            v-if="edit"
+            class="flex p-3 gap-x-3"
+        >
+            <button
+                v-for="(componentDef, key) in props.inputComponents"
+                type="button"
+                @click="addButtonPushed('' + key)"
+                class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
                 {{ componentDef.addItemLabel }}
             </button>
         </div>
+        <div
+            v-if="pagingSize"
+            class="flex flex-row flex-1 text-right py-4 pr-3 items-center justify-end gap-x-3 bg-slate-50"
+        >
+            <div>{{ nShow }} / {{ props.modelValue.length }}</div>
+            <button
+                v-if="hasMorePages"
+                type="button"
+                @click="showMore"
+                class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+                Show more
+            </button>
+        </div>
     </div>
-    <p v-if="errorMessages.length"
-       v-for="message in errorMessages"
-       class="mt-2 text-sm text-red-600"
-       id="email-error">{{ message }}</p>
+    <p
+        v-if="errorMessages.length"
+        v-for="message in errorMessages"
+        class="mt-2 text-sm text-red-600"
+        id="email-error"
+    >{{ message }}</p>
 </template>

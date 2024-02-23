@@ -4,7 +4,7 @@ import { ref, onMounted, watch, computed } from 'vue';
 import View from 'ol/View';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
-// import OSM from 'ol/source/OSM';
+
 import BingMaps from 'ol/source/BingMaps.js';
 import { Draw, Modify, Snap } from 'ol/interaction';
 import { Style, Fill, Stroke, Circle } from 'ol/style.js';
@@ -115,17 +115,7 @@ var multiPolygon = new MultiPolygon([]);
 drawInteraction.on('drawend', e => {
     const poly = e.feature.getGeometry();
     multiPolygon.appendPolygon(poly);
-    // updateGeojson();
 });
-// function updateGeojson() {
-//     const formatGeoJSON = new GeoJSON()
-//     const cloned = multiPolygon.clone();
-
-//     cloned.transform('EPSG:3857', 'EPSG:4326');
-//     var geojson = formatGeoJSON.writeGeometry(cloned);
-//     console.info(geojson);
-// }
-
 
 const modifyInteraction = new Modify({ source: vectorSource, style: drawStyle });
 const snapInteraction = new Snap({ source: vectorSource });
@@ -165,6 +155,7 @@ async function postGeoJson() {
 }
 
 async function fetchGeoJson() {
+    // return {};
     return fetch(
         `https://europe-west3-fao-ferm.cloudfunctions.net/get_area_json?area_uuid=${props.modelValue.uuid}&project_id=${projectStore.id}`, {
         method: 'GET',
@@ -207,12 +198,16 @@ onMounted(async () => {
         m.addInteraction(modifyInteraction);
         m.addInteraction(snapInteraction);
     } else {
-        const geoJson = await fetchGeoJson();
-        const olGeoJsonObj = new GeoJSON({ dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
-        const source = new VectorSource({ features: olGeoJsonObj.readFeatures(geoJson) });
-        m.removeLayer(vectorLayer);
-        m.addLayer(new VectorLayer({ source, style }));
-        m.getView().fit(source.getExtent());
+        try {
+            const geoJson = await fetchGeoJson();
+            const olGeoJsonObj = new GeoJSON({ dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
+            const source = new VectorSource({ features: olGeoJsonObj.readFeatures(geoJson) });
+            m.removeLayer(vectorLayer);
+            m.addLayer(new VectorLayer({ source, style }));
+            m.getView().fit(source.getExtent());
+        } catch (error) {
+            console.error('Error fetching GeoJSON', error);
+        }
     }
 });
 
@@ -252,46 +247,80 @@ function clear() {
 </script>
 
 <template>
-    <FormGroup label="Site name">
-        <TextInput :edit="edit"
-                   v-model="modelValue.siteName" />
-    </FormGroup>
-    <FormGroup :label="`Area [${getMenuSelectedLabel(projectStore.project.project.areaUnits, menus.units)}]`">
-        <template v-if="edit">
-            <div class="mt-2 flex rounded-md shadow-sm">
-                <div class="relative flex flex-grow items-stretch focus-within:z-10">
-                    <NumberInput v-model="modelValue.area"
-                                 :edit="edit" />
+    <div class="flex flex-col md:flex-row gap-6">
+        <div
+            class="mt-4 w-full md:w-72 h-72 border-gray-300 shadow rounded-lg min-w-fit-content"
+            ref="mapRoot"
+            id="mapRoot"
+        />
+        <div class="flex-1">
+            <fieldset @focusout="emit('focusout')">
+                <div class="md:mt-5 mb-5">
+                    <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
+                        Site name
+                    </legend>
+                    <div>
+                        <TextInput
+                            :edit="edit"
+                            v-model="modelValue.siteName"
+                        />
+                    </div>
                 </div>
-                <button type="button"
-                        @click="fetchPolygonArea()"
-                        :disabled="!areaUploaded"
-                        :class="[areaUploaded ? 'hover:bg-gray-50' : 'bg-gray-100 text-gray-500',
-                        'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 ' +
-                        'text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 ml-5']">
-                    <CalculatorIcon class="-ml-0.5 h-5 w-5 text-gray-400"
-                                    aria-hidden="true" />
-                    Calculate area
-                </button>
-            </div>
-        </template>
-        <div v-else>{{ modelValue.area }}</div>
-    </FormGroup>
-    <div class="mt-4 w-full h-96 border-2 border-gray-300"
-         ref="mapRoot"
-         id="caz" />
-    <button v-if="!areaUploaded && edit"
-            class="rounded-md px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400 cursor-default']"
-            @click="postGeoJson()">Upload
+            </fieldset>
+
+            <fieldset @focusout="emit('focusout')">
+                <div>
+                    <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
+                        {{ `Area [${getMenuSelectedLabel(projectStore.project.project.areaUnits, menus.units)}]` }}
+                    </legend>
+                    <div>
+                        <template v-if="edit">
+                            <div class="mt-2 flex rounded-md">
+                                <div class="relative flex flex-1 items-stretch focus-within:z-10">
+                                    <NumberInput
+                                        v-model="modelValue.area"
+                                        :edit="edit"
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    @click="fetchPolygonArea()"
+                                    :disabled="!areaUploaded"
+                                    :class="[areaUploaded ? 'hover:bg-gray-50' : 'bg-gray-100 text-gray-500',
+                                        'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 ml-5']"
+                                >
+                                    <CalculatorIcon
+                                        class="-ml-0.5 h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                    />
+                                    Calculate area
+                                </button>
+                            </div>
+                        </template>
+                        <div v-else>{{ modelValue.area }}</div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <button
+        v-if="!areaUploaded && edit"
+        class="rounded-md px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400 cursor-default']"
+        @click="postGeoJson()"
+    >Upload
     </button>
-    <button v-if="!areaUploaded && edit"
-            class="ml-4 mt-4 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            @click="clear">Clear
+    <button
+        v-if="!areaUploaded && edit"
+        class="ml-4 mt-4 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+        @click="clear"
+    >Clear
     </button>
 
-    <AreaEcosystemsView :edit="edit"
-                        :area="modelValue"
-                        :index="index"
-                        :nAreas="nAreas" />
+    <AreaEcosystemsView
+        :edit="edit"
+        :area="modelValue"
+        :index="index"
+        :nAreas="nAreas"
+    />
 </template>

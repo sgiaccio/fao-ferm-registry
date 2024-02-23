@@ -5,10 +5,8 @@ import { ListBulletIcon, ExclamationTriangleIcon, CheckCircleIcon } from '@heroi
 
 import ButtonWait from '@/components/ButtonWait.vue';
 
-// import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
 
-// import FormGroup from '@/components/inputs/FormGroup.vue';
 import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 
 import { getPolygonZonalStats } from '@/firebase/functions';
@@ -43,9 +41,6 @@ let unwatcher = watchEcosystemsChangeInArea()
 function hasUuid(area: any) {
     return !!area.uuid
 }
-// function getAreaValue(area: any) {
-//     return area[getAreaType(area)];
-// }
 
 async function getBiomeStats(area: any) {
     const areaValue = area;
@@ -203,77 +198,101 @@ function handleAfterLeave(el: any) {
 </script>
 
 <template>
-    <div class="flex flex-col pt-6 mb-6">
+    <div class="flex flex-col pt-6 mb-6 gap-4">
         <!-- class="border-2 px-3 py-2 rounded-lg border-gray-300"> -->
         <!-- <div class="flex flex-row my-3"> -->
-        <template v-if="edit">
-            <button v-if="hasUuid(area)"
+        <div class="flex flex-col md:flex-row md:items-center gap-x-4">
+            <div class="flex-1 font-bold text-lg">IUCN Global Ecosystem Typology 2.0 - Biomes</div>
+            <div
+                v-if="edit"
+                class="flex flex-row shrink mt-3 md:mt-0"
+            >
+                <button
+                    v-if="hasUuid(area)"
                     type="button"
                     :disabled="areaBiomesLoadingStatus === 'loading' || areaBiomesLoadingStatus === 'success'"
                     @click="getAreaBiomeStats"
-                    :class="[areaBiomesLoadingStatus === 'loading' ? 'bg-gray-100 text-gray-400' : 'bg-ferm-blue-dark-100 text-gray-900', 'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 mb-4 mt-2 text-sm font-semibold ring-1 ring-inset ring-gray-300', ['idle', 'error'].includes(areaBiomesLoadingStatus) ? 'hover:bg-ferm-blue-dark-200' : '']">
-                <ListBulletIcon v-if="areaBiomesLoadingStatus === 'idle'"
-                                class="-ml-0.5 h-5 w-5 text-gray-400"
-                                aria-hidden="true" />
-                <ButtonWait v-if="areaBiomesLoadingStatus === 'loading'" />
-                <ExclamationTriangleIcon v-if="areaBiomesLoadingStatus === 'error'"
-                                         class="-ml-0.5 h-5 w-5 text-red-600"
-                                         aria-hidden="true" />
-                <CheckCircleIcon v-if="areaBiomesLoadingStatus === 'success'"
-                                 class="-ml-0.5 h-5 w-5 text-green-600"
-                                 aria-hidden="true" />
-                Get biomes in this area
-            </button>
-
-            <div class="flex flex-row items-center w-full">
-                <div class="flex-grow font-bold text-lg">IUCN Global Ecosystem Typology 2.0 - Biomes</div>
-                <button v-if="index === 0 && nAreas > 1"
-                        type="button"
-                        :disabled="!area.ecosystems?.length && nAreas > 1"
-                        :class="[!area.ecosystems?.length ? 'bg-gray-100 text-gray-400' : 'bg-ferm-blue-dark-100 hover:bg-ferm-blue-dark-200 text-gray-900', 'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 ml-4']"
-                        @click="applyToAll">
+                    :class="[areaBiomesLoadingStatus === 'loading' ? 'bg-gray-100 text-gray-400' : 'bg-ferm-blue-dark-100 text-gray-900', 'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300', ['idle', 'error'].includes(areaBiomesLoadingStatus) ? 'hover:bg-ferm-blue-dark-200' : '']"
+                >
+                    <ListBulletIcon
+                        v-if="areaBiomesLoadingStatus === 'idle'"
+                        class="-ml-0.5 h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                    />
+                    <ButtonWait v-if="areaBiomesLoadingStatus === 'loading'" />
+                    <ExclamationTriangleIcon
+                        v-if="areaBiomesLoadingStatus === 'error'"
+                        class="-ml-0.5 h-5 w-5 text-red-600"
+                        aria-hidden="true"
+                    />
+                    <CheckCircleIcon
+                        v-if="areaBiomesLoadingStatus === 'success'"
+                        class="-ml-0.5 h-5 w-5 text-green-600"
+                        aria-hidden="true"
+                    />
+                    Get biomes in this area
+                </button>
+                <button
+                    v-if="index === 0 && nAreas > 1"
+                    type="button"
+                    :disabled="!area.ecosystems?.length && nAreas > 1"
+                    :class="[!area.ecosystems?.length ? 'bg-gray-100 text-gray-400' : 'bg-ferm-blue-dark-100 hover:bg-ferm-blue-dark-200 text-gray-900', 'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 ml-4']"
+                    @click="applyToAll"
+                >
                     Apply to all
                 </button>
             </div>
-        </template>
+        </div>
         <!-- </div> -->
-        <TransitionGroup v-if="area.ecosystems?.length"
-                         name="list"
-                         tag="div"
-                         class="grid grid-cols-3 gap-3 mb-4 text-xs"
-                         @before-leave="handleBeforeLeave"
-                         @leave="handleLeave"
-                         @after-leave="handleAfterLeave">
-            <div v-for="realm in groupedBiomes"
-                 :key="realm.realm"
-                 :style="`background-color: ${realms.find(r => r.value === realm.realm)?.color};border-color: ${realms.find(r => r.value === realm.realm)?.borderColor};`"
-                 class="basis-1/3 rounded-lg px-2 py-2 font-sm flex flex-col gap-y-2 border-2">
+        <TransitionGroup
+            v-if="area.ecosystems?.length"
+            name="list"
+            tag="div"
+            class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs"
+            @before-leave="handleBeforeLeave"
+            @leave="handleLeave"
+            @after-leave="handleAfterLeave"
+        >
+            <div
+                v-for="realm in groupedBiomes"
+                :key="realm.realm"
+                :style="`background-color: ${realms.find(r => r.value === realm.realm)?.color};border-color: ${realms.find(r => r.value === realm.realm)?.borderColor};`"
+                class="basis-1/3 rounded-lg px-2 py-2 font-sm flex flex-col gap-y-2 border-2"
+            >
 
                 <span class="text-xm font-medium text-white">{{ (realms.find(r => r.value === realm.realm))?.label }}</span>
                 <div class="flex flex-col gap-y-2">
-                    <div v-for="biome in (realm.biomes)"
-                         class="text-gray-800 m-0 flex rounded-md pl-2.5 pr-1 bg-white min-h-7 p-1 border border-stone-800 justify-between items-center">
+                    <div
+                        v-for="biome in (realm.biomes)"
+                        class="text-gray-800 m-0 flex rounded-md pl-2.5 pr-1 bg-white min-h-7 p-1 border border-stone-800 justify-between items-center"
+                    >
                         {{ findBiomeLabel(biome) }}
                         <div v-if="edit">
-                            <svg @click="deleteOption(area, biome)"
-                                 class="ml-0.5 w-5 h-5 text-gray-300 hover:text-gray-400 cursor-pointer"
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 viewBox="0 0 20 20"
-                                 fill="currentColor">
-                                <path fill-rule="evenodd"
-                                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-                                      clip-rule="evenodd" />
+                            <svg
+                                @click="deleteOption(area, biome)"
+                                class="ml-0.5 w-5 h-5 text-gray-300 hover:text-gray-400 cursor-pointer"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                                    clip-rule="evenodd"
+                                />
                             </svg>
                         </div>
                     </div>
                 </div>
             </div>
         </TransitionGroup>
-        <RecursiveMenu :edit="edit"
-                       v-model="area.ecosystems"
-                       :options="menus.iucnEcosystems"
-                       :expandLevel="0"
-                       :showSelection="false" />
+        <RecursiveMenu
+            :edit="edit"
+            v-model="area.ecosystems"
+            :options="menus.iucnEcosystems"
+            :expandLevel="0"
+            :showSelection="false"
+        />
     </div>
     <!-- <div v-else-if="edit"
          class="text-red-600 font-bold text-lg pb-4 mt-6">Please enter at least one area in the
