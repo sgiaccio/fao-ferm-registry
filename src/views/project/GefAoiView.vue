@@ -19,7 +19,7 @@ import FormGroup from '../../components/inputs/FormGroup.vue';
 import NumberInput from '../../components/inputs/base/NumberInput.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
-import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
+import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
 
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
@@ -270,6 +270,127 @@ provide('applyToAll', () => {
                             (sum of GEF Core Indicators 1-5).</p>
                     </template>
                 </FormGroup>
+                <FormGroup
+                    :edit="edit"
+                    label="Breakdown of commitment by core indicator [Hectares]"
+                    description="Area of land committed by core indicator"
+                >
+                    <div class="grid _grid-flow-row gap-x-6 gap-y-2 grid-cols-[min-content_minmax(0px,_200px)]">
+                        <!-- <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
+                        <label
+                            for="targetAreaCoreIndicator1"
+                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
+                        >CI 1</label>
+                        <NumberInput
+                            class="flex-1"
+                            id="targetAreaCoreIndicator1"
+                            :edit="edit"
+                            v-model="store.project.project.targetAreaCoreIndicator1"
+                            min="0"
+                        />
+                        <!-- </div>
+                        <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
+                        <label
+                            for="targetAreaCoreIndicator2"
+                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
+                        >CI 2</label>
+                        <NumberInput
+                            class="flex-1"
+                            id="targetAreaCoreIndicator2"
+                            :edit="edit"
+                            v-model="store.project.project.targetAreaCoreIndicator2"
+                            min="0"
+                        />
+                        <!-- </div>
+                        <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
+                        <label
+                            for="targetAreaCoreIndicator3"
+                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
+                        >CI 3</label>
+                        <NumberInput
+                            class="flex-1"
+                            id="targetAreaCoreIndicator3"
+                            :edit="edit"
+                            v-model="store.project.project.targetAreaCoreIndicator3"
+                            min="0"
+                        />
+                        <!-- </div>
+                        <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
+                        <label
+                            for="targetAreaCoreIndicator4"
+                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
+                        >CI 4</label>
+                        <NumberInput
+                            class="flex-1"
+                            id="targetAreaCoreIndicator4"
+                            :edit="edit"
+                            v-model="store.project.project.targetAreaCoreIndicator4"
+                            min="0"
+                        />
+                        <!-- </div> -->
+                        <!-- <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
+                        <label
+                            for="targetAreaCoreIndicator5"
+                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
+                        >CI 5</label>
+                        <NumberInput
+                            class="flex-1"
+                            id="targetAreaCoreIndicator5"
+                            :edit="edit"
+                            v-model="store.project.project.targetAreaCoreIndicator5"
+                            min="0"
+                        />
+                        <!-- </div> -->
+                        <!-- <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
+                        <label
+                            for="targetAreaCoreIndicator2LDCF"
+                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
+                        >2 (LDCF)</label>
+                        <NumberInput
+                            class="flex-1"
+                            id="targetAreaCoreIndicator2LDCF"
+                            :edit="edit"
+                            v-model="store.project.project.targetAreaCoreIndicator2LDCF"
+                            min="0"
+                        />
+                        <!-- </div> -->
+                        <!-- <div>
+                            <label class="block text-sm font-medium text-gray-700">CI 2</label>
+                            <NumberInput
+                                :edit="edit"
+                                v-model="store.project.project.targetAreaCoreIndicator2"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">CI 3</label>
+                            <NumberInput
+                                :edit="edit"
+                                v-model="store.project.project.targetAreaCoreIndicator3"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">CI 4</label>
+                            <NumberInput
+                                :edit="edit"
+                                v-model="store.project.project.targetAreaCoreIndicator4"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">CI 5</label>
+                            <NumberInput
+                                :edit="edit"
+                                v-model="store.project.project.targetAreaCoreIndicator5"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">2 (LDCF)</label>
+                            <NumberInput
+                                :edit="edit"
+                                v-model="store.project.project.targetAreaCoreIndicator2LDCF"
+                            />
+                        </div> -->
+                    </div>
+                </FormGroup>
             </div>
 
             <div class="border-2 rounded-xl my-4 px-5 bg-teal-50 shadow-md border-gray-300">
@@ -297,14 +418,25 @@ provide('applyToAll', () => {
                             management activities and baseline information of the territory, including pictures.</p>
                     </template>
                 </FileUploadFormGroup2>
-                <RecursiveRadioFormGroup
+                <FormGroup
+                    class="odd:bg-white even:bg-slate-50"
+                    label="GEF investment type"
+                    dangerousHtmlDescription="Do the areas of intervention described in the Restoration Plans/Management Plans coincide with the areas of intervention uploaded in the <span class='text-black'>Geographic Areas?</span>"
+                >
+                    <SmallCardsFormGroup
+                        v-model="store.project.project.areaAchievedMatch"
+                        :options="menus.boolean"
+                        :edit="edit"
+                    />
+                </FormGroup>
+                <!-- <RecursiveRadioFormGroup
                     :edit="edit"
                     dangerousHtmlDescription="Do the areas of intervention described in the Restoration Plans/Management Plans coincide with the areas of intervention uploaded in the <span class='text-black'>Geographic Areas?</span>"
                     :options="menus.boolean"
                     :searchable="false"
                     v-model="store.project.project.areaAchievedMatch"
                     :show-selection="false"
-                />
+                /> -->
             </div>
 
             <div class="border-2 rounded-xl my-4 px-5 pb-5 bg-red-50 shadow-md border-gray-300">
@@ -373,57 +505,57 @@ provide('applyToAll', () => {
                     >
                         <div>{{ area }}</div>
                         <XCircleIcon
-                        v-if="edit"
-                        class="self-center h-5 w-5 text-gray-400 hover:text-gray-500 cursor-pointer"
-                        aria-hidden="true"
-                        @click="() => deleteCountry(i)"
-                    />
-                </div>
-                <div>
-                    <select
-                        v-model="newCountry"
-                        v-if="edit"
-                        @change="addCountry"
-                        class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                    >
-                        <option value="">Add country</option>
-                        <option
-                            v-for="country in countries"
-                            :value="country.iso2"
+                            v-if="edit"
+                            class="self-center h-5 w-5 text-gray-400 hover:text-gray-500 cursor-pointer"
+                            aria-hidden="true"
+                            @click="() => deleteCountry(i)"
+                        />
+                    </div>
+                    <div>
+                        <select
+                            v-model="newCountry"
+                            v-if="edit"
+                            @change="addCountry"
+                            class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                         >
-                            {{ country.label }}
-                        </option>
-                    </select>
+                            <option value="">Add country</option>
+                            <option
+                                v-for="country in countries"
+                                :value="country.iso2"
+                            >
+                                {{ country.label }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <MultiInput
-                :edit="edit"
-                :numbering="(n, v) => numbering(n, v)"
-                :input-components="multiInputComponents"
-                v-model="store.projectAreas"
-                :paging-size="25"
-                delete-confirm-message="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted."
-            />
-            <!--                <button v-if="store.projectAreas.length > 0 && edit"-->
-            <!--                        @click="deleteProjectAreas()" type="button"-->
-            <!--                        class="mt-6 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">-->
-            <!--                    <TrashIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />-->
-            <!--                    Delete all areas-->
-            <!--                </button>-->
-
-            <button
-                v-if="store.projectAreas.length > 0 && edit"
-                @click="() => { showDeleteAreasConfirm = true }"
-                type="button"
-                class="mt-6 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-            >
-                <TrashIcon
-                    class="-ml-0.5 h-5 w-5"
-                    aria-hidden="true"
+                <MultiInput
+                    :edit="edit"
+                    :numbering="(n, v) => numbering(n, v)"
+                    :input-components="multiInputComponents"
+                    v-model="store.projectAreas"
+                    :paging-size="25"
+                    delete-confirm-message="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted."
                 />
-                Delete all areas
-            </button>
-        </div>
-    </template>
+                <!--                <button v-if="store.projectAreas.length > 0 && edit"-->
+                <!--                        @click="deleteProjectAreas()" type="button"-->
+                <!--                        class="mt-6 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">-->
+                <!--                    <TrashIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />-->
+                <!--                    Delete all areas-->
+                <!--                </button>-->
+
+                <button
+                    v-if="store.projectAreas.length > 0 && edit"
+                    @click="() => { showDeleteAreasConfirm = true }"
+                    type="button"
+                    class="mt-6 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                >
+                    <TrashIcon
+                        class="-ml-0.5 h-5 w-5"
+                        aria-hidden="true"
+                    />
+                    Delete all areas
+                </button>
+            </div>
+        </template>
 </TabTemplate></template>

@@ -9,7 +9,7 @@ import baseProps from '../formGroupProps';
 import FormGroup from '../FormGroup.vue';
 
 
-const progress = ref(0);
+// const progress = ref(0);
 
 const props = defineProps({
     ...baseProps,

@@ -1,135 +1,93 @@
 <script setup lang="ts">
-import * as vue from 'vue';
-import { getStorage, ref, uploadBytes, listAll, deleteObject } from 'firebase/storage';
-
-import { useProjectStore } from '../../../stores/project';
-
-import baseProps from "../formGroupProps"
-
-
-const store = useProjectStore();
-
-
-const selectedFile = vue.ref<File | null>(null);
-const uploadStatus = vue.ref<'idle' | 'uploading' | 'uploaded'>('idle');
-
+import { multiFactor } from 'firebase/auth';
+import { ref } from 'vue';
 
 const props = defineProps({
-    ...baseProps,
-    ...{
-        bucketUrl: { type: String }, // firebase sets default bucket if undefined
-        modelValue: { type: String }
+    multiple: { type: Boolean, default: true },
+    edit: { type: Boolean, default: false },
+    label: { type: String, default: '' },
+    accept: { type: String, default: '' },
+});
+
+const emit = defineEmits(['upload'])
+
+const isDragging = ref(false);
+const fileInput = ref<HTMLInputElement | null>(null);
+
+const dragEnter = (asdf) => {
+    if (!props.edit) return;
+    isDragging.value = true;
+};
+
+const dragLeave = () => {
+    if (!props.edit) return;
+    isDragging.value = false;
+};
+
+function handleDrop(event: DragEvent) {
+    if (!props.edit) return;
+
+    event.preventDefault();
+
+    isDragging.value = false;
+
+    const files = event.dataTransfer?.files;
+    if (files) {
+        if (!props.multiple && files.length > 1) {
+            alert('Only one file allowed');
+            return;
+        }
+
+        const acceptedExtensions = props.accept.split(',').map(ext => ext.trim());
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileExtension = '.' + file.name.split('.').pop();
+            if (!acceptedExtensions.includes(fileExtension)) {
+                alert('Invalid file type: ' + file.name);
+                return;
+            }
+        }
+        fileInput.value!.files = files;
+        handleFiles();
     }
-});
+};
 
-const emit = defineEmits(['update:modelValue'])
+function handleFiles() {
+    if (!props.edit) return;
 
-function setSelectedFile(event: Event) {
-    selectedFile.value = (event.target as HTMLInputElement).files![0];
+    const files = fileInput.value!.files;
+
+    if (!files) return;
+
+    emit('upload', files);
 }
 
-const storage = getStorage(undefined, props.bucketUrl);
+const openFileDialog = () => {
+    if (!props.edit) return;
 
-function uploadFile(projectId: string | null) {
-    if (projectId === null) return
-
-    if (uploadStatus.value !== 'idle') return;
-
-    const storageRef = ref(storage, `${projectId}/documents/${selectedFile.value!.name}`);
-    const uploadTask = uploadBytes(storageRef, selectedFile.value!);
-
-    uploadStatus.value = 'uploading';
-    uploadTask.then(snapshot => {
-        getFiles(projectId);
-        selectedFile.value = null;
-        uploadStatus.value = 'uploaded';
-    }).catch(error => {
-        uploadStatus.value = 'idle';
-    });
-}
-
-async function listFiles(projectId: string) {
-    const dirRef = ref(storage, `${projectId}/documents/`);
-    return listAll(dirRef);
-}
-
-const fileName = vue.ref<string | null>();
-
-async function getFiles(id: string) {
-    const fList = await listFiles(id);
-    fileName.value = fList.items && fList.items.length && fList.items[0].name || null; // only one file can be uploaded
-    emit('update:modelValue', fileName.value);
-}
-
-function deleteFile(projectId: string | null, fileName: string) {
-    if (projectId === null) return;
-
-    if (!confirm(`Are you sure you want to delete the file ${fileName}`)) return;
-    const fRef = ref(storage, `${projectId}/documents/${fileName}`);
-    deleteObject(fRef)
-    // .then(() => {
-    //     getFiles(projectId);
-    // })
-    .catch(_ => alert('Error deleting the file'))
-    .finally(() => getFiles(projectId));
-}
-
-vue.watch(() => store.id as string, async id => {
-    getFiles(id);
-});
+    fileInput.value!.click();
+};
 </script>
 
 <template>
-    <div v-if="!fileName">
-        <div>Upload one initiative document</div>
-        <label for="file" class="block text-sm font-medium text-gray-700" />
-        <div class="mt-1 flex rounded-md shadow-sm">
-            <div class="flex-grow focus-within:z-10">
-                <input
-                    v-if="edit" type="file" name="file"
-                    class="pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
-                    @change="setSelectedFile">
-                <div v-else>
-                    {{selectedFile?.name}}
-                </div>
-            </div>
-            <button
-                v-if="edit"
-                type="button"
-                class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none"
-                :class="['idle' === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
-                @click="uploadFile(store.id)">
-                <svg 
-                    v-if="uploadStatus === 'idle'" xmlns="http://www.w3.org/2000/svg"
-                    :class="[selectedFile ? 'text-red-600 animate-pulse' : 'text-gray-400', 'h-5 w-5']"
-                    viewBox="0 0 20 20" fill="currentColor"
-                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                    clip-rule="evenodd">
-                    <path
-                        fill-rule="evenodd"
-                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                        clip-rule="evenodd"></path>
-                </svg>
-                <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    class="w-5 h-5 animate-spin">
-                    <path
-                        fill-rule="evenodd"
-                        d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
-                        clip-rule="evenodd" />
-                </svg>
-            </button>
-        </div>
-        <div
-            v-if="selectedFile"
-            class="text-red-500 text-sm">Remember to click the upload button before saving.</div>
-    </div>
     <div
-        v-else-if="edit">
-        Initiative file: {{ fileName }}
-        <span @click="deleteFile(store.id, fileName!)">[delete]</span>
+        @dragover.prevent
+        @dragenter="dragEnter"
+        @dragleave="dragLeave"
+        @drop="handleDrop"
+        @click="openFileDialog"
+        class="w-full h-32 border-2 border-dashed border-gray-400 flex items-center justify-center font-bold text-center rounded-lg"
+        :class="[edit ? 'hover:bg-ferm-blue-dark-200 cursor-pointer' : '', edit && isDragging ? 'bg-ferm-blue-dark-200' : '']"
+    >
+        <slot />
+        <!-- {{ label || 'Drop file here or click to upload' }} -->
+        <input
+            ref="fileInput"
+            type="file"
+            :multiple="multiple"
+            class="hidden"
+            @change="handleFiles"
+            :accept="accept"
+        />
     </div>
 </template>

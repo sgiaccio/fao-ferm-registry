@@ -166,7 +166,7 @@ function showMore() {
             v-if="pagingSize"
             class="flex flex-row flex-1 text-right py-4 pr-3 items-center justify-end gap-x-3 bg-slate-50"
         >
-            <div>{{ nShow }} / {{ props.modelValue.length }}</div>
+            <div>{{ Math.min(nShow!, props.modelValue.length) }} of {{ props.modelValue.length }}</div>
             <button
                 v-if="hasMorePages"
                 type="button"
