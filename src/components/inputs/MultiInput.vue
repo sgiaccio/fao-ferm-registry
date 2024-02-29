@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { TrashIcon } from '@heroicons/vue/20/solid';
 
 
@@ -108,15 +108,15 @@ function showMore() {
 </script>
 
 <template>
+    <component
+        v-for="([k, d]) in dialogs"
+        class="p-3"
+        :is="d.addDialog"
+        :open="openedDialog === k"
+        @cancel="openedDialog = null"
+        @done="(newData: any) => addItemFromDialog(k, newData)"
+    />
     <div class="border-2 rounded-md divide-y-2 border-stone-300 divide-stone-300 bg-white overflow-hidden">
-        <component
-            v-for="([k, d]) in dialogs"
-            class="p-3"
-            :is="d.addDialog"
-            :open="openedDialog === k"
-            @cancel="openedDialog = null"
-            @done="(newData: any) => addItemFromDialog(k, newData)"
-        />
         <div
             v-for="(v, i) in nShow ? props.modelValue.slice(0, nShow) : props.modelValue"
             class="p-3"

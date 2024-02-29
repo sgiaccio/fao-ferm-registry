@@ -220,7 +220,7 @@ provide('applyToAll', () => {
             </FormGroup>
             <div class="py-6">
                 <div v-if="edit || store.project.project.countries?.length > 0"
-                     class="text-sm italic text-gray-700 mb-1.5">Countries are automatically set based on your uploaded polygons and selected admin areas. You can also edit them manually.</div>
+                     class="text-sm italic text-gray-700 mb-1.5">Countries are automatically selected based on your uploaded polygons and selected admin areas. You can also edit them manually.</div>
                 <div v-if="countries"
                      class="flex flex-wrap w-full gap-2 mb-4 whitespace-nowrap">
                     <div class="border rounded-md px-4 py-1 flex flex-row gap-x-1 items-center bg-white"
