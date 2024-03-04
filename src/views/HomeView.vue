@@ -89,7 +89,7 @@ onMounted(async () => {
             <div class="overflow-hidden bg-none relative">
                 <img
                     src="/seashore.jpg"
-                    class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-75"
+                    class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute"
                 >
                 <wavy-divider class="absolute -left-1 bottom-0" />
                 <div class="px-4 sm:px-12 pt-12 md:pb-4 pb-32">

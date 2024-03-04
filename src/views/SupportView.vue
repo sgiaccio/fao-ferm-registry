@@ -68,7 +68,7 @@ const onCloseError = () => {
     </AlertModal>
     <div class="relative isolate bg-gray-900">
         <img src="/seashore.jpg"
-             class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute brightness-50">
+             class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute">
         <wavy-divider class="absolute -left-1 bottom-0" />
         <div class="px-4 sm:px-12 pt-12">
             <!-- Logos -->
