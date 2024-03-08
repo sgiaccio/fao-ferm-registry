@@ -97,7 +97,12 @@ const router = createRouter({
             component: () => import('../views/LoginView.vue'),
             meta: { public: true }
         },
-
+        {
+            path: "/search",
+            name: "search",
+            component: () => import('../views/search/SearchView.vue'),
+            meta: { public: true }
+        },
         // Administration
         {
             path: "/admin",

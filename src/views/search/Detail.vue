@@ -1,0 +1,124 @@
+<script
+    setup
+    lang="ts"
+>
+
+import { LinkIcon } from '@heroicons/vue/20/solid'
+import { PhotoIcon } from '@heroicons/vue/24/outline'
+
+const props = defineProps<{
+    practice: {
+        title: string;
+        short_description: string;
+        last_updated: string;
+        organizations: string[];
+        url: string;
+        source: string;
+        preview_image: string;
+        country_iso3_codes: string[];
+        country_names: string[];
+    };
+}>();
+
+const sourceLinks = {
+    ferm: 'https://www.fao.org/ferm',
+    goprofor: 'https://www.lifegoprofor.eu',
+    panorama: 'https://panorama.solutions',
+    wocat: 'https://www.wocat.net',
+}
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+});
+</script>
+
+<template>
+    <div class="flex flex-row flex-grow gap-x-4 max-h-full  bg-gray-50">
+        <!-- hide on mobile -->
+        <img
+            v-if="practice.preview_image"
+            :src="practice.preview_image"
+            alt="thumbnail"
+            class="aspect-square overflow-hidden flex-shrink-0 object-cover h-full max-h-64 hidden sm:flex"
+        />
+        <div
+            v-else
+            class="flex justify-center h-full bg-gray-100"
+        >
+            <PhotoIcon class="h-32 w-32 text-gray-300 mt-6" />
+        </div>
+        <div class="py-4 flex flex-col justify-between w-full mr-4 ml-4 sm:ml-0">
+            <div>
+                <div class="flex flex-col gap-y-4 mb-2 ml-2 justify-between flex-shrink-0 float-right">
+                    <div class="flex flex-col gap-y-2">
+                        <div
+                            class="flex flex-row items-center gap-x-1 w-full justify-end"
+                            v-for="iso3, i in practice.country_iso3_codes"
+                        >
+                            <span class="text-xs font-semibold">{{ practice.country_names[i] }}</span>
+                            <img
+                                class="w-6 h-6"
+                                :src="`/flags-iso3/${iso3}.svg`"
+                                alt="flag"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <h3 class="text-md font-medium line-clamp-2">{{ practice.title }}</h3>
+                <p
+                    v-if="practice.short_description"
+                    class="text-sm text-gray-700 line-clamp-3 w-auto mt-2"
+                ><span class="font-semibold">Description: </span>{{ practice.short_description }}</p>
+                <p
+                    v-if="practice.last_updated"
+                    class="text-sm text-gray-700"
+                ><span class="font-semibold">Last updated: </span>{{ dateFormatter.format(new Date(practice.last_updated)) }}</p>
+                <!-- <div
+                        v-if="practice.organizations?.length > 0"
+                        class="flex flex-row gap-x-2 text-sm mt-2"
+                    > -->
+                <p
+                    v-if="practice.organizations?.length > 0"
+                    class="text-sm text-gray-700 line-clamp-3"
+                >
+                    <span class="font-semibold text-gray-700">Organization<template v-if="practice.organizations.length > 1">s</template>: </span>
+                    <!-- <div>
+                            <p v-for="(org, index) in practice.organizations">
+                                {{ org }}
+                            </p>
+                        </div> -->
+
+                    <template v-for="(org, index) in practice.organizations">
+                        {{ org }}<template v-if="index < practice.organizations.length - 1">, </template>
+                    </template>
+                </p>
+                <!-- </div> -->
+            </div>
+            <div class="flex flex-row justify-between items-end">
+                <a
+                    :href="practice.url"
+                    target="_blank"
+                    class="text-gray-700 font-semibold flex items-center gap-x-2 whitespace-nowrap text-sm"
+                >
+                    <LinkIcon class="h-5 w-5 inline" />View full practice
+                </a>
+                <a
+                    :href="sourceLinks[practice.source.toLowerCase()]"
+                    target="_blank"
+                >
+                    <img
+                        v-if="practice.source"
+                        :src="`/interop_logos/${practice.source.toLowerCase()}.svg`"
+                        alt="source"
+                        class="max-w-32 max-h-8"
+                    />
+                </a>
+            </div>
+        </div>
+    </div>
+</template>
