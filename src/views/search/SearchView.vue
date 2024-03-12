@@ -6,24 +6,28 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 
 // import WavyDivider from '@/views/WavyDivider.vue';
 
-import { Dialog, DialogPanel } from '@headlessui/vue'
+import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 
-import { Bars3Icon } from '@heroicons/vue/24/outline'
+import { MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
 
-import { ChevronRightIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
-
-import { CheckIcon } from '@heroicons/vue/16/solid'
 
 import {
-    Disclosure,
-    DisclosureButton,
-    DisclosurePanel,
+    Dialog,
+    DialogPanel,
+
     TransitionRoot,
     TransitionChild,
+
+    RadioGroup,
+    RadioGroupLabel,
+    RadioGroupOption
 } from '@headlessui/vue'
 
 import Detail from './Detail.vue'
 import CountrySelect from './CountrySelect.vue'
+import SidebarGoodPractices from './SidebarGoodPractices.vue'
+import SidebarInitiatives from './SidebarInitiatives.vue'
+
 
 onMounted(() => {
     loadMore();
@@ -36,7 +40,7 @@ onBeforeUnmount(() => {
 
 const hasMore = ref(true);
 function handleScroll() {
-    if (isLoading.value || !hasMore) return;
+    if (isLoading.value || !hasMore.value) return;
 
     const threshold = document.documentElement.scrollHeight - window.innerHeight - 100;
     if (window.scrollY >= threshold) {
@@ -45,7 +49,7 @@ function handleScroll() {
 }
 
 const searchText = ref<string>('');
-const query = [
+const queryGoodPractices = [
     {
         name: 'Degradation Drivers',
         queryName: 'drivers',
@@ -62,33 +66,40 @@ const query = [
         name: 'Source',
         queryName: 'source',
         queryValues: ['FERM', 'GoProFor', 'Panorama', 'WoCat']
-    }, {
-        name: 'Country',
-        queryName: 'country',
-        queryValues: ['Afghanistan']
     },
 ]
 
+const queryInitiatives = [
+    {
+        name: 'Ecosystem',
+        queryName: 'ecosystems',
+        queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas']
+    }, {
+        name: 'Region',
+        queryName: 'regions',
+        queryValues: ['Africa', 'Asia and the Pacific', 'Europe', 'Latin America and the Caribbean', 'North America', 'West Asia']
+    }, {
+        name: 'Source',
+        queryName: 'source',
+        queryValues: ['FERM', 'Nature commitments']
+    }, {
+        name: 'Restoration Type',
+        queryName: 'xxx',
+        queryValues: ['Ecological restoration', 'Rehabilitation']
+    }, {
+        name: 'Restoration Status',
+        queryName: 'ecosystems',
+        queryValues: ['In preparation', 'In progress', 'Post-completion monitoring']
+    },
+]
+
+const countries = ref([]);
+
 const sidebarOpen = ref(false)
 
-// const searchTerms = ref({
-//     drivers: [],
-//     ecosystems: [],
-//     regions: [],
-//     source: [],
-//     country: [],
-// });
+const searchTermsGoodPractices = ref(Object.fromEntries(queryGoodPractices.map((q) => [q.queryName, []])));
 
-const searchTerms = ref(Object.fromEntries(query.map((q) => [q.queryName, []])));
-
-function toggleSearchTerm(queryName: string, value: string) {
-    const current = searchTerms.value[queryName]
-    if (current.includes(value)) {
-        searchTerms.value[queryName] = current.filter((v) => v !== value)
-    } else {
-        searchTerms.value[queryName] = [...current, value]
-    }
-}
+const searchTermsInitiatives = ref(Object.fromEntries(queryInitiatives.map((q) => [q.queryName, []])));
 
 // debounce searchText
 const debounce = (func, wait: number) => {
@@ -109,8 +120,13 @@ watch(searchText, debounce((text) => {
 }, 1000));
 
 const debouncedSearchTerms = ref({});
-watch(searchTerms, debounce((val) => {
+watch(searchTermsGoodPractices, debounce((val) => {
     debouncedSearchTerms.value = { ...val }
+}, 1000), { deep: true });
+
+const debouncedCountries = ref([]);
+watch(countries, debounce((val) => {
+    debouncedCountries.value = [...val]
 }, 1000), { deep: true });
 
 const isLoading = ref(false);
@@ -118,7 +134,7 @@ const isLoading = ref(false);
 const searchResults = ref([]);
 const totalCount = ref(null);
 
-watch([debouncedSearchTerms, debouncedSearchText], ([newVal = {}, newSearchText = '']) => {
+watch([debouncedSearchTerms, debouncedSearchText, debouncedCountries], () => {
     isLoading.value = true;
     searchResults.value = [];
     totalCount.value = null;
@@ -131,7 +147,7 @@ function loadMore() {
     const nLoaded = searchResults.value.length;
     const queryStart = 'WITH data AS ( SELECT * FROM fao-maps-review.fao_cse.vw_cse_en ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data '
 
-    let conditions = Object.entries(searchTerms.value).map(([key, values]) => {
+    let conditions = Object.entries(searchTermsGoodPractices.value).map(([key, values]) => {
         if (values.length === 0) return ''
         if (key === 'source') {
             return `source IN UNNEST([${values.map((v) => `'${v}'`).join(', ')}])`
@@ -139,6 +155,11 @@ function loadMore() {
             return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE ${key} IN (${values.map((v) => `'${v}'`).join(', ')}))`
         }
     }).filter(Boolean)
+
+    if (countries.value.length) {
+        const countryIso3Codes = countries.value.map(c => c.ISO3)
+        conditions.push(`EXISTS (SELECT 1 FROM UNNEST(country_iso3_codes) AS country WHERE country IN (${countryIso3Codes.map((v) => `'${v}'`).join(', ')}))`)
+    }
 
     if (searchText.value) {
         // escape single quotes and backslashes in the search text
@@ -155,6 +176,8 @@ function loadMore() {
             searchResults.value = [...searchResults.value, ...data];
             totalCount.value = data[0]?.total_count;
             isLoading.value = false;
+
+            hasMore.value = searchResults.value.length < totalCount.value;
         })
         .catch(error => {
             console.error(error);
@@ -176,6 +199,8 @@ const isOpen = ref(false);
 function setIsOpen(value: boolean) {
     isOpen.value = value;
 }
+
+const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
 </script>
 
 <template>
@@ -268,17 +293,154 @@ function setIsOpen(value: boolean) {
             </div>
         </div>
     </header>
-    <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-
-
+    <div class="mx-auto max-w-7xl sm:px-6_ lg:px-8">
         <div class="flex flex-row">
+            <TransitionRoot
+                as="template"
+                :show="sidebarOpen"
+            >
+                <Dialog
+                    as="div"
+                    class="relative z-50 lg:hidden"
+                    @close="sidebarOpen = false"
+                >
+                    <TransitionChild
+                        as="template"
+                        enter="transition-opacity ease-linear duration-300"
+                        enter-from="opacity-0"
+                        enter-to="opacity-100"
+                        leave="transition-opacity ease-linear duration-300"
+                        leave-from="opacity-100"
+                        leave-to="opacity-0"
+                    >
+                        <div class="fixed inset-0 bg-gray-900/80" />
+                    </TransitionChild>
+
+                    <div class="fixed inset-0 flex">
+                        <TransitionChild
+                            as="template"
+                            enter="transition ease-in-out duration-300 transform"
+                            enter-from="-translate-x-full"
+                            enter-to="translate-x-0"
+                            leave="transition ease-in-out duration-300 transform"
+                            leave-from="translate-x-0"
+                            leave-to="-translate-x-full"
+                        >
+                            <DialogPanel class="relative mr-16 flex w-full max-w-xs flex-1">
+                                <TransitionChild
+                                    as="template"
+                                    enter="ease-in-out duration-300"
+                                    enter-from="opacity-0"
+                                    enter-to="opacity-100"
+                                    leave="ease-in-out duration-300"
+                                    leave-from="opacity-100"
+                                    leave-to="opacity-0"
+                                >
+                                    <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+                                        <button
+                                            type="button"
+                                            class="-m-2.5 p-2.5"
+                                            @click="sidebarOpen = false"
+                                        >
+                                            <span class="sr-only">Close sidebar</span>
+                                            <XMarkIcon
+                                                class="h-6 w-6 text-white"
+                                                aria-hidden="true"
+                                            />
+                                        </button>
+                                    </div>
+                                </TransitionChild>
+                                <!-- Sidebar component, swap this element with another sidebar if you like -->
+                                <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+                                    <SidebarGoodPractices
+                                        v-if="whatToSearch === 'goodPractices'"
+                                        :query="queryGoodPractices"
+                                        v-model:searchTerms="searchTermsGoodPractices"
+                                        v-model:countries="countries"
+                                    />
+                                    <SidebarInitiatives
+                                        v-else
+                                        :query="queryInitiatives"
+                                        v-model:searchTerms="searchTermsGoodPractices"
+                                        v-model:countries="countries"
+                                    />
+                                    <!-- <nav class="flex flex-1 flex-col pt-6">
+                                        <ul
+                                            role="list"
+                                            class="flex flex-1 flex-col gap-y-5"
+                                        >
+                                            <Disclosure
+                                                v-for="item in query"
+                                                class="border-b-2 border-b-gray-100"
+                                                as="li"
+                                                v-slot="{ open }"
+                                                :defaultOpen="true"
+                                            >
+                                                <DisclosureButton class="flex flex-row w-full font-bold uppercase text-gray-600 cursor-pointer items-center">
+                                                    <ChevronRightIcon
+                                                        v-if="!open"
+                                                        class="h-5 w-5 text-gray-800"
+                                                    />
+                                                    <ChevronDownIcon
+                                                        v-else
+                                                        class="h-5 w-5 text-gray-800"
+                                                    />
+                                                    <span>{{ item.name }}</span>
+                                                </DisclosureButton>
+                                                <DisclosurePanel
+                                                    as="ul"
+                                                    role="list"
+                                                    class="mx-2 mt-1 mb-2 space-y-1"
+                                                >
+                                                    <li
+                                                        v-for="value in item.queryValues"
+                                                        :key="value"
+                                                        :class="[searchTerms[item.queryName].includes(value) ? 'bg-blue-100' : '', 'flex flex-row justify-between text-sm cursor-pointer hover:bg-blue-100 rounded-full py-1 pl-3 items-center']"
+                                                        @click="() => toggleSearchTerm(item.queryName, value)"
+                                                    >
+                                                        <div class="flex flex-row items-center justify-between w-full">
+                                                            <span class="text-gray-700">{{ value }}</span>
+                                                            <CheckIcon
+                                                                :class="[searchTerms[item.queryName].includes(value) ? 'visible' : 'invisible', 'h-4 w-4 text-gray-800 mr-2 flex-shrink-0']"
+                                                                aria-hidden="true"
+                                                            />
+                                                        </div>
+                                                    </li>
+                                                </DisclosurePanel>
+                                            </Disclosure>
+                                            <div class="pl-5">
+                                                <CountrySelect v-model="countries" />
+                                            </div>
+                                        </ul>
+                                    </nav> -->
+
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </Dialog>
+            </TransitionRoot>
 
 
-
-            <!-- Sidebar component, swap this element with another sidebar if you like -->
             <div class="hidden lg:inset-y-0 lg:z-40 lg:flex lg:w-80 lg:flex-col flex-shrink-0 flex-col gap-y-5 overflow-y-auto border-r-2 border-gray-50 bg-white px-6 pb-4">
-
+                <SidebarGoodPractices
+                    v-if="whatToSearch === 'goodPractices'"
+                    :query="queryGoodPractices"
+                    v-model:searchTerms="searchTermsGoodPractices"
+                    v-model:countries="countries"
+                />
+                <SidebarInitiatives
+                    v-else
+                    :query="queryInitiatives"
+                    v-model:searchTerms="searchTermsInitiatives"
+                    v-model:countries="countries"
+                />
+            </div>
+            <!-- Sidebar component, swap this element with another sidebar if you like -->
+            <!-- <div class="hidden lg:inset-y-0 lg:z-40 lg:flex lg:w-80 lg:flex-col flex-shrink-0 flex-col gap-y-5 overflow-y-auto border-r-2 border-gray-50 bg-white px-6 pb-4">
                 <nav class="flex flex-1 flex-col pt-6">
+
+
                     <ul
                         role="list"
                         class="flex flex-1 flex-col gap-y-5"
@@ -301,15 +463,6 @@ function setIsOpen(value: boolean) {
                                 />
                                 <span>{{ item.name }}</span>
                             </DisclosureButton>
-                            <!-- Use the built-in `transition` component to add transitions. -->
-                            <!-- <transition
-                                enter-active-class="transition duration-100 ease-out"
-                                enter-from-class="transform scale-95 opacity-0"
-                                enter-to-class="transform scale-100 opacity-100"
-                                leave-active-class="transition duration-75 ease-out"
-                                leave-from-class="transform scale-100 opacity-100"
-                                leave-to-class="transform scale-95 opacity-0"
-                            > -->
                             <DisclosurePanel
                                 as="ul"
                                 role="list"
@@ -323,7 +476,6 @@ function setIsOpen(value: boolean) {
                                 >
                                     <div class="flex flex-row items-center justify-between w-full">
                                         <span class="text-gray-700">{{ value }}</span>
-                                        <!-- <span v-if="searchTerms[item.queryName].includes(value)" class="text-gray-700 pr-3"></span> -->
                                         <CheckIcon
                                             :class="[searchTerms[item.queryName].includes(value) ? 'visible' : 'invisible', 'h-4 w-4 text-gray-800 mr-2 flex-shrink-0']"
                                             aria-hidden="true"
@@ -331,76 +483,13 @@ function setIsOpen(value: boolean) {
                                     </div>
                                 </li>
                             </DisclosurePanel>
-                            <!-- </transition> -->
                         </Disclosure>
-
-                        <CountrySelect v-model:query="searchTerms.country" />
+                        <div class="pl-5">
+                            <CountrySelect v-model="countries" />
+                        </div>
                     </ul>
-                    <!-- <ul
-                        role="list"
-                        class="flex flex-1 flex-col gap-y-7"
-                    >
-                        <li>
-                            <ul
-                                role="list"
-                                class="-mx-2 space-y-1"
-                            >
-                                <li
-                                    v-for="item in query"
-                                    :key="item.name"
-                                    class="flex flex-col"
-                                >
-                                    <div
-                                        :class="['text-gray-700 hover:text-indigo-600 hover:bg-gray-50', 'group justify-between flex gap-x-3 rounded-md p-2 text-sm font-semibold border-b uppercase cursor-pointer']"
-                                        @click="toggleSearchSection(item.queryName)"
-                                    >
-                                        <component
-                                            :is="item.icon"
-                                            :class="['text-gray-400 group-hover:text-indigo-600', 'h-6 w-6 shrink-0']"
-                                            aria-hidden="true"
-                                        />
-                                        {{ item.name }}
-                                        <ChevronDownIcon
-                                            v-if="openedSearches.has(item.queryName)"
-                                            class="h-5 w-5 text-gray-400"
-                                            aria-hidden="true"
-                                        />
-                                        <ChevronRightIcon
-                                            v-else
-                                            class="h-5 w-5 text-gray-400"
-                                            aria-hidden="true"
-                                        />
-                                    </div>
-                                    <div
-                                        v-show="openedSearches.has(item.queryName)"
-                                        class="flex flex-col gap-y-2"
-                                    >
-                                        <div
-                                            v-for="value in item.queryValues"
-                                            :key="value"
-                                            class="flex flex-row justify-between items-end text-sm"
-                                        >
-                                            <span class="text-gray-700">{{ value }}</span>
-                                        </div>
-                                    </div>
-                                    <div
-                                        v-show="openedSearches.has(item.queryName)"
-                                        class="flex flex-col gap-y-2"
-                                    >
-                                        <div
-                                            v-for="value in item.queryValues"
-                                            :key="value"
-                                            class="flex flex-row justify-between items-end text-sm"
-                                        >
-                                            <span class="text-gray-700">{{ value }}</span>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul> -->
                 </nav>
-            </div>
+            </div> -->
 
             <div
                 class="w-full"
@@ -427,11 +516,7 @@ function setIsOpen(value: boolean) {
                         />
 
                         <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-                            <form
-                                class="relative flex flex-1"
-                                action="#"
-                                method="GET"
-                            >
+                            <div class="relative flex flex-1">
                                 <label
                                     for="search-field"
                                     class="sr-only"
@@ -444,11 +529,39 @@ function setIsOpen(value: boolean) {
                                     v-model="searchText"
                                     id="search-field"
                                     class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-base bfont-semibold bg-transparent"
-                                    placeholder="Search good practices..."
+                                    placeholder="Search..."
                                     type="search"
                                     name="search"
                                 />
-                            </form>
+                            </div>
+                            <div>
+                                <RadioGroup
+                                    v-model="whatToSearch"
+                                    class="mt-2"
+                                >
+                                    <RadioGroupLabel class="sr-only">Choose a memory option</RadioGroupLabel>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <RadioGroupOption
+                                            as="template"
+                                            value="initiatives"
+                                            v-slot="{ active, checked }"
+                                        >
+                                            <div :class="['cursor-pointer focus:outline-none', active ? 'ring-2 ring-indigo-600 ring-offset-2' : '', whatToSearch === 'initiatives' ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50', 'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold sm:flex-1']">
+                                                <RadioGroupLabel as="span">Initiatives</RadioGroupLabel>
+                                            </div>
+                                        </RadioGroupOption>
+                                        <RadioGroupOption
+                                            as="template"
+                                            value="goodPractices"
+                                            v-slot="{ active, checked }"
+                                        >
+                                            <div :class="['cursor-pointer focus:outline-none', active ? 'ring-2 ring-indigo-600 ring-offset-2' : '', whatToSearch === 'goodPractices' ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50', 'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold sm:flex-1']">
+                                                <RadioGroupLabel as="span">Good practices</RadioGroupLabel>
+                                            </div>
+                                        </RadioGroupOption>
+                                    </div>
+                                </RadioGroup>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -473,8 +586,8 @@ function setIsOpen(value: boolean) {
                             @click="() => showDetail(result)"
                             :style="`background-image: url(${result.preview_image || '/placeholder.png'});background-size: cover; background-position: center;`"
                         >
-                            <div class="h-20 bg-black/60 text-white px-3 p-3 w-full self-end">
-                                <h3 class="text-sm font-medium line-clamp-3">{{ result.title }}</h3>
+                            <div class="h-20 bg-black/50 text-white px-3 p-3 w-full self-end">
+                                <h3 class="text-sm font-medium line-clamp-3 shadow-black text-shadow-sm">{{ result.title }}</h3>
                             </div>
                         </div>
                     </div>
