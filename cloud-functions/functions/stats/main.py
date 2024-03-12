@@ -98,7 +98,14 @@ data_sources = {
         "end_date": "2014-12-31",
         "band": "tree_canopy_cover",
         "categorical": False
-    }
+    },
+    "iucn_richness": {
+        "asset_id": "projects/ee-marortpab/assets/FAO/FERM/ecosystems/iucn_richness_coll",
+        "ini_date": "2021-01-01",
+        "end_date": "2022-12-31",
+        "band": "b1",
+        "categorical": False,
+    },
 }
 
 

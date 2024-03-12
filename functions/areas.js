@@ -119,7 +119,7 @@ async function fetchData(earthMapApiKey, polygon, stats, options) {
     console.log("Payload:", payload);
 
     try {
-        const response = await axios.post("https://dev.earthmap.org/api/statistics", payload, {
+        const response = await axios.post("https://earthmap.org/api/statistics", payload, {
             headers: {
                 "Accept": "application/json",
                 "Authorization": `Bearer ${earthMapApiKey}`,

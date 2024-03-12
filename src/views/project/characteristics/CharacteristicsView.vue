@@ -11,6 +11,8 @@ import TabTemplate from "../../TabTemplate.vue";
 import MeanMinMax from './MeanMinMax.vue';
 import LandCover from './LandCover.vue';
 import LandProductivityDynamics from './LandProductivityDynamics.vue';
+import BarChart from './BarChart.vue';
+import LineChart from './LineChart.vue';
 
 import { getPolygonZonalStats } from '@/firebase/functions';
 
@@ -110,9 +112,57 @@ const statistics: Statistics[] = [
             lastYear: 2020,
         },
         dbId: 'cciBiomass',
-        label: 'CCI Biomass',
-        transformFn: (val: any) => val,
-        template: LandProductivityDynamics,
+        label: 'Above Ground Biomass [MT/ha]',
+        transformFn: (val: any) => val.statisticResults.data.map((v: any) => {
+            return {
+                year: v.year,
+                value: Math.trunc(v.total)
+            }
+        }).sort((a: any, b: any) => a.year - b.year),
+        template: (props) => {
+            console.log(props.value.map((area: any) => ({
+                label: area.year,
+                value: area.value
+            })));
+            return h(BarChart, {
+                values: props.value.map((area: any) => ({
+                    label: area.year,
+                    value: area.value
+                })),
+                legend: 'AGB [MT/ha]'
+            })
+        },
+        // template_: h('CciChart', {
+        //     values: (area: any) => ({
+        //         label: area.year,
+        //         value: area.value
+        //     }),
+        //     legend: 'Above Ground Biomass [MT/ha]'
+        // }),
+        infoTemplate: () => {
+            return h('div', {
+                class: 'class="font-light mt-4 text-sm"',
+                innerHTML: `<p class="4">
+                    <span class="font-bold">Above Ground Biomass:</span> The change in above-ground biomass is essential to quantify the carbon sequestration potential of ecosystems in restoration. It allows the comparability between similar restoration techniques and approaches and evaluates their effectiveness. It is also a proxy of ecosystem health and helps monitor productivity. Estimates of forest above-ground biomass for the years 2010, 2017, 2018, 2019, and 2020.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Minimum, mean and maximum AGB per pixel
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> MT/ha
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 98 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Santoro, M.; Cartus, O. (2023): ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass for the years 2010, 2017, 2018, 2019 and 2020, v4. NERC EDS Centre for Environmental Data Analysis, 21 April 2023. doi:10.5285/af60720c1e404a9e9d2c145d2b2ead4e.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://dx.doi.org/10.5285/af60720c1e404a9e9d2c145d2b2ead4">https://dx.doi.org/10.5285/af60720c1e404a9e9d2c145d2b2ead4</a>
+                </p>` });
+        }
     },
     {
         type: 'em',
@@ -227,100 +277,170 @@ const statistics: Statistics[] = [
                 </p>` });
         }
     }, {
-        requestId: 'temperature',
-        dbId: 'temperature',
-        label: 'Temperature [℃]',
-        transformFn: result => {
-            const k = calculateAverages(result, false);
-            return {
-                mean: Math.trunc(+k.mean - 273.15),
-                min: Math.trunc(+k.min - 273.15),
-                max: Math.trunc(+k.max - 273.15),
-            }
+        type: 'em',
+        requestId: 'meanTempECMWFLand',
+        requestOptions: {
+            firstYear: 2013,
+            lastYear: 2023,
+            timePeriod: 'monthlyAverages',
         },
-        template: MeanMinMax,
+        dbId: 'temperatureMonthlyAvg',
+        label: 'Temperature Monthly Average [°C]',
+        transformFn: result => {
+            // the first row is the header
+            const data = result.statisticResults.data.slice(1);
+            return data.map(([month, temp]: [string, number]) => {
+                return {
+                    month: month,
+                    value: temp
+                }
+            });
+        },
+        template: (props) => {
+            return h(LineChart, {
+                values: props.value.map((area: any) => ({
+                    label: area.month,
+                    value: area.value
+                })),
+                legend: 'Temperature',
+                unit: '°C'
+            })
+        },
         infoTemplate: () => {
             return h('div', {
                 class: 'class="font-light mt-4 text-sm"',
                 innerHTML: `<p class="4">
                     <span class="font-bold">Temperature:</span>
-                    Temperature influences the distribution and range of species, growing season and phenology, resilience to climate change, soil health and nutrient cycling and has a direct impact in water availability and evapotranspiration. Estimates of temperature are computed from 2015 to 2019.
+                    Temperature influences the distribution and range of species, growing season and phenology, resilience to climate change, soil health and nutrient cycling and has a direct impact in water availability and evapotranspiration. Estimates of temperature are computed from 2013 to 2023.
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Values:</span> Minimum, maximum and mean monthly temperature of 5 years within the area under restoration
+                    <span class="font-medium">Values:</span> Mean monthly temperature for the period 2013 to 2023.
                 </p>
                 <p class="mt-1">
                     <span class="font-medium">Units:</span> degree Celsius (°C)
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Spatial resolution:</span> 27830 meters
+                    <span class="font-medium">Spatial resolution:</span> 11132 meters
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">References:</span> Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS), (date of access), <a class="text-blue-600 underline hover:text-blue-500"
-                       target="_blank"
-                       href="https://cds.climate.copernicus.eu/cdsapp#!/home">https://cds.climate.copernicus.eu/cdsapp#!/home</a>
+                    <span class="font-medium">References:</span> oz Sabater, J., (2019): ERA5-Land monthly averaged data from 1981 to present. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). (<date of access>), doi:10.24381/cds.68d2bb30.
                 </p>
                 <p class="mt-1">
                     <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
                        target="_blank"
-                       href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
+                       href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR#citation">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR#citation</a>
                 </p>` });
         }
-    }];
+    }, {
+        type: 'em',
+        requestId: 'precipitationECMWFLand',
+        requestOptions: {
+            firstYear: 2013,
+            lastYear: 2023,
+            timePeriod: 'monthlyAverages',
+        },
+        dbId: 'precipitationMonthlyAvg',
+        label: 'Precipitation Monthly Average [mm]',
+        transformFn: result => {
+            // the first row is the header
+            const data = result.statisticResults.data.slice(1);
+            return data.map(([month, temp]: [string, number]) => {
+                return {
+                    month: month,
+                    value: temp
+                }
+            });
+        },
+        template: (props) => {
+            return h(LineChart, {
+                values: props.value.map((area: any) => ({
+                    label: area.month,
+                    value: area.value
+                })),
+                legend: 'Precipitation',
+                nDecimals: 0,
+                unit: 'mm'
+            })
+        },
+        infoTemplate: () => {
+            return h('div', {
+                class: 'class="font-light mt-4 text-sm"',
+                innerHTML: `<p class="4">
+                    <span class="font-bold">Precipitation:</span>
+                    Precipitation influences water availability, hydrological processes, soi erosion, nutrient cycling and species community composition. Estimates of precipitation are computed from 2013 to 2023.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Mean monthly precipitation sum for the period 2013 to 2023.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> mm
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 11132 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Muñoz Sabater, J., (2019): ERA5-Land monthly averaged data from 1981 to present. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). (<date of access>), doi:10.24381/cds.68d2bb30.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR#citation">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR#citation</a>
+                </p>` });
+        }
+    }, {
+        type: 'gee',
+        requestId: 'iucn_richness',
+        dbId: 'iucnRichness',
+        label: 'IUCN Richness',
+        transformFn: (val: any) => {
+            console.log(val);
+            return [{
+                year: 2021,
+                value: val[0].mean
+            }, {
+                year: 2022,
+                value: val[1].mean
+            }];
+        },
+        template: (props) => {
+            return h(BarChart, {
+                values: props.value.map((area: any) => ({
+                    label: area.year,
+                    value: area.value
+                })),
+                legend: 'Number of species',
+            })
+        },
+        infoTemplate: () => {
+            return h('div', {
+                class: 'class="font-light mt-4 text-sm"',
+                innerHTML: `<p class="4">
+                    <span class="font-bold">Species Richness:</span>
+                    Is a fundamental component to measure biodiversity, which is an essential component to achieve target 2. Biodiversity is key for ecosystem functioning, resilience to environmental change and genetic diversity. Estimates of species richness are for the year 2021 and 2022.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Count of the number of terrestrial species potentially occurring in each grid cell in 2021 and 2022.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> Number of species/pixel
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 30000 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://www.iucnredlist.org/resources/other-spatial-downloads#SR_2022 ">https://www.iucnredlist.org/resources/other-spatial-downloads#SR_2022</a>
+                </p>` });
+        }
+    }
+];
 
 const t = statistics.reduce((prev, curr) => ({ ...prev, [curr.dbId]: 'idle' }), {})
 const areaStatStatus = ref<{ [key: string]: 'idle' | 'loading' | 'error' }[]>(new Array(store.projectAreas.length).fill(null).map(() => ({ ...t })));
 
 const nDots = ref(0);
 const nLoading = ref(0)
-
-function fetchIndicators_(area: any) {
-
-    const areaIdx = store.projectAreas.indexOf(area);
-
-    if (Object.values(areaStatStatus.value[areaIdx]).includes('loading')) {
-        return;
-    }
-
-    let intervalId: number;
-
-    statistics.forEach(async stats => {
-        if (nLoading.value === 0) {
-            intervalId = window.setInterval(() => nDots.value = (nDots.value + 1) % 4, 600);
-        }
-        nLoading.value += 1;
-
-        areaStatStatus.value[areaIdx][stats.dbId] = 'loading';
-        const areaValues = area[Object.keys(area)[0]];
-        areaValues.characteristics = {};
-
-        try {
-            const result = await fetchPolygonIndicator(areaValues.uuid, stats.requestId);
-            areaValues.characteristics[stats.dbId] = stats.transformFn(result);
-            areaStatStatus.value[areaIdx][stats.dbId] = 'idle';
-        } catch (e) {
-            console.error(e);
-            areaStatStatus.value[areaIdx][stats.dbId] = 'error';
-        } finally {
-            nLoading.value -= 1;
-            if (nLoading.value === 0) {
-                clearInterval(intervalId);
-                nDots.value = 1;
-            }
-        }
-    });
-}
-
-
-// onMounted(() => {
-//     getPolygonZonalStats(store.id!, store.projectAreas.map(area => area[Object.keys(area)[0]].uuid))
-//         .then(result => {
-//             result.forEach((area, i) => {
-//                 areaStatStatus.value[i] = { ...areaStatStatus.value[i], ...area };
-//             })
-//         })
-//         .catch(e => console.error(e));
-// });
 
 function fetchIndicators(area: any) {
     const areaIdx = store.projectAreas.indexOf(area);
@@ -547,4 +667,4 @@ function fetchIndicators(area: any) {
                 >Area tab</router-link></div>
         </template>
     </TabTemplate>
-</template>
+</template>./BatChart.vue
