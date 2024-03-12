@@ -104,15 +104,22 @@ async function fetchPolygonsFromDatabase(client, uuids) {
  * @param {string} stats The statistics to fetch.
  * @returns {Promise<any>}
  */
-async function fetchData(earthMapApiKey, polygon, stats) {
+async function fetchData(earthMapApiKey, polygon, stats, options) {
+    const payload = {
+        id: stats,
+        feature: {
+            type: "Feature",
+            geometry: polygon
+        }
+    };
+    if (options) {
+        payload.options = options;
+    }
+
+    console.log("Payload:", payload);
+
     try {
-        const response = await axios.post("https://dev.earthmap.org/api/statistics", {
-            id: stats,
-            feature: {
-                type: "Feature",
-                geometry: polygon
-            }
-        }, {
+        const response = await axios.post("https://dev.earthmap.org/api/statistics", payload, {
             headers: {
                 "Accept": "application/json",
                 "Authorization": `Bearer ${earthMapApiKey}`,
@@ -130,7 +137,7 @@ async function fetchData(earthMapApiKey, polygon, stats) {
 exports.getPolygonZonalStats = functions
     // .runWith({ secrets: [dbUser, dbHost, dbDatabase, dbPassword, earthMapApiKey] })
     .https
-    .onCall(async ({ polygonId, stats }, context) => {
+    .onCall(async ({ polygonId, stats, options }, context) => {
         // Check if the user is logged in
         if (!context.auth) {
             throw new functions.https.HttpsError("unauthenticated", "User must be authenticated to fetch polygon data.");
@@ -153,7 +160,7 @@ exports.getPolygonZonalStats = functions
 
             // Fetch the data from the EarthMap API.
             functions.logger.log("Fetching data from EarthMap API...");
-            const result = await fetchData(earthMapApiKey.value(), polygon, stats);
+            const result = await fetchData(earthMapApiKey.value(), polygon, stats, options);
             if (!result) {
                 throw new functions.https.HttpsError("unknown", "No data returned from external API.");
             }

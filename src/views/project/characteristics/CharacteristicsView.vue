@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+    setup
+    lang="ts"
+>
 import { ref, h } from 'vue';
 
 import { useProjectStore } from '../../../stores/project';
@@ -45,8 +48,8 @@ async function fetchPolygonIndicator(areaUuid: string, statistics: string) {
         });
 }
 
-async function fetchPolygonIndicatorFromEarthMap(areaUuid: string, statistics: string) {
-    const results: any = await getPolygonZonalStats(areaUuid, statistics);
+async function fetchPolygonIndicatorFromEarthMap(areaUuid: string, statistics: string, options: any) {
+    const results: any = await getPolygonZonalStats(areaUuid, statistics, options);
     return results;
 
     // const ecosystems = results.statisticResults.years.filter((y: any) => y.data.length)
@@ -77,11 +80,12 @@ async function fetchPolygonIndicatorFromEarthMap(areaUuid: string, statistics: s
 interface Statistics {
     type?: 'gee' | 'em', // Google Earth Engine or Earth Map
     requestId: string,
+    requestOptions?: any,
     dbId: string,
     label: string,
     transformFn: any, // TODO: function
     template: any, // TODO vue template
-    infoTemplate?: any
+    infoTemplate?: any,
 }
 
 function calculateAverages(values: any[], trunc = true): { mean: number, min: number, max: number } {
@@ -97,31 +101,44 @@ function calculateAverages(values: any[], trunc = true): { mean: number, min: nu
     }
 }
 
-const statistics: Statistics[] = [{
-    type: 'em',
-    requestId: 'landProductivity',
-    dbId: 'landProductivityDynamics',
-    label: 'Land Productivity Dynamics [ha]',
-
-    transformFn: (val: any) => {
-        const data2016 = val.statisticResults.years.find((y: any) => y.year === 2016).data;
-        // camelize the keys
-        const camelized = data2016.map((d: any) => ({
-            areaHa: Math.trunc(d.area_ha),
-            areaPercentage: d.area_percentage,
-            areaSqm: Math.trunc(d.area_sqm),
-            className: d.class_name,
-            classNumber: d.class_number,
-            classPalette: d.class_palette,
-            index: d.index
-        }));
-        return camelized;
+const statistics: Statistics[] = [
+    {
+        type: 'em',
+        requestId: 'CCIBiomass',
+        requestOptions: {
+            firstYear: 2010,
+            lastYear: 2020,
+        },
+        dbId: 'cciBiomass',
+        label: 'CCI Biomass',
+        transformFn: (val: any) => val,
+        template: LandProductivityDynamics,
     },
-    template: LandProductivityDynamics,
-    infoTemplate: () => {
-        return h('div', {
-            class: 'class="font-light mt-4 text-sm"',
-            innerHTML: `<p class="4">
+    {
+        type: 'em',
+        requestId: 'landProductivity',
+        dbId: 'landProductivityDynamics',
+        label: 'Land Productivity Dynamics [ha]',
+
+        transformFn: (val: any) => {
+            const data2016 = val.statisticResults.years.find((y: any) => y.year === 2016).data;
+            // camelize the keys
+            const camelized = data2016.map((d: any) => ({
+                areaHa: Math.trunc(d.area_ha),
+                areaPercentage: d.area_percentage,
+                areaSqm: Math.trunc(d.area_sqm),
+                className: d.class_name,
+                classNumber: d.class_number,
+                classPalette: d.class_palette,
+                index: d.index
+            }));
+            return camelized;
+        },
+        template: LandProductivityDynamics,
+        infoTemplate: () => {
+            return h('div', {
+                class: 'class="font-light mt-4 text-sm"',
+                innerHTML: `<p class="4">
                     <span class="font-bold">Land Productivity Dynamics:</span> The dynamics in the land productivity indicator are related to changes in the health and productive capacity of the land and reflects the net effects of changes in ecosystem functioning due to changes in plant phenology and biomass growth, where declining trends are often (but not always) a defining characteristic of land degradation. Understanding changes in the productive capacity of the land is critical for assessing the impact of land management interventions, its long-term sustainability, and the climate-derived impacts which could affect ecosystem resilience and human livelihoods. The categories correspond to the trends observed during the period 2001-2016.
                 </p>
                 <p class="mt-1">
@@ -141,20 +158,20 @@ const statistics: Statistics[] = [{
                        target="_blank"
                        href="https://earthmap.org/documents/LPD_Global.pdf">https://earthmap.org/documents/LPD_Global.pdf</a>
                 </p>` });
-    }
-}, {
-    requestId: 'land_cover',
-    dbId: 'landCover',
-    label: 'Land cover [ha]',
-    transformFn: (val: any) => Object.entries(val[0])
-        .map(([k, v]) => [+k, +v])
-        .filter(entry => !isNaN(+entry[0]))
-        .map(entry => ({ id: entry[0], value: Math.trunc(+entry[1]) })),
-    template: LandCover,
-    infoTemplate: () => {
-        return h('div', {
-            class: 'class="font-light mt-4 text-sm"',
-            innerHTML: `<p class="4">
+        }
+    }, {
+        requestId: 'land_cover',
+        dbId: 'landCover',
+        label: 'Land cover [ha]',
+        transformFn: (val: any) => Object.entries(val[0])
+            .map(([k, v]) => [+k, +v])
+            .filter(entry => !isNaN(+entry[0]))
+            .map(entry => ({ id: entry[0], value: Math.trunc(+entry[1]) })),
+        template: LandCover,
+        infoTemplate: () => {
+            return h('div', {
+                class: 'class="font-light mt-4 text-sm"',
+                innerHTML: `<p class="4">
                     <span class="font-bold">Land cover:</span>
                     The type of land cover directly influences the composition of ecosystems and biodiversity, and also provide different ecosystem services, such as water regulation, carbon sequestration, or erosion control. This layer is the Dynamic Land Cover map (CGLS-LC100) for the year 2019.
                 </p>
@@ -175,17 +192,17 @@ const statistics: Statistics[] = [{
                     target="_blank"
                     href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global">https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_Landcover_100m_Proba-V-C3_Global</a>
                 </p>` });
-    }
-}, {
-    requestId: 'elevation',
-    dbId: 'elevation',
-    label: 'Elevation [m]',
-    transformFn: calculateAverages,
-    template: MeanMinMax,
-    infoTemplate: () => {
-        return h('div', {
-            class: 'class="font-light mt-4 text-sm"',
-            innerHTML: `<p class="4">
+        }
+    }, {
+        requestId: 'elevation',
+        dbId: 'elevation',
+        label: 'Elevation [m]',
+        transformFn: calculateAverages,
+        template: MeanMinMax,
+        infoTemplate: () => {
+            return h('div', {
+                class: 'class="font-light mt-4 text-sm"',
+                innerHTML: `<p class="4">
                     <span class="font-bold">Elevation:</span>
                     Elevation has an impact on various environmental factors such as microclimatic conditions, water flow and hydrology, species distribution, soil composition and ecosystem dynamics. This Digital Elevation Model (DEM) provides elevation values for the year 2000.
                 </p>
@@ -208,24 +225,24 @@ const statistics: Statistics[] = [{
                        target="_blank"
                        href="https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4">https://developers.google.com/earth-engine/datasets/catalog/CGIAR_SRTM90_V4</a>
                 </p>` });
-    }
-}, {
-    requestId: 'temperature',
-    dbId: 'temperature',
-    label: 'Temperature [℃]',
-    transformFn: result => {
-        const k = calculateAverages(result, false);
-        return {
-            mean: Math.trunc(+k.mean - 273.15),
-            min: Math.trunc(+k.min - 273.15),
-            max: Math.trunc(+k.max - 273.15),
         }
-    },
-    template: MeanMinMax,
-    infoTemplate: () => {
-        return h('div', {
-            class: 'class="font-light mt-4 text-sm"',
-            innerHTML: `<p class="4">
+    }, {
+        requestId: 'temperature',
+        dbId: 'temperature',
+        label: 'Temperature [℃]',
+        transformFn: result => {
+            const k = calculateAverages(result, false);
+            return {
+                mean: Math.trunc(+k.mean - 273.15),
+                min: Math.trunc(+k.min - 273.15),
+                max: Math.trunc(+k.max - 273.15),
+            }
+        },
+        template: MeanMinMax,
+        infoTemplate: () => {
+            return h('div', {
+                class: 'class="font-light mt-4 text-sm"',
+                innerHTML: `<p class="4">
                     <span class="font-bold">Temperature:</span>
                     Temperature influences the distribution and range of species, growing season and phenology, resilience to climate change, soil health and nutrient cycling and has a direct impact in water availability and evapotranspiration. Estimates of temperature are computed from 2015 to 2019.
                 </p>
@@ -248,8 +265,8 @@ const statistics: Statistics[] = [{
                        target="_blank"
                        href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#citations</a>
                 </p>` });
-    }
-}];
+        }
+    }];
 
 const t = statistics.reduce((prev, curr) => ({ ...prev, [curr.dbId]: 'idle' }), {})
 const areaStatStatus = ref<{ [key: string]: 'idle' | 'loading' | 'error' }[]>(new Array(store.projectAreas.length).fill(null).map(() => ({ ...t })));
@@ -329,7 +346,7 @@ function fetchIndicators(area: any) {
             if (!stats.type || stats.type === 'gee') {
                 result = await fetchPolygonIndicator(areaValues.uuid, stats.requestId);
             } else if (stats.type === 'em') {
-                result = await fetchPolygonIndicatorFromEarthMap(areaValues.uuid, stats.requestId);
+                result = await fetchPolygonIndicatorFromEarthMap(areaValues.uuid, stats.requestId, stats.requestOptions);
             } else {
                 throw Error('Unknown statistics type');
             }
