@@ -31,7 +31,8 @@ onMounted(() => {
         // },
         tooltip: {
             trigger: 'axis',
-            valueFormatter: (value: number) => value.toFixed(props.nDecimals) + ' ' + props.unit
+            valueFormatter: (value: number) => value.toFixed(props.nDecimals) + ' ' + props.unit,
+            confine: true
         },
         legend: { show: false },
         // toolbox: {

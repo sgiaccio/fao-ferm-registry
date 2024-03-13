@@ -25,7 +25,9 @@ onMounted(() => {
             // text: 'Biomass [MT/ha]'
             show: false
         },
-        tooltip: {},
+        tooltip: {
+            confine: true,
+        },
         legend: {
             data: [props.legend],
             show: false

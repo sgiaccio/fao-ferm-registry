@@ -212,7 +212,7 @@ const statistics: Statistics[] = [
     }, {
         requestId: 'land_cover',
         dbId: 'landCover',
-        label: 'Land cover [ha]',
+        label: 'Land Cover [ha]',
         transformFn: (val: any) => Object.entries(val[0])
             .map(([k, v]) => [+k, +v])
             .filter(entry => !isNaN(+entry[0]))
@@ -391,7 +391,7 @@ const statistics: Statistics[] = [
         type: 'gee',
         requestId: 'iucn_richness',
         dbId: 'iucnRichness',
-        label: 'IUCN Richness',
+        label: 'Species Richness',
         transformFn: (val: any) => {
             console.log(val);
             return [{
