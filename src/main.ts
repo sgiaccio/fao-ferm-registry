@@ -23,5 +23,14 @@ import './index.css'
     //     await router.push(auth.returnUrl);
     // }
 
+    
+    app.config.errorHandler = (error, vm, info) => {
+        // Handle the error globally
+        if (process.env.NODE_ENV === 'development') {
+            alert('An unexpected error occurred, please check the console log.');
+        }
+        console.error(error);
+    };
+
     app.mount("#app");
 })();
