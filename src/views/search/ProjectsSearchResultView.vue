@@ -11,6 +11,8 @@ import {
     TransitionChild,
 } from '@headlessui/vue'
 
+import { Squares2X2Icon, ListBulletIcon } from '@heroicons/vue/24/outline'
+
 import Thumbnail from './Thumbnail.vue'
 import Detail from './Detail.vue'
 
@@ -130,15 +132,33 @@ async function loadMore() {
         isLoading.value = false;
     }
 }
+
+const isList = ref(false);
 </script>
 
 <template>
-    <Teleport
+    <div
+        class="w-full flex justify-between mb-5 relative items-center"
         v-if="totalCount !== null"
-        to="#total-count"
     >
-        <span class="text-gray-500 font-semibold">Showing {{ searchResults.length }} of {{ totalCount }} good practices</span>
-    </Teleport>
+        <div class="text-gray-700 font-medium_ tracking-wide text-lg">Showing <span class="font-bold">{{ searchResults.length }}</span> of <span class="font-bold">{{ totalCount }}</span> initiatives</div>
+        <!-- show as list or as grid -->
+        <div class="flex justify-end items-center gap-x-2">
+            <button
+                class="border-2 border-gray-400 rounded-md text-gray-400 p-0.5  hover:bg-gray-50 transition-all duration-200"
+                @click="isList = !isList"
+            >
+                <Squares2X2Icon
+                    v-if="!isList"
+                    class="h-6 w-6"
+                />
+                <ListBulletIcon
+                    v-else
+                    class="h-6 w-6"
+                />
+            </button>
+        </div>
+    </div>
 
     <TransitionRoot
         as="template"
@@ -174,14 +194,14 @@ async function loadMore() {
                     <DialogPanel class="w-full max-w-4xl rounded-md bg-white overflow-hidden min-h-64 shadow-md flex flex-col">
                         <Detail
                             :title="currentResult.title"
-                            :short_description="currentResult.description"
-                            :last_updated="currentResult.last_updated"
+                            :shortDescription="currentResult.description"
+                            :lastUpdated="currentResult.last_updated"
                             :organizations="currentResult.organizations"
                             :url="currentResult.url"
                             :source="currentResult.source"
                             :previewImage="currentResult.preview_image"
-                            :country_iso3_codes="currentResult.country_codes_iso3"
-                            :country_names="currentResult.countries"
+                            :countryIso3Codes="currentResult.country_codes_iso3"
+                            :countryNames="currentResult.countries"
                         />
                     </DialogPanel>
                 </TransitionChild>
@@ -191,7 +211,7 @@ async function loadMore() {
 
 
     <div
-        v-if="true"
+        v-if="!isList"
         class="grid grid-cols-2 md:grid-cols-3 gap-4"
     >
         <div
@@ -208,7 +228,7 @@ async function loadMore() {
             />
             <img
                 v-if="result.source && result.preview_image"
-                class="h-7 absolute top-1.5 right-1.5 rounded-sm bg-white/90 p-1 shadow-md shadow-black/20 backdrop-blur-sm"
+                class="h-7 absolute top-1.5 right-1.5 rounded-sm bg-white/90 p-1 shadow-md shadow-black/10 backdrop-blur-sm"
                 :src="`/interop_logos/${result.source}.svg`"
                 :alt="result.source"
             />
@@ -232,11 +252,18 @@ async function loadMore() {
     >
         <div
             v-for="result in searchResults"
-            class="w-full max-w-4xl rounded-md bg-white overflow-hidden h-56 shadow-md flex flex-col border"
+            class="w-full max-w-4xl rounded-md bg-white overflow-hidden h-64 shadow-md flex flex-col border"
         >
             <Detail
-                :key="result.id"
-                :practice="result"
+                :title="result.title"
+                :shortDescription="result.description"
+                :lastUpdated="result.last_updated"
+                :organizations="result.organizations"
+                :url="result.url"
+                :source="result.source"
+                :previewImage="result.preview_image"
+                :countryIso3Codes="result.country_codes_iso3"
+                :countryNames="result.countries"
             />
         </div>
     </div>

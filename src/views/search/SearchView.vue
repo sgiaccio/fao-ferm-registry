@@ -74,10 +74,12 @@ const queryInitiatives = [
     },
 ]
 
-const searchText = ref<string>('');
+const searchTextGoodPractices = ref<string>('');
+const searchTextInitiatives = ref<string>('');
 const searchTermsGoodPractices = ref(Object.fromEntries(queryGoodPractices.map((q) => [q.queryName, []])));
 const searchTermsInitiatives = ref(Object.fromEntries(queryInitiatives.map((q) => [q.queryName, []])));
-const countries = ref([]);
+const countriesBestPractices = ref([]);
+const countriesInitiatives = ref([]);
 
 const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
 </script>
@@ -123,7 +125,7 @@ const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
     </header>
     <div class="mx-auto max-w-7xl sm:px-6_ lg:px-8">
         <div class="flex flex-row">
-            
+
             <TransitionRoot
                 as="template"
                 :show="sidebarOpen"
@@ -185,13 +187,13 @@ const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
                                         v-if="whatToSearch === 'goodPractices'"
                                         :query="queryGoodPractices"
                                         v-model:searchTerms="searchTermsGoodPractices"
-                                        v-model:countries="countries"
+                                        v-model:countries="countriesBestPractices"
                                     />
                                     <SidebarInitiatives
                                         v-else
                                         :query="queryInitiatives"
                                         v-model:searchTerms="searchTermsGoodPractices"
-                                        v-model:countries="countries"
+                                        v-model:countries="countriesInitiatives"
                                     />
                                 </div>
                             </DialogPanel>
@@ -205,13 +207,13 @@ const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
                     v-if="whatToSearch === 'goodPractices'"
                     :query="queryGoodPractices"
                     v-model:searchTerms="searchTermsGoodPractices"
-                    v-model:countries="countries"
+                    v-model:countries="countriesBestPractices"
                 />
                 <SidebarInitiatives
                     v-else
                     :query="queryInitiatives"
                     v-model:searchTerms="searchTermsInitiatives"
-                    v-model:countries="countries"
+                    v-model:countries="countriesInitiatives"
                 />
             </div>
             <div
@@ -247,67 +249,96 @@ const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
                                     aria-hidden="true"
                                 />
                                 <input
-                                    v-model="searchText"
+                                    v-if="whatToSearch === 'goodPractices'"
+                                    v-model="searchTextGoodPractices"
                                     id="search-field"
                                     class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-base bfont-semibold bg-transparent"
                                     placeholder="Search..."
                                     type="search"
                                     name="search"
                                 />
-                            </div>
-                            <div>
-                                <RadioGroup
-                                    v-model="whatToSearch"
-                                    class="mt-2"
+                                <input
+                                    v-else
+                                    v-model="searchTextInitiatives"
+                                    id="search-field"
+                                    class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-base bfont-semibold bg-transparent"
+                                    placeholder="Search..."
+                                    type="search"
+                                    name="search"
+                                    </div
                                 >
-                                    <RadioGroupLabel class="sr-only">Choose a memory option</RadioGroupLabel>
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <RadioGroupOption
-                                            as="template"
-                                            value="initiatives"
-                                            v-slot="{ active, checked }"
-                                        >
-                                            <div :class="['cursor-pointer focus:outline-none', active ? 'ring-2 ring-indigo-600 ring-offset-2' : '', whatToSearch === 'initiatives' ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50', 'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold sm:flex-1']">
-                                                <RadioGroupLabel as="span">Initiatives</RadioGroupLabel>
-                                            </div>
-                                        </RadioGroupOption>
-                                        <RadioGroupOption
-                                            as="template"
-                                            value="goodPractices"
-                                            v-slot="{ active, checked }"
-                                        >
-                                            <div :class="['cursor-pointer focus:outline-none', active ? 'ring-2 ring-indigo-600 ring-offset-2' : '', whatToSearch === 'goodPractices' ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50', 'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold sm:flex-1']">
-                                                <RadioGroupLabel as="span">Good practices</RadioGroupLabel>
-                                            </div>
-                                        </RadioGroupOption>
-                                    </div>
-                                </RadioGroup>
+
+
+                                <div>
+                                    <span class="isolate inline-flex rounded-md shadow-sm mt-3">
+                                        <button
+                                            type="button"
+                                            @click="whatToSearch = 'initiatives'"
+                                            :class="['relative inline-flex items-center rounded-l-md px-3 py-2 text-sm font-semibold text-gray-900 border-t border-l border-b focus:z-10_', whatToSearch === 'initiatives' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50']"
+                                        >Initiatives</button>
+                                        <!-- <button
+                                            type="button"
+                                            class="relative -ml-px inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+                                        >Months</button> -->
+                                        <button
+                                            @click="whatToSearch = 'goodPractices'"
+                                            type="button"
+                                            :class="['relative -ml-px inline-flex items-center rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 border-t border-r border-b focus:z-10_', whatToSearch === 'goodPractices' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50']"
+                                        >Good practices</button>
+                                    </span>
+
+                                    <!-- <RadioGroup
+                                        v-model="whatToSearch"
+                                        class="mt-2"
+                                    >
+                                        <RadioGroupLabel class="sr-only">Choose a memory option</RadioGroupLabel>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <RadioGroupOption
+                                                as="template"
+                                                value="initiatives"
+                                                v-slot="{ active, checked }"
+                                            >
+                                                <div :class="['cursor-pointer focus:outline-none', active ? 'ring-2 ring-indigo-600 ring-offset-2' : '', whatToSearch === 'initiatives' ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50', 'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold sm:flex-1']">
+                                                    <RadioGroupLabel as="span">Initiatives</RadioGroupLabel>
+                                                </div>
+                                            </RadioGroupOption>
+                                            <RadioGroupOption
+                                                as="template"
+                                                value="goodPractices"
+                                                v-slot="{ active, checked }"
+                                            >
+                                                <div :class="['cursor-pointer focus:outline-none', active ? 'ring-2 ring-indigo-600 ring-offset-2' : '', whatToSearch === 'goodPractices' ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50', 'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold sm:flex-1']">
+                                                    <RadioGroupLabel as="span">Good practices</RadioGroupLabel>
+                                                </div>
+                                            </RadioGroupOption>
+                                        </div>
+                                    </RadioGroup> -->
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- <div id="total-count" class="flex justify-center items-center pt-5"></div> -->
+
+                    <main class="pt-6 pb-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+                        <GoodPracticesSearchResultView
+                            v-if="whatToSearch === 'goodPractices'"
+                            :searchText="searchTextGoodPractices"
+                            :searchTerms="searchTermsGoodPractices"
+                            :countries="countriesBestPractices"
+                        />
+                        <ProjectsSearchResultView
+                            v-else
+                            :searchText="searchTextInitiatives"
+                            :searchTerms="searchTermsInitiatives"
+                            :countries="countriesInitiatives"
+                        />
+                    </main>
                 </div>
-
-                <div id="total-count" class="flex justify-center items-center pt-5"></div>
-
-                <main class="pt-6 pb-8 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
-                    <GoodPracticesSearchResultView
-                        v-if="whatToSearch === 'goodPractices'"
-                        :searchText="searchText"
-                        :searchTerms="searchTermsGoodPractices"
-                        :countries="countries"
-                    />
-                    <ProjectsSearchResultView
-                        v-else
-                        :searchText="searchText"
-                        :searchTerms="searchTermsInitiatives"
-                        :countries="countries"
-                    />
-                </main>
             </div>
-        </div>
 
-    </div>
+        </div>
 </template>
 
 <style scoped>

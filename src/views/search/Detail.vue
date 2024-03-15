@@ -9,15 +9,15 @@ import Thumbnail from './Thumbnail.vue'
 
 
 defineProps<{
-    title: string;
-    short_description: string;
-    last_updated: string;
+    title?: string;
+    shortDescription?: string;
+    lastUpdated?: number;
     organizations: string[];
     url: string;
     source: string;
-    previewImage: string;
-    country_iso3_codes: string[];
-    country_names: string[];
+    previewImage?: string;
+    countryIso3Codes: string[];
+    countryNames: string[];
 }>();
 
 const sourceLinks = {
@@ -60,9 +60,9 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
                     <div class="flex flex-col gap-y-2">
                         <div
                             class="flex flex-row items-center gap-x-2 w-full justify-end"
-                            v-for="iso3, i in country_iso3_codes"
+                            v-for="iso3, i in countryIso3Codes"
                         >
-                            <span class="text-sm font-semibold">{{ country_names[i] }}</span>
+                            <span class="text-sm font-semibold">{{ countryNames[i] }}</span>
                             <img
                                 class="w-7 h-7"
                                 :src="`/flags-iso3/${iso3}.svg`"
@@ -76,13 +76,13 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 
                 <h3 class="text-md font-medium line-clamp-2">{{ title }}</h3>
                 <p
-                    v-if="short_description"
+                    v-if="shortDescription"
                     class="text-sm text-gray-700 line-clamp-3 w-auto mt-3"
-                ><span class="font-semibold">Description: </span>{{ short_description }}</p>
+                ><span class="font-semibold">Description: </span>{{ shortDescription }}</p>
                 <p
-                    v-if="last_updated"
+                    v-if="lastUpdated"
                     class="text-sm text-gray-700"
-                ><span class="font-semibold">Last updated: </span>{{ dateFormatter.format(new Date(last_updated)) }}</p>
+                ><span class="font-semibold">Last updated: </span>{{ dateFormatter.format(new Date(lastUpdated)) }}</p>
                 <!-- <div
                         v-if="organizations?.length > 0"
                         class="flex flex-row gap-x-2 text-sm mt-2"
@@ -104,11 +104,11 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
                 </p>
                 <!-- </div> -->
             </div>
-            <div class="flex flex-row justify-between items-end">
+            <div class="flex flex-row justify-between items-center">
                 <a
                     :href="url"
                     target="_blank"
-                    class="text-gray-700 font-semibold flex items-center gap-x-2 whitespace-nowrap text-sm"
+                    class="text-gray-700 font-semibold flex items-center gap-x-2 whitespace-nowrap text-base hover:text-blue-600"
                 >
                     <LinkIcon class="h-5 w-5 inline" />View full practice
                 </a>
