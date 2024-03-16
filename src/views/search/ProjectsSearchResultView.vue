@@ -116,7 +116,7 @@ async function loadMore() {
             conditions.push(`(LOWER(title) LIKE '%${escapedSearchText}%' OR EXISTS ( SELECT 1 FROM UNNEST(country_codes_iso3) AS country WHERE LOWER(country) LIKE '%${escapedSearchText}%' ))`);
         }
 
-        const queryEnd = `) SELECT * FROM counted_data LIMIT 30 OFFSET ${nLoaded};`
+        const queryEnd = `) SELECT * FROM counted_data ORDER BY last_updated DESC LIMIT 30 OFFSET ${nLoaded};`;
         const query = queryStart + (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') + queryEnd
 
         const response = await fetch('https://api.data.apps.fao.org/api/v2/bigquery?query=' + encodeURIComponent(query) + '&output_format=json&download=false');
@@ -202,6 +202,7 @@ const isList = ref(false);
                             :previewImage="currentResult.preview_image"
                             :countryIso3Codes="currentResult.country_codes_iso3"
                             :countryNames="currentResult.countries"
+                            viewFullText="View full initiative"
                         />
                     </DialogPanel>
                 </TransitionChild>
@@ -217,7 +218,7 @@ const isList = ref(false);
         <div
             v-for="result in searchResults"
             :key="result.id"
-            class="relative"
+            class="relative cursor-pointer"
             @click="showDetail(result)"
         >
             <Thumbnail
@@ -229,7 +230,7 @@ const isList = ref(false);
             <img
                 v-if="result.source && result.preview_image"
                 class="h-7 absolute top-1.5 right-1.5 rounded-sm bg-white/90 p-1 shadow-md shadow-black/10 backdrop-blur-sm"
-                :src="`/interop_logos/${result.source}.svg`"
+                :src="`/interop_logos/${result.source.toLowerCase()}.svg`"
                 :alt="result.source"
             />
         </div>
@@ -264,6 +265,7 @@ const isList = ref(false);
                 :previewImage="result.preview_image"
                 :countryIso3Codes="result.country_codes_iso3"
                 :countryNames="result.countries"
+                viewFullText="View full initiative"
             />
         </div>
     </div>

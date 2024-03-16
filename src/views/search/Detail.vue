@@ -18,6 +18,7 @@ defineProps<{
     previewImage?: string;
     countryIso3Codes: string[];
     countryNames: string[];
+    viewFullText: string;
 }>();
 
 const sourceLinks = {
@@ -110,7 +111,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
                     target="_blank"
                     class="text-gray-700 font-semibold flex items-center gap-x-2 whitespace-nowrap text-base hover:text-blue-600"
                 >
-                    <LinkIcon class="h-5 w-5 inline" />View full practice
+                    <LinkIcon class="h-5 w-5 inline" />{{ viewFullText }}
                 </a>
                 <a
                     v-if="source"

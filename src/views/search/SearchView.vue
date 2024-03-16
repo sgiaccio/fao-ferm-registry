@@ -2,7 +2,7 @@
     setup
     lang="ts"
 >
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 // import WavyDivider from '@/views/WavyDivider.vue';
 
@@ -13,13 +13,9 @@ import { MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
 import {
     Dialog,
     DialogPanel,
-
+    DialogTitle,
     TransitionRoot,
     TransitionChild,
-
-    RadioGroup,
-    RadioGroupLabel,
-    RadioGroupOption
 } from '@headlessui/vue'
 
 import SidebarGoodPractices from './SidebarGoodPractices.vue'
@@ -29,6 +25,12 @@ import ProjectsSearchResultView from './ProjectsSearchResultView.vue'
 
 
 const sidebarOpen = ref(false)
+const aboutOpen = ref(false)
+
+if (!localStorage.getItem('aboutViewedOnce')) {
+    localStorage.setItem('aboutViewedOnce', 'true');
+    aboutOpen.value = true;
+}
 
 const queryGoodPractices = [
     {
@@ -54,7 +56,7 @@ const queryInitiatives = [
     {
         name: 'Ecosystem',
         queryName: 'ecosystems',
-        queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas', 'Not available']
+        queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas', 'Not Available']
     }, {
         name: 'Region',
         queryName: 'regions',
@@ -85,11 +87,164 @@ const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
 </script>
 
 <template>
+    <TransitionRoot
+        as="template"
+        :show="aboutOpen"
+    >
+        <Dialog
+            as="div"
+            class="relative z-50"
+            @close="aboutOpen = false"
+        >
+            <TransitionChild
+                as="template"
+                enter="ease-out duration-300"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="ease-in duration-200"
+                leave-from="opacity-100"
+                leave-to="opacity-0"
+            >
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </TransitionChild>
+
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full justify-center p-4 text-center">
+                    <TransitionChild
+                        as="template"
+                        enter="ease-out duration-300"
+                        enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        enter-to="opacity-100 translate-y-0 sm:scale-100"
+                        leave="ease-in duration-200"
+                        leave-from="opacity-100 translate-y-0 sm:scale-100"
+                        leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    >
+                        <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 max-w-3xl sm:p-6">
+                            <!-- <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+                                <button
+                                    type="button"
+                                    class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    @click="open = false"
+                                >
+                                    <span class="sr-only">Close</span>
+                                    <XMarkIcon
+                                        class="h-6 w-6"
+                                        aria-hidden="true"
+                                    />
+                                </button>
+                            </div> -->
+                            <DialogTitle
+                                as="h1"
+                                class="text-2xl font-bold leading-6 mb-5 font-akrobat uppercase text-ferm-blue-dark-800"
+                            >Welcome to the FERM Common Search Engine for Good Practices on Ecosystem Restoration!</DialogTitle>
+
+                            <p>This common search engine is the result of a collaborative effort by the FAO-led <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://www.decadeonrestoration.org/task-forces/best-practices"
+                                >Best Practices</a> and <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://www.decadeonrestoration.org/task-forces/monitoring"
+                                >Monitoring</a> Task Forces of the UN Decade on Ecosystem Restoration, combining the need to share and promote good practices and the need to transparently track progress of our collective restoration efforts.
+                            </p>
+
+                            <h2 class="font-akrobat uppercase text-lg font-bold mt-4 text-ferm-blue-dark-800">Purpose</h2>
+                            <p>The primary purpose of the FERM Common Search Engine is to <span class="font-bold">foster mutual learning and knowledge sharing among restoration practitioners</span> by systematically disseminating good practices resulting from restoration initiatives. This will prevent them from repeating mistakes and will encourage the replication and adaptation of good practices in different contexts with similar goals, enhancing their capacity to undertake and scale up effective restoration efforts across all sectors, ecosystems, and regions.</p>
+
+                            <h2 class="font-akrobat uppercase text-lg font-bold mt-4 text-ferm-blue-dark-800">Using the FERM Common Search Engine</h2>
+                            <p>To facilitate access to good practices on ecosystem restoration, the common search engine brings together good practices documented from four collaborating platforms: the <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://ferm.fao.org/login"
+                                >FERM Registry</a>, <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://www.lifegoprofor-gp.eu/"
+                                >LIFE GoProFor</a>, <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://panorama.solutions/en/portal/panorama-restoration"
+                                >Panorama Solutions</a> and <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://www.wocat.net/en/global-slm-database/"
+                                >WOCAT</a>. Users can effectively search, filter, and access an extensive array of good restoration practices according to their specific needs. There are two search modalities available:
+                            </p>
+
+                            <ul class="list-inside list-disc pl-4 mt-2">
+                                <li>Open browser search: Users can type in keywords to find relevant good practices.</li>
+                                <li>Refined filters: Users can filter practices based on degradation drivers addressed by the practice, ecosystem, region, source, and language.</li>
+                            </ul>
+
+                            <h2 class="font-akrobat uppercase text-lg font-bold mt-4 text-ferm-blue-dark-800">What is a good practice for ecosystem restoration? </h2>
+                            <p>A good practice for ecosystem restoration is an <span class="font-bold">evidence-based approach, technique or technology</span> that contributes to achieving one or more objectives of a restoration initiative, maximizing benefits for nature and people across different contexts. <span class="font-bold">It is usually a component of a restoration initiative that has been applied, tested and replicated in different contexts and therefore, can be easily transferred and/or adapted to other initiatives with similar goals.</span>If a practice has been tested solely in a specific context, it is considered a promising practice, then results need to be proven outside the current situation for replicability and adaptability to different contexts.</p>
+
+                            <h2 class="font-akrobat uppercase text-lg font-bold mt-4 text-ferm-blue-dark-800">How can restoration practices be shared through the FERM common search engine?</h2>
+                            <p>Restoration practitioners can document their practices through any of the following collaborating platforms: the <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://ferm.fao.org/login"
+                                >FERM Registry</a>, <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://panorama.solutions/en/portal/panorama-restoration"
+                                >Panorama Solutions</a> and <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://www.wocat.net/en/global-slm-database/"
+                                >WOCAT</a>. By doing so, you can contribute to our collective effort to inspire others with your valuable experiences.
+                            </p>
+                            <p class="mt-2">
+                                For more information on how to submit good practices through the <span class="font-bold">FERM Registry</span>, please follow this <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://docs.google.com/document/d/17p410EysJ1j7ZE427z1yyYJ50xrLbKe7/edit"
+                                >link</a>.
+                            </p>
+                            <p class="mt-2">
+                                For more information on how to submit good practices through <span class="font-bold">Panorama Solutions</span>, please follow this <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://panorama.solutions/en/solution/add"
+                                >link</a>.
+                            </p>
+                            <p class="mt-2">
+                                For more information on how to submit good practices through <span class="font-bold">WOCAT</span>, please follow this <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://qcat.wocat.net/en/wocat/add/"
+                                >link</a>.
+                            </p>
+
+                            <h2 class="font-akrobat uppercase text-lg font-bold mt-4 text-ferm-blue-dark-800">Providing feedback</h2>
+                            <p>We continuously strive to improve our common search engine and make it more user-friendly. If you have any feedback or suggestions regarding your experience while consulting good practices through the FERM common search engine, please <a
+                                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-600"
+                                    target="_blank"
+                                    href="https://forms.office.com/e/uhAfteu8ZV"
+                                >HERE</a> to provide your valuable input.</p>
+
+                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                <button
+                                    type="button"
+                                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                    @click="aboutOpen = false"
+                                >Close</button>
+                            </div>
+                        </DialogPanel>
+                    </TransitionChild>
+                </div>
+            </div>
+        </Dialog>
+    </TransitionRoot>
+
+
+
     <header class="inset-x-0 top-0">
         <div class="overflow-hidden bg-none relative">
             <img
                 src="/seashore.jpg"
-                class="w-full h-full _bg-[url('/seashore.jpg')] object-cover absolute"
+                class="w-full h-full object-cover absolute"
             >
             <!-- <wavy-divider class="absolute -left-1 bottom-0" /> -->
             <div class="px-4 sm:px-12 pt-8 pb-4">
@@ -117,6 +272,12 @@ const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
                                 />
                             </a>
                         </div>
+                    </div>
+                    <div class="absolute top-3 right-3">
+                        <button
+                            @click="aboutOpen = true"
+                            class="font-akrobat font-bold uppercase text-lg tracking-wide text-white/90 text-shadow-sm shadow-black"
+                        >About</button>
                     </div>
                 </div>
                 <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-3xl md:text-4xl lg:text-5xl uppercase shadow-black text-shadow-sm mb-6 sm:mb-8">Framework for Ecosystem<br>Restoration Monitoring</div>

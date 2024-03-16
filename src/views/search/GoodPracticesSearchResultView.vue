@@ -207,6 +207,7 @@ const isList = ref(false);
                             :previewImage="currentResult.preview_image"
                             :countryIso3Codes="currentResult.country_iso3_codes"
                             :countryNames="currentResult.country_names"
+                            viewFullText="View full practice"
                         />
                     </DialogPanel>
                 </TransitionChild>
@@ -216,7 +217,7 @@ const isList = ref(false);
 
 
     <div
-        v-if="false"
+        v-if="!isList"
         class="grid grid-cols-2 md:grid-cols-3 gap-4"
     >
         <!-- <Thumbnail
@@ -243,7 +244,7 @@ const isList = ref(false);
             <img
                 v-if="result.source && result.preview_image"
                 class="h-6 absolute top-1.5 right-1.5 rounded-sm bg-white/90 p-1.5 shadow-md shadow-black/10 backdrop-blur-sm"
-                :src="`/interop_logos/${result.source}.svg`"
+                :src="`/interop_logos/${result.source.toLowerCase()}.svg`"
                 :alt="result.source"
             />
         </div>
@@ -268,6 +269,7 @@ const isList = ref(false);
                 :previewImage="result.preview_image"
                 :countryIso3Codes="[]"
                 :countryNames="result.country_names"
+                viewFullText="View full practice"
             />
         </div>
     </div>
