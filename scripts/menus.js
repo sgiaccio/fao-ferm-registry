@@ -1198,7 +1198,7 @@ exports.restorationTypes = [
 exports.tenureStatuses = [
     { value: 1, label: "Communal" },
     { value: 2, label: "Government" },
-    { value: 3, label: "Indigenous as Indigenous and Traditional Territories (ITTs)" },
+    { value: 3, label: "Indigenous and Traditional Territories (ITTs)" },
     { value: 4, label: "Jointly owned" },
     { value: 5, label: "Private" },
     { value: 6, label: "Other" },

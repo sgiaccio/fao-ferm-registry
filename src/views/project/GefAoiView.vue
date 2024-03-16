@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+    setup
+    lang="ts"
+>
 import { ref, provide, onMounted } from 'vue';
 
 import { InformationCircleIcon } from '@heroicons/vue/24/outline';
@@ -221,6 +224,7 @@ provide('applyToAll', () => {
                 </InfoButton>
             </p>
         </template>
+
         <template #default>
             <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 shadow-md border-gray-300">
                 <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data).</span>
@@ -251,6 +255,7 @@ provide('applyToAll', () => {
                         :edit="edit"
                         v-model="store.project.project.targetAreaReviewPhase"
                     />
+
                     <template v-slot:info>
                         <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span>
                             (sum of GEF Core Indicators 1-5).</p>
@@ -265,6 +270,7 @@ provide('applyToAll', () => {
                         :edit="edit"
                         v-model="store.project.project.targetAreaEvaluationPhase"
                     />
+
                     <template v-slot:info>
                         <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span>
                             (sum of GEF Core Indicators 1-5).</p>
@@ -402,6 +408,7 @@ provide('applyToAll', () => {
                         :edit="edit"
                         v-model="store.project.project.areaAchieved"
                     />
+
                     <template v-slot:info>
                         <p>Please include the land (in ha) reported in the Restoration Plans/Management Plans (tabular data).</p>
                     </template>
@@ -413,6 +420,7 @@ provide('applyToAll', () => {
                     :accessToken="authStore!.user!.accessToken"
                     :edit="edit"
                 >
+
                     <template v-slot:info>
                         <p>Please upload the Restoration Plans/ Management plans with the description of restoration / land
                             management activities and baseline information of the territory, including pictures.</p>
@@ -490,6 +498,7 @@ provide('applyToAll', () => {
                     label="Total area of land achieved (spatially explicit format)"
                     :value="roundToPrecisionAsString(store.polygonsArea(), 2)"
                 >
+
                     <template v-slot:info>
                         <p>The total of the land (in ha) will be computed by the
                             plattorm based on spatially explicit information provided.</p>
@@ -558,4 +567,5 @@ provide('applyToAll', () => {
                 </button>
             </div>
         </template>
-</TabTemplate></template>
+    </TabTemplate>
+</template>
