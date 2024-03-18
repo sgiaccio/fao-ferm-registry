@@ -152,3 +152,40 @@ export function setsContainSameValues<T>(set1: Set<T>, set2: Set<T>) {
 export function getGroupsWhereEditor(privileges: { [key: string]: string }): string[] {
     return Object.keys(privileges).filter(group => ['editor', 'admin'].includes(privileges[group]));
 }
+
+export async function resilientFetch(url: string, options: any = {}, timeout = 5000, retries: number = 3): Promise<Response> {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await Promise.race([
+                fetch(url, options),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Timeout')), timeout)
+                )
+            ]);
+
+            // return response;
+            if (response instanceof Response && response.ok) {
+                return response;
+            }
+        } catch (error) {
+            if ((error as Error).message === 'Timeout') {
+                console.error('Request timed out');
+            } else {
+                console.error(`Attempt ${i + 1} failed with error:`, error);
+            }
+        }
+    }
+    throw new Error('Network error');
+}
+
+export function debounce(func: Function, wait: number) {
+    let timeout: any;
+    return function (this: any, ...args: []) {
+        const context = this;
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            timeout = null;
+            func.apply(context, args);
+        }, wait);
+    };
+};

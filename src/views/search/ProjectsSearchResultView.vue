@@ -13,6 +13,8 @@ import {
 
 import { Squares2X2Icon, ListBulletIcon } from '@heroicons/vue/24/outline'
 
+import { debounce, resilientFetch } from '@/lib/util'
+
 import Thumbnail from './Thumbnail.vue'
 import Detail from './Detail.vue'
 
@@ -41,26 +43,15 @@ function handleScroll() {
     }
 }
 
+const showAsList = ref(false);
+
 const currentResult = ref(null);
-const isOpen = ref(false);
+const isSetailsModalOpen = ref(false);
 
 function showDetail(result) {
     currentResult.value = result;
-    isOpen.value = true;
+    isSetailsModalOpen.value = true;
 }
-
-
-const debounce = (func: Function, wait: number) => {
-    let timeout: any;
-    return function (...args: []) {
-        const context = this;
-        if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            timeout = null;
-            func.apply(context, args);
-        }, wait);
-    };
-};
 
 const debouncedSearchText = ref('');
 watch(() => props.searchText, debounce((text: string) => {
@@ -90,36 +81,42 @@ watch([debouncedSearchTerms, debouncedSearchText, debouncedCountries], () => {
     loadMore();
 }, { deep: true });
 
+
+function buildQuery() {
+    const queryStart = 'WITH data AS ( SELECT * FROM fao-ferm2-review.initiatives.vw_cse ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data '
+
+    let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
+        if (values.length === 0) return ''
+        if (key === 'source' || key === 'restoration_status') {
+            return `${key} IN UNNEST([${values.map((v) => `'${v}'`).join(', ')}])`
+        } else {
+            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE ${key} IN (${values.map((v) => `'${v}'`).join(', ')}))`
+        }
+    }).filter(Boolean)
+
+    if (props.countries.length) {
+        const countryIso3Codes = props.countries.map(c => c.ISO3)
+        conditions.push(`EXISTS (SELECT 1 FROM UNNEST(country_codes_iso3) AS country WHERE country IN (${countryIso3Codes.map((v) => `'${v}'`).join(', ')}))`)
+    }
+
+    if (props.searchText) {
+        // escape single quotes and backslashes in the search text
+        let escapedSearchText = props.searchText.toLowerCase().replace(/['\\]/g, '\\$&');
+        conditions.push(`(LOWER(title) LIKE '%${escapedSearchText}%' OR EXISTS ( SELECT 1 FROM UNNEST(country_codes_iso3) AS country WHERE LOWER(country) LIKE '%${escapedSearchText}%' ))`);
+    }
+
+    const queryEnd = `) SELECT * FROM counted_data ORDER BY last_updated DESC LIMIT 30 OFFSET ${searchResults.value.length};`;
+
+    return queryStart + (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') + queryEnd
+}
+
 async function loadMore() {
     try {
         isLoading.value = true;
-        const nLoaded = searchResults.value.length;
-        const queryStart = 'WITH data AS ( SELECT * FROM fao-ferm2-review.initiatives.vw_cse ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data '
 
-        let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
-            if (values.length === 0) return ''
-            if (key === 'source' || key === 'restoration_status') {
-                return `${key} IN UNNEST([${values.map((v) => `'${v}'`).join(', ')}])`
-            } else {
-                return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE ${key} IN (${values.map((v) => `'${v}'`).join(', ')}))`
-            }
-        }).filter(Boolean)
+        const query = buildQuery();
+        const response = await resilientFetch('https://api.data.apps.fao.org/api/v2/bigquery?query=' + encodeURIComponent(query) + '&output_format=json&download=false', {}, 10000);
 
-        if (props.countries.length) {
-            const countryIso3Codes = props.countries.map(c => c.ISO3)
-            conditions.push(`EXISTS (SELECT 1 FROM UNNEST(country_codes_iso3) AS country WHERE country IN (${countryIso3Codes.map((v) => `'${v}'`).join(', ')}))`)
-        }
-
-        if (props.searchText) {
-            // escape single quotes and backslashes in the search text
-            let escapedSearchText = props.searchText.toLowerCase().replace(/['\\]/g, '\\$&');
-            conditions.push(`(LOWER(title) LIKE '%${escapedSearchText}%' OR EXISTS ( SELECT 1 FROM UNNEST(country_codes_iso3) AS country WHERE LOWER(country) LIKE '%${escapedSearchText}%' ))`);
-        }
-
-        const queryEnd = `) SELECT * FROM counted_data ORDER BY last_updated DESC LIMIT 30 OFFSET ${nLoaded};`;
-        const query = queryStart + (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') + queryEnd
-
-        const response = await fetch('https://api.data.apps.fao.org/api/v2/bigquery?query=' + encodeURIComponent(query) + '&output_format=json&download=false');
         const data = await response.json();
         searchResults.value = [...searchResults.value, ...data];
         totalCount.value = data[0]?.total_count;
@@ -132,8 +129,6 @@ async function loadMore() {
         isLoading.value = false;
     }
 }
-
-const isList = ref(false);
 </script>
 
 <template>
@@ -146,10 +141,10 @@ const isList = ref(false);
         <div class="flex justify-end items-center gap-x-2">
             <button
                 class="border-2 border-gray-400 rounded-md text-gray-400 p-0.5  hover:bg-gray-50 transition-all duration-200"
-                @click="isList = !isList"
+                @click="showAsList = !showAsList"
             >
                 <Squares2X2Icon
-                    v-if="!isList"
+                    v-if="!showAsList"
                     class="h-6 w-6"
                 />
                 <ListBulletIcon
@@ -162,10 +157,10 @@ const isList = ref(false);
 
     <TransitionRoot
         as="template"
-        :show="isOpen"
+        :show="isSetailsModalOpen"
     >
         <Dialog
-            @close="isOpen = false"
+            @close="isSetailsModalOpen = false"
             class="relative z-50"
         >
             <TransitionChild
@@ -212,7 +207,7 @@ const isList = ref(false);
 
 
     <div
-        v-if="!isList"
+        v-if="!showAsList"
         class="grid grid-cols-2 md:grid-cols-3 gap-4"
     >
         <div

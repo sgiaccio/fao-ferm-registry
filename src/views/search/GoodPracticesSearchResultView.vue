@@ -14,6 +14,8 @@ import {
 
 import { Squares2X2Icon, ListBulletIcon } from '@heroicons/vue/24/outline'
 
+import { debounce, resilientFetch } from '@/lib/util'
+
 import Detail from './Detail.vue'
 import Thumbnail from './Thumbnail.vue'
 
@@ -42,10 +44,13 @@ function handleScroll() {
     }
 }
 
+const showAsList = ref(false);
+
 const currentResult = ref(null);
 const isOpen = ref(false);
 
 function showDetail(result) {
+    console.log('showDetail', result);
     currentResult.value = result;
     // if source is FERM, replace the last '/' with '/FERM_' i.e. https://ferm-search.fao.org/practices/j7yFzUQGrsMta8ebAEpm -> https://ferm-search.fao.org/practices/FERM_j7yFzUQGrsMta8ebAEpm
     if (result.source === 'FERM') {
@@ -53,18 +58,6 @@ function showDetail(result) {
     }
     isOpen.value = true;
 }
-
-const debounce = (func: Function, wait: number) => {
-    let timeout: any;
-    return function (this: any, ...args: []) {
-        const context = this;
-        if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            timeout = null;
-            func.apply(context, args);
-        }, wait);
-    };
-};
 
 const debouncedSearchText = ref('');
 watch(() => props.searchText, debounce((text: string) => {
@@ -94,36 +87,40 @@ watch([debouncedSearchTerms, debouncedSearchText, debouncedCountries], () => {
     loadMore();
 }, { deep: true });
 
+function buildQuery() {
+    const queryStart = 'WITH data AS ( SELECT * FROM fao-maps-review.fao_cse.vw_cse_en ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data '
+
+    let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
+        if (values.length === 0) return ''
+        if (key === 'source') {
+            return `source IN UNNEST([${values.map((v) => `'${v}'`).join(', ')}])`
+        } else {
+            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE ${key} IN (${values.map((v) => `'${v}'`).join(', ')}))`
+        }
+    }).filter(Boolean)
+
+    if (props.countries.length) {
+        const countryIso3Codes = props.countries.map(c => c.ISO3)
+        conditions.push(`EXISTS (SELECT 1 FROM UNNEST(country_iso3_codes) AS country WHERE country IN (${countryIso3Codes.map((v) => `'${v}'`).join(', ')}))`)
+    }
+
+    if (props.searchText) {
+        // escape single quotes and backslashes in the search text
+        let escapedSearchText = props.searchText.toLowerCase().replace(/['\\]/g, '\\$&');
+        conditions.push(`(LOWER(title) LIKE '%${escapedSearchText}%' OR LOWER(short_description) LIKE '%${escapedSearchText}%' OR EXISTS ( SELECT 1 FROM UNNEST(country_iso3_codes) AS country WHERE LOWER(country) LIKE '%${escapedSearchText}%' ))`);
+    }
+
+    const queryEnd = `) SELECT * FROM counted_data LIMIT 30 OFFSET ${searchResults.value.length};`
+    return queryStart + (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') + queryEnd
+}
+
 async function loadMore() {
     try {
         isLoading.value = true;
-        const nLoaded = searchResults.value.length;
-        const queryStart = 'WITH data AS ( SELECT * FROM fao-maps-review.fao_cse.vw_cse_en ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data '
 
-        let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
-            if (values.length === 0) return ''
-            if (key === 'source') {
-                return `source IN UNNEST([${values.map((v) => `'${v}'`).join(', ')}])`
-            } else {
-                return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE ${key} IN (${values.map((v) => `'${v}'`).join(', ')}))`
-            }
-        }).filter(Boolean)
+        const query = buildQuery();
+        const response = await resilientFetch('https://api.data.apps.fao.org/api/v2/bigquery?query=' + encodeURIComponent(query) + '&output_format=json&download=false', {}, 10000);
 
-        if (props.countries.length) {
-            const countryIso3Codes = props.countries.map(c => c.ISO3)
-            conditions.push(`EXISTS (SELECT 1 FROM UNNEST(country_iso3_codes) AS country WHERE country IN (${countryIso3Codes.map((v) => `'${v}'`).join(', ')}))`)
-        }
-
-        if (props.searchText) {
-            // escape single quotes and backslashes in the search text
-            let escapedSearchText = props.searchText.toLowerCase().replace(/['\\]/g, '\\$&');
-            conditions.push(`(LOWER(title) LIKE '%${escapedSearchText}%' OR LOWER(short_description) LIKE '%${escapedSearchText}%' OR EXISTS ( SELECT 1 FROM UNNEST(country_iso3_codes) AS country WHERE LOWER(country) LIKE '%${escapedSearchText}%' ))`);
-        }
-
-        const queryEnd = `) SELECT * FROM counted_data LIMIT 30 OFFSET ${nLoaded};`
-        const query = queryStart + (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') + queryEnd
-
-        const response = await fetch('https://api.data.apps.fao.org/api/v2/bigquery?query=' + encodeURIComponent(query) + '&output_format=json&download=false');
         const data = await response.json();
         searchResults.value = [...searchResults.value, ...data];
         totalCount.value = data[0]?.total_count;
@@ -136,8 +133,6 @@ async function loadMore() {
         isLoading.value = false;
     }
 }
-
-const isList = ref(false);
 </script>
 
 <template>
@@ -150,10 +145,10 @@ const isList = ref(false);
         <div class="flex justify-end items-center gap-x-2">
             <button
                 class="border-2 border-gray-400 rounded-md text-gray-400 p-0.5  hover:bg-gray-50 transition-all duration-200"
-                @click="isList = !isList"
+                @click="showAsList = !showAsList"
             >
                 <Squares2X2Icon
-                    v-if="!isList"
+                    v-if="!showAsList"
                     class="h-6 w-6"
                 />
                 <ListBulletIcon
@@ -217,7 +212,7 @@ const isList = ref(false);
 
 
     <div
-        v-if="!isList"
+        v-if="!showAsList"
         class="grid grid-cols-2 md:grid-cols-3 gap-4"
     >
         <!-- <Thumbnail
