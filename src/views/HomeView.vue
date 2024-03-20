@@ -30,16 +30,23 @@ const points = [
 ];
 
 const lastFlagships = [
-    { name: "Altyn Dala Conservation Initiative", memberStates: "Kazakhstan", ecosystems: "Grasslands, Shrublands and Savannahs" },
-    { name: "Building with Nature in Indonesia", memberStates: "Indonesia", ecosystems: "Forests; Coasts; Human settlements" },
-    { name: "Central American Dry Corridor", memberStates: "Costa Rica, El Salvador, Guatemala, Honduras, Nicaragua, Panama", ecosystems: "Farmlands; Forests" },
-    { name: "Great Green Wall for Restoration and Peace", memberStates: "Burkina Faso, Niger", ecosystems: "Grasslands, Shrublands and Savannahs; Farmlands" },
-    { name: "Multi-country Mountain Flagship", memberStates: "DRC/Uganda/Rwanda, Kyrgyzstan, Serbia", ecosystems: "Mountains; Forests" },
-    { name: "Namami Gange", memberStates: "India", ecosystems: "Freshwaters; Peatlands" },
-    { name: "Abu Dhabi Marine Restoration", memberStates: "United Arab Emirates", ecosystems: "Oceans and coasts" },
-    { name: "Shan-Shui Initiative in China", memberStates: "China", ecosystems: "Forests; Peatlands; Freshwaters; Farmlands; Mountains; Coasts; Grasslands, Shrublands and Savannahs" },
-    { name: "SIDS Ecosystem Restoration Flagship", memberStates: "Saint Lucia, Comoros, Vanuatu", ecosystems: "Oceans and coasts; Freshwaters" },
-    { name: "Trinational Atlantic Forest Pact", memberStates: "Argentina, Brazil, Paraguay", ecosystems: "Forests; Freshwaters; Coasts" }
+    { name: "Altyn Dala Conservation Initiative", memberStates: "Kazakhstan", iucnBiomes: "Shrublands & shrubby woodlands biome; Savannas and grasslands biome; Deserts and semi-deserts biome; Palustrine wetlands biome (*which covers Peatlands); Rivers and streams biome" },
+    { name: "Building with Nature in Indonesia", memberStates: "Indonesia", iucnBiomes: "Intensive land-use systems biome; Shorelines biome; Brackish tidal biome" },
+    { name: "Central American Dry Corridor", memberStates: "Costa Rica, El Salvador, Guatemala, Honduras, Nicaragua, Panama", iucnBiomes: "Tropical-subtropical forests biome" },
+    { name: "Great Green Wall for Restoration and Peace", memberStates: "Burkina Faso, Niger", iucnBiomes: "Savannas and grasslands biome; Deserts and semi-deserts biome" },
+    { name: "Multi-country Mountain Flagship", memberStates: "DRC/Uganda/Rwanda, Kyrgyzstan, Serbia", iucnBiomes: "Tropical-subtropical forests biome; Temperate-boreal forests & woodlands biome; Shrublands & shrubby woodlands biome; Savannas and grasslands biome; Deserts and semi-deserts biome; Intensive land-use systems biome; Rivers and streams biome" },
+    { name: "Namami Gange", memberStates: "India", iucnBiomes: "Tropical-subtropical forests biome; Shrublands and shrubby woodlands biome; Intensive land use systems biome; Palustrine wetlands biome (including peatlands); Rivers and streams biome; Lakes biome; Artificial wetlands biome" },
+    { name: "Abu Dhabi Marine Restoration", memberStates: "United Arab Emirates", iucnBiomes: "Marine shelf biome; Shorelines biome; Brackish tidal biome" },
+    { name: "Shan-Shui Initiative in China", memberStates: "China", iucnBiomes: "Tropical-subtropical forests biome; Temperate-boreal forests & woodlands biome; Shrublands & shrubby woodlands biome; Deserts and semi-deserts biome; Intensive land-use systems biome; Palustrine wetlands biome (*which covers Peatlands); Rivers and streams biome; Lakes biome; Artificial wetlands biome; Anthropogenic marine biome; Shorelines biome; Supralittoral coastal biome; Anthropogenic shorelines biome; Brackish tidal biome" },
+    { name: "SIDS Ecosystem Restoration Flagship", memberStates: "Saint Lucia, Comoros, Vanuatu", iucnBiomes: "Rivers and streams biome; Tropical or subtropical forests biome; Shrublands and shrubby woodlands biome; Savannas and grasslands biome; Intensive land use (crop and urban) biome; Marine shelf biome; Shorelines biome; Brackish tidal biome" },
+    { name: "Trinational Atlantic Forest Pact", memberStates: "Argentina, Brazil, Paraguay", iucnBiomes: "Tropical-subtropical forests biome; Intensive land-use systems biome; Rivers and streams biome; Shorelines biome; Supralittoral coastal biome; Anthropogenic shorelines biome" },
+    { name: "Sri Lanka’s Mangrove Restoration", memberStates: "Sri Lanka", iucnBiomes: "Brackish Tidal Biome" },
+    { name: "The Living Indus Initiative", memberStates: "Pakistan", iucnBiomes: "Tropical-subtropical forests; Shrublands & shrubby woodlands; Deserts and semi-deserts; Intensive land-use systems; Rivers and streams biome; Lakes biome; Artificial wetlands biome; Marine shelf biome; Supralittoral coastal biome" },
+    { name: "Corridor Restoration in Terai Arc Landscape", memberStates: "Nepal", iucnBiomes: "Tropical-subtropical forests; Savannas and grasslands; Rivers and streams biome" },
+    { name: "Accion Andina", memberStates: "Argentina, Chile, Bolivia, Ecuador, Peru", iucnBiomes: "Polar-alpine; Rivers and streams biome" },
+    { name: "African Farmers Transforming Food Systems", memberStates: "Senegal, Mali,Tanzania, Kenya, Uganda", iucnBiomes: "Intensive land-use systems" },
+    { name: "Regreening Africa", memberStates: "Kenya, Somalia, Ethiopia, Rwanda, Mali, Niger, Senegal, Ghana", iucnBiomes: "Tropical-subtropical forests; Savannas and grasslands biome;  Shrublands & shrubby woodlands; Intensive land-use systems" },
+    { name: "Restoring Mediterranean Forests", memberStates: "Lebanon, Morocco, Tunisia, Turkey", iucnBiomes: "Temperate-boreal forests & woodlands; Shrublands & shrubby woodlands; Savannas and grasslands" },
 ]
 
 async function initMap() {
@@ -162,8 +169,8 @@ onMounted(async () => {
                                 </div>
                             </div>
                         </a>
-                        <a
-                            href="https://ferm-search.fao.org/search"
+                        <router-link
+                            :to="{ name: 'searchInitiatives' }"
                             class="bg-ferm-mustard-dark/95 hover:bg-ferm-mustard-light rounded-lg p-4 md:py-5 text-left transition-colors shadow backdrop-blur order-3 md:order-none"
                         >
                             <div class="flex flex-row gap-x-2 h-full">
@@ -175,7 +182,7 @@ onMounted(async () => {
                                     <div class="text-sm md:text-base">For good practices on ecosystem restoration</div>
                                 </div>
                             </div>
-                        </a>
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -231,7 +238,7 @@ onMounted(async () => {
                                 <div class="flex flex-col">
                                     <div class="font-bold text-ferm-blue-dark">{{ flagship.name }}</div>
                                     <div><span class="font-semibold text-ferm-blue-dark-900">Countries: </span>{{ flagship.memberStates }}</div>
-                                    <div><span class="font-semibold text-ferm-blue-dark-900">Ecosystems: </span>{{ flagship.ecosystems }}</div>
+                                    <div><span class="font-semibold text-ferm-blue-dark-900">Ecosystems: </span>{{ flagship.iucnBiomes }}</div>
                                 </div>
                             </li>
                         </ul>

@@ -114,8 +114,6 @@ async function uploadToBucket(bpId: string, file: File) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.text();
-    // }).then(data => {
-    //     console.log(data); // DEBUG
     }).catch(error => {
         console.error(error); // DEBUG
     });

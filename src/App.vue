@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { ref, provide } from 'vue';
+import { ref, provide, watch } from 'vue';
 import { RouterView } from 'vue-router';
+import { storeToRefs } from 'pinia'
+
+import { useLoadingStore } from '@/stores/loading';
 
 // import { useAuthStore } from './stores/auth';
 // import { useUserPrefsStore } from './stores/userPreferences';
 
 import CustomAlert from '@/views/project/CustomAlert.vue';
 
+import LoadingView from '@/views/LoadingView.vue';
 
 // const authStore = useAuthStore();
 // const userPrefsStore = useUserPrefsStore();
@@ -22,9 +26,10 @@ provide('customAlert', function (t: string, m: string, ty: string, options: any)
 // watch(user, async () => {
 //     await userPrefsStore.fetchUserPrefs();
 // });
+
+const { isLoading } = storeToRefs(useLoadingStore());
 </script>
 
 <template>
-    <CustomAlert ref="customAlert" />
-    <RouterView />
+    <component :is="isLoading ? LoadingView : RouterView"></component>
 </template>

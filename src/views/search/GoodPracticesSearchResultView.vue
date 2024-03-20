@@ -50,12 +50,7 @@ const currentResult = ref(null);
 const isOpen = ref(false);
 
 function showDetail(result) {
-    console.log('showDetail', result);
     currentResult.value = result;
-    // if source is FERM, replace the last '/' with '/FERM_' i.e. https://ferm-search.fao.org/practices/j7yFzUQGrsMta8ebAEpm -> https://ferm-search.fao.org/practices/FERM_j7yFzUQGrsMta8ebAEpm
-    if (result.source === 'FERM') {
-        currentResult.value.url = result.url.replace(/\/([^/]+)$/, '/FERM_$1');
-    }
     isOpen.value = true;
 }
 

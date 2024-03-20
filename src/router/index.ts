@@ -3,6 +3,8 @@
 // import { useMenusStore } from "../stores/menus"
 
 import { createRouter, createWebHistory } from "vue-router";
+import { useLoadingStore } from '../stores/loading';
+
 
 
 // Initiatives tabs are used both for editing and viewing projects, so define them once here
@@ -100,9 +102,38 @@ const router = createRouter({
         {
             path: "/search",
             name: "search",
-            component: () => import('../views/search/SearchView.vue'),
-            meta: { public: true }
+            redirect: { name: 'searchInitiatives' },
+            meta: { public: true },
+            children: [
+                {
+                    path: 'initiatives',
+                    name: 'searchInitiatives',
+                    component: () => import('../views/search/SearchView.vue'),
+                    props: { type: 'initiatives' },
+                    meta: { public: true }
+                }, {
+                    path: 'good-practices',
+                    name: 'searchGoodPractices',
+                    component: () => import('../views/search/SearchView.vue'),
+                    props: { type: 'goodPractices' },
+                    meta: { public: true }
+                }
+            ]
         },
+        // {
+        //     path: "/search/initiatives",
+        //     name: "searchInitiatives",
+        //     component: () => import('../views/search/SearchView.vue'),
+        //     props: { type: 'initiatives' },
+        //     meta: { public: true }
+        // },
+        // {
+        //     path: "/search/goodPractices",
+        //     name: "searchGoodPractices",
+        //     component: () => import('../views/search/SearchView.vue'),
+        //     props: { type: 'goodPractices' },
+        //     meta: { public: true }
+        // },
         // Administration
         {
             path: "/admin",
@@ -139,6 +170,7 @@ const router = createRouter({
             path: '/registry',
             name: 'registry',
             component: () => import('../views/RegistryView.vue'),
+
             beforeEnter: async (_to, _from) => {
                 // dynamically load the menus store to save bandwidth
                 const { useMenusStore } = await import('../stores/menus');
@@ -234,10 +266,19 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
+    const loadingStore = useLoadingStore();
+
     if (to.matched.every(record => record.meta.public)) {
         return;
     }
-    
+
+    // if it's entering the registry page, or a subroute, show a loading screen
+    if (to.name === 'registry' || to.matched.some(record => record.name === 'registry')) {
+        if (!loadingStore.registryLoaded) {
+            loadingStore.setLoading(true);
+        }
+    }
+
     const { useAuthStore } = await import('../stores/auth');
     const { useUserPrefsStore } = await import('../stores/userPreferences');
 
@@ -280,6 +321,17 @@ router.beforeEach(async (to) => {
     //     authStore.returnUrl = to.fullPath;
     //     return { name: 'login' };
     // }
+});
+
+router.afterEach((to) => {
+    const loadingStore = useLoadingStore();
+
+    // hide the loading screen
+    loadingStore.setLoading(false);
+
+    if (to.name === 'registry' || to.matched.some(record => record.name === 'registry')) {
+        loadingStore.setRegistryLoaded(true)
+    }
 });
 
 export default router;

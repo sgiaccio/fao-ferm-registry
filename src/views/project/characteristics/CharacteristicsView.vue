@@ -96,10 +96,6 @@ const statistics: Statistics[] = [
             }
         }).sort((a: any, b: any) => a.year - b.year),
         template: (props) => {
-            console.log(props.value.map((area: any) => ({
-                label: area.year,
-                value: area.value
-            })));
             return h(BarChart, {
                 values: props.value.map((area: any) => ({
                     label: area.year,
@@ -369,7 +365,6 @@ const statistics: Statistics[] = [
         dbId: 'iucnRichness',
         label: 'Species Richness',
         transformFn: (val: any) => {
-            console.log(val);
             return [{
                 year: 2021,
                 value: val[0].mean

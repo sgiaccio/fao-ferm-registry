@@ -119,8 +119,6 @@ async function fetchData(earthMapApiKey, polygon, stats, options) {
         payload.options = options;
     }
 
-    console.log("Payload:", payload);
-
     try {
         const response = await axios.post("https://earthmap.org/api/statistics", payload, {
             headers: {

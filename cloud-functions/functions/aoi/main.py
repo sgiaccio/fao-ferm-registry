@@ -452,7 +452,7 @@ def load_area_json(request):
 
 @authenticated
 def get_area_json(request):
-    """ Returns a GeoJson with all the polygons
+    """ Returns a GeoJson with all the polygons with a given area_uuid
     Args:
         request (flask.Request): The request object.
     Returns:

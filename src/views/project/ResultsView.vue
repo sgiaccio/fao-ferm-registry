@@ -71,6 +71,7 @@ import 'leaflet/dist/leaflet.css';
 // import { Map } from 'maplibre-gl';
 
 import * as echarts from 'echarts';
+import type { GeoJSONObject } from 'ol/format/GeoJSON';
 
 
 onMounted(async () => {
@@ -287,33 +288,36 @@ async function initMap() {
         body: JSON.stringify({
             mapType: 'satellite',
             language: 'en-US',
-            region: 'US'
+            region: 'US',
+            "layerTypes": ["layerRoadmap"],
+            "overlay": false,
         })
     }).then(response => response.json()).then(data => {
         return data.session;
     });
-
     const areaFetchPromise = getProjectAreas(store.id!);
 
     const sessionToken = await sessionTokenPromise;
-    const area = await areaFetchPromise;
 
-    const map = L.map('map').setView([10.666667, -61.5075], 13);
+    const map = L.map('map').setView([0, 0], 2);
+
     L.tileLayer('https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session=' + sessionToken + '&key=AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M', {
         maxZoom: 15,
         attribution: 'Google Maps<a class="ol-attribution-google-tos" href="https://cloud.google.com/maps-platform/terms/" target="_blank">Terms of Use</a> and <a class="ol-attribution-google-tos" href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a>'
     }).addTo(map);
 
     var myStyle = {
-        // dark yellow
         "color": "#FFCC00",
-        "weight": 3,
-        "opacity": 1,
+        "weight": 2,
+        "opacity": 0.9,
         "fillOpacity": 0
     };
 
+
+    const area = await areaFetchPromise as GeoJSONObject;
+
     const jsonLayer = L.geoJSON(area, {
-        pointToLayer: function (feature, latlng) {
+        pointToLayer: function (_feature, latlng) {
             return L.circleMarker(latlng, {
                 radius: 1,
                 fillColor: "#ff0000",
@@ -326,12 +330,13 @@ async function initMap() {
         style: myStyle
     });
 
-    jsonLayer.addTo(map);
-    map.fitBounds(jsonLayer.getBounds(), {
-        padding: [10, 10]
+    map.flyToBounds(jsonLayer.getBounds(), {
+        padding: [10, 10],
     });
 
-
+    map.once('zoomend', function () {
+        jsonLayer.addTo(map);
+    });
 
     // MapLibre
 
@@ -398,21 +403,22 @@ async function initMap() {
         <template #default>
             <div
                 id="map"
-                class="rounded shadow-lg border border-gray-100 mt-4"
-                style="height: 400px;width:100%"
+                class="rounded shadow-md border border-gray-100 mt-4 w-full"
+                style="height: 400px"
             ></div>
+            <!-- Non GEF charts -->
             <div
                 v-if="store.project.reportingLine !== 'GEF'"
                 class="flex flex-col gap-6 mt-6"
             >
                 <div
                     v-if="store.project.project.targetArea && store.project.project.areaUnderRestoration"
-                    class="shadow-lg rounded px-4 py-3 text-base border"
+                    class="shadow-md rounded px-4 py-3 text-base border"
                 >
                     <div
                         id="chart"
                         ref="chartDiv"
-                        class="h-96 w-96"
+                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
                     ></div>
                     <!-- <SnailChart
                         :values="[store.project.project.areaUnderRestoration]"
@@ -430,75 +436,72 @@ async function initMap() {
                     Committed area to restore or Total area under restoration not selected in the Area & Ecosystems tab.
                 </div>
             </div>
+
+            <!-- GEF charts -->
             <div
                 v-else-if="chartData.length > 0 && getLastTargetArea()"
                 class="flex flex-col gap-6 mt-6"
             >
-                <div
-                    v-if="store.project.project.areaAchievedMatch === 1"
-                    class="shadow-lg rounded px-4 py-3 text-base border"
-                >
+
+                <template v-if="store.project.project.areaAchievedMatch === 1">
                     <div
                         v-if="chartData.length > 0 && getLastTargetArea()"
                         id="chart"
                         ref="chartDiv"
-                        class="h-64 w-full"
+                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
                     />
                     <div
                         ref="ciChartDiv"
-                        class="h-64 w-full"
+                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
                     />
 
                     <!-- <SnailChart
                         v-if="chartValues.length > 0 && getLastTargetArea()"
                         :values="chartValues"
-                        :labels="chartLabels"
-                        unit="Ha"
+                        :labels="chartLabels h-64 w-full"
                         :targetValue="getLastTargetArea()"
                     /> -->
                     <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has {{ Math.trunc(store.polygonsArea() / getLastTargetArea() * 100) }}% of committed land under restoration.</p>
-                </div>
-                <div
+                </template>
+                <!-- <div
                     v-else
-                    class="shadow-lg rounded px-4 py-3 text-base border"
+                    class="shadow-md rounded px-4 py-3 text-base border"
                 >
-                    <!-- <SnailChart
+                    <!- - <SnailChart
                         :values="[]"
-                        :labels="[]"
-                        :targetValue="getLastTargetArea()"
-                    /> -->
+                        :labels="[] h-64 w-full"
+                    /> - ->
                     <div
                         id="chart"
                         ref="chartDiv"
-                        class="h-96 w-96"
+                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
                     ></div>
-                </div>
+                </div> -->
 
-                <div class="shadow-lg rounded border divide-y">
+                <div class="shadow-md rounded border divide-y">
                     <div class="px-4 py-5 sm:px-6 bg-ferm-green-light/70 rounded-t">
-                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Area of land committed in last project phase</h3>
+                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Area of land committed in last project phase</h3 h-64 w-full>
+
+                        <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-green-light/20">
+                            <div class="col-span-2">Target area in last project phase</div>
+                            <div class="col-span-1">{{ roundToPrecisionAsString(getLastTargetArea(), 2) }} Ha</div>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-green-light/20">
-                        <div class="col-span-2">Target area in last project phase</div>
-                        <div class="col-span-1">{{ roundToPrecisionAsString(getLastTargetArea(), 2) }} Ha</div>
-                    </div>
-                </div>
+                    <div class="shadow-md rounded border divide-y">
+                        <div class="px-4 py-5 sm:px-6 bg-ferm-mustard-light/70 rounded-t">
+                            <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved during project implementation</h3>
+                        </div>
 
-                <div class="shadow-lg rounded border divide-y">
-                    <div class="px-4 py-5 sm:px-6 bg-ferm-mustard-light/70 rounded-t">
-                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved during project implementation</h3>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-mustard-light/20">
-                        <div class="col-span-2">Total area of land achieved (tabular format)</div>
-                        <div class="col-span-1">{{ roundToPrecisionAsString(store.project.project.areaAchieved, 2) }} Ha</div>
+                        <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-mustard-light/20">
+                            <div class="col-span-2">Total area of land achieved (tabular format)</div h-64 w-full>areaAchieved, 2) }} Ha
+                        </div>
                         <div class="col-span-2">Total area of land achieved (spatially explicit format)</div>
                         <div class="col-span-1">{{ roundToPrecisionAsString(store.polygonsArea(), 2) }} Ha</div>
                     </div>
                 </div>
 
-                <div class="shadow-lg rounded border divide-y">
+                <div class="shadow-md rounded border divide-y">
                     <div class="px-4 py-5 sm:px-6 bg-ferm-blue-light/70 rounded-t">
                         <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved per GEF CORE Indicator 1&#8209;5</h3>
                     </div>

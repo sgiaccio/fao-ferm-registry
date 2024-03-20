@@ -2,7 +2,9 @@
     setup
     lang="ts"
 >
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
+
+import router from '@/router';
 
 // import WavyDivider from '@/views/WavyDivider.vue';
 
@@ -23,6 +25,11 @@ import SidebarInitiatives from './SidebarInitiatives.vue'
 import GoodPracticesSearchResultView from './GoodPracticesSearchResultView.vue'
 import ProjectsSearchResultView from './ProjectsSearchResultView.vue'
 
+const props = withDefaults(defineProps<{
+    type: 'initiatives' | 'goodPractices'
+}>(), {
+    type: 'initiatives'
+});
 
 const sidebarOpen = ref(false)
 const aboutOpen = ref(false)
@@ -83,7 +90,10 @@ const searchTermsInitiatives = ref(Object.fromEntries(queryInitiatives.map((q) =
 const countriesBestPractices = ref([]);
 const countriesInitiatives = ref([]);
 
-const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
+const whatToSearch = ref<'initiatives' | 'goodPractices'>();
+watch(() => props.type, (type) => {
+    whatToSearch.value = type;
+}, { immediate: true });
 </script>
 
 <template>
@@ -434,7 +444,7 @@ const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
                                     <span class="isolate inline-flex rounded-md shadow-sm mt-3">
                                         <button
                                             type="button"
-                                            @click="whatToSearch = 'initiatives'"
+                                            @click="router.push({ name: 'searchInitiatives' })"
                                             :class="['relative inline-flex items-center rounded-l-md px-3 py-2 text-sm font-semibold text-gray-900 border-t border-l border-b focus:z-10_', whatToSearch === 'initiatives' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50']"
                                         >Initiatives</button>
                                         <!-- <button
@@ -442,7 +452,7 @@ const whatToSearch = ref<'initiatives' | 'goodPractices'>('initiatives');
                                             class="relative -ml-px inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
                                         >Months</button> -->
                                         <button
-                                            @click="whatToSearch = 'goodPractices'"
+                                            @click="router.push({ name: 'searchGoodPractices' })"
                                             type="button"
                                             :class="['relative -ml-px inline-flex items-center rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 border-t border-r border-b focus:z-10_', whatToSearch === 'goodPractices' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50']"
                                         >Good practices</button>

@@ -23,7 +23,6 @@ const props = withDefaults(defineProps<{
 let resizeHandler: any;
 
 onMounted(() => {
-    console.log('values', props.values);
     const chart = echarts.init(chartDiv.value);
     chart.setOption({
         // title: {
