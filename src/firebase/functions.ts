@@ -134,3 +134,10 @@ export async function saveProjectCollaborators(projectId: string, collaboratorsU
     const saveProjectCollaborators = httpsCallable(functions, 'saveProjectCollaborators');
     return saveProjectCollaborators({ projectId, collaboratorsUids });
 }
+
+export async function getProjectAreas(projectId: string) {
+    const functions = getFunctions();
+    const getProjectAreas = httpsCallable(functions, 'getProjectAreas');
+    const result = await getProjectAreas({ projectId });
+    return result.data;
+}

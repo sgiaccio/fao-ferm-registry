@@ -168,7 +168,6 @@ watch(admin2, val => {
             v-model="admin0"
             :options="admin0Menu"
             placeholder="Please select Country"
-            @change="azzo"
         />
         <SelectInput
             :edit="edit"

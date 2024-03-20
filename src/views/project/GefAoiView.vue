@@ -247,7 +247,7 @@ provide('applyToAll', () => {
                     </template>
                 </FormGroup>
                 <FormGroup
-                    :edit="edit || store.project.project.targetAreaReviewPhase"
+                    :edit="edit || !!store.project.project.targetAreaReviewPhase"
                     label="Target area in mid-term review phase [Hectares]"
                     description="Area of land committed in mid-term review phase"
                 >
@@ -262,7 +262,7 @@ provide('applyToAll', () => {
                     </template>
                 </FormGroup>
                 <FormGroup
-                    :edit="edit || store.project.project.targetAreaEvaluationPhase"
+                    :edit="edit || !!store.project.project.targetAreaEvaluationPhase"
                     label="Target area in terminal evaluation phase [Hectares]"
                     description="Area of land committed in terminal evaluation phase"
                 >

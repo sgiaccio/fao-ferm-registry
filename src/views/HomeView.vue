@@ -8,10 +8,9 @@ import {
 
 import { ArrowRightIcon, GlobeAltIcon, MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/vue/24/solid'
 
-import { DocumentTextIcon } from '@heroicons/vue/20/solid'
-
 import WavyDivider from '@/views/WavyDivider.vue';
 import Footer from '@/views/Footer.vue'
+
 
 const points = [
     { flagship: "Altyn Dala Conservation Initiative", target2030: "5 million ha new protected areas and ecological corridors", restored: "", memberStates: "Kazakhstan", iucnEcosystemsBiomes: "Shrublands & shrubby woodlands biome; Savannas and grasslands biome; Deserts and semi-deserts biome; Palustrine wetlands biome (*which covers Peatlands); Rivers and streams biome", latitude: 48.0196, longitude: 66.9237 },

@@ -3,6 +3,8 @@ const { Pool } = require("pg");
 const axios = require("axios");
 
 // const { areasCollection, registryCollection } = require("./util");
+const { areasCollection } = require("./util");
+
 const { defineString } = require("firebase-functions/params");
 
 const { gaul2iso } = require("./gaul2iso");
@@ -10,6 +12,7 @@ const { gaul2iso } = require("./gaul2iso");
 const serviceAccount = require('./fao-ferm2-review-ad0074f38f58.json'); // Your path to the service account key
 const ee = require('@google/earthengine'); // ee is required to find intersecting countries
 
+const { isSuperAdmin, isGroupAdmin, isGroupEditor } = require("./util");
 
 // Secrets api is not working, so we are using config instead for now
 // const earthMapApiKey = defineSecret("EARTHMAP_API_KEY");
@@ -477,16 +480,16 @@ function isValidUuid(uuid) {
 
 
 
-// function getUploadedAreasUuids(areas = []) {
-//     return areas
-//         .map(areaObject => {
-//             // Get all values (which are objects) from each area object, and find the one that has a 'uuid'.
-//             // using this instead of Object.values(areaObject)[0] here because it's more robust
-//             const areaData = Object.values(areaObject).find(value => value.hasOwnProperty('uuid'));
-//             return areaData?.uuid;
-//         })
-//         .filter(isValidUuid);
-// }
+function getUploadedAreasUuids(areas = []) {
+    return areas
+        .map(areaObject => {
+            // Get all values (which are objects) from each area object, and find the one that has a 'uuid'.
+            // using this instead of Object.values(areaObject)[0] here because it's more robust
+            const areaData = Object.values(areaObject).find(value => value.hasOwnProperty('uuid'));
+            return areaData?.uuid;
+        })
+        .filter(isValidUuid);
+}
 
 // exports.getPolygonsFromUuids = functions
 //     // .runWith({ secrets: [dbUser, dbHost, dbDatabase, dbPassword, earthMapApiKey] })
@@ -620,4 +623,55 @@ exports.getIntersectingCountries = functions.runWith({ timeoutSeconds: 120 }).ht
     } finally {
         client.release();
     }
+});
+
+exports.getProjectAreas = functions.https.onCall(async (data, context) => {
+    // Check for user authentication
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const { projectId } = data;
+
+    if (!isSuperAdmin(context) && !isGroupAdmin(context, projectId) && !isGroupEditor(context, projectId)) {
+        throw new functions.https.HttpsError("permission-denied", "User must be a superadmin, a group admin, or a group editor to delete areas.");
+    }
+
+    // Fetch the area with the ID matching projectId
+    const areaDoc = await areasCollection.doc(projectId).get();
+
+    if (!areaDoc.exists) {
+        throw new functions.https.HttpsError('not-found', 'No areas found for document', projectId);
+    }
+
+    const areaUuids = getUploadedAreasUuids(areaDoc.data().areas);
+
+    // execute this query but also on areauuids: "SELECT ST_AsGeoJSON(ST_Collect(ST_CollectionExtract(geom::geometry))) FROM project_areas WHERE project_id = %s"
+    const client = await getDatabaseClient({
+        user: dbUser.value(),
+        host: dbHost.value(),
+        database: dbDatabase.value(),
+        password: dbPassword.value()
+    });
+
+    try {
+        const query = "SELECT ST_AsGeoJSON(ST_Collect(ST_CollectionExtract(geom::geometry))) as geojson FROM project_areas WHERE project_id = $1 AND area_uuid = ANY($2::uuid[])";
+        const result = await client.query(query, [projectId, areaUuids]);
+        
+
+        if (!result?.rows?.length) {
+            throw new functions.https.HttpsError('not-found', 'No polygons found for the given project.');
+        }
+
+        return JSON.parse(result.rows[0].geojson)
+    } catch (error) {
+        if (error instanceof functions.https.HttpsError) {
+            throw error; // Re-throw if it's already an HttpsError
+        }
+        functions.logger.error("Error:", error);
+        throw new functions.https.HttpsError("internal", error.message);
+    } finally {
+        client.release();
+    }
+
 });

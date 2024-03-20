@@ -57,20 +57,21 @@ watch(() => store.projectAreas, areas => areas.forEach(area => {
         delete areaValue.tenureStatus;
     }
 }), { deep: true });
+
 ref(new Array(store.projectAreas.length).fill(new Map()));
-function isSelected(area: any, indicator: any) {
-    const indicators = Object.values(area)[0]?.goalIndicators;
-    if (!indicators) return false;
-    return indicators.some(i => {
-        try {
-            const t = new GoalIndicator(i.indicator);
-            return t.equals(indicator);
-        } catch (error) {
-            console.error(error);
-            return false;
-        }
-    });
-}
+// function isSelected(area: any, indicator: any) {
+//     const indicators = Object.values(area)[0]?.goalIndicators;
+//     if (!indicators) return false;
+//     return indicators.some(i => {
+//         try {
+//             const t = new GoalIndicator(i.indicator);
+//             return t.equals(indicator);
+//         } catch (error) {
+//             console.error(error);
+//             return false;
+//         }
+//     });
+// }
 </script>
 
 <template>
@@ -175,7 +176,7 @@ function isSelected(area: any, indicator: any) {
                 <div class="mb-6">
                     <!-- <h3 class="text-xl font-semibold leading-6 text-gray-900">Area by indicator</h3> -->
                     <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                        <div v-for="  [indicator, area]   in   store.areaByGefIndicator()  "
+                        <div v-for="[indicator, area]   in   store.areaByGefIndicator()"
                              :key="indicator"
                              class="overflow-hidden rounded-lg bg-gray-100 px-4 py-5 shadow sm:p-6 flex flex-col">
                             <dt class="flex-grow text-sm font-medium text-gray-500">

@@ -39,7 +39,7 @@ onMounted(() => {
         series: [{
             name: props.legend,
             type: 'bar',
-            data: props.values.map((v) => v.value)
+            data: props.values.map(v => v.value)
         }],
         itemStyle: {
             borderRadius: [2, 2, 0, 0],

@@ -914,6 +914,7 @@ exports.getPolygonZonalStats = areas.getPolygonZonalStats;
 exports.deleteDanglingAreaRecords = areas.deleteDanglingAreaRecords;
 // exports.deleteAllProjectAreas = areas.deleteAllProjectAreas;
 exports.getIntersectingCountries = areas.getIntersectingCountries;
+exports.getProjectAreas = areas.getProjectAreas;
 
 /************************************************
  *

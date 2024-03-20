@@ -233,6 +233,15 @@ export const useProjectStore = defineStore('', () => {
             });
     }
 
+    function areaByGefIndicatorGroup() {
+        const indicators = areaByGefIndicator();
+        const areabyIndicatorGroup = indicators.reduce((prev, [id, area]) => {
+            const newId = id === 'GEF2LDCF' ? '2LDCF' : id.slice(3, 4);
+            return prev.set(newId, (prev.get(newId) || 0) + area);
+        }, new Map());
+        return Array.from(areabyIndicatorGroup);
+    }
+
     function createEmptyProject(groupId: string) {
         const projectRef = doc(projectsCollection);
         id.value = projectRef.id
@@ -292,7 +301,7 @@ export const useProjectStore = defineStore('', () => {
         if (!id.value) {
             throw new Error('Id is not set');
         }
-        
+
         // Set project additional information
         const projectToBeSaved = {
             ...project.value,
@@ -430,7 +439,7 @@ export const useProjectStore = defineStore('', () => {
         lastVisible,
         nProjectsFound,
         loadingNext,
-        
+
         validation,
 
         resetProjectState,
@@ -438,6 +447,7 @@ export const useProjectStore = defineStore('', () => {
         fetchNextProjects,
         refetchProject,
         areaByGefIndicator,
+        areaByGefIndicatorGroup,
         createEmptyProject,
         createProject,
         save,
