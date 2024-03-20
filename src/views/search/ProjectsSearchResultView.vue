@@ -115,7 +115,8 @@ async function loadMore() {
         isLoading.value = true;
 
         const query = buildQuery();
-        const response = await resilientFetch('https://api.data.apps.fao.org/api/v2/bigquery?query=' + encodeURIComponent(query) + '&output_format=json&download=false', {}, 10000);
+        const url = `https://api.data.apps.fao.org/api/v2/bigquery?query=${encodeURIComponent(query)}&output_format=json&download=false`;
+        const response = await resilientFetch(url, {}, 10000);
 
         const data = await response.json();
         searchResults.value = [...searchResults.value, ...data];

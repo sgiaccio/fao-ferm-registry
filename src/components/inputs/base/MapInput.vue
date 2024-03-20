@@ -18,7 +18,6 @@ import { useAuthStore } from '@/stores/auth';
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
 
-import FormGroup from '../FormGroup.vue';
 import TextInput from './TextInput.vue';
 
 import AreaEcosystemsView from '@/views/project/AreaEcosystemsView.vue';
