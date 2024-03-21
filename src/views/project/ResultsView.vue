@@ -98,7 +98,7 @@ async function initChart() {
             // format the number with no decimals
             formatter: function (params: any) {
                 const value = params.value;
-                return `${getRecursiveMenuLabel(params.name, menus.gefIndicators) || params.name}:<br>${numberFormatter.format(value)} ${store.project.project.areaUnits}`;
+                return `${getRecursiveMenuLabel(params.name, menus.gefIndicators) || params.name}:<br>${numberFormatter.format(value)} ${store.project.project.areaUnits || ''}`;
             },
             confine: 'true',
             textStyle: {
@@ -157,7 +157,7 @@ async function initChart() {
                         fontSize: 40,
                         fontWeight: 'bold',
                         formatter: (params: any) => {
-                            return numberFormatter.format(params.value) + ' ' + store.project.project.areaUnits;
+                            return numberFormatter.format(params.value) + ' ' + (store.project.project.areaUnits || '');
                         }
                     },
                 },
@@ -178,8 +178,10 @@ async function initChart() {
 }
 
 const ciChartDiv = ref(null);
+const showCIChart = ref(true);
 function initCICharts() {
     if (!ciChartDiv.value) return;
+
     // return if not GEF
     if (store.project.reportingLine !== 'GEF') return;
 
@@ -197,12 +199,12 @@ function initCICharts() {
         findAchievedAreaByCoreIndicator('2LDCF')
     ];
     const committedData = [
-        store.project.project.targetAreaCoreIndicator1,
-        store.project.project.targetAreaCoreIndicator2,
-        store.project.project.targetAreaCoreIndicator3,
-        store.project.project.targetAreaCoreIndicator4,
-        store.project.project.targetAreaCoreIndicator5,
-        store.project.project.targetAreaCoreIndicator2LDCF
+        store.project.project.targetAreaCoreIndicator1 || 0,
+        store.project.project.targetAreaCoreIndicator2 || 0,
+        store.project.project.targetAreaCoreIndicator3 || 0,
+        store.project.project.targetAreaCoreIndicator4 || 0,
+        store.project.project.targetAreaCoreIndicator5 || 0,
+        store.project.project.targetAreaCoreIndicator2LDCF || 0,
     ];
     const yAxisData = [
         '1',
@@ -222,6 +224,11 @@ function initCICharts() {
             i--;
         }
     }
+
+    if (achievedData.length === 0) {
+        showCIChart.value = false;
+        return;
+    };
 
     var myChart = echarts.init(ciChartDiv.value);
 
@@ -278,7 +285,6 @@ function initCICharts() {
     });
 }
 
-
 async function initMap() {
     const sessionTokenPromise = fetch('https://tile.googleapis.com/v1/createSession?key=AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M', {
         method: 'POST',
@@ -315,6 +321,10 @@ async function initMap() {
 
 
     const area = await areaFetchPromise as GeoJSONObject;
+    // if area is not a valid GeoJSON object, return
+    if (!area) {
+        return;
+    }
 
     const jsonLayer = L.geoJSON(area, {
         pointToLayer: function (_feature, latlng) {
@@ -452,6 +462,7 @@ async function initMap() {
                     />
                     <div
                         ref="ciChartDiv"
+                        v-if="showCIChart"
                         class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
                     />
 
@@ -478,30 +489,31 @@ async function initMap() {
                     ></div>
                 </div> -->
 
-                <div class="shadow-md rounded border divide-y">
+                <div class="shadow-lg rounded border divide-y">
                     <div class="px-4 py-5 sm:px-6 bg-ferm-green-light/70 rounded-t">
-                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Area of land committed in last project phase</h3 h-64 w-full>
-
-                        <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-green-light/20">
-                            <div class="col-span-2">Target area in last project phase</div>
-                            <div class="col-span-1">{{ roundToPrecisionAsString(getLastTargetArea(), 2) }} Ha</div>
-                        </div>
+                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Area of land committed in last project phase</h3>
                     </div>
 
-                    <div class="shadow-md rounded border divide-y">
-                        <div class="px-4 py-5 sm:px-6 bg-ferm-mustard-light/70 rounded-t">
-                            <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved during project implementation</h3>
-                        </div>
+                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-green-light/20">
+                        <div class="col-span-2">Target area in last project phase</div>
+                        <div class="col-span-1">{{ roundToPrecisionAsString(getLastTargetArea(), 2) }} Ha</div>
+                    </div>
+                </div>
 
-                        <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-mustard-light/20">
-                            <div class="col-span-2">Total area of land achieved (tabular format)</div h-64 w-full>areaAchieved, 2) }} Ha
-                        </div>
+                <div class="shadow-lg rounded border divide-y">
+                    <div class="px-4 py-5 sm:px-6 bg-ferm-mustard-light/70 rounded-t">
+                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved during project implementation</h3>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-mustard-light/20">
+                        <div class="col-span-2">Total area of land achieved (tabular format)</div>
+                        <div class="col-span-1">{{ roundToPrecisionAsString(store.project.project.areaAchieved, 2) }} Ha</div>
                         <div class="col-span-2">Total area of land achieved (spatially explicit format)</div>
                         <div class="col-span-1">{{ roundToPrecisionAsString(store.polygonsArea(), 2) }} Ha</div>
                     </div>
                 </div>
 
-                <div class="shadow-md rounded border divide-y">
+                <div class="shadow-lg rounded border divide-y">
                     <div class="px-4 py-5 sm:px-6 bg-ferm-blue-light/70 rounded-t">
                         <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved per GEF CORE Indicator 1&#8209;5</h3>
                     </div>
@@ -513,7 +525,6 @@ async function initMap() {
                         </template>
                     </div>
                 </div>
-
 
 
                 <!-- <div class="shadow rounded px-4 py-3 border bg-slate-50">

@@ -34,10 +34,16 @@ const props = withDefaults(defineProps<{
 const sidebarOpen = ref(false)
 const aboutOpen = ref(false)
 
-if (!localStorage.getItem('aboutViewedOnce')) {
-    localStorage.setItem('aboutViewedOnce', 'true');
-    aboutOpen.value = true;
-}
+const whatToSearch = ref<'initiatives' | 'goodPractices'>();
+watch(() => props.type, type => {
+    whatToSearch.value = type;
+
+    // show the about dialog if the user is searching for good practices for the first time
+    if (!localStorage.getItem('aboutViewedOnce') && type === 'goodPractices') {
+        localStorage.setItem('aboutViewedOnce', 'true');
+        aboutOpen.value = true;
+    }
+}, { immediate: true });
 
 const queryGoodPractices = [
     {
@@ -89,11 +95,6 @@ const searchTermsGoodPractices = ref(Object.fromEntries(queryGoodPractices.map((
 const searchTermsInitiatives = ref(Object.fromEntries(queryInitiatives.map((q) => [q.queryName, []])));
 const countriesBestPractices = ref([]);
 const countriesInitiatives = ref([]);
-
-const whatToSearch = ref<'initiatives' | 'goodPractices'>();
-watch(() => props.type, (type) => {
-    whatToSearch.value = type;
-}, { immediate: true });
 </script>
 
 <template>
@@ -282,8 +283,11 @@ watch(() => props.type, (type) => {
                                 />
                             </a>
                         </div>
-                    </div>
-                    <div class="absolute top-3 right-3">
+                </div>
+                    <div
+                        v-if="whatToSearch === 'goodPractices'"
+                        class="absolute top-3 right-3"
+                    >
                         <button
                             @click="aboutOpen = true"
                             class="font-akrobat font-bold uppercase text-lg tracking-wide text-white/90 text-shadow-sm shadow-black"

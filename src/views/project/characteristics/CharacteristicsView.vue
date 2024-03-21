@@ -118,10 +118,10 @@ const statistics: Statistics[] = [
                     <span class="font-bold">Above Ground Biomass:</span> The change in above-ground biomass is essential to quantify the carbon sequestration potential of ecosystems in restoration. It allows the comparability between similar restoration techniques and approaches and evaluates their effectiveness. It is also a proxy of ecosystem health and helps monitor productivity. Estimates of forest above-ground biomass for the years 2010, 2017, 2018, 2019, and 2020.
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Values:</span> Minimum, mean and maximum AGB per pixel
+                    <span class="font-medium">Values:</span> Sum of the AGB for the whole area
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Units:</span> MT/ha
+                    <span class="font-medium">Units:</span>Mg, Ton
                 </p>
                 <p class="mt-1">
                     <span class="font-medium">Spatial resolution:</span> 98 meters
@@ -367,10 +367,10 @@ const statistics: Statistics[] = [
         transformFn: (val: any) => {
             return [{
                 year: 2021,
-                value: val[0].mean
+                value: val[0].max
             }, {
                 year: 2022,
-                value: val[1].mean
+                value: val[1].max
             }];
         },
         template: (props) => {
@@ -390,10 +390,10 @@ const statistics: Statistics[] = [
                     Is a fundamental component to measure biodiversity, which is an essential component to achieve target 2. Biodiversity is key for ecosystem functioning, resilience to environmental change and genetic diversity. Estimates of species richness are for the year 2021 and 2022.
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Values:</span> Count of the number of terrestrial species potentially occurring in each grid cell in 2021 and 2022.
+                    <span class="font-medium">Values:</span> Count of the maximum number of terrestrial species potentially occurring in each grid cell in 2021 and 2022.
                 </p>
                 <p class="mt-1">
-                    <span class="font-medium">Units:</span> Number of species/pixel
+                    <span class="font-medium">Units:</span> Number of species
                 </p>
                 <p class="mt-1">
                     <span class="font-medium">Spatial resolution:</span> 30000 meters

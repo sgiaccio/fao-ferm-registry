@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+    setup
+    lang="ts"
+>
 import { onMounted } from 'vue';
 
 import {
@@ -13,20 +16,202 @@ import Footer from '@/views/Footer.vue'
 
 
 const points = [
-    { flagship: "Altyn Dala Conservation Initiative", target2030: "5 million ha new protected areas and ecological corridors", restored: "", memberStates: "Kazakhstan", iucnEcosystemsBiomes: "Shrublands & shrubby woodlands biome; Savannas and grasslands biome; Deserts and semi-deserts biome; Palustrine wetlands biome (*which covers Peatlands); Rivers and streams biome", latitude: 48.0196, longitude: 66.9237 },
-    { flagship: "Building with Nature in Indonesia - restoring an eroding coastline and inspiring action at scale", target2030: "", restored: "119 ha mangroves restored, 300 ha of sustainable aquaculture and 3.4 km permeable structures built", memberStates: "Indonesia", iucnEcosystemsBiomes: "Intensive land-use systems biome; Shorelines biome; Brackish tidal biome", latitude: -0.7893, longitude: 113.9213 },
-    { flagship: "Central America dry corridor Agro-Forestry Restoration", target2030: "300,000 ha", restored: "", memberStates: "Costa Rica, El Salvador, Guatemala, Honduras, Nicaragua, Panama", iucnEcosystemsBiomes: "Tropical-subtropical forests biome", latitude: 12.8654, longitude: -85.2072 },
-    { flagship: "GGW for restoration and Peace building", target2030: "100 million ha", restored: "", memberStates: "Burkina Faso, Djibouti, Eritrea, Ethiopia, Mali, Mauritania, Niger, Senegal, Sudan, Chad", iucnEcosystemsBiomes: "Savannas and grasslands biome; Deserts and semi-deserts biome", latitude: 17.6078, longitude: 13.0817 },
-    { flagship: "Multi-country flagship on ecosystem restoration in mountain regions", target2030: "Virunga Massif: 8,333 ha", restored: "Virunga Massif: 1,027 ha", memberStates: "DRC/Uganda/Rwanda, Kyrgyzstan, Serbia", iucnEcosystemsBiomes: "Tropical-subtropical forests biome; Temperate-boreal forests & woodlands biome; Shrublands & shrubby woodlands biome; Savannas and grasslands biome; Deserts and semi-deserts biome; Intensive land-use systems biome; Rivers and streams biome", latitude: -1.9403, longitude: 29.8739 },
-    { flagship: "Multi-country flagship on ecosystem restoration in mountain regions", target2030: "Serbia: two nature parks: 5,000 ha (Stara Planina) and 35,000 ha (Kucaj – Beljanica); 200 ha forests, between 30 and 40 ha pasture", restored: "200 ha", memberStates: "DRC/Uganda/Rwanda, Kyrgyz, Serbia", iucnEcosystemsBiomes: "Tropical-subtropical forests biome; Temperate-boreal forests & woodlands biome; Shrublands & shrubby woodlands biome; Savannas and grasslands biome; Deserts and semi-deserts biome; Intensive land-use systems biome; Rivers and streams biome", latitude: 44.0165, longitude: 21.0059 },
-    { flagship: "Multi-country flagship on ecosystem restoration in mountain regions", target2030: "Kyrgyzstan: biodiversity conservation and pasture management: micro-reserve Moldonun-Beli with 11,450 ha and pastures of 2 Pasture Committees – 52,000 ha; Dzheti-Oguz zoological preserve with 30,000 ha and pastures of 2 Pasture Committees – 20,800 ha; Teploklyuchensky zoological preserve 29,000 ha and pastures of 1 Pasture Committees – 22,600 ha. At-Bashyn district of Naryn province are planned to be covered by pasture management, with a potential area of 1.9 million ha.  Forest management: 34 Forest Management Units (FMUs) around the country. Each unit is expected to restore 400 ha per year. When considering the 34 FMUs, 13,600 ha are expected to be restored per year, which amounts to 110,000 ha by 2030", restored: "The following areas have been conserved and restored through biodiversity conservation and pasture management: micro-reserve Baiboosun: 14,000 ha of protected area and 75,500 ha of pasture since 2019; zoological reserve Jargylchak: 23,098 ha of protected area and 101,891 ha of pasture. In addition, another 26,258 ha of pasture have been restored by applying GRI.    Forest management: Through 8 forest management units (FMUs), 126,000 ha of forest have already been restored. Another 2,500 ha of forest has been planted and an improved management of the forest was achieved through community engagement which in turn has led to 800,000 ha of forest ecosystems that are now under sustainable management", memberStates: "DRC/Uganda/Rwanda, Kyrgyz, Serbia", iucnEcosystemsBiomes: "Tropical-subtropical forests biome; Temperate-boreal forests & woodlands biome; Shrublands & shrubby woodlands biome; Savannas and grasslands biome; Deserts and semi-deserts biome; Intensive land-use systems biome; Rivers and streams biome", latitude: 41.2044, longitude: 74.7661 },
-    { flagship: "Namami Gange", target2030: "134,000 ha reforestation", restored: "30,000 ha reforestation and 370 km river banks restored", memberStates: "India", iucnEcosystemsBiomes: "Tropical-subtropical forests biome; Shrublands and shrubby woodlands biome; Intensive land use systems biome; Palustrine wetlands biome (including peatlands); Rivers and streams biome; Lakes biome; Artificial wetlands biome", latitude: 20.5937, longitude: 78.9629 },
-    { flagship: "Restoration of Coastal and Marine Ecosystems of Abu Dhabi, United Arab Emirates", target2030: "Another 4,500 ha of of coastal areas", restored: "7,500 ha of of coastal areas", memberStates: "United Arab Emirates", iucnEcosystemsBiomes: "Marine shelf biome; Shorelines biome; Brackish tidal biome", latitude: 23.4241, longitude: 53.8478 },
-    { flagship: "Shan-Shui Initiative in China", target2030: "10 million ha", restored: "2 million ha", memberStates: "China", iucnEcosystemsBiomes: "Tropical-subtropical forests biome; Temperate-boreal forests & woodlands biome; Shrublands & shrubby woodlands biome; Deserts and semi-deserts biome; Intensive land-use systems biome; Palustrine wetlands biome (*which covers Peatlands); Rivers and streams biome; Lakes biome; Artificial wetlands biome; Anthropogenic marine biome; Shorelines biome; Supralittoral coastal biome; Anthropogenic shorelines biome; Brackish tidal biome", latitude: 35.8617, longitude: 104.1954 },
-    { flagship: "SIDS Ecosystem Restoration Flagship", target2030: "", restored: "Comoros: 82,000 ha under restoration", memberStates: "Saint Lucia, Comoros, Vanuatu", iucnEcosystemsBiomes: "Rivers and streams biome; Tropical or subtropical forests biome; Shrublands and shrubby woodlands biome; Savannas and grasslands biome; Intensive land use (crop and urban) biome; Marine shelf biome; Shorelines biome; Brackish tidal biome", latitude: -11.6455, longitude: 43.3333 },
-    { flagship: "SIDS Ecosystem Restoration Flagship", target2030: "", restored: "Saint Lucia: 21,000 ha under restoration", memberStates: "Saint Lucia, Comoros, Vanuatu", iucnEcosystemsBiomes: "Rivers and streams biome; Tropical or subtropical forests biome; Shrublands and shrubby woodlands biome; Savannas and grasslands biome; Intensive land use (crop and urban) biome; Marine shelf biome; Shorelines biome; Brackish tidal biome", latitude: 13.9094, longitude: -60.9789 },
-    { flagship: "SIDS Ecosystem Restoration Flagship", target2030: "", restored: "Vanuatu: 10 ha under restoration", memberStates: "Saint Lucia, Comoros, Vanuatu", iucnEcosystemsBiomes: "Rivers and streams biome; Tropical or subtropical forests biome; Shrublands and shrubby woodlands biome; Savannas and grasslands biome; Intensive land use (crop and urban) biome; Marine shelf biome; Shorelines biome; Brackish tidal biome", latitude: -15.3767, longitude: 166.9592 },
-    { flagship: "Trinational Atlantic Forest Pact", target2030: "1 million ha", restored: "700,000 ha", memberStates: "Argentina, Brazil, Paraguay", iucnEcosystemsBiomes: "Tropical-subtropical forests biome; Intensive land-use systems biome; Rivers and streams biome; Shorelines biome; Supralittoral coastal biome; Anthropogenic shorelines biome", latitude: -23.4425, longitude: -58.4438 },
+    {
+        latitude: 48.0196,
+        longitude: 66.9237
+    },
+    {
+        latitude: -0.7893,
+        longitude: 113.9213
+    },
+    {
+        latitude: 9.907,
+        longitude: -84.1051
+    },
+    {
+        latitude: 13.6918,
+        longitude: -89.2261
+    },
+    {
+        latitude: 14.6345,
+        longitude: -90.517
+    },
+    {
+        latitude: 14.081,
+        longitude: -87.1607
+    },
+    {
+        latitude: 12.1015,
+        longitude: -86.2268
+    },
+    {
+        latitude: 9.0021,
+        longitude: -79.5176
+    },
+    {
+        latitude: 12.3756,
+        longitude: -1.5211
+    },
+    {
+        latitude: 13.4849,
+        longitude: 2.1343
+    },
+    {
+        latitude: -4.5249,
+        longitude: 15.7612
+    },
+    {
+        latitude: 0.353,
+        longitude: 32.5896
+    },
+    {
+        latitude: -1.9412,
+        longitude: 30.0449
+    },
+    {
+        latitude: 44.0165,
+        longitude: 21.0059
+    },
+    {
+        latitude: 41.2044,
+        longitude: 74.7661
+    },
+    {
+        latitude: 20.5937,
+        longitude: 78.9629
+    },
+    {
+        latitude: 23.4241,
+        longitude: 53.8478
+    },
+    {
+        latitude: 35.8617,
+        longitude: 104.1954
+    },
+    {
+        latitude: -11.6455,
+        longitude: 43.3333
+    },
+    {
+        latitude: 13.9094,
+        longitude: -60.9789
+    },
+    {
+        latitude: -15.3767,
+        longitude: 166.9592
+    },
+    {
+        latitude: -34.6073,
+        longitude: -58.961
+    },
+    {
+        latitude: -15.7949,
+        longitude: -47.9137
+    },
+    {
+        latitude: -25.1845,
+        longitude: -57.4534
+    },
+    {
+        latitude: 6.9022,
+        longitude: 79.9088
+    },
+    {
+        latitude: 33.6844,
+        longitude: 73.0479
+    },
+    {
+        latitude: 27.7172,
+        longitude: 85.324
+    },
+    {
+        latitude: -34.603722,
+        longitude: -58.381592
+    },
+    {
+        latitude: -33.44889,
+        longitude: -70.669265
+    },
+    {
+        latitude: -19.033349,
+        longitude: -65.262738
+    },
+    {
+        latitude: -0.180653,
+        longitude: -78.467838
+    },
+    {
+        latitude: -12.046374,
+        longitude: -77.042793
+    },
+    {
+        latitude: 14.6928,
+        longitude: -17.4467
+    },
+    {
+        latitude: 17.5707,
+        longitude: -3.9962
+    },
+    {
+        latitude: -6.163,
+        longitude: 35.7516
+    },
+    {
+        latitude: -1.286389,
+        longitude: 36.817223
+    },
+    {
+        latitude: 0.3476,
+        longitude: 32.5825
+    },
+    {
+        latitude: -1.286389,
+        longitude: 36.817223
+    },
+    {
+        latitude: 2.0469,
+        longitude: 45.3182
+    },
+    {
+        latitude: 9.03,
+        longitude: 38.74
+    },
+    {
+        latitude: -1.9579,
+        longitude: 30.1129
+    },
+    {
+        latitude: 12.6392,
+        longitude: -8.0029
+    },
+    {
+        latitude: 13.5127,
+        longitude: 2.1125
+    },
+    {
+        latitude: 14.6928,
+        longitude: -17.4467
+    },
+    {
+        latitude: 5.6037,
+        longitude: -0.187
+    },
+    {
+        latitude: 33.8938,
+        longitude: 35.5018
+    },
+    {
+        latitude: 34.0209,
+        longitude: -6.8416
+    },
+    {
+        latitude: 36.8065,
+        longitude: 10.1815
+    },
+    {
+        latitude: 39.9334,
+        longitude: 32.8597
+    },
 ];
 
 const lastFlagships = [
@@ -47,7 +232,7 @@ const lastFlagships = [
     { name: "African Farmers Transforming Food Systems", memberStates: "Senegal, Mali,Tanzania, Kenya, Uganda", iucnBiomes: "Intensive land-use systems" },
     { name: "Regreening Africa", memberStates: "Kenya, Somalia, Ethiopia, Rwanda, Mali, Niger, Senegal, Ghana", iucnBiomes: "Tropical-subtropical forests; Savannas and grasslands biome;  Shrublands & shrubby woodlands; Intensive land-use systems" },
     { name: "Restoring Mediterranean Forests", memberStates: "Lebanon, Morocco, Tunisia, Turkey", iucnBiomes: "Temperate-boreal forests & woodlands; Shrublands & shrubby woodlands; Savannas and grasslands" },
-]
+].reverse();
 
 async function initMap() {
     const { Map } = await google.maps.importLibrary('maps');
@@ -64,11 +249,11 @@ async function initMap() {
             position: { lat: point.latitude, lng: point.longitude },
             icon: {
                 path: google.maps.SymbolPath.CIRCLE,
-                scale: 7,
-                // fillColor: '#fff',
-                // fillOpacity: 0.5,
-                strokeColor: '#0A97D9',
-                // strokeWeight: 1,
+                scale: 4.,
+                fillColor: '#fff',
+                fillOpacity: 0.9,
+                strokeColor: '#EEA63A',
+                strokeWeight: 2.5
             },
             opacity: 0.9,
             cursor: 'hand',
@@ -128,9 +313,9 @@ onMounted(async () => {
                     <div class="relative text-white mt-16 max-w-sm md:max-w-2xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-8 md:grid-cols-2 md:gap-x-10">
                         <div class="bg-ferm-green-light/70 rounded-lg p-4 md:py-5 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur order-1 md:order-none">
                             <router-link :to="{ name: 'initiatives' }">
-                                <div class="flex flex-row gap-x-2 h-full">
+                                <div class="flex flex-row gap-x-4 h-full">
                                     <div class="mt-0.5">
-                                        <ArrowRightIcon class="w-6 h-6" />
+                                        <ArrowRightIcon class="w-12 h-12" />
                                     </div>
                                     <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
                                         <div class="text-xl font-bold uppercase md:tracking-wide">Register</div>
@@ -144,9 +329,9 @@ onMounted(async () => {
                             target="_blank"
                             class="bg-ferm-blue-dark/80 rounded-lg p-4 md:py-5 text-left transition-colors hover:bg-ferm-blue-light shadow backdrop-blur order-2 md:order-none"
                         >
-                            <div class="flex flex-row gap-x-2 h-full">
+                            <div class="flex flex-row gap-x-4 h-full">
                                 <div>
-                                    <GlobeAltIcon class="w-6 h-6" />
+                                    <GlobeAltIcon class="w-12 h-12" />
                                 </div>
                                 <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
                                     <div class="text-xl font-semibold uppercase md:tracking-wide">Visualize</div>
@@ -159,9 +344,9 @@ onMounted(async () => {
                             target="_blank"
                             class="border-ferm-green-light/70 hover:border-transparent border-4 rounded-lg p-4 md:py-5 text-left transition-colors hover:bg-ferm-green-light/70 shadow backdrop-blur order-4 md:order-none"
                         >
-                            <div class="flex flex-row gap-x-2 h-full -m-1">
+                            <div class="flex flex-row gap-x-4 h-full -m-1">
                                 <div>
-                                    <BookOpenIcon class="w-6 h-6" />
+                                    <BookOpenIcon class="w-12 h-12" />
                                 </div>
                                 <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
                                     <div class="text-xl font-semibold uppercase md:tracking-wide">User guide</div>
@@ -173,9 +358,9 @@ onMounted(async () => {
                             :to="{ name: 'searchInitiatives' }"
                             class="bg-ferm-mustard-dark/95 hover:bg-ferm-mustard-light rounded-lg p-4 md:py-5 text-left transition-colors shadow backdrop-blur order-3 md:order-none"
                         >
-                            <div class="flex flex-row gap-x-2 h-full">
+                            <div class="flex flex-row gap-x-4 h-full">
                                 <div>
-                                    <MagnifyingGlassIcon class="w-6 h-6" />
+                                    <MagnifyingGlassIcon class="w-12 h-12" />
                                 </div>
                                 <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
                                     <div class="text-xl font-semibold uppercase md:tracking-wide">Search</div>
@@ -223,8 +408,8 @@ onMounted(async () => {
                     </div>
                 </div>
 
-                <div class="col-span-2 h-72 rounded-lg bg-white border-2 border-ferm-blue-dark-300 overflow-hidden shadow flex flex-col">
-                    <div class="py-4 px-8 font-akrobat font-bold text-xl bg-ferm-blue-light-50">New Initiatives</div>
+                <div class="col-span-2 h-72 rounded-lg bg-white border-2_ border-ferm-blue-dark-300 overflow-hidden shadow flex flex-col">
+                    <div class="py-4 px-8 font-akrobat font-bold text-xl bg-ferm-blue-light-200">New Initiatives</div>
                     <div class="overflow-y-auto px-4 py-2">
                         <ul
                             role="list"
