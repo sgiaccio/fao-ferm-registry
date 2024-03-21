@@ -9,7 +9,7 @@ import {
     GlobeEuropeAfricaIcon,
 } from '@heroicons/vue/24/outline'
 
-import { ArrowRightIcon, GlobeAltIcon, MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/vue/24/solid'
+import { MapPinIcon, GlobeAltIcon, MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/vue/24/solid'
 
 import WavyDivider from '@/views/WavyDivider.vue';
 import Footer from '@/views/Footer.vue'
@@ -315,7 +315,7 @@ onMounted(async () => {
                             <router-link :to="{ name: 'initiatives' }">
                                 <div class="flex flex-row gap-x-4 h-full">
                                     <div class="mt-0.5">
-                                        <ArrowRightIcon class="w-12 h-12" />
+                                        <GlobeAltIcon class="w-12 h-12" />
                                     </div>
                                     <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
                                         <div class="text-xl font-bold uppercase md:tracking-wide">Register</div>
@@ -331,7 +331,7 @@ onMounted(async () => {
                         >
                             <div class="flex flex-row gap-x-4 h-full">
                                 <div>
-                                    <GlobeAltIcon class="w-12 h-12" />
+                                    <MapPinIcon class="w-12 h-12" />
                                 </div>
                                 <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
                                     <div class="text-xl font-semibold uppercase md:tracking-wide">Visualize</div>

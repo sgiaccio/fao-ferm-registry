@@ -3,7 +3,44 @@
     lang="ts"
 >
 import { ref, onMounted, onUnmounted } from 'vue';
-import * as echarts from 'echarts';
+
+import * as echarts from 'echarts/core';
+
+// Import bar charts, all suffixed with Chart
+import { LineChart } from 'echarts/charts';
+
+// Import the tooltip, title, rectangular coordinate system, dataset and transform components
+import {
+    // TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    // DatasetComponent,
+    // TransformComponent,
+    LegendComponent,
+    MarkPointComponent
+} from 'echarts/components';
+
+// Features like Universal Transition and Label Layout
+// import { LabelLayout, UniversalTransition } from 'echarts/features';
+
+// Import the Canvas renderer
+// Note that including the CanvasRenderer or SVGRenderer is a required step
+import { SVGRenderer } from 'echarts/renderers';
+
+
+echarts.use([
+    LineChart,
+    // TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    // DatasetComponent,
+    // TransformComponent,
+    // LabelLayout,
+    // UniversalTransition,
+    SVGRenderer,
+    LegendComponent,
+    MarkPointComponent
+]);
 
 
 const chartDiv = ref();

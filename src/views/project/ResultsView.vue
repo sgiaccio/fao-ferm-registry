@@ -2,6 +2,9 @@
     setup
     lang="ts"
 >
+import * as L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
 import { ref, onMounted } from 'vue';
 
 import { useProjectStore } from '../../stores/project';
@@ -58,20 +61,47 @@ if (totalArea < getLastTargetArea()) {
     });
 }
 
-
-
-
-
-
-
-import * as L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-
 // import 'maplibre-gl/dist/maplibre-gl.css';
 // import { Map } from 'maplibre-gl';
 
-import * as echarts from 'echarts';
+import * as echarts from 'echarts/core';
+
+// Import bar charts, all suffixed with Chart
+import { BarChart } from 'echarts/charts';
+import { PieChart } from 'echarts/charts';
+
+// Import the tooltip, title, rectangular coordinate system, dataset and transform components
+import {
+    // TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    // DatasetComponent,
+    // TransformComponent,
+    LegendComponent
+} from 'echarts/components';
+
+// Features like Universal Transition and Label Layout
+// import { LabelLayout, UniversalTransition } from 'echarts/features';
+
+// Import the Canvas renderer
+// Note that including the CanvasRenderer or SVGRenderer is a required step
+import { SVGRenderer } from 'echarts/renderers';
+
 import type { GeoJSONObject } from 'ol/format/GeoJSON';
+
+echarts.use([
+    PieChart,
+    BarChart,
+    // TitleComponent,
+    TooltipComponent,
+    GridComponent,
+    // DatasetComponent,
+    // TransformComponent,
+    // LabelLayout,
+    // UniversalTransition,
+    SVGRenderer,
+    LegendComponent
+]);
 
 
 onMounted(async () => {
