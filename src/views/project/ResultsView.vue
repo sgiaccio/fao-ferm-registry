@@ -4,6 +4,7 @@
 >
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-bing-layer';
 
 import { ref, onMounted } from 'vue';
 
@@ -47,12 +48,35 @@ const areaByGefIndicator = store.areaByGefIndicator();
 
 // const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel(label, menus.gefIndicators));
 
-const chartData = areaByGefIndicator.map(([label, value]) => {
-    return {
-        value,
-        name: label
-    };
-})
+let chartData: { value: number, name: string }[] = [];
+if (store.project.reportingLine === 'GEF') {
+    chartData = areaByGefIndicator.map(([label, value]) => {
+        return {
+            value,
+            name: getRecursiveMenuLabel(label, menus.gefIndicators) || label
+        };
+    });
+} else {
+    chartData = [
+        {
+            value: store.project.project.areaUnderRestoration || 0,
+            name: 'Area under restoration'
+        },
+        {
+            value: store.project.project.targetArea - (store.project.project.areaUnderRestoration || 0),
+            name: 'Not achieved'
+        }
+    ];
+}
+
+
+// const chartData = areaByGefIndicator.map(([label, value]) => {
+//     return {
+//         value,
+//         name: label
+//     };
+// })
+
 const totalArea = chartData.reduce((total, { value }) => total + value, 0);
 if (totalArea < getLastTargetArea()) {
     chartData.push({
@@ -150,7 +174,13 @@ async function initChart() {
                     },
                 },
             },
-            formatter: (name: string) => name === 'Not achieved' ? 'Not achieved' : name.slice(3),
+            formatter: (name: string) => {
+                if (store.project.reportingLine === 'GEF')
+                    name === 'Not achieved' ? 'Not achieved' : name.slice(3)
+                else {
+                    return name;
+                }
+            }
             // formatter: function (name: string) {
             //     const maxLength = 60; // Maximum length of legend text
             //     const truncatedName = name.length > maxLength ? name.substring(0, maxLength - 3) + '...' : name;
@@ -316,101 +346,163 @@ function initCICharts() {
 }
 
 async function initMap() {
-    const sessionTokenPromise = fetch('https://tile.googleapis.com/v1/createSession?key=AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            mapType: 'satellite',
-            language: 'en-US',
-            region: 'US',
-            "layerTypes": ["layerRoadmap"],
-            "overlay": false,
-        })
-    }).then(response => response.json()).then(data => {
-        return data.session;
+    const { Map } = await google.maps.importLibrary('maps');
+    const map = new Map(document.getElementById('map') as HTMLElement, {
+        center: { lat: 0, lng: 40 },
+        zoom: 1,
+        disableDefaultUI: true,
+        // satellite map
+        mapTypeId: 'hybrid'
     });
-    const areaFetchPromise = getProjectAreas(store.id!);
 
-    const sessionToken = await sessionTokenPromise;
-
-    const map = L.map('map').setView([0, 0], 2);
-
-    L.tileLayer('https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session=' + sessionToken + '&key=AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M', {
-        maxZoom: 15,
-        attribution: 'Google Maps<a class="ol-attribution-google-tos" href="https://cloud.google.com/maps-platform/terms/" target="_blank">Terms of Use</a> and <a class="ol-attribution-google-tos" href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a>'
-    }).addTo(map);
-
-    var myStyle = {
-        "color": "#FFCC00",
-        "weight": 2,
-        "opacity": 0.9,
-        "fillOpacity": 0
-    };
-
-
-    const area = await areaFetchPromise as GeoJSONObject;
+    //load the json data
+    const area = await getProjectAreas(store.id!);
     // if area is not a valid GeoJSON object, return
     if (!area) {
         return;
     }
 
-    const jsonLayer = L.geoJSON(area, {
-        pointToLayer: function (_feature, latlng) {
-            return L.circleMarker(latlng, {
-                radius: 1,
-                fillColor: "#ff0000",
-                color: "#ff7800",
-                weight: 1,
-                opacity: 1,
-                fillOpacity: 0.8
-            });
+    const geojson = {
+        type: "FeatureCollection",
+        features: [{
+            type: "Feature",
+            properties: {},
+            geometry: area
+        }]
+    }
+
+    // let geojson;
+    // // area is a GeometryCollection, wrap in a FeatureCollection
+    // if (area.type === 'GeometryCollection') {
+    //     geojson = {
+    //         type: 'FeatureCollection',
+    //         features: area.geometries.map((geometry: any) => ({
+    //             type: 'Feature',
+    //             properties: {},
+    //             geometry
+    //         })),
+    //     };
+    // }
+
+
+    map.data.addGeoJson(geojson);
+
+    map.data.setStyle({
+        fillColor: '#ff0000',
+        fillOpacity: 0,
+        strokeColor: '#EEA63A',
+        strokeWeight: 2,
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            fillColor: '#fff',
+            fillOpacity: 0.67,
+            strokeColor: '#EEA63A',
+            strokeWeight: 2,
+            scale: 4,
         },
-        style: myStyle
     });
 
-    map.flyToBounds(jsonLayer.getBounds(), {
-        padding: [10, 10],
+    // const jsonLayer = new google.maps.Data({ map });
+    // jsonLayer.addGeoJson(geojson);
+
+    // zoom to the layer
+    const bounds = new google.maps.LatLngBounds();
+    map.data.forEach((feature) => {
+        feature.getGeometry().forEachLatLng((latLng) => {
+            bounds.extend(latLng);
+        });
     });
+    // zoom slowly to the layer
+    map.fitBounds(bounds);
 
-    map.once('zoomend', function () {
-        jsonLayer.addTo(map);
-    });
-
-    // MapLibre
-
-    // const map = new Map({
-    //     container: 'map', // container id
-    //     style: {
-    //         'version': 8,
-    //         'sources': {
-    //             'raster-tiles': {
-    //                 'type': 'raster',
-    //                 'tiles': [
-    //                     // NOTE: Layers from Stadia Maps do not require an API key for localhost development or most production
-    //                     // web deployments. See https://docs.stadiamaps.com/authentication/ for details.
-    //                     'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
-    //                 ],
-    //                 'tileSize': 256,
-    //                 'attribution':
-    //                     'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
-    //             }
-    //         },
-    //         'layers': [
-    //             {
-    //                 'id': 'simple-tiles',
-    //                 'type': 'raster',
-    //                 'source': 'raster-tiles',
-    //                 'minzoom': 0,
-    //                 'maxzoom': 22
-    //             }
-    //         ]
-    //     },
-    //     center: [-74.5, 40], // starting position
-    //     zoom: 2 // starting zoom
+    // jsonLayer.setStyle({
+    //     fillColor: '#ff0000',
+    //     fillOpacity: 0,
+    //     color: '#ff7800',
+    //     strokeWeight: 2
     // });
+
+    // // map.data.setMap(map)
+
+    // // Add marks from the points array
 }
+
+
+// async function initMap() {
+//     const map = L.map('map').setView([0, 0], 2);
+
+//     L.tileLayer.bing(import.meta.env.VITE_BING_KEY).addTo(map)
+//     const areaFetchPromise = getProjectAreas(store.id!);
+
+//     var myStyle = {
+//         "color": "#FFCC00",
+//         "weight": 2,
+//         "opacity": 0.9,
+//         "fillOpacity": 0
+//     };
+
+
+//     const area = await areaFetchPromise as GeoJSONObject;
+//     // if area is not a valid GeoJSON object, return
+//     if (!area) {
+//         return;
+//     }
+
+//     const jsonLayer = L.geoJSON(area, {
+//         pointToLayer: function (_feature, latlng) {
+//             return L.circleMarker(latlng, {
+//                 radius: 1,
+//                 fillColor: "#ff0000",
+//                 color: "#ff7800",
+//                 weight: 1,
+//                 opacity: 1,
+//                 fillOpacity: 0.8
+//             });
+//         },
+//         style: myStyle
+//     });
+
+//     map.flyToBounds(jsonLayer.getBounds(), {
+//         padding: [10, 10],
+//     });
+
+//     map.once('zoomend', function () {
+//         jsonLayer.addTo(map);
+//     });
+
+// MapLibre
+
+// const map = new Map({
+//     container: 'map', // container id
+//     style: {
+//         'version': 8,
+//         'sources': {
+//             'raster-tiles': {
+//                 'type': 'raster',
+//                 'tiles': [
+//                     // NOTE: Layers from Stadia Maps do not require an API key for localhost development or most production
+//                     // web deployments. See https://docs.stadiamaps.com/authentication/ for details.
+//                     'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
+//                 ],
+//                 'tileSize': 256,
+//                 'attribution':
+//                     'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
+//             }
+//         },
+//         'layers': [
+//             {
+//                 'id': 'simple-tiles',
+//                 'type': 'raster',
+//                 'source': 'raster-tiles',
+//                 'minzoom': 0,
+//                 'maxzoom': 22
+//             }
+//         ]
+//     },
+//     center: [-74.5, 40], // starting position
+//     zoom: 2 // starting zoom
+// });
+// }
 
 // async function fetchProjectPolygonsArea() {
 //     return fetch(

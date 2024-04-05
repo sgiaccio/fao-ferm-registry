@@ -276,6 +276,7 @@ export const useProjectStore = defineStore('', () => {
             results: {},
             reportingLine: reportingLine,
             created_by: authStore.user!.uid,
+            created_by_name: authStore.user!.displayName,
             termsAndConditionsAccepted: termsAndConditionsAccepted,
             createTime: serverTimestamp(),
             updateTime: serverTimestamp(),
@@ -315,7 +316,7 @@ export const useProjectStore = defineStore('', () => {
         if (!projectToBeSaved['createTime']) {
             // It's a new project
             projectToBeSaved['createTime'] = serverTimestamp();
-            projectToBeSaved['created_by'] = authStore.user.uid
+            projectToBeSaved['created_by'] = authStore.user.uid;
             projectRef = doc(projectsCollection);
         }
 

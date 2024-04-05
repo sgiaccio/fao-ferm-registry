@@ -31,8 +31,9 @@ exports.getMyNewGroupRequests = functions.https.onCall(async (_, context) => {
         throw new functions.https.HttpsError('permission-denied', 'User is not a superadmin');
     }
 
-    // Get the requests
-    const requests = await util.newGroupRequestsCollection.get();
+    // Get all the requests - order by creation time
+    // const requests = await util.newGroupRequestsCollection.get();
+    const requests = await util.newGroupRequestsCollection.orderBy('createTime', 'desc').get();
 
     const requestDocs = requests.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 

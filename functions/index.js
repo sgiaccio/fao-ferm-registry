@@ -195,10 +195,6 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
     if (!context.auth) {
         throw new functions.https.HttpsError("unauthenticated", "User is not authenticated");
     }
-    // if (!util.GROUP_ROLES.includes(role)) {
-    //     throw new functions.https.HttpsError('invalid-argument', `Invalid role: ${role}`);
-    // }
-
     if (!util.isSuperAdmin(context)) {
         throw new functions.https.HttpsError("permission-denied", "Only admins can change user privileges (for now)");
     }
@@ -219,9 +215,6 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
     // Check if the groups are valid
     const groups = Object.keys(privileges);
 
-    // if (Promise.any(groups.map(async g => !(await util.isValidGroup(g))))) {
-    //     throw new functions.https.HttpsError('invalid-argument', `Group ${invalidGroup} doesn't exist`);
-    // }
     const invalidGroup = await util.findAsync(groups, async g => !(await util.isValidGroup(g)));
     if (invalidGroup) {
         throw new functions.https.HttpsError("invalid-argument", `Group ${invalidGroup} doesn't exist`);
@@ -229,91 +222,164 @@ exports.setUserPrivileges = functions.https.onCall(async ({ email, privileges, a
 
     // Set the user's custom claims
     const user = await admin.auth().getUserByEmail(email);
+    const newCustomClaims = { privileges, admin: !!_admin };
 
+    await admin.auth().setCustomUserClaims(user.uid, newCustomClaims);
 
-    // // get the previous privileges
-    // const previousPrivileges = user.customClaims.privileges || {};
-    // // find the differences between the previous privileges and the new privileges
-    // const privilegesToAdd = Object.keys(privileges).filter(g => !Object.keys(previousPrivileges).includes(g));
-    // const privilegesToRemove = Object.keys(previousPrivileges)
-    //     .filter(g => !Object.keys(privileges).includes(g));
-    // const privilegesToUpdate = Object.keys(previousPrivileges)
-    //     .filter(g => Object.keys(privileges).includes(g) && previousPrivileges[g] !== privileges[g]);
-
-    // console.log('privilegesToAdd', privilegesToAdd);
-    // console.log('privilegesToRemove', privilegesToRemove);
-    // console.log('privilegesToUpdate', privilegesToUpdate);
-
-    // // send email to user with the changes in privileges
-    // const mailDoc = {
-    //     to: [email],
-    //     message: {
-    //         subject: 'Changes in your FERM privileges',
-    //         html: `
-    //             <p>Hi,</p>
-    //             <p>Your privileges in the FERM Registry have been updated.</p>
-    //             <p>Privileges added: ${privilegesToAdd.join(', ')}</p>
-    //             <p>Privileges removed: ${privilegesToRemove.join(', ')}</p>
-    //             <p>Privileges updated: ${privilegesToUpdate.join(', ')}</p>
-    //             <p>Best regards,</p>
-    //             <p>The FERM Team<br>
-    //             <a href="http://ferm.fao.org">Framework for Ecosystem Restoration Monitoring portal</a></p>
-    //         `
-    //     }
-    // };
-
-    // // add mail document to mail collection
-    // await util.mailCollection.add(mailDoc);
-
-    await admin.auth().setCustomUserClaims(user.uid, { privileges, admin: !!_admin });
+    // update the custom claims in the user collection
+    await util.usersCollection.doc(user.uid).set({ customClaims: newCustomClaims }, { merge: true });
 
     return { message: "Success! Privileges assigned" };
 });
 
 exports.setUserPrivilegesGroupAdmin = functions.https.onCall(async ({ uid, privileges }, context) => {
+    validateInputs(uid, context);
+
+    privileges = privileges || {};
+
+    await checkValidGroups(privileges);
+    checkValidRoles(privileges);
+    await checkAdminOfAllGroups(privileges, context);
+    // await checkUserMemberOfAllGroups(context.auth.uid, privileges);
+
+    return await setPrivileges(uid, privileges, context);
+});
+
+async function validateInputs(uid, context) {
     if (!context.auth) {
         throw new functions.https.HttpsError("unauthenticated", "User is not authenticated");
     }
 
-    // check the parameters
     if (!uid) {
         throw new functions.https.HttpsError("invalid-argument", "uid is undefined");
     }
+}
 
-    if (!privileges) privileges = {};
-
-    // check if the groups are valid
+async function checkValidGroups(privileges) {
     const invalidAssignedGroup = await util.checkValidGroups(privileges);
     if (invalidAssignedGroup) {
         throw new functions.https.HttpsError("invalid-argument", `Invalid group id ${invalidAssignedGroup}`);
     }
+}
 
-    // check if the roles are valid
+function checkValidRoles(privileges) {
     const roles = Object.values(privileges);
     const invalidRole = roles.find(r => !util.GROUP_ROLES.includes(r));
     if (invalidRole) {
         throw new functions.https.HttpsError("invalid-argument", `Role ${invalidRole} doesn't exist`);
     }
+}
 
-    // check if the current user is admin of all the groups in privileges
+async function checkAdminOfAllGroups(privileges, context) {
     const groupsWhereAdmin = util.getGroupsWhereAdmin(context);
     const groupsIds = Object.keys(privileges);
     const invalidGroup = groupsIds.find(g => !groupsWhereAdmin.includes(g));
     if (invalidGroup) {
-        throw new functions.https.HttpsError("permission-denied", `User is not admin of group ${invalidGroup}`);
+        throw new functions.https.HttpsError("permission-denied", `Requestin user is not admin of group ${invalidGroup}`);
     }
+}
 
-    // throw error if the user is not a member of all the groups in privileges
-    const userGroups = await getUserGroupIds(uid);
-    const invalidGroup3 = groupsIds.find(g => !userGroups.includes(g));
-    if (invalidGroup3) {
-        throw new functions.https.HttpsError("permission-denied", `User is not a member of group ${invalidGroup3}`);
+// async function checkUserMemberOfAllGroups(uid, privileges) {
+//     const userGroups = await getUserGroupIds(uid);
+//     const groupsIds = Object.keys(privileges);
+//     const invalidGroup2 = groupsIds.find(g => !userGroups.includes(g));
+//     if (invalidGroup2) {
+//         throw new functions.https.HttpsError("permission-denied", `Requesting user is not a member of group ${invalidGroup2}`);
+//     }
+// }
+
+async function setPrivileges(uid, privileges, context) {
+    console.log("Setting privileges for user", uid, "to", privileges);
+
+    const currentCustomClaims = (await admin.auth().getUser(uid)).customClaims || {};
+
+    // build a new privileges object by merging the current privileges with the new ones, from the old privileges remove the ones
+    // that are not in the new privileges and where the user is admin
+    const mergedPrivileges = { ...currentCustomClaims.privileges, ...privileges };
+    const groupsWhereAdmin = util.getGroupsWhereAdmin(context);
+    const newPrivileges = Object.keys(mergedPrivileges).reduce((acc, p) => {
+        if (groupsWhereAdmin.includes(p) && !privileges[p]) {
+            return acc;
+        }
+        return { ...acc, [p]: mergedPrivileges[p] };
+    }, {});
+
+
+    const newCustomClaims = { ...currentCustomClaims, privileges: newPrivileges };
+
+    try {
+        await admin.auth().setCustomUserClaims(uid, newCustomClaims);
+        console.log("New custom claims:", JSON.stringify(newCustomClaims, null, 2));
+        return { message: "Success! Privileges assigned" };
+    } finally {
+        try {
+            await util.usersCollection.doc(uid).set({ customClaims: newCustomClaims }, { merge: true });
+        } catch (error) {
+            console.error("Error updating user custom claims in the user collection:", error);
+        }
     }
+}
 
-    await admin.auth().setCustomUserClaims(uid, { privileges, admin: false });
+// exports.setUserPrivilegesGroupAdmin_ = functions.https.onCall(async ({ uid, privileges }, context) => {
+//     if (!context.auth) {
+//         throw new functions.https.HttpsError("unauthenticated", "User is not authenticated");
+//     }
 
-    return { message: "Success! Privileges assigned" };
-});
+//     // check the parameters
+//     if (!uid) {
+//         throw new functions.https.HttpsError("invalid-argument", "uid is undefined");
+//     }
+
+//     if (!privileges) privileges = {};
+
+//     // check if the groups are valid
+//     const invalidAssignedGroup = await util.checkValidGroups(privileges);
+//     if (invalidAssignedGroup) {
+//         throw new functions.https.HttpsError("invalid-argument", `Invalid group id ${invalidAssignedGroup}`);
+//     }
+
+//     // check if the roles are valid
+//     const roles = Object.values(privileges);
+//     const invalidRole = roles.find(r => !util.GROUP_ROLES.includes(r));
+//     if (invalidRole) {
+//         throw new functions.https.HttpsError("invalid-argument", `Role ${invalidRole} doesn't exist`);
+//     }
+
+//     // check if the current user is admin of all the groups in privileges
+//     const groupsWhereAdmin = util.getGroupsWhereAdmin(context);
+//     const groupsIds = Object.keys(privileges);
+//     const invalidGroup = groupsIds.find(g => !groupsWhereAdmin.includes(g));
+//     if (invalidGroup) {
+//         throw new functions.https.HttpsError("permission-denied", `User is not admin of group ${invalidGroup}`);
+//     }
+
+//     // throw error if the user is not a member of all the groups in privileges
+//     const userGroups = await getUserGroupIds(uid);
+//     const invalidGroup2 = groupsIds.find(g => !userGroups.includes(g));
+//     if (invalidGroup2) {
+//         throw new functions.https.HttpsError("permission-denied", `User is not a member of group ${invalidGroup2}`);
+//     }
+
+//     console.log("Setting privileges for user", uid, "to", privileges);
+
+//     const currentCustomClaims = (await admin.auth().getUser(uid)).customClaims || {};
+//     const newCustomClaims = {
+//         admin: !!currentCustomClaims.admin,
+//         privileges: { ...currentCustomClaims.privileges, ...privileges }
+//     };
+
+//     try {
+//         await admin.auth().setCustomUserClaims(uid, newCustomClaims);
+//         console.log("New custom claims:", JSON.stringify(newCustomClaims, null, 2));
+//         return { message: "Success! Privileges assigned" };
+//     } finally {
+//         try {
+//             await util.usersCollection.doc(uid).set({ customClaims: newCustomClaims }, { merge: true });
+//         } catch (error) {
+//             console.error("Error updating user custom claims in the user collection:", error);
+//         }
+//     }
+// });
 
 // Scheduled Firestore Export every 24 hours
 // This is used to export the data from the firestore database
@@ -676,6 +742,9 @@ exports.handleGroupAssignmentRequest = functions.https.onCall(async ({ requestId
 
             console.log("New custom claims:", JSON.stringify(customClaims, null, 2));
             await admin.auth().setCustomUserClaims(userId, customClaims);
+
+            // update the custom claims in the user collection - set the whole custom claims object
+            await util.usersCollection.doc(userId).set({ customClaims }, { merge: true });
         } catch (error) {
             // revert the request status - TODO use a transaction
             await util.assignmentRequestsCollection.doc(requestId).update({ status });
@@ -843,38 +912,38 @@ exports.updateBestPracticesCount = functions.firestore.document("registry/{proje
     // await util.registryCollection.doc(projectId).update({ bestPracticesCount });
 });
 
-async function updatedCreatedByName(createdBy, projectId, snapshot) {
-    try {
-        // get the user's name from the auth system
-        const { displayName } = await admin.auth().getUser(createdBy);
-        functions.logger.info("Updating created_by_name for project", projectId, "to", displayName);
+// async function updatedCreatedByName(createdBy, projectId, snapshot) {
+//     try {
+//         // get the user's name from the auth system
+//         const { displayName } = await admin.auth().getUser(createdBy);
+//         functions.logger.info("Updating created_by_name for project", projectId, "to", displayName);
 
-        // update the created_by_name field in the project document
-        if (displayName) {
-            await util.registryCollection.doc(snapshot.id).update({ created_by_name: displayName });
-        } else {
-            functions.logger.warn("No displayName found for user:", createdBy);
-        }
-    } catch (error) {
-        functions.logger.error("Error getting user:", createdBy, error);
-    }
-}
+//         // update the created_by_name field in the project document
+//         if (displayName) {
+//             await util.registryCollection.doc(snapshot.id).update({ created_by_name: displayName });
+//         } else {
+//             functions.logger.warn("No displayName found for user:", createdBy);
+//         }
+//     } catch (error) {
+//         functions.logger.error("Error getting user:", createdBy, error);
+//     }
+// }
 
-exports.addProjectCreatedByName = functions.firestore.document("registry/{projectId}").onCreate(async (snapshot, context) => {
-    const { created_by: createdBy } = snapshot.data();
-    await updatedCreatedByName(createdBy, context.params.projectId, snapshot);
-});
+// exports.addProjectCreatedByName = functions.firestore.document("registry/{projectId}").onCreate(async (snapshot, context) => {
+//     const { created_by: createdBy } = snapshot.data();
+//     await updatedCreatedByName(createdBy, context.params.projectId, snapshot);
+// });
 
-exports.updateProjectCreatedByName = functions.firestore.document("registry/{projectId}").onUpdate(async (change, context) => {
-    const { created_by: oldCreatedBy } = change.before.data();
-    const { created_by: newCreatedBy } = change.after.data();
+// exports.updateProjectCreatedByName = functions.firestore.document("registry/{projectId}").onUpdate(async (change, context) => {
+//     const { created_by: oldCreatedBy } = change.before.data();
+//     const { created_by: newCreatedBy } = change.after.data();
 
-    if (oldCreatedBy === newCreatedBy) {
-        functions.logger.info("created_by didn't change, not updating created_by_name");
-    } else {
-        await updatedCreatedByName(newCreatedBy, context.params.projectId, change.after);
-    }
-});
+//     if (oldCreatedBy === newCreatedBy) {
+//         functions.logger.info("created_by didn't change, not updating created_by_name");
+//     } else {
+//         await updatedCreatedByName(newCreatedBy, context.params.projectId, change.after);
+//     }
+// });
 
 
 /************************************************
