@@ -253,7 +253,7 @@ function clear() {
             id="mapRoot"
         />
         <div class="flex-1">
-            <fieldset @focusout="emit('focusout')">
+            <fieldset>
                 <div class="md:mt-5 mb-5">
                     <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
                         Site name
@@ -267,7 +267,7 @@ function clear() {
                 </div>
             </fieldset>
 
-            <fieldset @focusout="emit('focusout')">
+            <fieldset>
                 <div>
                     <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
                         {{ `Area [${getMenuSelectedLabel(projectStore.project.project.areaUnits, menus.units)}]` }}

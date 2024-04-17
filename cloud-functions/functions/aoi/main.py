@@ -214,20 +214,13 @@ def _insert_into_postgis(project_id, shp_file_path, bucket_path, orig_filename, 
                 geometry4326 = transform(project.transform, geometry)  # apply projection
                 geometries.append(geometry4326)
 
-        uuid = uuid1()
-        uuid_list.append(str(uuid))
-        # if dissolve:
-            # geometry_collection = GeometryCollection(geometries)
-            # cursor.execute("INSERT INTO project_areas (source, project_id, area_uuid, geom, bucket_path, orig_filename) VALUES ('shapefile', %s, %s, ST_Force2D(ST_GeomFromText(%s, 4326)), %s, %s)",
-            #                 (project_id, str(uuid), wkt.dumps(geometry_collection), bucket_path, orig_filename))
-            
-            # uuid_list.append(str(uuid))
+        if (dissolve):
+            uuid = uuid1()
+            uuid_list.append(str(uuid))
         for geom in geometries:
             if (not dissolve):
                 uuid = uuid1()
-
             cursor.execute("INSERT INTO project_areas (source, project_id, area_uuid, geom, bucket_path, orig_filename) VALUES ('shapefile', %s, %s, ST_Force2D(ST_GeomFromText(%s, 4326)), %s, %s)", (project_id, str(uuid), wkt.dumps(geom), bucket_path, orig_filename))
-
             if (not dissolve):
                 uuid_list.append(str(uuid))
 
@@ -285,10 +278,10 @@ def load_geometries(request, file_handler):
         shp_file_path = file_handler(tmp_dir, temp_zipfile, temp_zipfile_path)
         # shp_file_path = _unzip_and_find_shapefile(tmp_dir, temp_zipfile)
         uuids = _insert_into_postgis(project_id, shp_file_path, bucket_dst_path, orig_filename, dissolve)
+
         # Get the areas of the inserted polygons
         areas = _fetch_areas(project_id, uuids)
 
-        print('Areas inserted: %s' % len(areas))
 
         # return the uuids
         # return (json.dumps(uuids), 200, { 'Access-Control-Allow-Origin': '*' })
@@ -319,7 +312,7 @@ def _fetch_areas(project_id, uuids):
         conn = db_pool.getconn()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT area_uuid, ST_Area(ST_Union(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933))) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s GROUP BY area_uuid", [tuple(uuids), str(project_id)])   
+        cursor.execute("SELECT area_uuid, ST_Area(ST_Union(ST_MakeValid(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)))) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s GROUP BY area_uuid", [tuple(uuids), str(project_id)])   
         areas = cursor.fetchall()
         return areas;
     except Exception as e:
@@ -397,10 +390,12 @@ def get_polygon_area(request):
 
         # perform a query to get the poygons area that merges the features
         cursor.execute("""
-            SELECT ST_Area(ST_Transform(ST_SetSRID(ST_Union(geom::geometry), 4326), 6933)) 
+            SELECT ST_Area(ST_Union(ST_MakeValid(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)))) 
             FROM project_areas 
             WHERE area_uuid = %s
         """, [str(area_uuid)])
+
+        # cursor.execute("SELECT area_uuid, ST_Area(ST_Union(ST_MakeValid(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)))) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s GROUP BY area_uuid", [tuple(uuids), str(project_id)])   
 
         # This is the old query that didn't merge the features
         # cursor.execute("SELECT ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) FROM project_areas WHERE area_uuid = %s", [str(area_uuid)])

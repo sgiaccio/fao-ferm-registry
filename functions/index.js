@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const { Firestore } = require("firebase-admin/firestore");
 
 const firestore = require("@google-cloud/firestore");
 
@@ -565,14 +566,21 @@ exports.deleteUserRecord = functions.auth.user().onDelete(async ({ uid }) => {
     await util.usersCollection.doc(uid).delete();
 });
 
-// TODO: deploy this function and configure it as a blocking function in the Firebase console
+// Deploy this function and configure it as a blocking function in the Firebase console
 // Blocks password sign in attempts. Only password-less and social sign in are allowed
-exports.beforeSignIn = functions.auth.user().beforeSignIn((_user, context) => {
+exports.beforeSignIn = functions.auth.user().beforeSignIn((user, context) => {
     if (context.eventType.endsWith("password")) {
         throw new functions.auth.HttpsError("permission-denied", "Password sign in is not allowed");
     }
+
+    util.usersCollection.doc(user.uid).update({
+        lastSignInTime:Firestore.FieldValue.serverTimestamp(),
+    });
 });
 
+// // This blocking function updates the lastLogin field in the user record when a user logs in
+// exports.afterSignIn = functions.auth.user().beforeSignIn((user, _context) => {
+// });
 
 // New user signup. Everyone can sign up.
 // This function is not used anymore. We now use the client SDK to send the email sign in link.
@@ -1009,3 +1017,12 @@ exports.checkEmailSend = applicationStatus.checkEmailSend;
  * **********************************************/
 const collaborators = require("./collaborators");
 exports.saveProjectCollaborators = collaborators.saveProjectCollaborators;
+
+
+/************************************************
+ * 
+ * EMAILS
+ * 
+ * **********************************************/
+const emails = require("./emails");
+exports.resendEmails = emails.resendEmails;
