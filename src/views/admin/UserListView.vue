@@ -401,7 +401,7 @@ function cancelEdit() {
                                     <DialogTitle
                                         as="h3"
                                         class="text-lg font-medium leading-6 text-gray-900"
-                                    >Edit user zzz{{ userToEdit.displayName || userToEdit.email }}</DialogTitle>
+                                    >Edit user {{ userToEdit.displayName || userToEdit.email }}</DialogTitle>
                                     <div
                                         v-if="authStore.isAdmin"
                                         class="mt-2"
