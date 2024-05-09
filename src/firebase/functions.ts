@@ -76,8 +76,10 @@ export async function submitForReview(projectId: string) {
 
 export async function publishProject(projectId: string) {
     const functions = getFunctions();
-    const submitForReview = httpsCallable(functions, 'publishProject');
-    const result = await submitForReview({ projectId });
+    // const publishProject = httpsCallable(functions, 'publishProject');
+    debugger;
+    const publishProject = httpsCallable(functions, 'publishProjectTemp');
+    const result = await publishProject({ projectId });
     return result.data;
 }
 
@@ -139,5 +141,11 @@ export async function getProjectAreas(projectId: string) {
     const functions = getFunctions();
     const getProjectAreas = httpsCallable(functions, 'getProjectAreas');
     const result = await getProjectAreas({ projectId });
+    return result.data;
+}
+
+export async function createNewProjectVersion(projectId: string) {
+    const createNewProjectVersion = httpsCallable(functions, 'createNewProjectVersion');
+    const result = await createNewProjectVersion({ projectId });
     return result.data;
 }

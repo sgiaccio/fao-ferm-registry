@@ -222,7 +222,7 @@ def delete_bp_image(request):
         blob = bucket.blob(thumbnail_path)
         if (blob.exists()):
             blob.delete()
-        dir_path = '%s/images' % bp_id
+        # dir_path = '%s/images' % bp_id
         # blobs = storage_client.list_blobs(dst_bucket, prefix=dir_path)
         # for blob in blobs:
         #     blob.delete()
