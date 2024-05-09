@@ -416,6 +416,7 @@ provide('applyToAll', () => {
                 <FileUploadFormGroup2
                     label="Please upload Restoration Plans/Management Plans"
                     :projectId="store.id!"
+                    folder="documents/gef/plans"
                     :multiple="true"
                     :accessToken="authStore!.user!.accessToken"
                     :edit="edit"
