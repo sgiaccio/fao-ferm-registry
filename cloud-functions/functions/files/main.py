@@ -179,18 +179,21 @@ def list_document_files(request):
         if not project_id:
             raise BadRequest("Missing project_id")
         
-        bucket = storage.Client().bucket(dst_bucket)
-        blobs = bucket.list_blobs(prefix='%s/%s' % (project_id, file_path))
-        
-        # Convert Blob objects to a serializable format
-        files = [{'name': blob.name.split('/')[-1], 'path': blob.name} for blob in blobs]
+        storage_client = storage.Client()
+        prefix = f'{project_id}/{file_path}'.rstrip('/') + '/'
+        blobs = storage_client.list_blobs(dst_bucket, prefix=prefix, delimiter='/')
 
-        # Return a JSON response
-        return (jsonify(files), 200, {'Access-Control-Allow-Origin': '*'})
+        files = []
+        for blob in blobs:
+            if not blob.name.endswith('/'):  # Ensuring it's not a directory
+                files.append({'name': blob.name.split('/')[-1], 'path': blob.name})
+
+        return jsonify(files), 200, {'Access-Control-Allow-Origin': '*'}
+    except BadRequest as e:
+        return str(e), 400, {'Access-Control-Allow-Origin': '*'}
     except Exception as error:
         logger.error(traceback.format_exc())
-        return ('Internal server error', 500, { 'Access-Control-Allow-Origin': '*' })
-
+        return 'Internal server error', 500, {'Access-Control-Allow-Origin': '*'}
 
 @authenticated
 def delete_document_file(request):
