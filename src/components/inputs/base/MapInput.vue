@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch, computed, onBeforeUnmount } from 'vue';
 
 import View from 'ol/View';
 import Map from 'ol/Map';
@@ -166,25 +166,14 @@ async function fetchGeoJson() {
 }
 
 let m: Map;
+let observer: IntersectionObserver;
 
 onMounted(async () => {
+    if (!mapRoot.value) return;
+
     m = new Map({
         target: mapRoot.value,
-        layers: [
-            // new TileLayer({ source: new OSM() }),
-            new TileLayer({
-                visible: true,
-                preload: Infinity,
-                source: new BingMaps({
-                    key: import.meta.env.VITE_BING_KEY,
-                    imagerySet: 'AerialWithLabelsOnDemand'
-                    // use maxZoom 19 to see stretched tiles instead of the BingMaps
-                    // "no photos at this zoom level" tiles
-                    // maxZoom: 19
-                })
-            }),
-            vectorLayer
-        ],
+        layers: [vectorLayer],
         view: new View({
             zoom: 0,
             center: [0, 0],
@@ -208,7 +197,45 @@ onMounted(async () => {
             console.error('Error fetching GeoJSON', error);
         }
     }
+
+    observer = new IntersectionObserver(
+        ([entry]) => {
+            if (!mapRoot.value) return;
+            if (entry.isIntersecting) {
+                handleIntersection();
+                observer.unobserve(mapRoot.value);
+            }
+        },
+        {
+            threshold: 0.1,
+        }
+    );
+
+    observer.observe(mapRoot.value);
 });
+
+onBeforeUnmount(() => {
+    if (observer) {
+        observer.disconnect();
+    }
+});
+
+function handleIntersection() {
+    const newLayer = new TileLayer({
+        visible: true,
+        preload: Infinity,
+        // @ts-ignore
+        source: new BingMaps({
+            key: import.meta.env.VITE_BING_KEY,
+            imagerySet: 'AerialWithLabelsOnDemand'
+            // use maxZoom 19 to see stretched tiles instead of the BingMaps
+            // "no photos at this zoom level" tiles
+            // maxZoom: 19
+        })
+    });
+
+    m.getLayers().insertAt(0, newLayer);
+}
 
 watch(areaUploaded, (uploaded) => {
     if (uploaded && props.edit) {
