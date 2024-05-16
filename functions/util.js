@@ -9,7 +9,7 @@ const db = admin.firestore();
 const usersCollection = db.collection("users");
 const groupsCollection = db.collection("groups");
 const registryCollection = db.collection("registry");
-const bestPracticesCollection = db.collection("bestPractices");
+// const bestPracticesCollection = db.collection("bestPractices");
 const assignmentRequestsCollection = db.collection("assignementRequests"); // Typo in the name
 const newGroupRequestsCollection = db.collection("newGroupRequests");
 const mailCollection = db.collection("mail");
@@ -229,7 +229,7 @@ exports = module.exports = {
     usersCollection,
     groupsCollection,
     registryCollection,
-    bestPracticesCollection,
+    // bestPracticesCollection,
     assignmentRequestsCollection,
     newGroupRequestsCollection,
     mailCollection,

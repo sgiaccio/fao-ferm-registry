@@ -118,9 +118,13 @@ function openCreateNewVersionDialog() {
     createNewVersionDialog.value.open();
 }
 
-function createNewVersion() {
-    return createNewProjectVersion(props.project.id);
-    // router.push({ name: 'projectInfoEdit', params: { id: props.project.id } });
+async function createNewVersion() {
+    await createNewProjectVersion(props.project.id);
+}
+
+function newVersionCreated() {
+    projectStore.refetchProject(props.project.id);
+    router.push({ name: 'projectInfoEdit', params: { id: props.project.id } });
 }
 </script>
 
@@ -235,10 +239,10 @@ function createNewVersion() {
     <TwoStagesDialog
         ref="createNewVersionDialog"
         title="Start new revision"
-        success-title="New Version Created"
+        success-title="New Revision Created"
         error-title="Error Creating New Version"
         :confirm-callback="createNewVersion"
-        @complete="done"
+        @complete="newVersionCreated"
     >
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">

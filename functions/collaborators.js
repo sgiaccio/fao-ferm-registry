@@ -20,14 +20,14 @@ async function getCollaboratorsFromUids(collaboratorsUids) {
     return await Promise.all(collaboratorsUids.map(uid => util.getUser(uid)));
 }
 
-async function getCollaborators(project, collaboratorsUids) {
-    // get the new collaborators uids
-    const oldCollaboratorsUids = project.collaborators || [];
-    const newCollaboratorsUids = collaboratorsUids.filter(uid => !oldCollaboratorsUids.includes(uid));
+// async function getCollaborators(project, collaboratorsUids) {
+//     // get the new collaborators uids
+//     const oldCollaboratorsUids = project.collaborators || [];
+//     const newCollaboratorsUids = collaboratorsUids.filter(uid => !oldCollaboratorsUids.includes(uid));
 
-    // check that the new collaborators are editors of the project
-    return await Promise.all(newCollaboratorsUids.map(uid => util.getUser(uid)));
-}
+//     // check that the new collaborators are editors of the project
+//     return await Promise.all(newCollaboratorsUids.map(uid => util.getUser(uid)));
+// }
 
 function checkCollaborators(collaborators, project) {
     // This function checks that the collaborators are editors of the project

@@ -1036,3 +1036,4 @@ exports.resendEmails = emails.resendEmails;
 
 const projectVersions = require("./projectVersions");
 exports.createNewProjectVersion = projectVersions.createNewProjectVersion;
+exports.reviseProject = projectPublishWorkflow.reviseProject;

@@ -359,7 +359,10 @@ function resetFilters() {
                             </div>
                         </Combobox>
 
-                        <div v-if="selectedGroup === fermGroupId" class="max-w-xs  pt-3 md:pt-0">
+                        <div
+                            v-if="selectedGroup === fermGroupId"
+                            class="max-w-xs  pt-3 md:pt-0"
+                        >
                             <div class="flex items-center justify-between">
                                 <h2 class="text-sm font-medium leading-6 text-gray-700">GEF cycle</h2>
                             </div>
@@ -399,7 +402,7 @@ function resetFilters() {
                         {{ projectStore.nProjectsFound }} initiatives
                     </div>
 
-                    <div class="mt-8 overflow-hidden_ bg-white shadow sm:rounded-md">
+                    <div class="mt-8 overflow-hidden_ bg-gray-50 shadow sm:rounded-md">
                         <ul
                             role="list"
                             class="divide-y divide-gray-200"
@@ -436,12 +439,25 @@ function resetFilters() {
                                             <div class="mt-2 sm:flex sm:justify-between">
                                                 <div class="sm:flex">
                                                     <p class="flex items-center text-sm text-gray-500">
-                                                        <template v-if="projectUtils.getStatus(project) === 'draft'">
-                                                            <Cog6ToothIcon
+                                                        <template v-if="project.data.publishedVersion">
+                                                            <MegaphoneIcon
                                                                 class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
                                                                 aria-hidden="true"
                                                             />
-                                                            Draft
+                                                            Public
+                                                        </template>
+                                                        <template v-if="projectUtils.getStatus(project) === 'draft'">
+                                                            <Cog6ToothIcon
+                                                                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                                                                :class="{ 'ml-2': project.data.publishedVersion }"
+                                                                aria-hidden="true"
+                                                            />
+                                                            <template v-if="project.data.publishedVersion">
+                                                                New revision
+                                                            </template>
+                                                            <template v-else>
+                                                                Draft
+                                                            </template>
                                                         </template>
                                                         <template v-if="projectUtils.getStatus(project) === 'submitted'">
                                                             <DocumentMagnifyingGlassIcon
@@ -449,13 +465,6 @@ function resetFilters() {
                                                                 aria-hidden="true"
                                                             />
                                                             Under review
-                                                        </template>
-                                                        <template v-if="projectUtils.getStatus(project) === 'public'">
-                                                            <MegaphoneIcon
-                                                                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                                                                aria-hidden="true"
-                                                            />
-                                                            Public
                                                         </template>
                                                     </p>
                                                     <!-- Best practices menu -->
@@ -470,7 +479,7 @@ function resetFilters() {
                                                                 class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none"
                                                             >
                                                                 <span class="text-gray-600">{{ project.data.bestPracticesCount
-                                                                }} good
+                                                                    }} good
                                                                     practice{{ project.data.bestPracticesCount === 1 ? '' : 's'
                                                                     }}</span>
                                                                 <ChevronDownIcon
@@ -646,4 +655,3 @@ function resetFilters() {
         </div>
     </div>
 </template>
-

@@ -10,7 +10,13 @@ const db = admin.firestore();
 const util = require("./util");
 // const registryCollection = db.collection("registry");
 
-const { createFirestoreVersion, createGeoDbVersion, createBucketVersion } = require("./projectVersions");
+const {
+    createFirestoreVersion,
+    createGeoDbVersion,
+    createBucketVersion,
+    deleteFiles,
+    getNewVersionNumber
+} = require("./projectVersions");
 
 
 exports.submitProject = functions.https.onCall(async ({ projectId }, context) => {
@@ -78,6 +84,8 @@ exports.submitProject = functions.https.onCall(async ({ projectId }, context) =>
     }
 });
 
+// When a project is published, a new version of the project is created in Firestore, in the storage bucket and in the geodatabase
+// The project status is set to 'public' and the publishedTime is updated
 exports.publishProjectTemp = functions.https.onCall(async ({ projectId }, context) => {
     // check if the user is authenticated
     if (!context.auth) {
@@ -89,92 +97,73 @@ exports.publishProjectTemp = functions.https.onCall(async ({ projectId }, contex
         throw new functions.https.HttpsError("invalid-argument", "Missing arguments");
     }
 
-    // get the project document from Firestore
-    const projectRef = await util.registryCollection.doc(projectId).get();
-    // check that the project exists
-    if (!projectRef.exists) {
-        throw new functions.https.HttpsError("not-found", "Project not found");
-    }
-
-    const project = projectRef.data();
-
-    // check that the project status is 'submitted' - only submitted projects can be published
-    if (project.status && project.status !== "submitted") {
-        throw new functions.https.HttpsError("invalid-argument", "Project status must be \"submitted\"");
-    }
-
-    const isGroupAdmin = util.isGroupAdmin(context, project);
-    const authorized = util.isSuperAdmin(context) || isGroupAdmin;
-    if (!authorized) {
-        throw new functions.https.HttpsError("permission-denied", "User is not a super admin nor a group admin");
-    }
-
-    console.log("Updating project status to public");
-    const publicationTime = new Date();
-
-
-
-
     return db.runTransaction(async (transaction) => {
         // get the project document from Firestore
-        const projectRef = await util.registryCollection.doc(projectId).get();
+        const projectSnapshot = await util.registryCollection.doc(projectId).get();
         // check that the project exists
-        if (!projectRef.exists) {
+        if (!projectSnapshot.exists) {
             throw new functions.https.HttpsError("not-found", "Project not found");
         }
         // get the project document data
-        const project = projectRef.data();
+        const projectData = projectSnapshot.data();
 
         ///////////////////////////////////////////////////////
         //
-        // TODO - UNCOMMENT THE FOLLOWING CODE BLOCK???
+        // TODO - UNCOMMENT THE FOLLOWING CODE BLOCK
         //
         ///////////////////////////////////////////////////////
-
-        // check that the project status is 'public' - only public projects can be versioned
-        // if (project.status && project.status !== "public") {
-        //     throw new functions.https.HttpsError("invalid-argument", "Project status must be \"public\"");
+        // // check that the project status is 'submitted' - only submitted projects can be published
+        // if (project.status && project.status !== "submitted") {
+        //     throw new functions.https.HttpsError("invalid-argument", "Project status must be \"submitted\"");
         // }
 
-        const isAdmin = util.isGroupAdmin(context, project);
-        const isAuthorAndEditor = util.isGroupEditor(context, project) && project.created_by === context.auth.uid;
+        const isAdmin = util.isGroupAdmin(context, projectData);
+        const isAuthorAndEditor = util.isGroupEditor(context, projectData) && projectData.created_by === context.auth.uid;
         const authorized = util.isSuperAdmin(context) || isAdmin || isAuthorAndEditor;
         if (!authorized) {
             throw new functions.https.HttpsError("permission-denied", "User is not a super admin, nor a group admin, nor a group editor and owner of the project");
         }
 
-        const { areaUuids, versionId, bestPracticeIds } = await createFirestoreVersion(projectId, project, transaction);
+        let newVersionNumber;
 
-        // now let's copy the related db areas
-        ///////////////////////////////////////////////////////
-        //
-        // TODO - UNCOMMENT THE FOLLOWING CODE BLOCK
-        //
-        ///////////////////////////////////////////////////////
-        // await createGeoDbVersion(projectId, areaUuids, versionId);
+        try {
+            newVersionNumber = await getNewVersionNumber(projectId, transaction);
 
-        ///////////////////////////////////////////////////////
-        //
-        // TODO - UNCOMMENT THE FOLLOWING CODE BLOCK
-        //
-        ///////////////////////////////////////////////////////
-        // now let's copy the related files
-        await createBucketVersion(versionId, projectId, bestPracticeIds);
+            const bestPracticesSnapshot = await util.registryCollection.doc(projectId).collection("bestPractices").get();
+            const bestPracticeIds = bestPracticesSnapshot.docs.map(doc => doc.id);
 
-        // now let's set the project status to public
-        ///////////////////////////////////////////////////////
-        //
-        // TODO - UNCOMMENT THE FOLLOWING CODE BLOCK
-        //
-        ///////////////////////////////////////////////////////
-        // transaction.update(util.registryCollection.doc(projectId), {
-        //     status: "public",
-        //     publishedTime: Timestamp.fromDate(publicationTime),
-        //     // delete rejectedTime and rejectedReason if it exists
-        //     rejectedReason: FieldValue.delete(),
-        // });
+            // copy the related files - do this first as there might be triggered actions on the db that we couldn't roll back
+            await createBucketVersion(newVersionNumber, projectId, bestPracticeIds);
 
-        return { versionId };
+            // set the project status to public and update the publishedTime
+            console.log("Updating project status to public");
+            transaction.update(util.registryCollection.doc(projectId), {
+                status: "public",
+                publishedTime:  FieldValue.serverTimestamp(),
+                // delete rejectedTime and rejectedReason if they exists
+                rejectedReason: FieldValue.delete(),
+                rejectedTime: FieldValue.delete(),
+                publishedVersion: newVersionNumber
+            });
+
+            // create a new version of the project in Firestore
+            console.log("Creating a new version of the project in Firestore");
+            const { areaUuids } = await createFirestoreVersion(projectSnapshot, bestPracticesSnapshot, newVersionNumber, transaction);
+
+            // copy the related db areas
+            console.log("Copying the related db areas");
+            await createGeoDbVersion(projectId, areaUuids, newVersionNumber);
+
+            return { version: newVersionNumber };
+        } catch (error) {
+            // delete the files that were copied if any error occurs
+            console.error("Error publishing project", error);
+            if (newVersionNumber) {
+                console.log("Deleting all files for version", newVersionNumber);
+                await deleteFiles(projectId, newVersionNumber);
+            }
+            throw error;
+        }
     });
 
     // try {
@@ -208,67 +197,60 @@ exports.publishProjectTemp = functions.https.onCall(async ({ projectId }, contex
     // }
 });
 
-exports.rejectProject = functions.https.onCall(async ({ projectId, reason }, context) => {
+async function _unpublish(projectId, context) {
     // check if the user is authenticated
     if (!context.auth) {
         throw new functions.https.HttpsError("unauthenticated", "User is not authenticated");
     }
 
     // check arguments
-    if (!projectId || !reason) {
+    if (!projectId) {
         throw new functions.https.HttpsError("invalid-argument", "Missing arguments");
     }
 
-    // get the project document from Firestore
-    const projectRef = await util.registryCollection.doc(projectId).get();
-    // check that the project exists
-    if (!projectRef.exists) {
-        throw new functions.https.HttpsError("not-found", "Project not found");
-    }
+    return db.runTransaction(async (transaction) => {
+        // get the project document from Firestore
+        const projectRef = await util.registryCollection.doc(projectId).get();
+        // check that the project exists
+        if (!projectRef.exists) {
+            throw new functions.https.HttpsError("not-found", "Project not found");
+        }
+        // get the project document data
+        const project = projectRef.data();
 
-    const project = projectRef.data();
-
-    // check that the project status is 'submitted' - only draft projects can be rejected
-    if (project.status && project.status !== "submitted") {
-        throw new functions.https.HttpsError("invalid-argument", "Project status must be \"submitted\"");
-    }
-
-    const isGroupAdmin = util.isGroupAdmin(context, project);
-    const authorized = util.isSuperAdmin(context) || isGroupAdmin;
-    if (!authorized) {
-        throw new functions.https.HttpsError("permission-denied", "User is not a super admin nor a group admin");
-    }
-
-    console.log("Updating project status to public");
-    const rejectedTime = new Date();
-    try {
-        util.registryCollection.doc(projectId).update({
-            status: "draft",
-            rejectedTime: Timestamp.fromDate(rejectedTime),
-            // delete publishedTime
-            publishedTime: FieldValue.delete(),
-            rejectedReason: reason
-        });
-        console.log("Project status updated to draft");
-
-        // send email to the project author
-        console.log("Sending email to the project author");
-        const ownerId = project.created_by;
-
-        // get displayName from the user in the authentication service
-        const ownerEmail = await util.getUserEmail(ownerId);
-        if (ownerEmail) {
-            const ownerName = await util.getUserDisplayName(ownerId) || ownerEmail;
-            const groupName = await util.getGroupName(project.group);
-            const mailDoc = emailTemplates.initiativeRejected([ownerEmail], groupName, projectId, project.project.title, ownerName, reason);
-            await util.mailCollection.add(mailDoc);
-        } else {
-            console.log("User email not found");
+        // check that the project status is 'public' - only public projects can be versioned
+        if (project.status && project.status !== "public") {
+            throw new functions.https.HttpsError("invalid-argument", "Project status must be \"public\"");
         }
 
-        return { message: "Success! Project rejected." };
-    } catch (error) {
-        console.log("Error updating project status to draft", error);
-        throw new functions.https.HttpsError("internal", "Error updating project status to draft");
-    }
+        const isAdmin = util.isGroupAdmin(context, project);
+        const isAuthorAndEditor = util.isGroupEditor(context, project) && project.created_by === context.auth.uid;
+        const authorized = util.isSuperAdmin(context) || isAdmin || isAuthorAndEditor;
+        if (!authorized) {
+            throw new functions.https.HttpsError("permission-denied", "User is not a super admin, nor a group admin, nor a group editor and owner of the project");
+        }
+
+        try {
+            // set the project status to draft
+            console.log("Updating project status to draft");
+            transaction.update(util.registryCollection.doc(projectId), {
+                status: "draft",
+                // delete publishedTime
+                publishedTime: FieldValue.delete()
+            });
+            console.log("Project status updated to draft");
+
+        } catch (error) {
+            console.log("Error updating project status to draft", error);
+            throw new functions.https.HttpsError("internal", "Error updating project status to draft");
+        }
+    });
+}
+
+exports.reviseProject = functions.https.onCall(async ({ projectId }, context) => {
+    return _unpublish(projectId, context);
+});
+
+exports.unpublishProject = functions.https.onCall(async ({ projectId }, context) => {
+    return _unpublish(projectId, context);
 });

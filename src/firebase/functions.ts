@@ -145,7 +145,7 @@ export async function getProjectAreas(projectId: string) {
 }
 
 export async function createNewProjectVersion(projectId: string) {
-    const createNewProjectVersion = httpsCallable(functions, 'createNewProjectVersion');
-    const result = await createNewProjectVersion({ projectId });
+    const reviseProject = httpsCallable(functions, 'reviseProject');
+    const result = await reviseProject({ projectId });
     return result.data;
 }
