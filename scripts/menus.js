@@ -1438,3 +1438,27 @@ exports.units = [
     { value: 'km2', label: 'Square km' },
     { value: 'km', label: 'Linear km' }
 ];
+
+exports.gefImplementingAgencies = [
+    { value: 1, label: 'African Development Bank' },
+    { value: 2, label: 'Asian Development Bank' },
+    { value: 3, label: 'Brazilian Biodiversity Fund' },
+    { value: 4, label: 'Conservation International' },
+    { value: 5, label: 'Development Bank of Latin America' },
+    { value: 6, label: 'Development Bank of Southern Africa' },
+    { value: 7, label: 'European Bank for Reconstruction and Development' },
+    { value: 8, label: 'Food and Agriculture Organization' },
+    { value: 9, label: 'Foreign Economic Cooperation Office' },
+    { value: 10, label: 'GEF Secretariat' },
+    { value: 11, label: 'Inter-American Development Bank' },
+    { value: 12, label: 'International Finance Corporation' },
+    { value: 13, label: 'International Fund for Agricultural Development' },
+    { value: 14, label: 'International Union for Conservation of Nature' },
+    { value: 15, label: 'Ministry of Environmental Protection of China' },
+    { value: 16, label: 'The World Bank' },
+    { value: 17, label: 'United Nations Development Programme' },
+    { value: 18, label: 'United Nations Environment Programme' },
+    { value: 19, label: 'United Nations Industrial Development Organization' },
+    { value: 20, label: 'West African Development Bank' },
+    { value: 21, label: 'World Wildlife Fund - US Chapter' },
+];

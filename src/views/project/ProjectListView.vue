@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed } from 'vue';
+import { onMounted, ref, watch, computed, onBeforeMount } from 'vue';
 
-import { fbTimestampToString } from '@/lib/util';
+import { useRoute } from 'vue-router'
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { Combobox, ComboboxInput, ComboboxButton, ComboboxLabel, ComboboxOption, ComboboxOptions } from '@headlessui/vue';
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 
 import {
-    CalendarIcon,
     Cog6ToothIcon,
     ChevronDownIcon,
     PencilSquareIcon,
@@ -17,8 +16,12 @@ import {
     CheckIcon,
     ChevronUpDownIcon
 } from '@heroicons/vue/20/solid';
-
 import { FaceFrownIcon } from '@heroicons/vue/24/outline';
+
+import router from '@/router';
+
+import { fbTimestampToString } from '@/lib/util';
+import * as projectUtils from '@/lib/project';
 
 import { useAuthStore } from '@/stores/auth';
 import { useProjectStore } from '@/stores/project';
@@ -28,54 +31,48 @@ import { useGaul } from '@/hooks/useGaul';
 
 import { fetchAllGroupNames } from '@/firebase/firestore';
 
-import router from '@/router';
-
 import InstitutionsAssignment from '../InstitutionsAssignment.vue';
 import NewProjectDialog from '@/views/project/NewProjectDialog.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
-
-import * as projectUtils from '@/lib/project';
 import ActionsMenu from './ActionsMenu.vue';
 
-import { useMenusStore } from '@/stores/menus';
 
+const fermGroupId = import.meta.env.VITE_FERM_GROUP_ID;
+
+const route = useRoute()
 
 const projectStore = useProjectStore();
 const authStore = useAuthStore();
 const bestPracticesStore = useBestPracticesStore();
-const menusStore = useMenusStore().menus;
 
-const userGroups = ref<any[]>([]);
+const userGroups = ref<{ [key: string]: string }>({});
 
+// Search queries
 const groupQuery = ref('')
-const selectedGroup = ref<string>('');
 const countryQuery = ref('')
-const selectedCountry = ref<string>('');
-const selectedGefCycle = ref<string>('');
+const selectedGroup = ref<string>();
+const selectedCountry = ref<string>();
+const selectedGefCycle = ref<string>();
 
-const fermGroupId = 'mrrzmcKjPQQOqB8uZBKU';
+onBeforeMount(() => {
+    // set the query values from the url
+    const query = new URLSearchParams(decodeURIComponent(route.query.q as string));
+    selectedGroup.value = query.get('institution') || '';
+    selectedCountry.value = query.get('country') || '';
+    selectedGefCycle.value = query.get('gef_cycle') || '';
+});
 
 onMounted(async () => {
     try {
-        await Promise.all([
-            // (nProjects: number = 25, reset: boolean = false, searchOptions: any = {})
-            projectStore.fetchNextProjects(undefined, true, { group: selectedGroup.value, country: selectedCountry.value, gefCycle: selectedGefCycle.value }),
-            // get all groups if admin, otherwise get only the groups the user is part of
-            await (async () => userGroups.value = authStore.isAdmin ? await fetchAllGroupNames() : authStore.userGroups)()
-        ]);
+        userGroups.value = await fetchAllGroupNames();
+        console.log(userGroups.value);
     } catch (e) {
         console.error(e);
     }
 });
 
-const bestPractices = ref([]);
-
-async function showBestPractices(projectId: string) {
-    bestPractices.value = await bestPracticesStore.fetchProjectBestPractices(projectId);
-}
-
 watch([selectedGroup, selectedCountry, selectedGefCycle], ([newGroup, newCountry, newGefCycle], [oldGroup, oldCountry, oldGefCycle]) => {
-    if (newGroup !== 'mrrzmcKjPQQOqB8uZBKU' && selectedGefCycle.value !== '') {
+    if (newGroup !== fermGroupId && selectedGefCycle.value !== '') {
         selectedGefCycle.value = ''; // this will trigger another watch
         return;
     }
@@ -86,9 +83,29 @@ watch([selectedGroup, selectedCountry, selectedGefCycle], ([newGroup, newCountry
     }
 });
 
+// build a string representing the query, and add the query to the url
+watch([selectedGroup, selectedCountry, selectedGefCycle], ([group, country, gefCycle]) => {
+    const query = new URLSearchParams();
+    if (group) query.set('institution', group);
+    if (country) query.set('country', country);
+    if (gefCycle) query.set('gef_cycle', gefCycle);
+    router.replace({
+        name: 'initiatives',
+        query: {
+            q: encodeURIComponent(query.toString())
+        }
+    });
+});
+
+const bestPractices = ref();
+
+async function showBestPractices(projectId: string) {
+    bestPractices.value = await bestPracticesStore.fetchProjectBestPractices(projectId);
+}
+
 const showNewInitiativeDialog = ref(false);
 
-async function createProject({ title, reportingLine, group }) {
+async function createProject({ title, reportingLine, group }: { title: string, reportingLine: string, group: string }) {
     showNewInitiativeDialog.value = false;
 
     if (!title || !group || !reportingLine) {
@@ -138,7 +155,7 @@ const filteredGroups = computed(() => {
             .reduce((obj, [id, name]) => {
                 obj[id] = name;
                 return obj;
-            }, {});
+            }, {} as { [key: string]: string });
 });
 
 // get the list of countries with iso 2 names
@@ -148,7 +165,7 @@ const filteredCountries = computed(() => {
     return countryQuery.value === ''
         ? gaulLevel0.value
         : gaulLevel0.value
-            .filter(({ label }) => label.toLowerCase().includes(countryQuery.value.toLowerCase()))
+            .filter(({ label }: { label: string }) => label.toLowerCase().includes(countryQuery.value.toLowerCase()));
 });
 
 function resetFilters() {
@@ -319,7 +336,7 @@ function resetFilters() {
                                 <ComboboxInput
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     @change="groupQuery = $event.target.value"
-                                    :display-value="() => userGroups[selectedGroup]"
+                                    :display-value="() => userGroups[selectedGroup || '']"
                                 />
                                 <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                     <ChevronUpDownIcon
@@ -359,7 +376,10 @@ function resetFilters() {
                             </div>
                         </Combobox>
 
-                        <div v-if="selectedGroup === fermGroupId" class="max-w-xs  pt-3 md:pt-0">
+                        <div
+                            v-if="selectedGroup === fermGroupId"
+                            class="max-w-xs  pt-3 md:pt-0"
+                        >
                             <div class="flex items-center justify-between">
                                 <h2 class="text-sm font-medium leading-6 text-gray-700">GEF cycle</h2>
                             </div>
@@ -385,7 +405,7 @@ function resetFilters() {
                             </RadioGroup>
                         </div>
                     </div>
-                    <!-- <div v-if="selectedGroup === 'mrrzmcKjPQQOqB8uZBKU'">
+                    <!-- <div v-if="selectedGroup === fermGroupId">
                         <SmallCardsFormGroup
                             v-model="selectedGefCycle"
                             :options="menusStore.gefCycles"
@@ -395,8 +415,7 @@ function resetFilters() {
                 </div>
 
                 <template v-if="projectStore.projects && projectStore.projects.length">
-                    <div class="text-md font-bold text-center mt-2 mb-2 text-gray-700">{{ projectStore.projects.length }} of
-                        {{ projectStore.nProjectsFound }} initiatives
+                    <div class="text-md font-bold text-center mt-2 mb-2 text-gray-700">{{ projectStore.projects.length }} of {{ projectStore.nProjectsFound }} initiatives
                     </div>
 
                     <div class="mt-8 overflow-hidden_ bg-white shadow sm:rounded-md">
@@ -470,7 +489,7 @@ function resetFilters() {
                                                                 class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none"
                                                             >
                                                                 <span class="text-gray-600">{{ project.data.bestPracticesCount
-                                                                }} good
+                                                                    }} good
                                                                     practice{{ project.data.bestPracticesCount === 1 ? '' : 's'
                                                                     }}</span>
                                                                 <ChevronDownIcon
@@ -582,31 +601,11 @@ function resetFilters() {
                                     class="h-12 w-12 text-gray-400"
                                     aria-hidden="true"
                                 />
-                                <!-- <svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                     stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg> -->
                             </div>
                             <div class="mt-3 text-center sm:mt-5">
                                 <h3 class="text-lg leading-6 font-medium text-gray-900">
                                     No initiatives found
                                 </h3>
-                                <!-- <div class="mt-2">
-                                    <p class="text-sm text-gray-500">
-                                        Get started by creating a new initiative.
-                                    </p>
-                                </div> -->
-                                <!-- <div class="mt-4">
-                                    <button
-                                        type="button"
-                                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                        @click="showTermsAndConditions = true"
-                                    >
-                                        Create new initiative
-                                    </button> -->
                                 <div class="mt-4">
                                     <button
                                         type="button"
@@ -632,7 +631,7 @@ function resetFilters() {
                 </div>
                 <button
                     v-if="!projectStore.isLastPage && !projectStore.loadingNext"
-                    @click="projectStore.fetchNextProjects(undefined, undefined, { group: selectedGroup, country: selectedCountry })"
+                    @click="projectStore.fetchNextProjects(undefined, undefined, { group: selectedGroup, country: selectedCountry, gefCycle: selectedGefCycle })"
                     class="rounded-md bg-ferm-blue-dark-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ferm-blue-dark-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ferm-blue-dark-500"
                 >
                     Load more
@@ -646,4 +645,3 @@ function resetFilters() {
         </div>
     </div>
 </template>
-
