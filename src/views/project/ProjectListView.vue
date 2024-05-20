@@ -95,6 +95,14 @@ watch([selectedGroup, selectedCountry, selectedGefCycle], ([group, country, gefC
             q: encodeURIComponent(query.toString())
         }
     });
+    
+    // delete the query from the url if all filters are empty
+    if (!group && !country && !gefCycle) {
+        router.replace({
+            name: 'initiatives',
+            query: {}
+        });
+    }
 });
 
 const bestPractices = ref();
