@@ -184,7 +184,7 @@ async function save() {
                 <div class="text-gray-600 text-sm italic" v-else-if="availableUsers">
                     No more editors are available in your organization
                 </div>
-                <div v-else class="text-gray-600 text-md">Loading the list of editors...</div>
+                <div v-else class="text-gray-600 text-md">Loading the list of editors in the institution...</div>
                 <div class="flex pt-6 justify-end">
                     <button
                         @click="() => router.push({ name: 'initiatives' })"

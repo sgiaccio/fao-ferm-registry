@@ -1,7 +1,4 @@
-<script
-    setup
-    lang="ts"
->
+<script setup lang="ts">
 import type { User } from 'firebase/auth';
 import { httpsCallable } from "firebase/functions";
 
@@ -507,7 +504,7 @@ function cancelEdit() {
                                             class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                         >
                                             <option
-                                                v-for="[group, name] in Object.entries(availableGroups)"
+                                                v-for="[group, name] in Object.entries(availableGroups).sort((a, b) => a[1].localeCompare(b[1]))"
                                                 :value="group"
                                             >{{ name }}</option>
                                         </select>
