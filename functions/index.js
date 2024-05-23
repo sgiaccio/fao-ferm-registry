@@ -962,7 +962,7 @@ exports.updateBestPracticesCount = functions.firestore.document("registry/{proje
 
 const projectPublishWorkflow = require("./projectPublishWorkflow");
 exports.submitProject = projectPublishWorkflow.submitProject;
-exports.publishProjectTemp = projectPublishWorkflow.publishProjectTemp; // TODO remove Temp
+exports.publishAndVersionProject = projectPublishWorkflow.publishAndVersionProject; 
 exports.rejectProject = projectPublishWorkflow.rejectProject;
 
 

@@ -77,8 +77,7 @@ export async function submitForReview(projectId: string) {
 export async function publishProject(projectId: string) {
     const functions = getFunctions();
     // const publishProject = httpsCallable(functions, 'publishProject');
-    debugger;
-    const publishProject = httpsCallable(functions, 'publishProjectTemp');
+    const publishProject = httpsCallable(functions, 'publishAndVersionProject');
     const result = await publishProject({ projectId });
     return result.data;
 }

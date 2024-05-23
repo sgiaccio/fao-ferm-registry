@@ -86,7 +86,7 @@ exports.submitProject = functions.https.onCall(async ({ projectId }, context) =>
 
 // When a project is published, a new version of the project is created in Firestore, in the storage bucket and in the geodatabase
 // The project status is set to 'public' and the publishedTime is updated
-exports.publishProjectTemp = functions.https.onCall(async ({ projectId }, context) => {
+exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, context) => {
     // check if the user is authenticated
     if (!context.auth) {
         throw new functions.https.HttpsError("unauthenticated", "User is not authenticated");
@@ -107,15 +107,10 @@ exports.publishProjectTemp = functions.https.onCall(async ({ projectId }, contex
         // get the project document data
         const projectData = projectSnapshot.data();
 
-        ///////////////////////////////////////////////////////
-        //
-        // TODO - UNCOMMENT THE FOLLOWING CODE BLOCK
-        //
-        ///////////////////////////////////////////////////////
-        // // check that the project status is 'submitted' - only submitted projects can be published
-        // if (project.status && project.status !== "submitted") {
-        //     throw new functions.https.HttpsError("invalid-argument", "Project status must be \"submitted\"");
-        // }
+        // check that the project status is 'submitted' - only submitted projects can be published
+        if (projectData.status && projectData.status !== "submitted") {
+            throw new functions.https.HttpsError("invalid-argument", "Project status must be \"submitted\"");
+        }
 
         const isAdmin = util.isGroupAdmin(context, projectData);
         const isAuthorAndEditor = util.isGroupEditor(context, projectData) && projectData.created_by === context.auth.uid;
@@ -139,7 +134,7 @@ exports.publishProjectTemp = functions.https.onCall(async ({ projectId }, contex
             console.log("Updating project status to public");
             transaction.update(util.registryCollection.doc(projectId), {
                 status: "public",
-                publishedTime:  FieldValue.serverTimestamp(),
+                publishedTime: FieldValue.serverTimestamp(),
                 // delete rejectedTime and rejectedReason if they exists
                 rejectedReason: FieldValue.delete(),
                 rejectedTime: FieldValue.delete(),
@@ -153,8 +148,6 @@ exports.publishProjectTemp = functions.https.onCall(async ({ projectId }, contex
             // copy the related db areas
             console.log("Copying the related db areas");
             await createGeoDbVersion(projectId, areaUuids, newVersionNumber);
-
-            return { version: newVersionNumber };
         } catch (error) {
             // delete the files that were copied if any error occurs
             console.error("Error publishing project", error);
@@ -166,35 +159,26 @@ exports.publishProjectTemp = functions.https.onCall(async ({ projectId }, contex
         }
     });
 
-    // try {
-    //     util.registryCollection.doc(projectId).update({
-    //         status: "public",
-    //         publishedTime: Timestamp.fromDate(publicationTime),
-    //         // delete rejectedTime and rejectedReason if it exists
-    //         rejectedReason: FieldValue.delete()
-    //     });
-    //     console.log("Project status updated to published");
+    try {
+        // send an email to the project author
+        console.log("Sending email to the project author");
+        const ownerId = project.created_by;
 
-    //     // send email to the project author
-    //     console.log("Sending email to the project author");
-    //     const ownerId = project.created_by;
+        // get displayName from the user in the authentication service
+        const ownerEmail = await util.getUserEmail(ownerId);
+        if (ownerEmail) {
+            const ownerName = await util.getUserDisplayName(ownerId) || ownerEmail;
+            const groupName = await util.getGroupName(project.group);
+            const mailDoc = emailTemplates.initiativePublished([ownerEmail], groupName, projectId, project.project.title, ownerName, publicationTime);
+            await util.mailCollection.add(mailDoc);
+        } else {
+            console.log("User email not found");
+        }
+    } catch (error) {
+        console.log("Error sending email to the project author", error);
+    }
 
-    //     // get displayName from the user in the authentication service
-    //     const ownerEmail = await util.getUserEmail(ownerId);
-    //     if (ownerEmail) {
-    //         const ownerName = await util.getUserDisplayName(ownerId) || ownerEmail;
-    //         const groupName = await util.getGroupName(project.group);
-    //         const mailDoc = emailTemplates.initiativePublished([ownerEmail], groupName, projectId, project.project.title, ownerName, publicationTime);
-    //         await util.mailCollection.add(mailDoc);
-    //     } else {
-    //         console.log("User email not found");
-    //     }
-
-    //     return { message: "Success! Project published." };
-    // } catch (error) {
-    //     console.log("Error updating project status to published", error);
-    //     throw new functions.https.HttpsError("internal", "Error updating project status to published");
-    // }
+    return { version: newVersionNumber };
 });
 
 async function _unpublish(projectId, context) {
