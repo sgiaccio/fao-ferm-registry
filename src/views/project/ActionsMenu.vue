@@ -175,12 +175,7 @@ function newVersionCreated() {
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
                 <p>
-<<<<<<< ours
-                    Are you sure you want to publish the initiative <span class="font-bold">'{{ project.data.project?.title
-                        }}'</span>?
-=======
-                    Are you sure you want to publish the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?
->>>>>>> theirs
+                    Are you sure you want to publish the initiative <span class="font-bold">'{{ project.data.project?.title}}'</span>?
                 </p>
             </div>
         </template>
@@ -245,17 +240,18 @@ function newVersionCreated() {
     >
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Are you sure you want to create a new version of the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?</p>
+                <p>Are you sure you want to create a new revision of the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?</p>
+                <p class="mt-2">This will make the initiative editable again. The public version will remain unchanged.</p>
             </div>
         </template>
         <template #success>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>A new version of the initiative has been created.</p>
+                <p>A new revision of the initiative has been created. It's now possible to edit the initiative again.</p>
             </div>
         </template>
         <template #error>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>There was an error creating a new version of the initiative. Please try again later.</p>
+                <p>There was an error creating a new revision of the initiative. Please try again later.</p>
             </div>
         </template>
     </TwoStagesDialog>
@@ -373,8 +369,7 @@ function newVersionCreated() {
                             Submit for review
                         </div>
                     </menu-item>
-                    <!-- Just uncomment this if you want to add the start new revision button -  all the logic is already there -->
-                    <!-- <menu-item
+                    <menu-item
                         v-if="project.data.status === 'public' && projectUtils.canCreateVersion(project) && (!sections || sections.includes('publishing'))"
                         v-slot="{ active }"
                     >
@@ -388,7 +383,7 @@ function newVersionCreated() {
                             />
                             Start New Revision
                         </div>
-                    </menu-item> -->
+                    </menu-item>
                     <menu-item
                         v-if="projectUtils.canPublish(project) && (!sections || sections.includes('publishing'))"
                         v-slot="{ active }"

@@ -97,7 +97,7 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
         throw new functions.https.HttpsError("invalid-argument", "Missing arguments");
     }
 
-    return db.runTransaction(async (transaction) => {
+    const { projectData, version } = await db.runTransaction(async (transaction) => {
         // get the project document from Firestore
         const projectSnapshot = await util.registryCollection.doc(projectId).get();
         // check that the project exists
@@ -148,6 +148,8 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
             // copy the related db areas
             console.log("Copying the related db areas");
             await createGeoDbVersion(projectId, areaUuids, newVersionNumber);
+
+            return { projectData, version: newVersionNumber };
         } catch (error) {
             // delete the files that were copied if any error occurs
             console.error("Error publishing project", error);
@@ -157,20 +159,24 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
             }
             throw error;
         }
+        
+        return newVersionNumber;
     });
 
     try {
         // send an email to the project author
         console.log("Sending email to the project author");
-        const ownerId = project.created_by;
+        const ownerId = projectData.created_by;
 
         // get displayName from the user in the authentication service
         const ownerEmail = await util.getUserEmail(ownerId);
         if (ownerEmail) {
             const ownerName = await util.getUserDisplayName(ownerId) || ownerEmail;
-            const groupName = await util.getGroupName(project.group);
-            const mailDoc = emailTemplates.initiativePublished([ownerEmail], groupName, projectId, project.project.title, ownerName, publicationTime);
+            const groupName = await util.getGroupName(projectData.group);
+            const mailDoc = emailTemplates.initiativePublished([ownerEmail], groupName, 
+            projectId, projectData.project.title, ownerName, new Date());
             await util.mailCollection.add(mailDoc);
+            console.log("Email sent to the project author");
         } else {
             console.log("User email not found");
         }
@@ -178,7 +184,7 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
         console.log("Error sending email to the project author", error);
     }
 
-    return { version: newVersionNumber };
+    return { message: "Success! Project published.", version };
 });
 
 async function _unpublish(projectId, context) {
@@ -232,9 +238,9 @@ async function _unpublish(projectId, context) {
 }
 
 exports.reviseProject = functions.https.onCall(async ({ projectId }, context) => {
-    return _unpublish(projectId, context);
+    await _unpublish(projectId, context);
 });
 
-exports.unpublishProject = functions.https.onCall(async ({ projectId }, context) => {
-    return _unpublish(projectId, context);
-});
+// exports.unpublishProject = functions.https.onCall(async ({ projectId }, context) => {
+//     await _unpublish(projectId, context);
+// });

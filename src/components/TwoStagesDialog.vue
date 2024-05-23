@@ -69,10 +69,15 @@ function confirmDialogClosed() {
 
 function complete() {
     showSuccessDialog.value = false;
+    waiting.value = false;
     emit('complete');
 }
 
 function cancel() {
+    if (waiting.value) return;
+
+    waiting.value = false;
+
     showConfirmDialog.value = false;
     emit('cancel');
 }
@@ -85,6 +90,7 @@ function cancel() {
         :ok-button-text="confirmButtonText"
         :ok-button-enabled="confirmButtonEnabled && !waiting"
         :cancel-button-text="cancelButtonText"
+        :cancel-button-enabled="!waiting"
         @confirm="confirm"
         @cancel="cancel"
         @closed="confirmDialogClosed"
