@@ -373,7 +373,8 @@ function newVersionCreated() {
                             Submit for review
                         </div>
                     </menu-item>
-                    <menu-item
+                    <!-- Just uncomment this if you want to add the start new revision button -  all the logic is already there -->
+                    <!-- <menu-item
                         v-if="project.data.status === 'public' && projectUtils.canCreateVersion(project) && (!sections || sections.includes('publishing'))"
                         v-slot="{ active }"
                     >
@@ -387,7 +388,7 @@ function newVersionCreated() {
                             />
                             Start New Revision
                         </div>
-                    </menu-item>
+                    </menu-item> -->
                     <menu-item
                         v-if="projectUtils.canPublish(project) && (!sections || sections.includes('publishing'))"
                         v-slot="{ active }"
