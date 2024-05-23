@@ -142,23 +142,18 @@ function newVersionCreated() {
                 <p>Are you sure you want to submit the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span> for review? Please note that by
                     proceeding:</p>
                 <ol class="mt-2 list-decimal list-inside">
-                    <li>An email will be sent to your institution administrators for review. They will have the
-                        authority to
-                        either accept or reject your initiative.
+                    <li>An email will be sent to your institution administrators for review They will have the authority to or reject your initiative.
                     </li>
                     <li class="mt-1">You will not be able to make further edits to the initiative once it's submitted
                         for review.
                     </li>
                 </ol>
-                <p class="mt-2">Please review your submission thoroughly to ensure all information is accurate and
-                    complete before proceeding. Do you wish to proceed?"</p>
+                <p class="mt-2">Please review your submission thoroughly to ensure all information is accurate and complete before proceeding. Do you wish to proceed?"</p>
             </div>
         </template>
         <template #success>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Your initiative has been submitted for review. An email will be sent to your institution
-                    administrators for review. They will have the authority to either accept or reject your
-                    initiative.
+                <p>Your initiative has been submitted for review. An email will be sent to your institution administrators for review. They will have the authority to either accept or reject your initiative.
                 </p>
             </div>
         </template>
@@ -180,8 +175,12 @@ function newVersionCreated() {
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
                 <p>
+<<<<<<< ours
                     Are you sure you want to publish the initiative <span class="font-bold">'{{ project.data.project?.title
                         }}'</span>?
+=======
+                    Are you sure you want to publish the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?
+>>>>>>> theirs
                 </p>
             </div>
         </template>
