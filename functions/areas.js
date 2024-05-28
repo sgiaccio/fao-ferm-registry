@@ -673,6 +673,9 @@ exports.getProjectAreas = functions.https.onCall(async (data, context) => {
 
 });
 
+
+const earthMapBucket = admin.storage().bucket('earthmap-geojsons');
+
 exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context) => {
     // for now, if not admin send error
     if (!isSuperAdmin(context)) {
@@ -715,13 +718,40 @@ exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context)
 
         // now perform the database query
         const geoJson = await getAggregatedPolygons(projectId, filteredAreaUuids, filteredAreaNames);
-        return geoJson;
+
+        // if the size of the geoJson as a string is greater than 2kb, save it into a bucket and return the url, otherwise return the geoJson directly
+        const geoJsonString = JSON.stringify(geoJson);
+        if (geoJsonString.length > 2000) {
+            // save the geoJson to a bucket
+            const bucket = admin.storage().bucket(earthMapBucket);
+            const file = bucket.file(`areas/${projectId}.geojson`);
+            await file.save(geoJsonString, { contentType: 'application/json' });
+
+            return { url: file.publicUrl() };
+        }
+
+        return { geoJson };
     } else {
         console.error("No such document");
         return new functions.https.HttpsError("not-found", "No such document");
     }
 });
 
+
+// this function periodically (every hour) deletes all the areas in the `areas/` directory of the storage bucket that were created more than 1 hour ago
+exports.deleteOldAreasGeoJson = functions.pubsub.schedule('every 1 hours').onRun(async () => {
+    const now = Date.now();
+    const oneHourAgo = now - 3600000;
+
+    const bucket = admin.storage().bucket(earthMapBucket);
+    const [files] = await bucket.getFiles({ prefix: 'areas/' });
+
+    const filesToDelete = files.filter(file => file.metadata.timeCreated < oneHourAgo);
+
+    await Promise.all(filesToDelete.map(file => file.delete()));
+
+    return filesToDelete.length;
+});
 
 async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
     const client = await getDatabaseClient({
