@@ -1,8 +1,5 @@
-<script
-    setup
-    lang="ts"
->
-import { ref, provide, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref, provide, onMounted, computed } from 'vue';
 
 import { InformationCircleIcon } from '@heroicons/vue/24/outline';
 import { TrashIcon, XCircleIcon } from '@heroicons/vue/20/solid';
@@ -26,7 +23,7 @@ import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vu
 
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
-
+import EarthMapView from './EarthMapView.vue';
 
 import AlertModal from '@/views/AlertModal.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
@@ -40,6 +37,9 @@ import { getGaulLevel0 } from '@/firebase/firestore';
 const store = useProjectStore();
 const authStore = useAuthStore();
 const menus = useMenusStore().menus;
+
+const earthMapView = ref();
+
 let countries = ref();
 
 onMounted(async () => {
@@ -164,6 +164,11 @@ provide('applyToAll', () => {
         }
     });
 });
+
+const areasWithUuid = computed(() => store.projectAreas
+    .map(a => Object.values(a)[0])
+    .map((a: any, i) => ({ uuid: a.uuid, siteName: a.siteName || `Area ${i + 1}` }))
+    .filter(a => !!a.uuid));
 </script>
 
 <template>
@@ -226,6 +231,13 @@ provide('applyToAll', () => {
         </template>
 
         <template #default>
+            <EarthMapView
+                v-if="areasWithUuid.length > 0"
+                ref="earthMapView"
+                :projectId="store.id!"
+                :areas="areasWithUuid"
+                class="mt-6"
+            />
             <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 shadow-md border-gray-300">
                 <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data).</span>
                     The sum of committed land in GEF Core Indicators 1&mdash;5 shall be included

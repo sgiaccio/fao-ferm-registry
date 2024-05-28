@@ -72,6 +72,9 @@ module.exports = {
           dark: '#BF8B2E',
         },
       },
+      height: {
+        '128': '32rem',
+      },
     },
   },
   plugins: [

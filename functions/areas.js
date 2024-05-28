@@ -655,7 +655,6 @@ exports.getProjectAreas = functions.https.onCall(async (data, context) => {
     try {
         const query = "SELECT ST_AsGeoJSON(ST_Collect(ST_CollectionExtract(geom::geometry))) as geojson FROM project_areas WHERE project_id = $1 AND area_uuid = ANY($2::uuid[])";
         const result = await client.query(query, [projectId, areaUuids]);
-        
 
         if (!result?.rows?.length) {
             throw new functions.https.HttpsError('not-found', 'No polygons found for the given project.');
@@ -673,3 +672,198 @@ exports.getProjectAreas = functions.https.onCall(async (data, context) => {
     }
 
 });
+
+exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context) => {
+    // for now, if not admin send error
+    if (!isSuperAdmin(context)) {
+        throw new functions.https.HttpsError("permission-denied", "User must be a superadmin to get all project areas.");
+    }
+
+    // get all the areas document with id = projectId
+    const projectId = data.projectId;
+    const areaDocRef = areasCollection.doc(projectId);
+    const areaDocSnap = await areaDocRef.get();
+
+    const uuids = data.uuids;
+    if (!uuids || !uuids.length || !uuids.every(isValidUuid)) {
+        throw new functions.https.HttpsError("invalid-argument", "Invalid UUIDs: ", uuids.join(", "));
+    }
+
+    if (areaDocSnap.exists) {
+        const data = areaDocSnap.data();
+        if (!data.areas) {
+            throw new functions.https.HttpsError("not-found", "No areas found for the given project.");
+        }
+
+        const areasWithUuids = data.areas
+            .filter(a => Object.values(a)[0].uuid && isValidUuid(Object.values(a)[0].uuid))
+            .filter(a => uuids.includes(Object.values(a)[0].uuid));
+        const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
+        const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
+
+        // delete the areasUuids and areaNames that are not in the uuids array
+        const filteredAreaUuids = areaUuids.filter(uuid => uuids.includes(uuid));
+        const filteredAreaNames = areaNames.filter((_, i) => uuids.includes(areaUuids[i]));
+
+        if (!areaUuids.length) {
+            // return an empty GeoJSON object
+            return {
+                type: 'FeatureCollection',
+                features: []
+            };
+        }
+
+        // now perform the database query
+        const geoJson = await getAggregatedPolygons(projectId, filteredAreaUuids, filteredAreaNames);
+        return geoJson;
+    } else {
+        console.error("No such document");
+        return new functions.https.HttpsError("not-found", "No such document");
+    }
+});
+
+
+async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
+    const client = await getDatabaseClient({
+        user: dbUser.value(),
+        host: dbHost.value(),
+        database: dbDatabase.value(),
+        password: dbPassword.value()
+    });
+
+    try {
+        const areaValues = areaUuids.map((_uuid, i) => `($${i + 2}::uuid, $${i + 2 + areaUuids.length}::text)`).join(", ");
+
+        const query = `
+            WITH area_names AS (
+                SELECT *
+                FROM (
+                    VALUES ${areaValues}
+                ) AS t (area_uuid, name)
+            ),
+            individual_geoms AS (
+                SELECT 
+                    pa.area_uuid,
+                    an.name,
+                    ST_AsGeoJSON(pa.geom::geometry) AS geojson
+                FROM 
+                    project_areas pa
+                JOIN
+                    area_names an
+                ON
+                    pa.area_uuid = an.area_uuid
+                WHERE
+                    pa.project_id = $1
+            ),
+            grouped_geoms AS (
+                SELECT 
+                    area_uuid,
+                    name,
+                    json_agg(geojson::json) AS geoms
+                FROM 
+                    individual_geoms
+                GROUP BY 
+                    area_uuid, name
+            ),
+            geometry_collections AS (
+                SELECT 
+                    area_uuid,
+                    name,
+                    json_build_object(
+                        'type', 'GeometryCollection',
+                        'geometries', geoms
+                    ) AS geojson
+                FROM 
+                    grouped_geoms
+            )
+            SELECT 
+                json_build_object(
+                    'type', 'FeatureCollection',
+                    'features', json_agg(
+                        json_build_object(
+                            'type', 'Feature',
+                            'geometry', geojson,
+                            'properties', json_build_object(
+                                'uuid', area_uuid,
+                                'name', name
+                            )
+                        )
+                    )
+                ) AS geojson
+            FROM 
+                geometry_collections;
+        `;
+
+        const values = [projectId, ...areaUuids, ...areaNames];
+        const result = await client.query(query, values);
+
+        if (!result?.rows?.length) {
+            throw new Error("No polygons found for the given project.");
+        }
+
+        // console.log(JSON.stringify(result.rows[0].geojson, null, 2));
+        return result.rows[0].geojson;
+    } catch (error) {
+        console.error("Error fetching polygons from database:", error);
+        throw error;
+    }
+}
+
+/*
+WITH area_names AS (
+    VALUES
+        ('4ee3e540-19ac-11ef-95b9-07c01b311bea'::uuid, 'Area 1'),
+        ('6da2508a-0ede-11ef-b4c3-8fff922eef8c'::uuid, 'Area 2')
+),
+individual_geoms AS (
+    SELECT 
+        pa.area_uuid,
+        an.name,
+        ST_AsGeoJSON(pa.geom::geometry) AS geojson
+    FROM 
+        project_areas pa
+    JOIN
+        (SELECT * FROM area_names) an(area_uuid, name)
+    ON
+        pa.area_uuid = an.area_uuid
+    WHERE 
+        pa.project_id = 'YJEHbBMIM7k3xMjPQvqJ'
+),
+grouped_geoms AS (
+    SELECT 
+        area_uuid,
+        name,
+        json_agg(geojson::json) AS geoms
+    FROM 
+        individual_geoms
+    GROUP BY 
+        area_uuid, name
+),
+geometry_collections AS (
+    SELECT 
+        area_uuid,
+        name,
+        json_build_object(
+            'type', 'GeometryCollection',
+            'geometries', geoms
+        ) AS geojson
+    FROM 
+        grouped_geoms
+)
+SELECT 
+    json_build_object(
+        'type', 'FeatureCollection',
+        'features', json_agg(
+            json_build_object(
+                'type', 'Feature',
+                'geometry', geojson,
+                'properties', json_build_object(
+                    'area_uuid', area_uuid,
+                    'name', name
+                )
+            )
+        )
+    ) AS geojson
+FROM 
+    geometry_collections;
+*/

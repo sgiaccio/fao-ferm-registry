@@ -148,3 +148,10 @@ export async function createNewProjectVersion(projectId: string) {
     const result = await reviseProject({ projectId });
     return result.data;
 }
+
+export async function getAllProjectAreasGeoJson(projectId: string, uuids: string[]) {
+    const functions = getFunctions();
+    const getAllProjectAreasGeoJson = httpsCallable(functions, 'getAllProjectAreasGeoJson');
+    const result = await getAllProjectAreasGeoJson({ projectId, uuids });
+    return result.data;
+}
