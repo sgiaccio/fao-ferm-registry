@@ -1,15 +1,22 @@
-import { createApp } from "vue";
-import { createPinia } from "pinia";
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
-import App from "./App.vue";
-import router from "./router";
+import App from './App.vue';
+import router from './router';
 
 import './index.css'
+
+import Vue3Toasity, { type ToastContainerOptions } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 
 (async () => {
     const app = createApp(App);
     app.use(createPinia());
+
+    app.use(Vue3Toasity, {
+        autoClose: 3000
+    } as ToastContainerOptions);
 
     // const auth = useAuthStore();
     // await auth.fetchUser();
@@ -19,12 +26,12 @@ import './index.css'
     app.use(router);
 
     await router.isReady();
-    // if (router.currentRoute.value.path === "/login" && auth.authLoaded) {
+    // if (router.currentRoute.value.path === '/login' && auth.authLoaded) {
     //     await router.push(auth.returnUrl);
     // }
 
-    
-    app.config.errorHandler = (error, vm, info) => {
+
+    app.config.errorHandler = (error, _vm, _info) => {
         // Handle the error globally
         if (process.env.NODE_ENV === 'development') {
             alert('An unexpected error occurred, please check the console log.');
@@ -32,5 +39,5 @@ import './index.css'
         console.error(error);
     };
 
-    app.mount("#app");
+    app.mount('#app');
 })();

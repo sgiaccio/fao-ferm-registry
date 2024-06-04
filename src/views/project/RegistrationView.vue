@@ -22,6 +22,7 @@ import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioForm
 import RecursiveMenuFormGroup from '@/components/inputs/base/RecursiveMenuFormGroup.vue';
 import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
+import ImageUploadFormGroup from '@/components/inputs/base/ImageUploadFormGroup.vue';
 
 
 withDefaults(defineProps<{
@@ -185,6 +186,15 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                 label="Title"
                 description="Title of the initiative as stated in the official initiative document"
             />
+            <RecursiveMenuFormGroup
+                class="px-4 odd:bg-white even:bg-slate-50"
+                :edit="edit"
+                v-model="store.project.project.gefImplementingAgencies"
+                label="GEF implementing agencies"
+                :searchable="false"
+                :showSelection="false"
+                :options="menus.gefImplementingAgencies"
+            />
 
             <!-- Enable this when the reporting line is GEF -->
             <template v-if="store.project.reportingLine === 'GEF'">
@@ -211,15 +221,6 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                                 :edit="edit"
                                 :searchable="false" />
             </FormGroup> -->
-                <RecursiveMenuFormGroup
-                    class="px-4 odd:bg-white even:bg-slate-50"
-                    :edit="edit"
-                    v-model="store.project.project.gefImplementingAgencies"
-                    label="GEF implementing agencies"
-                    :searchable="false"
-                    :showSelection="false"
-                    :options="menus.gefImplementingAgencies"
-                />
                 <FormGroup
                     class="px-4 odd:bg-white even:bg-slate-50"
                     label="GEF cycle"
@@ -267,6 +268,18 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                     <p v-else>Provide a short context of the initiative in terms of actors and partners leading it, a short background, main restoration activities that will be implemented, expected results of the initiative.</p>
                 </template>
             </TextareaFormGroup>
+
+            <ImageUploadFormGroup
+                label="Initiative photos"
+                description="Please upload photos of the initiative. You can then choose one as a cover photo by clicking on it."
+                :projectId="store.id!"
+                folder="images"
+                :multiple="true"
+                class="px-4 odd:bg-white even:bg-slate-50"
+                :edit="edit"
+                :getAccessTokenFn="authStore!.getIdToken"
+            />
+
 
             <TextFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
@@ -400,7 +413,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                 :multiple="false"
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
-                :accessToken="authStore!.user!.accessToken"
+                :getAccessTokenFn="authStore!.getIdToken"
             >
             </FileUploadFormGroup2>
             <MultiInputFormGroup

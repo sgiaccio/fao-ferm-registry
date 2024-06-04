@@ -1,236 +1,296 @@
 <script setup lang="ts">
-import * as vue from 'vue';
-import { getStorage, ref, getBlob } from 'firebase/storage';
+import { ref, onMounted } from 'vue';
+import { uploadFiles, listProjectFiles, getFileAsBlob, deleteFile } from '@/firebase/storage';
+import { makeCoverPhoto } from '@/firebase/functions';
 
-import baseProps from "../formGroupProps"
-import FormGroup from '../FormGroup.vue'
+import { toast } from 'vue3-toastify';
 
-import { useAuthStore } from '@/stores/auth';
+import baseProps from '../formGroupProps';
 
+import Upload from './Upload.vue';
+import FormGroup from '../FormGroup.vue';
 
-const authStore = useAuthStore();
-
-const selectedFile = vue.ref<File | null>(null);
-const uploadStatus = vue.ref<'idle' | 'uploading' | 'uploaded'>('idle');
+import { TrashIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/solid';
 
 const props = defineProps({
     ...baseProps,
     ...{
-        bucketUrl: { type: String }, // firebase sets default bucket if undefined
-        bpId: { type: String, required: true },
-        modelValue: { type: String }
+        projectId: { type: String, required: true },
+        folder: { type: String, required: true },
+        multiple: { type: Boolean, default: true },
+        getAccessTokenFn: { type: Function, required: true },
     }
 });
 
-const storage = getStorage(undefined, props.bucketUrl);
+const uploadedFiles = ref<{ name: string, path: string, url: string, imageUrl?: string }[]>([]);
 
-async function loadFile(src: string, maxRetries = 5, pause = 2000): Promise<Blob> {
-    let tries = 0;
-    let blob: Blob;
-
-    return new Promise(async (resolve, reject) => {
-        while (!blob && tries++ < maxRetries) {
-            try {
-                blob = await getBlob(ref(storage, src));
-                resolve(blob);
-            } catch (error) {
-                if (tries < maxRetries) {
-                    await new Promise(resolve => setTimeout(resolve, pause));
-                }
-            }
-        }
-        reject(new Error('Could not load image'));
-    });
-}
-
-const thumbnailUrl = vue.ref();
-
-async function loadThumbnail(maxRetries = 1, pause = 2000) {
-    revokeObjectURL();
+async function getUploadedFiles() {
     try {
-        const imgBlob = await loadFile(`${props.bpId}/images/thumbnail/thumbnail.jpg`, maxRetries, pause);
-        const urlCreator = window.URL || window.webkitURL;
-        thumbnailUrl.value = urlCreator.createObjectURL(imgBlob);
+        const accessToken = await props.getAccessTokenFn();
+        const files = await listProjectFiles(props.projectId, props.folder, accessToken);
+
+        // Initialize the array with placeholders to maintain order
+        uploadedFiles.value = new Array(files.length);
+
+        files.forEach(async (file, index) => {
+            try {
+                const blob = await getFileAsBlob(props.projectId, file.path, accessToken);
+                const imageUrl = URL.createObjectURL(blob);
+
+                // Place the file at the correct index
+                uploadedFiles.value[index] = { ...file, imageUrl };
+                console.log(uploadedFiles.value);
+                // Trigger a reactive update
+                uploadedFiles.value = [...uploadedFiles.value];
+            } catch (error) {
+                console.error(`Failed to load file ${file.path}:`, error);
+            }
+        });
     } catch (error) {
-        thumbnailUrl.value = null;
+        console.error(error);
+        alert('Failed to load files: ' + error);
     }
 }
 
-// async function loadThumbnail(maxRetries = 1, pause = 2000) {
-//     // create url parameters
-//     const params = new URLSearchParams({
-//         'bp_id': props.bpId
-//     });
-
-//     return fetch('https://europe-west3-fao-ferm.cloudfunctions.net/get_bp_thumbnail?' + params, {
-//         method: 'GET',
-//         headers: {
-//             'Authorization': `Bearer ${authStore!.user!.accessToken}`,
-//         },
-//     }).then(async response => {
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! status: ${response.status}`);
-//         }
-//         return response.blob();
-//     }).then(imgBlob => {
-//         debugger;
-//         thumbnailUrl.value = URL.createObjectURL(imgBlob);
-//     }).catch(error => {
-//         console.error(error); // DEBUG
-//     });
-// }
-
-
-vue.onMounted(async () => {
-    loadThumbnail();
+onMounted(async () => {
+    await getUploadedFiles();
 });
 
+async function upload(files: FileList) {
+    const toastId = notify(files.length);
 
-function revokeObjectURL() {
-    if (thumbnailUrl.value) {
-        URL.revokeObjectURL(thumbnailUrl.value);
+    try {
+        const accessToken = await props.getAccessTokenFn();
+        const onUploadComplete = () => {
+            toast.update(toastId, {
+                render: `Upload complete`,
+                autoClose: true,
+                closeOnClick: true,
+                closeButton: true,
+                type: toast.TYPE.SUCCESS,
+                isLoading: false,
+            });
+        };
+        await uploadFiles(props.projectId, props.folder, Array.from(files), accessToken, () => { }, onUploadComplete);
+        await getUploadedFiles();
+    } catch (error) {
+        console.error('Upload failed:', error);
+        toast.update(toastId, {
+            render: 'Upload failed',
+            autoClose: false,
+            closeOnClick: true,
+            closeButton: true,
+            type: toast.TYPE.ERROR,
+            isLoading: false,
+        });
     }
 }
 
-vue.onUnmounted(revokeObjectURL);
+// async function download(path: string, name: string) {
+//     try {
+//         const accessToken = await props.getAccessTokenFn();
+//         const blob = await getFileAsBlob(props.projectId, path, accessToken);
+//         const url = URL.createObjectURL(blob);
 
-function setSelectedFile(event: Event) {
-    selectedFile.value = (event.target as HTMLInputElement).files![0];
-}
-
-async function uploadToBucket(bpId: string, file: File) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('bp_id', bpId);
-
-    return fetch('https://europe-west3-fao-ferm.cloudfunctions.net/upload_bp_image', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'Authorization': `Bearer ${authStore!.user!.accessToken}`,
-        },
-    }).then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.text();
-    }).catch(error => {
-        console.error(error); // DEBUG
-    });
-}
-
-
-function uploadFile() {
-    if (uploadStatus.value !== 'idle') return;
-
-    const uploadTask = uploadToBucket(props.bpId, selectedFile.value!);
-
-    uploadStatus.value = 'uploading';
-    uploadTask.then(async () => {
-        selectedFile.value = null;
-        uploadStatus.value = 'uploaded';
-        await loadThumbnail(20);
-    }).catch(_error => {
-        uploadStatus.value = 'idle';
-    });
-}
-
-// async function listFiles(folder: string) {
-//     const dirRef = ref(storage, folder);
-//     return listAll(dirRef);
+//         const link = document.createElement('a');
+//         link.href = url;
+//         link.download = name;
+//         link.click();
+//     } catch (error) {
+//         console.error(error);
+//         alert('Download failed: ' + error);
+//     }
 // }
 
-function deleteFile() {
-    const params = new URLSearchParams({
-        'bp_id': props.bpId
-    });
-
-    return fetch('https://europe-west3-fao-ferm.cloudfunctions.net/delete_bp_image?' + params, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${authStore!.user!.accessToken}`,
-        },
-    }).then(async response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+const deleting = ref<Set<string>>(new Set())
+async function deleteFromStorage(name: string, path: string) {
+    if (!props.edit) return;
+    if (confirm(`Are you sure you want to delete ${name}?`)) {
+        if (deleting.value.has(path)) return;
+        deleting.value.add(path);
+        try {
+            const accessToken = await props.getAccessTokenFn();
+            await deleteFile(props.projectId, path, accessToken);
+            uploadedFiles.value = uploadedFiles.value.filter(file => file.path !== path);
+        } catch (error) {
+            alert('Failed to delete file: ' + error);
+        } finally {
+            deleting.value.delete(path);
         }
-    }).catch(error => {
-        console.error(error);
-    }).finally(() => {
-        loadThumbnail();
-        uploadStatus.value = 'idle';
-    });
+    }
+}
 
-    // if (!confirm('Are you sure you want to delete the image?')) return;
-    // const fRef = ref(storage, `${props.folder}/${fileName.value}`);
-    // deleteObject(fRef)
-    //     .catch(_ => alert('Error deleting the file'))
-    //     .finally(() => {
-    //         getFiles();
-    //         loadThumbnail(5);
-    //     });
+function notify(nFiles: number) {
+    const toastId = toast.loading(`Uploading ${nFiles} file${nFiles > 1 ? 's' : ''}...`);
+    return toastId
+};
+
+async function makeCover(imgUrl) {
+    // TODO this works but trying to resize client side
+    // alert('Make cover photo for: ' + path); // DEBUG
+    // await makeCoverPhoto(props.projectId, path);
+
+    // resize client side
+    const img = new Image();
+    img.onload = () => resizeImage(img);
+    img.src = imgUrl
+}
+
+const canvasRef = ref<HTMLCanvasElement>();
+function resizeImage(img, callback) {
+    const canvas = canvasRef.value;
+    if (!canvas) return;
+
+    const maxWidth = 200; // Maximum width for the resized image
+    const maxHeight = 200; // Maximum height for the resized image
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return
+
+    let width = img.width;
+    let height = img.height;
+
+    if (width > height) {
+        if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+        }
+    } else {
+        if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+        }
+    }
+
+    canvas.width = width;
+    canvas.height = height;
+    ctx.drawImage(img, 0, 0, width, height);
+    console.log(canvas);
+
+    canvas.toBlob(blob => {
+        console.log('Resized image Blob:', blob);
+        // Now you can upload the resized image blob to your server
+        callback();
+    }, "image/jpeg");
 }
 </script>
 
 <template>
-    <FormGroup :label="label"
-               :description="description"
-               :dangerousHtmlDescription="dangerousHtmlDescription">
-        <div v-if="!thumbnailUrl">
-            <label for="file"
-                   class="block text-sm font-medium text-gray-700" />
-            <div class="border-gray-300 mt-1 flex rounded-md shadow-sm">
-                <div class="flex-grow focus-within:z-10">
-                    <input v-if="edit"
-                           type="file"
-                           name="file"
-                           class="py-2 pl-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
-                           @change="setSelectedFile">
-                    <div v-else>
-                        {{ selectedFile?.name }}
-                    </div>
-                </div>
-                <!-- Upload button -->
-                <button v-if="edit"
-                        type="button"
-                        class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md bg-gray-50 focus:outline-none"
-                        :class="['idle' === 'idle' ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-200 cursor-default']"
-                        @click="uploadFile">
-                    <!-- Not uploading -->
-                    <svg v-if="uploadStatus === 'idle'"
-                         xmlns="http://www.w3.org/2000/svg"
-                         :class="[selectedFile ? 'text-red-600 animate-pulse' : 'text-gray-400', 'h-5 w-5']"
-                         viewBox="0 0 20 20"
-                         fill="currentColor"
-                         d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                         clip-rule="evenodd">
-                        <path fill-rule="evenodd"
-                              d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
-                              clip-rule="evenodd"></path>
-                    </svg>
-                    <!-- Uploading -->
-                    <svg v-else
-                         xmlns="http://www.w3.org/2000/svg"
-                         viewBox="0 0 20 20"
-                         fill="currentColor"
-                         class="w-5 h-5 animate-spin">
-                        <path fill-rule="evenodd"
-                              d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
-                              clip-rule="evenodd" />
-                    </svg>
-                </button>
+    <canvas
+        ref="canvasRef"
+        style="display:none;"
+    ></canvas>
+    <FormGroup
+        :label="label"
+        :description="description"
+        :dangerousHtmlDescription="dangerousHtmlDescription"
+    >
+        <div class="bg-white text-sm">
+            <div class="grid grid-cols-3 gap-2">
+                <template v-if="uploadedFiles?.length">
+                    <template v-for="(file, i) in uploadedFiles">
+                        <div
+                            v-if="file?.imageUrl"
+                            class="aspect-square rounded-md shadow-md overflow-hidden relative"
+                            @click="() => makeCover(file.imageUrl)"
+                        >
+                            <div
+                                v-if="edit"
+                                class="absolute cursor-pointer bottom-2 right-2 drop-shadow-md"
+                                @click.stop="() => deleteFromStorage(file.name, file.path)"
+                            >
+                                <TrashIcon
+                                    v-if="!deleting.has(file.path)"
+                                    class="inline left-auto w-5 h-5 text-ferm-red-dark hover:text-ferm-red-light"
+                                />
+                                <!-- otherwise show spinning duck -->
+                                <svg
+                                    v-else
+                                    aria-hidden="true"
+                                    style="width:1.5rem;height:1.5rem;"
+                                    class="spinner"
+                                    viewBox="0 0 100 101"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                        fill="currentColor"
+                                    />
+                                    <path
+                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642
+                                        10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                        fill="currentFill"
+                                    />
+                                </svg>
+                            </div>
+                            <img
+                                v-if="file?.imageUrl"
+                                :src="file.imageUrl"
+                                alt="File Image"
+                                class="w-full h-full object-cover aspect-square"
+                            />
+                        </div>
+                        <div
+                            v-else
+                            class="aspect-square"
+                        >
+                            <!-- show a spinning loader -->
+                            <div class="w-full h-full flex items-center justify-center shadow-md">
+                                <svg
+                                    aria-hidden="true"
+                                    style="width:3.5rem;height:3.5rem;"
+                                    class="spinner"
+                                    viewBox="0 0 100 101"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                        fill="currentColor"
+                                    />
+                                    <path
+                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                        fill="currentFill"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- <div
+                            :class="['cursor-pointer', edit ? 'mr-3' : '']"
+                            @click="() => download(file.path, file.name)"
+                        >
+                            <ArrowDownTrayIcon class="inline left-auto w-5 h-5 hover:text-ferm-blue-dark-800" />
+                        </div> -->
+                        <!-- <div
+                        v-if="edit"
+                        class="cursor-pointer"
+                        @click="() => deleteFromStorage(file.name, file.path)"
+                    >
+                        <TrashIcon class="inline left-auto w-5 h-5 text-ferm-red-dark hover:text-ferm-red-light" />
+                    </div> -->
+                        <!-- </div> -->
+                    </template>
+                </template>
+                <Upload
+                    class="aspect-square w-full border-2 border-dashed border-gray-400 flex items-center justify-center cursor-pointer font-bold text-center hover:bg-ferm-blue-dark-200 rounded-md p-6"
+                    :edit="edit"
+                    :multiple="multiple"
+                    :files="uploadedFiles"
+                    @startUpload="upload"
+                    @done="getUploadedFiles"
+                    @delete="deleteFromStorage"
+                />
             </div>
-            <!-- Show reminder if file was chosen -->
-            <!-- <div v-if="selectedFile"
-                 class="text-red-500 text-sm">Remember to click the upload button before saving.</div> -->
         </div>
-        <div v-else>
-            <img v-if="thumbnailUrl"
-                 :src="thumbnailUrl">
-            <button v-if="edit"
-                    @click="deleteFile()"
-                    type="button"
-                    class="rounded-md bg-indigo-600 py-2.5 px-3.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Delete</button>
-        </div>
+        <!-- <div v-else-if="!edit">
+            <p class="text-gray-400 italic">No files uploaded yet</p>
+        </div> -->
+        <template
+            v-slot:info
+            v-if="$slots.info"
+        >
+            <slot name="info" />
+        </template>
     </FormGroup>
 </template>

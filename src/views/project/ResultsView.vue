@@ -628,8 +628,8 @@ async function initMap() {
                     </div>
 
                     <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-mustard-light/20">
-                        <div class="col-span-2">Total area of land achieved (tabular format)</div>
-                        <div class="col-span-1">{{ roundToPrecisionAsString(store.project.project.areaAchieved, 2) }} Ha</div>
+                        <!-- <div class="col-span-2">Total area of land achieved (tabular format)</div>
+                        <div class="col-span-1">{{ roundToPrecisionAsString(store.project.project.areaAchieved, 2) }} Ha</div> -->
                         <div class="col-span-2">Total area of land achieved (spatially explicit format)</div>
                         <div class="col-span-1">{{ roundToPrecisionAsString(store.polygonsArea(), 2) }} Ha</div>
                     </div>

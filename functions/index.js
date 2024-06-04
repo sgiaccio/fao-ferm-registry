@@ -1012,7 +1012,7 @@ exports.checkEmailSend = applicationStatus.checkEmailSend;
 
 /************************************************
  * 
- * Collaborators
+ * COLLABORATORS
  * 
  * **********************************************/
 const collaborators = require("./collaborators");
@@ -1037,3 +1037,13 @@ exports.resendEmails = emails.resendEmails;
 const projectVersions = require("./projectVersions");
 exports.createNewProjectVersion = projectVersions.createNewProjectVersion;
 exports.reviseProject = projectPublishWorkflow.reviseProject;
+
+
+/************************************************
+ * 
+ * STORAGE
+ * 
+ * **********************************************/
+
+const storage = require("./storage");
+exports.makeCoverPhoto = storage.makeCoverPhoto;

@@ -148,3 +148,10 @@ export async function createNewProjectVersion(projectId: string) {
     const result = await reviseProject({ projectId });
     return result.data;
 }
+
+export async function makeCoverPhoto(projectId: string, filePath: string) {
+    const functions = getFunctions();
+    const makeCoverPhoto = httpsCallable(functions, 'makeCoverPhoto');
+    const result = await makeCoverPhoto({ projectId, filePath });
+    return result.data;
+}

@@ -5,7 +5,7 @@ import TabTemplate from "../TabTemplate.vue"
 
 import TextareaFormGroup from "../../components/inputs/base/TextareaFormGroup.vue";
 import SelectFormGroup from "../../components/inputs/base/SelectFormGroup.vue";
-import ImageUploadFormGroup from "../../components/inputs/base/ImageUploadFormGroup.vue";
+import BpImageUploadFormGroup from "../../components/inputs/base/BpImageUploadFormGroup.vue";
 
 
 withDefaults(defineProps<{
@@ -45,7 +45,7 @@ const yesNo = [
                                    label="5.3 Additional comments"
                                    description="Feel free to share any additional information regarding the practice."
                                    :edit="edit" />
-                <ImageUploadFormGroup label="5.4 Please upload a picture of the practice"
+                <BpImageUploadFormGroup label="5.4 Please upload a picture of the practice"
                                       bucket-url="gs://fao-ferm-goodpractices"
                                       :bpId="bpStore.id!"
                                       :edit="edit" />

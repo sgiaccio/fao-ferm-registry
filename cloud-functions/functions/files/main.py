@@ -101,7 +101,7 @@ def authenticated(fn):
     return wrapped
 
 
-def upload_blob(bucket_name, source_file, destination_blob_name):
+def upload_blob(bucket_name, source_file, destination_blob_name, content_type):
     """Uploads a file to the bucket."""
     # The ID of your GCS bucket
     # bucket_name = "your-bucket-name"
@@ -114,7 +114,7 @@ def upload_blob(bucket_name, source_file, destination_blob_name):
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
-    blob.upload_from_file(source_file, rewind=True)
+    blob.upload_from_file(source_file, rewind=True, content_type=content_type)
     # blob.upload_from_filename(source_file_name)
 
 @authenticated
@@ -123,8 +123,8 @@ def upload_project_file(request):
     try:
         # Create a temporary directory where to store zip file and expanded ones
         tmp_dir = TemporaryDirectory()
-        project_id, temp_file, _, path, orig_filename = _handle_upload(request, tmp_dir)
-        _upload_to_bucket(project_id, temp_file, path, orig_filename)
+        project_id, temp_file, _, path, orig_filename, content_type = _handle_upload(request, tmp_dir)
+        _upload_to_bucket(project_id, temp_file, path, orig_filename, content_type)
 
         return ('File uploaded', 200, { 'Access-Control-Allow-Origin': '*' })
 
@@ -135,13 +135,13 @@ def upload_project_file(request):
         if tmp_dir:
             tmp_dir.cleanup()
 
-def _upload_to_bucket(project_id, temp_file, path, orig_filename):
+def _upload_to_bucket(project_id, temp_file, path, orig_filename, content_type):
     if (path != None and path != ''):
         dst_path = '%s/%s/%s' % (project_id, path, secure_filename(orig_filename))
     else:
         dst_path = '%s/%s' % (project_id, secure_filename(orig_filename))
     try:
-        upload_blob(dst_bucket, temp_file, dst_path)
+        upload_blob(dst_bucket, temp_file, dst_path, content_type)
     except Exception as e:
         dst_path = None
         logger.error('Couldn\'t save original file in bucket: %s' % e)
@@ -169,7 +169,9 @@ def _handle_upload(request, tmp_dir):
     file.save(temp_file)
     temp_file.seek(0)  # Move file pointer to the beginning
 
-    return project_id, temp_file, temp_file_path, path, orig_filename
+    content_type = file.content_type
+
+    return project_id, temp_file, temp_file_path, path, orig_filename, content_type
 
 @authenticated
 def list_document_files(request):

@@ -4,8 +4,6 @@
  * @module storage
  **/
 
-// import { storage } from "./index";
-
 // import { ref, uploadBytesResumable, listAll, getBlob, deleteObject } from "firebase/storage";
 
 // export async function uploadFiles(path: string, files: File[], onProgress: (progress: number) => void) {
@@ -50,35 +48,82 @@
 //     await Promise.all(uploadPromises);
 // }
 
-export async function uploadFiles(projectId: string, path: string = '', files: File[], accessToken: string) {
-    const uploadPromises = files.map((file) => {
-        return new Promise<void>((resolve, reject) => {
+export async function uploadFiles(projectId: string, path: string = '', files: File[], accessToken: string, onProgress: (loaded: number, total: number) => void = () => { }, onUploadComplete: () => void = () => { }) {
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    let totalLoaded = 0;
+    const fileProgressMap = new Map();
+
+    const uploadPromises = files.map(file => {
+        return new Promise((resolve, reject) => {
+            // using XMLHttpRequest instead of fetch to be able to track upload progress
+            // in fact upload progress it not yet used anywhere in the UI - maybe it will be in the future, otherwise fetch could be used
+            const xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', (event) => {
+                if (event.lengthComputable) {
+                    const previousLoaded = fileProgressMap.get(file) || 0;
+                    totalLoaded += event.loaded - previousLoaded;
+                    fileProgressMap.set(file, event.loaded);
+
+                    onProgress(totalLoaded, totalSize);
+                }
+            });
+
+            xhr.open('POST', 'https://europe-west3-fao-ferm.cloudfunctions.net/upload_project_file', true);
+            xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
+
             const formData = new FormData();
             formData.append('file', file);
             formData.append('project_id', projectId);
-            formData.append('path', path); // Construct the desired path
+            formData.append('path', path);
 
-            fetch('https://europe-west3-fao-ferm.cloudfunctions.net/upload_project_file', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            }).then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        resolve();
+                    } else {
+                        reject(new Error(`HTTP error! status: ${xhr.status}`));
+                    }
                 }
-                return response.text();
-            }).then(data => {
-                resolve();
-            }).catch(error => {
-                reject(error);
-            });
+            };
+
+            xhr.send(formData);
         });
     });
 
     await Promise.all(uploadPromises);
+    onUploadComplete();
 }
+
+// export async function uploadFiles(projectId: string, path: string = '', files: File[], accessToken: string) {
+//     const uploadPromises = files.map((file) => {
+//         return new Promise<void>((resolve, reject) => {
+//             const formData = new FormData();
+//             formData.append('file', file);
+//             formData.append('project_id', projectId);
+//             formData.append('path', path); // Construct the desired path
+
+//             fetch('https://europe-west3-fao-ferm.cloudfunctions.net/upload_project_file', {
+//                 method: 'POST',
+//                 body: formData,
+//                 headers: {
+//                     'Authorization': `Bearer ${accessToken}`,
+//                 },
+//             }).then(response => {
+//                 if (!response.ok) {
+//                     throw new Error(`HTTP error! status: ${response.status}`);
+//                 }
+//                 return response.text();
+//             }).then(data => {
+//                 resolve();
+//             }).catch(error => {
+//                 reject(error);
+//             });
+//         });
+//     });
+
+//     await Promise.all(uploadPromises);
+// }
 
 // export async function listFiles(path: string) {
 //     try {
@@ -93,7 +138,7 @@ export async function uploadFiles(projectId: string, path: string = '', files: F
 //     }
 // }
 
-export async function listFiles(projectId: string, path: string | null, accessToken: string) {
+export async function listProjectFiles(projectId: string, path: string | null, accessToken: string) {
     const url = new URL('https://europe-west3-fao-ferm.cloudfunctions.net/list_document_files');
     url.searchParams.append('project_id', projectId);
     if (path) url.searchParams.append('path', path);
@@ -119,10 +164,15 @@ export async function listFiles(projectId: string, path: string | null, accessTo
 //     return getBlob(storageRef);
 // }
 
-export async function getFileAsBlob(projectId: string, path: string, accessToken: string) {
+export function getFileUrl(projectId: string, path: string) {
     const url = new URL('https://europe-west3-fao-ferm.cloudfunctions.net/download_document_file');
     url.searchParams.append('project_id', projectId);
     url.searchParams.append('file_path', path);
+    return url.toString();
+}
+
+export async function getFileAsBlob(projectId: string, path: string, accessToken: string) {
+    const url = getFileUrl(projectId, path);
 
     const response = await fetch(url, {
         method: 'GET',
@@ -140,6 +190,10 @@ export async function getFileAsBlob(projectId: string, path: string, accessToken
     return blob;
 }
 
+// async function getProjectImagesAsURLs(projectId: string, path: string | null, accessToken: string) {
+//     const images = await listProjectImages(projectId, path, accessToken);
+//     return images.map(image => getFileUrl(projectId, image.path));
+// }
 
 export async function deleteFile(projectId: string, path: string, accessToken: string) {
     const url = new URL('https://europe-west3-fao-ferm.cloudfunctions.net/delete_document_file');
@@ -157,8 +211,8 @@ export async function deleteFile(projectId: string, path: string, accessToken: s
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.text();
-    // }).then(data => {
-    //     console.log(data);
+        // }).then(data => {
+        //     console.log(data);
     }).catch(error => {
         console.error("Delete file failed:", error);
         throw error;

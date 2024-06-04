@@ -235,6 +235,10 @@ export const useAuthStore = defineStore({
                 console.error(error.details?.code);
                 throw error.details?.code ? Error(error.details.code, { cause: error }) : error;
             }
+        },
+
+        async getIdToken() {
+            return await this.user?.getIdToken();
         }
     }
 });

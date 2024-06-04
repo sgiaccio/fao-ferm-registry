@@ -22,7 +22,7 @@ import FormGroup from '../../components/inputs/FormGroup.vue';
 import NumberInput from '../../components/inputs/base/NumberInput.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
-import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
+// import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
 
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
@@ -31,15 +31,13 @@ import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
 import AlertModal from '@/views/AlertModal.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
-import { useMenusStore } from '@/stores/menus';
-
 import { roundToPrecisionAsString } from '@/lib/util';
 
 import { getGaulLevel0 } from '@/firebase/firestore';
 
 const store = useProjectStore();
 const authStore = useAuthStore();
-const menus = useMenusStore().menus;
+// const menus = useMenusStore().menus;
 let countries = ref();
 
 onMounted(async () => {
@@ -164,6 +162,10 @@ provide('applyToAll', () => {
         }
     });
 });
+
+function onUploadProgress({ loaded, total }: { loaded: number, total: number }) {
+    
+}
 </script>
 
 <template>
@@ -403,7 +405,7 @@ provide('applyToAll', () => {
                 <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Restoration Plans/Management Plans (tabular data).</span> The
                     plan should at least include a description of restoration or land management
                     activities and the extension of the area of intervention.</p>
-                <FormGroup label="Total area of land achieved (tabular format)">
+                <!-- <FormGroup label="Total area of land achieved (tabular format)">
                     <NumberInput
                         :edit="edit"
                         v-model="store.project.project.areaAchieved"
@@ -412,13 +414,13 @@ provide('applyToAll', () => {
                     <template v-slot:info>
                         <p>Please include the land (in ha) reported in the Restoration Plans/Management Plans (tabular data).</p>
                     </template>
-                </FormGroup>
+                </FormGroup> -->
                 <FileUploadFormGroup2
                     label="Please upload Restoration Plans/Management Plans"
                     :projectId="store.id!"
                     folder="documents/gef/plans"
                     :multiple="true"
-                    :accessToken="authStore!.user!.accessToken"
+                    :getAccessTokenFn ="authStore!.getIdToken"
                     :edit="edit"
                 >
 
@@ -427,7 +429,7 @@ provide('applyToAll', () => {
                             management activities and baseline information of the territory, including pictures.</p>
                     </template>
                 </FileUploadFormGroup2>
-                <FormGroup
+                <!-- <FormGroup
                     class="odd:bg-white even:bg-slate-50"
                     label="GEF investment type"
                     dangerousHtmlDescription="Do the areas of intervention described in the Restoration Plans/Management Plans coincide with the areas of intervention uploaded in the <span class='text-black'>Geographic Areas?</span>"
@@ -437,7 +439,7 @@ provide('applyToAll', () => {
                         :options="menus.boolean"
                         :edit="edit"
                     />
-                </FormGroup>
+                </FormGroup> -->
                 <!-- <RecursiveRadioFormGroup
                     :edit="edit"
                     dangerousHtmlDescription="Do the areas of intervention described in the Restoration Plans/Management Plans coincide with the areas of intervention uploaded in the <span class='text-black'>Geographic Areas?</span>"

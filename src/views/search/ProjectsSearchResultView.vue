@@ -1,7 +1,4 @@
-<script
-    setup
-    lang="ts"
->
+<script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 
 import {
@@ -230,17 +227,6 @@ async function loadMore() {
                 :alt="result.source"
             />
         </div>
-        <!-- <div
-            v-for="result in searchResults"
-            :key="result.id"
-            class="aspect-square rounded-md overflow-hidden cursor-pointer hover:shadow-md hover:shadow-gray-400 shadow-sm transition-all duration-200 flex"
-            @click="() => showDetail(result)"
-            :style="`background-image: url(${'result.preview_image' || '/placeholder.png'});background-size: cover; background-position: center;`"
-        >
-            <div class="h-20 bg-black/50 text-white px-3 p-3 w-full self-end">
-                <h3 class="text-sm font-medium line-clamp-3 shadow-black text-shadow-sm">{{ result.title }}</h3>
-            </div>
-        </div> -->
     </div>
 
     <div

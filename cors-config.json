@@ -1,6 +1,6 @@
 [
     {
-      "origin": ["https://fao-ferm--publish-workflow-iunr37n7.web.app", "https://ferm.fao.org"],
+      "origin": ["https://fao-ferm--images-r3f01ylo.web.app", "https://ferm.fao.org"],
       "method": ["GET", "POST", "HEAD", "PUT", "DELETE"],
       "responseHeader": ["Content-Type", "Authorization"],
       "maxAgeSeconds": 3600
