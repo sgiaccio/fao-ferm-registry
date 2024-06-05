@@ -218,7 +218,9 @@ function notify(nFiles: number) {
 };
 
 async function makeCover(path: string) {
-    const toastId = toast.loading('Crating the thumbnail...');
+    if (path === props.modelValue) return;
+    
+    const toastId = toast.loading('Creating the thumbnail...');
     try {
         await makeCoverPhoto(props.projectId, path);
         emit('update:modelValue', path);
