@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { uploadFiles, listProjectFiles, getFileAsBlob, deleteFile } from '@/firebase/storage';
 import { makeCoverPhoto } from '@/firebase/functions';
 
@@ -10,11 +10,13 @@ import baseProps from '../formGroupProps';
 import Upload from './Upload.vue';
 import FormGroup from '../FormGroup.vue';
 
-import { TrashIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/solid';
+import { TrashIcon } from '@heroicons/vue/24/solid';
+
 
 const props = defineProps({
     ...baseProps,
     ...{
+        modelValue: { type: String },
         projectId: { type: String, required: true },
         folder: { type: String, required: true },
         multiple: { type: Boolean, default: true },
@@ -22,24 +24,23 @@ const props = defineProps({
     }
 });
 
-const uploadedFiles = ref<{ name: string, path: string, url: string, imageUrl?: string }[]>([]);
+const emit = defineEmits(['update:modelValue']);
+
+const uploadedFiles = ref<{ name: string, path: string, imageUrl?: string }[]>([]);
 
 async function getUploadedFiles() {
     try {
         const accessToken = await props.getAccessTokenFn();
-        const files = await listProjectFiles(props.projectId, props.folder, accessToken);
+        uploadedFiles.value = await listProjectFiles(props.projectId, props.folder, accessToken);
 
-        // Initialize the array with placeholders to maintain order
-        uploadedFiles.value = new Array(files.length);
-
-        files.forEach(async (file, index) => {
+        // Load each file in parallel
+        uploadedFiles.value.forEach(async (file: { name: string, path: string }, index: number) => {
             try {
                 const blob = await getFileAsBlob(props.projectId, file.path, accessToken);
                 const imageUrl = URL.createObjectURL(blob);
 
                 // Place the file at the correct index
                 uploadedFiles.value[index] = { ...file, imageUrl };
-                console.log(uploadedFiles.value);
                 // Trigger a reactive update
                 uploadedFiles.value = [...uploadedFiles.value];
             } catch (error) {
@@ -56,7 +57,88 @@ onMounted(async () => {
     await getUploadedFiles();
 });
 
-async function upload(files: FileList) {
+onUnmounted(() => {
+    // Revoke all object URLs
+    uploadedFiles.value.forEach(file => {
+        if (file.imageUrl) {
+            URL.revokeObjectURL(file.imageUrl);
+        }
+    });
+});
+
+function tryReduceImageSize(file: File) {
+    return new Promise<File>((resolve, reject) => {
+        if (file.size > 1024 * 1024) { // Check if the file size is greater than 1MB
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const image = new Image();
+            image.src = URL.createObjectURL(file);
+
+            image.onload = () => {
+                // Calculate the new dimensions while maintaining the aspect ratio
+                const maxDim = 1000;
+                let width = image.width;
+                let height = image.height;
+
+                if (width > height) {
+                    if (width > maxDim) {
+                        height *= maxDim / width;
+                        width = maxDim;
+                    }
+                } else {
+                    if (height > maxDim) {
+                        width *= maxDim / height;
+                        height = maxDim;
+                    }
+                }
+
+                // Set the canvas dimensions to the new size
+                canvas.width = width;
+                canvas.height = height;
+
+                // Draw the image onto the canvas with the new dimensions
+                ctx?.drawImage(image, 0, 0, width, height);
+
+                // Convert the canvas to a Blob and then a File
+                canvas.toBlob(blob => {
+                    if (blob) {
+                        // Check the new image size, if still above 1MB, throw an error
+                        if (blob.size > 1024 * 1024) {
+                            reject(new Error('Image size is still above 1MB'));
+                        } else {
+                            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+                        }
+                    } else {
+                        reject(new Error('Canvas is empty'));
+                    }
+                }, 'image/jpeg', 0.7);
+            };
+
+            image.onerror = () => {
+                reject(new Error('Image load error'));
+            };
+        } else {
+            resolve(file); // If the file size is already below 1MB, resolve with the original file
+        }
+    });
+}
+
+async function upload(origFiles: FileList) {
+    // make sure that all files are images
+    if (Array.from(origFiles).some(file => !file.type.startsWith('image/'))) {
+        toast.error('Only images are allowed');
+        return;
+    }
+
+    // Try to reduce the size of the images if they are above 1MB - do in parallel
+    // First check if any of the files are above 1MB
+    if (Array.from(origFiles).some(file => file.size > 1024 * 1024)) {
+        toast.info('Image size must be below 1MB, reducing size...');
+    }
+
+    const promises = Array.from(origFiles).map(file => tryReduceImageSize(file));
+    const files = await Promise.all(promises);
+
     const toastId = notify(files.length);
 
     try {
@@ -86,34 +168,44 @@ async function upload(files: FileList) {
     }
 }
 
-// async function download(path: string, name: string) {
-//     try {
-//         const accessToken = await props.getAccessTokenFn();
-//         const blob = await getFileAsBlob(props.projectId, path, accessToken);
-//         const url = URL.createObjectURL(blob);
-
-//         const link = document.createElement('a');
-//         link.href = url;
-//         link.download = name;
-//         link.click();
-//     } catch (error) {
-//         console.error(error);
-//         alert('Download failed: ' + error);
-//     }
-// }
-
 const deleting = ref<Set<string>>(new Set())
 async function deleteFromStorage(name: string, path: string) {
     if (!props.edit) return;
-    if (confirm(`Are you sure you want to delete ${name}?`)) {
+
+    if (confirm('Are you sure you want to delete this image?')) {
         if (deleting.value.has(path)) return;
+
+        const toastId = toast.loading('Deleting image...');
+
         deleting.value.add(path);
         try {
             const accessToken = await props.getAccessTokenFn();
             await deleteFile(props.projectId, path, accessToken);
             uploadedFiles.value = uploadedFiles.value.filter(file => file.path !== path);
+
+            // if the thumbnail was created by these image, remove it
+            if (path === props.modelValue) {
+                emit('update:modelValue', undefined);
+            }
+
+            toast.update(toastId, {
+                render: 'Image deleted',
+                autoClose: true,
+                closeOnClick: true,
+                closeButton: true,
+                type: toast.TYPE.SUCCESS,
+                isLoading: false,
+            });
         } catch (error) {
             alert('Failed to delete file: ' + error);
+            toast.update(toastId, {
+                render: 'Failed to delete image',
+                autoClose: false,
+                closeOnClick: true,
+                closeButton: true,
+                type: toast.TYPE.ERROR,
+                isLoading: false,
+            });
         } finally {
             deleting.value.delete(path);
         }
@@ -125,61 +217,34 @@ function notify(nFiles: number) {
     return toastId
 };
 
-async function makeCover(imgUrl) {
-    // TODO this works but trying to resize client side
-    // alert('Make cover photo for: ' + path); // DEBUG
-    // await makeCoverPhoto(props.projectId, path);
-
-    // resize client side
-    const img = new Image();
-    img.onload = () => resizeImage(img);
-    img.src = imgUrl
-}
-
-const canvasRef = ref<HTMLCanvasElement>();
-function resizeImage(img, callback) {
-    const canvas = canvasRef.value;
-    if (!canvas) return;
-
-    const maxWidth = 200; // Maximum width for the resized image
-    const maxHeight = 200; // Maximum height for the resized image
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return
-
-    let width = img.width;
-    let height = img.height;
-
-    if (width > height) {
-        if (width > maxWidth) {
-            height *= maxWidth / width;
-            width = maxWidth;
-        }
-    } else {
-        if (height > maxHeight) {
-            width *= maxHeight / height;
-            height = maxHeight;
-        }
+async function makeCover(path: string) {
+    const toastId = toast.loading('Crating the thumbnail...');
+    try {
+        await makeCoverPhoto(props.projectId, path);
+        emit('update:modelValue', path);
+        toast.update(toastId, {
+            render: 'Thumbnail created - please save to apply changes',
+            autoClose: true,
+            closeOnClick: true,
+            closeButton: true,
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
+        });
+    } catch (error) {
+        console.error('Failed to create thumbnail:', error);
+        toast.update(toastId, {
+            render: 'Failed to create thumbnail',
+            autoClose: false,
+            closeOnClick: true,
+            closeButton: true,
+            type: toast.TYPE.ERROR,
+            isLoading: false,
+        });
     }
-
-    canvas.width = width;
-    canvas.height = height;
-    ctx.drawImage(img, 0, 0, width, height);
-    console.log(canvas);
-
-    canvas.toBlob(blob => {
-        console.log('Resized image Blob:', blob);
-        // Now you can upload the resized image blob to your server
-        callback();
-    }, "image/jpeg");
 }
 </script>
 
 <template>
-    <canvas
-        ref="canvasRef"
-        style="display:none;"
-    ></canvas>
     <FormGroup
         :label="label"
         :description="description"
@@ -188,15 +253,19 @@ function resizeImage(img, callback) {
         <div class="bg-white text-sm">
             <div class="grid grid-cols-3 gap-2">
                 <template v-if="uploadedFiles?.length">
-                    <template v-for="(file, i) in uploadedFiles">
+                    <div
+                        v-for="file in uploadedFiles"
+                        class="rounded-md shadow-md overflow-hidden"
+                        :class="{ 'border-2 border-ferm-blue-dark-800': file?.path === props.modelValue, 'cursor-pointer hover:shadow-lg': edit && file?.path !== props.modelValue }"
+                    >
                         <div
                             v-if="file?.imageUrl"
-                            class="aspect-square rounded-md shadow-md overflow-hidden relative"
-                            @click="() => makeCover(file.imageUrl)"
+                            class="aspect-square relative"
+                            @click="() => makeCover(file.path)"
                         >
                             <div
                                 v-if="edit"
-                                class="absolute cursor-pointer bottom-2 right-2 drop-shadow-md"
+                                class="absolute bottom-2 right-2 drop-shadow-md"
                                 @click.stop="() => deleteFromStorage(file.name, file.path)"
                             >
                                 <TrashIcon
@@ -256,24 +325,10 @@ function resizeImage(img, callback) {
                                 </svg>
                             </div>
                         </div>
-                        <!-- <div
-                            :class="['cursor-pointer', edit ? 'mr-3' : '']"
-                            @click="() => download(file.path, file.name)"
-                        >
-                            <ArrowDownTrayIcon class="inline left-auto w-5 h-5 hover:text-ferm-blue-dark-800" />
-                        </div> -->
-                        <!-- <div
-                        v-if="edit"
-                        class="cursor-pointer"
-                        @click="() => deleteFromStorage(file.name, file.path)"
-                    >
-                        <TrashIcon class="inline left-auto w-5 h-5 text-ferm-red-dark hover:text-ferm-red-light" />
-                    </div> -->
-                        <!-- </div> -->
-                    </template>
+                    </div>
                 </template>
                 <Upload
-                    class="aspect-square w-full border-2 border-dashed border-gray-400 flex items-center justify-center cursor-pointer font-bold text-center hover:bg-ferm-blue-dark-200 rounded-md p-6"
+                    class="aspect-square w-full border border-dashed border-gray-400 flex items-center justify-center cursor-pointer font-bold text-center hover:bg-ferm-blue-dark-200 rounded-md p-6"
                     :edit="edit"
                     :multiple="multiple"
                     :files="uploadedFiles"
@@ -283,9 +338,6 @@ function resizeImage(img, callback) {
                 />
             </div>
         </div>
-        <!-- <div v-else-if="!edit">
-            <p class="text-gray-400 italic">No files uploaded yet</p>
-        </div> -->
         <template
             v-slot:info
             v-if="$slots.info"

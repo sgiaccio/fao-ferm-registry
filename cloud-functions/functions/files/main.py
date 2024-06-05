@@ -148,7 +148,7 @@ def _upload_to_bucket(project_id, temp_file, path, orig_filename, content_type):
         logger.error(traceback.format_exc())
     return dst_path
 
-def _handle_upload(request, tmp_dir):
+def _handle_upload(request, tmp_dir, max_size=3 * 1000 * 1024):
     form_data = request.form.to_dict()
     project_id = form_data.get('project_id')
     path = form_data.get('path')
@@ -159,6 +159,13 @@ def _handle_upload(request, tmp_dir):
     file = request.files.get('file')
     if not file:
         raise BadRequest("Missing file")
+    
+    # Check if the file size is too large
+    file.stream.seek(0, os.SEEK_END)
+    file_size = file.stream.tell()
+    file.stream.seek(0)  # Reset stream position to the beginning
+    if file_size > max_size:
+        raise BadRequest("File size too large")
 
     orig_filename = file.filename
     _, file_extension = os.path.splitext(orig_filename)  # Extract file extension

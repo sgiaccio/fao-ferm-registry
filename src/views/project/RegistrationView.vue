@@ -179,6 +179,8 @@ watch(() => store.project?.project.restorationStatus, newValue => {
             </p>
         </template>
         <div class="divide-y divide-slate-100 border-2 border-slate-200 rounded-md shadow-sm mt-4 mb-6 overflow-hidden">
+            <!-- show the thumbnail if available -->
+            <!-- <img v-if="store.project.project.thumbnailUrl" :src="store.project.project.thumbnailUrl" alt="thumbnail" class="w-full h-48 object-cover object-center" /> -->
             <TextFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
@@ -271,16 +273,15 @@ watch(() => store.project?.project.restorationStatus, newValue => {
 
             <ImageUploadFormGroup
                 label="Initiative photos"
-                description="Please upload photos of the initiative. You can then choose one as a cover photo by clicking on it."
+                dangerousHtmlDescription="Please upload photos of the initiative.<br>Images that are bigger than 1MB will be resized.<br><b>You can then choose one as a cover photo by clicking on it.</b>"
                 :projectId="store.id!"
                 folder="images"
                 :multiple="true"
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 :getAccessTokenFn="authStore!.getIdToken"
+                v-model="store.project.project.thumbnailUrl"
             />
-
-
             <TextFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
