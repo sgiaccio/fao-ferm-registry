@@ -189,7 +189,7 @@ function gotoPreviousTab() {
         </div>
     </div>
     <div class="mt-16 sm:ml-16 lg:ml-60 px-4 sm:px-6 lg:px-8">
-        <div class="pt-8 max-w-4xl mx-auto">
+        <div class="pt-8 max-w-6xl mx-auto">
             <router-view
                 :previous="gotoPreviousTab"
                 :next="gotoNextTab"

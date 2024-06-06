@@ -1,8 +1,5 @@
-<script
-    setup
-    lang="ts"
->
-import { ref, provide, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref, provide, onMounted, computed } from 'vue';
 
 import { InformationCircleIcon } from '@heroicons/vue/24/outline';
 import { TrashIcon, XCircleIcon } from '@heroicons/vue/20/solid';
@@ -27,7 +24,6 @@ import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
 
-
 import AlertModal from '@/views/AlertModal.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
@@ -38,6 +34,7 @@ import { getGaulLevel0 } from '@/firebase/firestore';
 const store = useProjectStore();
 const authStore = useAuthStore();
 // const menus = useMenusStore().menus;
+
 let countries = ref();
 
 onMounted(async () => {

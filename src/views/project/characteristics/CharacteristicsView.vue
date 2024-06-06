@@ -1,8 +1,5 @@
-<script
-    setup
-    lang="ts"
->
-import { ref, h } from 'vue';
+<script setup lang="ts">
+import { ref, computed, h } from 'vue';
 
 import { useProjectStore } from '../../../stores/project';
 
@@ -17,6 +14,8 @@ import LineChart from './LineChart.vue';
 import { getPolygonZonalStats } from '@/firebase/functions';
 
 import InfoButton from '@/components/InfoButton.vue';
+
+import EarthMapView from '../EarthMapView.vue';
 
 
 withDefaults(defineProps<{
@@ -61,7 +60,7 @@ interface Statistics {
     requestOptions?: any,
     dbId: string,
     label: string,
-    transformFn: any, // TODO: function
+    transformFn: (val: any) => any,
     template: any, // TODO vue template
     infoTemplate?: any,
 }
@@ -454,6 +453,13 @@ function fetchIndicators(area: any) {
         }
     });
 }
+
+const areasWithUuid = computed(() => store.projectAreas
+    .map(a => Object.values(a)[0])
+    .map((a: any, i) => ({ uuid: a.uuid, siteName: a.siteName || `Area ${i + 1}` }))
+    .filter(a => !!a.uuid));
+
+const earthMapView = ref();
 </script>
 
 <template>
@@ -463,6 +469,15 @@ function fetchIndicators(area: any) {
             <p class="mt-4">For each of the areas under restoration within your initiative a set of quantitative and qualitative statistics are calculated automatically using the following datasets. Details about these datasets, methods used for computation, and original sources are also provided.</p>
         </template>
         <template #default>
+            <div class="mt-10">
+                <EarthMapView
+                    v-if="areasWithUuid.length > 0"
+                    ref="earthMapView"
+                    :countries="store.project.project.countries"
+                    :projectId="store.id!"
+                    :areas="areasWithUuid"
+                />
+            </div>
             <div
                 v-if="store.projectAreas?.length"
                 class="text-sm text-gray-800 flex flex-col gap-y-4 mt-6"

@@ -37,7 +37,7 @@ import ConfirmModal from '@/views/ConfirmModal.vue';
 import ActionsMenu from './ActionsMenu.vue';
 
 
-const fermGroupId = import.meta.env.VITE_FERM_GROUP_ID;
+const fermGroupId = import.meta.env.VITE_GEF_GROUP_ID;
 
 const route = useRoute()
 

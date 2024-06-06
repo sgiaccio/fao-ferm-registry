@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, provide, onMounted } from 'vue';
+import { ref, watch, provide, onMounted, computed } from 'vue';
 
 import { TrashIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 
@@ -29,6 +29,7 @@ import { getGaulLevel0 } from '@/firebase/firestore';
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
+
 let countries = ref();
 
 withDefaults(defineProps<{
@@ -162,20 +163,24 @@ provide('applyToAll', () => {
 </script>
 
 <template>
-    <ConfirmModal :on-confirm="deleteProjectAreas"
-                  type="info"
-                  :open="showDeleteAreasConfirm"
-                  title="Delete all project areas"
-                  @cancel="() => { showDeleteAreasConfirm = false }">
+    <ConfirmModal
+        :on-confirm="deleteProjectAreas"
+        type="info"
+        :open="showDeleteAreasConfirm"
+        title="Delete all project areas"
+        @cancel="() => { showDeleteAreasConfirm = false }"
+    >
         Are you sure you want to delete all project areas? This action will only remove areas temporarily in your
         current session. <span class="font-bold">To permanently apply this change, you must save the project afterwards</span>. Proceed?
     </ConfirmModal>
     <TabTemplate title="Area & ecosystems">
         <template #description>
             <p>
-                Identification of geographic areas under ecosystem restoration is key for geospatial applications and is essential to keep track of effective restoration, being the main objective of Target 2 of the Kunming-Montreal Global Biodiversity Framework (<a class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-700"
-                   href="https://www.cbd.int/gbf/targets/2/"
-                   target="_blank">Target 2</a>). One initiative can implement ecosystem restoration in one or more geographic areas. Activities, indicators, ecosystem characterization and results will be provided for each area. Geographic areas can be identified based on different options:
+                Identification of geographic areas under ecosystem restoration is key for geospatial applications and is essential to keep track of effective restoration, being the main objective of Target 2 of the Kunming-Montreal Global Biodiversity Framework (<a
+                    class="underline text-ferm-blue-dark-800 hover:text-ferm-blue-dark-700"
+                    href="https://www.cbd.int/gbf/targets/2/"
+                    target="_blank"
+                >Target 2</a>). One initiative can implement ecosystem restoration in one or more geographic areas. Activities, indicators, ecosystem characterization and results will be provided for each area. Geographic areas can be identified based on different options:
             </p>
             <ul class="list-disc list-inside">
                 <li>
@@ -191,22 +196,28 @@ provide('applyToAll', () => {
             <p class="pt-4">
                 It is crucial to identify the ecosystems that your initiative is restoring. The IUCN Global Ecosystem Typology 2.0 is the outcome of critical review and input by an extensive international network of ecosystem scientists, containing profiles for 5 realms and their combinations, 25 biomes and 108 ecosystem functional groups (Keith et al.2022).
                 <InfoButton title="More information">
-                    <slot><AoiViewInfo /></slot>
-                </InfoButton> 
+                    <slot>
+                        <AoiViewInfo />
+                    </slot>
+                </InfoButton>
             </p>
         </template>
         <template #default>
             <FormGroup label="Committed area to restore">
                 <div class="flex gap-8">
                     <div class="flex flex-col gap-1">
-                        <NumberInput v-model="store.project.project.targetArea"
-                                     :edit="edit" />
+                        <NumberInput
+                            v-model="store.project.project.targetArea"
+                            :edit="edit"
+                        />
                         <span class="text-gray-300 text-sm">Area</span>
                     </div>
                     <div class="flex flex-col gap-1">
-                        <SelectInput v-model="store.project.project.areaUnits"
-                                     :options="menus.units"
-                                     :edit="edit" />
+                        <SelectInput
+                            v-model="store.project.project.areaUnits"
+                            :options="menus.units"
+                            :edit="edit"
+                        />
                         <span class="text-gray-300 text-sm">Units</span>
                     </div>
                 </div>
@@ -215,48 +226,68 @@ provide('applyToAll', () => {
                 </template>
             </FormGroup>
             <FormGroup :label="`Total area under restoration [${getMenuSelectedLabel(store.project.project.areaUnits, menus.units)}]`">
-                <NumberInput :edit="edit"
-                             v-model="store.project.project.areaUnderRestoration" />
+                <NumberInput
+                    :edit="edit"
+                    v-model="store.project.project.areaUnderRestoration"
+                />
             </FormGroup>
             <div class="py-6">
-                <div v-if="edit || store.project.project.countries?.length > 0"
-                     class="text-sm italic text-gray-700 mb-1.5">Countries are automatically selected based on your uploaded polygons and selected admin areas. You can also edit them manually.</div>
-                <div v-if="countries"
-                     class="flex flex-wrap w-full gap-2 mb-4 whitespace-nowrap">
-                    <div class="border rounded-md px-4 py-1 flex flex-row gap-x-1 items-center bg-white"
-                         v-for="(area, i) in (store.project.project.countries || []).map(getCountryName)">
+                <div
+                    v-if="edit || store.project.project.countries?.length > 0"
+                    class="text-sm italic text-gray-700 mb-1.5"
+                >Countries are automatically selected based on your uploaded polygons and selected admin areas. You can also edit them manually.</div>
+                <div
+                    v-if="countries"
+                    class="flex flex-wrap w-full gap-2 mb-4 whitespace-nowrap"
+                >
+                    <div
+                        class="border rounded-md px-4 py-1 flex flex-row gap-x-1 items-center bg-white"
+                        v-for="(area, i) in (store.project.project.countries || []).map(getCountryName)"
+                    >
                         <div>{{ area }}</div>
-                        <XCircleIcon v-if="edit"
-                                     class="self-center h-5 w-5 text-gray-400 hover:text-gray-500 cursor-pointer"
-                                     aria-hidden="true"
-                                     @click="() => deleteCountry(i)" />
+                        <XCircleIcon
+                            v-if="edit"
+                            class="self-center h-5 w-5 text-gray-400 hover:text-gray-500 cursor-pointer"
+                            aria-hidden="true"
+                            @click="() => deleteCountry(i)"
+                        />
                     </div>
                     <div>
-                        <select v-model="newCountry"
-                                v-if="edit"
-                                @change="addCountry"
-                                class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <select
+                            v-model="newCountry"
+                            v-if="edit"
+                            @change="addCountry"
+                            class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        >
                             <option value="">Add country</option>
-                            <option v-for="country in countries"
-                                    :value="country.iso2">
+                            <option
+                                v-for="country in countries"
+                                :value="country.iso2"
+                            >
                                 {{ country.label }}
                             </option>
                         </select>
                     </div>
                 </div>
 
-                <MultiInput :edit="edit"
-                            :numbering="(n, v) => numbering(n, v)"
-                            :input-components="multiInputComponents"
-                            v-model="store.projectAreas"
-                            :paging-size="25"
-                            delete-confirm-message="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted." />
-                <button v-if="store.projectAreas.length > 0 && edit"
-                        @click="() => { showDeleteAreasConfirm = true }"
-                        type="button"
-                        class="mt-6 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
-                    <TrashIcon class="-ml-0.5 h-5 w-5"
-                               aria-hidden="true" />
+                <MultiInput
+                    :edit="edit"
+                    :numbering="(n, v) => numbering(n, v)"
+                    :input-components="multiInputComponents"
+                    v-model="store.projectAreas"
+                    :paging-size="25"
+                    delete-confirm-message="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted."
+                />
+                <button
+                    v-if="store.projectAreas.length > 0 && edit"
+                    @click="() => { showDeleteAreasConfirm = true }"
+                    type="button"
+                    class="mt-6 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                >
+                    <TrashIcon
+                        class="-ml-0.5 h-5 w-5"
+                        aria-hidden="true"
+                    />
                     Delete all areas
                 </button>
             </div>
