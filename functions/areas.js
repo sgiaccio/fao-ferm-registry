@@ -625,6 +625,7 @@ exports.getIntersectingCountries = functions.runWith({ timeoutSeconds: 120 }).ht
     }
 });
 
+// This function returns a GeometryCollection of all the areas in a project
 exports.getProjectAreas = functions.https.onCall(async (data, context) => {
     // Check for user authentication
     if (!context.auth) {
@@ -678,6 +679,7 @@ exports.getProjectAreas = functions.https.onCall(async (data, context) => {
 
 const earthMapBucket = getStorage().bucket('fao-ferm-earthmap-export');
 
+// This function returns a FeatureCollection of all the areas in a project - for use in the EarthMap
 exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context) => {
     // for now, if not admin send error
     if (!isSuperAdmin(context)) {
