@@ -19,6 +19,7 @@ import Organization from '@/components/inputs/organizations/Organization.vue';
 import PointOfContact from '@/components/inputs/pointsOfContact/PointOfContact.vue';
 import SelectFormGroup from '@/components/inputs/base/SelectFormGroup.vue';
 import RecursiveRadioFormGroup from '@/components/inputs/base/RecursiveRadioFormGroup.vue';
+import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 import RecursiveMenuFormGroup from '@/components/inputs/base/RecursiveMenuFormGroup.vue';
 import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
@@ -366,6 +367,33 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                           v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span> -->
                 </template>
             </RecursiveMenuFormGroup>
+
+            <FormGroup
+                class="px-4 odd:bg-white even:bg-slate-50"
+                label="Objectives"
+                :dangerousHtmlDescription='"Please select the primary aims) of the restoration initiative. Reference: <a class=\"text-blue-600\" target=\"_blank\" href=\"https://gbf-indicators.org/metadata/headline/2-2\">https://gbf-indicators.org/metadata/headline/2-2</a>"'
+            >
+
+                <RecursiveMenu
+                    :edit="edit"
+                    v-model="store.project.project.objectives"
+                    label="Objectives"
+                    :options="menus.projectObjectives"
+                    :searchable="false"
+                    :showSelection="false"
+                    class="px-4 odd:bg-white even:bg-slate-50"
+                />
+                <div v-if="store.project.project.objectives?.length">
+                    Please provide additional information on the primary aims of the restoration initiative.
+                    <textarea
+                    class="px-4 odd:bg-white even:bg-slate-50"
+                    :edit="edit"
+                    v-model="store.project.project.objectivesAdditionalInformation"
+                    label="Objectives additional information"
+                    description="Please provide additional information on specific objectives of the initiative"
+                />
+                </div>
+            </FormGroup>
 
             <RecursiveMenuFormGroup
                 :edit="edit"
