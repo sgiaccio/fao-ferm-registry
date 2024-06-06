@@ -1462,3 +1462,10 @@ exports.gefImplementingAgencies = [
     { value: 20, label: 'West African Development Bank' },
     { value: 21, label: 'World Wildlife Fund - US Chapter' },
 ];
+
+exports.projectObjectives = [
+    { value: 1, label: 'Enhance biodiversity' },
+    { value: 2, label: 'Enhance ecosystem functions and services' },
+    { value: 3, label: 'Improve ecological integrity' },
+    { value: 4, label: 'Improve connectivity' },
+];
