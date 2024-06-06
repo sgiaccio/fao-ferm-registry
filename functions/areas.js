@@ -815,6 +815,12 @@ async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
             SELECT 
                 json_build_object(
                     'type', 'FeatureCollection',
+                    'name', json_build_object(
+                        'en', 'FERM Restoration sites',
+		                'fr', 'Espaces de restauration FERM',
+		                'pt', 'Áreas de Restauração FERM',
+		                'es', 'Áreas de restauración FERM'
+                    ),
                     'features', json_agg(
                         json_build_object(
                             'type', 'Feature',

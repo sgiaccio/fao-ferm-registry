@@ -2,13 +2,15 @@
 import { ref, onMounted } from 'vue';
 import { getAllProjectAreasGeoJson } from '@/firebase/functions';
 
-import LoadingView from '@/views/LoadingView.vue';
+// import LoadingView from '@/views/LoadingView.vue';
+import SpinningThing from '@/components/SpinningThing.vue';
 
 import { XMarkIcon, ArrowsPointingOutIcon } from '@heroicons/vue/16/solid';
 
 const props = defineProps<{
     projectId: string
-    areas: any[]
+    areas: any[],
+    countries: string[]
 }>();
 
 defineExpose({
@@ -33,30 +35,29 @@ onMounted(async () => {
 });
 
 async function refresh() {
-    const response: any = await getAllProjectAreasGeoJson(props.projectId, props.areas.map(a => a.uuid));
-
-    if (!response.geoJson) {
-        return;
-        // TODO it's a file url - handle differently
-    }
-    const geoJson = response.geoJson;
-    // replace the name property with the given ones
-    geoJson.features.forEach((feature: any) => {
-        feature.properties.name = props.areas.find(a => a.uuid === feature.properties.uuid)?.siteName;
-    });
-
-    geoJsonLoaded.value = true;
-
     if (iframeRef.value) {
+        const response: any = await getAllProjectAreasGeoJson(props.projectId, props.areas.map(a => a.uuid));
 
-        const url = `https://dev.ferm.earthmap.org/?embed=true&polygon=${JSON.stringify(geoJson)}`;
-        if (url.length > 8000) {
-            alert('The map is too large to be displayed on EarthMap');
-            geoJsonLoaded.value = false;
-            return;
+        if (response.geoJson) {
+            // replace the name property with the given ones
+            response.geoJson.features.forEach((feature: any) => {
+                feature.properties.name = props.areas.find(a => a.uuid === feature.properties.uuid)?.siteName;
+            });
         }
 
-        iframeRef.value.setAttribute('src', url);
+        geoJsonLoaded.value = true;
+    
+        const url = new URL('https://dev.ferm.earthmap.org/');
+        url.searchParams.append('embed', 'true');
+        if (props.countries.length) {
+            url.searchParams.append('aoi', JSON.stringify(props.countries[0]));
+        }
+        if (response.geoJson) {
+            url.searchParams.append('polygon', JSON.stringify(response.geoJson));
+        } else {
+            url.searchParams.append('fetchJson', response.url);
+        }
+        iframeRef.value.setAttribute('src', url.toString());
     }
 }
 
@@ -103,11 +104,12 @@ function enlargeEarthMap() {
                 v-show="geoJsonLoaded"
             />
             <div
-                v-show="true"
+                v-show="!iframeLoaded"
                 class="flex items-center justify-center w-full h-full absolute"
             >
                 <div class="flex flex-col items-center">
-                    <LoadingView />
+                    <SpinningThing />
+                    <div class="mt-4 font-bold text-gray-600">Loading EarthMap...</div>
                 </div>
             </div>
         </div>

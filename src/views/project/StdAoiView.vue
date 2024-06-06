@@ -19,7 +19,6 @@ import NumberInput from '@/components/inputs/base/NumberInput.vue';
 import SelectInput from '@/components/inputs/base/SelectInput.vue';
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
-import EarthMapView from './EarthMapView.vue';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
@@ -30,8 +29,6 @@ import { getGaulLevel0 } from '@/firebase/firestore';
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
-
-const earthMapView = ref();
 
 let countries = ref();
 
@@ -163,11 +160,6 @@ provide('applyToAll', () => {
         }
     });
 });
-
-const areasWithUuid = computed(() => store.projectAreas
-    .map(a => Object.values(a)[0])
-    .map(a => ({ uuid: a.uuid, siteName: a.siteName }))
-    .filter(a => !!a.uuid));
 </script>
 
 <template>
@@ -211,13 +203,6 @@ const areasWithUuid = computed(() => store.projectAreas
             </p>
         </template>
         <template #default>
-            <EarthMapView
-                v-if="areasWithUuid.length > 0"
-                ref="earthMapView"
-                :projectId="store.id!"
-                :areas="areasWithUuid"
-                class="mt-6"
-            />
             <FormGroup label="Committed area to restore">
                 <div class="flex gap-8">
                     <div class="flex flex-col gap-1">

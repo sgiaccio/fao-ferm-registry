@@ -473,6 +473,7 @@ const earthMapView = ref();
                 <EarthMapView
                     v-if="areasWithUuid.length > 0"
                     ref="earthMapView"
+                    :countries="store.project.project.countries"
                     :projectId="store.id!"
                     :areas="areasWithUuid"
                 />
