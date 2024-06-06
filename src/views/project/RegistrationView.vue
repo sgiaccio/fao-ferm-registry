@@ -25,6 +25,8 @@ import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vu
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import ImageUploadFormGroup from '@/components/inputs/base/ImageUploadFormGroup.vue';
 
+import { storeToRefs } from 'pinia';
+
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -167,6 +169,14 @@ watch(() => store.project?.project.restorationStatus, newValue => {
         }
     }
 }, { immediate: true });
+
+
+const { additionalInformationRef } = storeToRefs(store.project.project.objectivesAdditionalInformation);
+watch(() => store.project?.project.objectives, newValue => {
+    if (!newValue.length) {
+        delete (store.project.project.objectivesAdditionalInformation);
+    }
+});
 </script>
 
 <template>
@@ -383,15 +393,26 @@ watch(() => store.project?.project.restorationStatus, newValue => {
                     :showSelection="false"
                     class="px-4 odd:bg-white even:bg-slate-50"
                 />
-                <div v-if="store.project.project.objectives?.length">
-                    Please provide additional information on the primary aims of the restoration initiative.
+                <div
+                    v-if="store.project.project.objectives?.length"
+                    class="mt-3"
+                >
+                    <p class="font-semibold text-sm text-gray-500 mb-3">Please provide additional information on the primary aims of the restoration initiative.</p>
                     <textarea
-                    class="px-4 odd:bg-white even:bg-slate-50"
-                    :edit="edit"
-                    v-model="store.project.project.objectivesAdditionalInformation"
-                    label="Objectives additional information"
-                    description="Please provide additional information on specific objectives of the initiative"
-                />
+                        v-if="edit"
+                        rows="3"
+                        :disabled="false"
+                        class="block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm focus:ring-0"
+                        v-model="store.project.project.objectivesAdditionalInformation"
+                    ></textarea>
+                    <div
+                        v-else-if="store.project.project.objectivesAdditionalInformation"
+                        class="whitespace-pre-wrap"
+                    >{{ store.project.project.objectivesAdditionalInformation }}</div>
+                    <div
+                        v-else
+                        class="italic text-gray-400"
+                    >Not available</div>
                 </div>
             </FormGroup>
 
