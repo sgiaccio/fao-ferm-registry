@@ -14,7 +14,7 @@ const { gaul2iso } = require("./gaul2iso");
 const serviceAccount = require('./fao-ferm2-review-ad0074f38f58.json'); // Your path to the service account key
 const ee = require('@google/earthengine'); // ee is required to find intersecting countries
 
-const { isSuperAdmin, isGroupAdmin, isGroupEditor } = require("./util");
+const { isSuperAdmin, isGroupAdmin, isGroupEditor, isCollaborator, registryCollection } = require("./util");
 
 // Secrets api is not working, so we are using config instead for now
 // const earthMapApiKey = defineSecret("EARTHMAP_API_KEY");
@@ -627,15 +627,23 @@ exports.getIntersectingCountries = functions.runWith({ timeoutSeconds: 120 }).ht
 
 // This function returns a GeometryCollection of all the areas in a project
 exports.getProjectAreas = functions.https.onCall(async (data, context) => {
-    // Check for user authentication
     if (!context.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
 
-    const { projectId } = data;
+    const projectId = data.projectId;
 
-    if (!isSuperAdmin(context) && !isGroupAdmin(context, projectId) && !isGroupEditor(context, projectId)) {
-        throw new functions.https.HttpsError("permission-denied", "User must be a superadmin, a group admin, or a group editor to delete areas.");
+    // get the project document from Firestore
+    const projectSnapshot = await registryCollection.doc(projectId).get();
+    // check that the project exists
+    if (!projectSnapshot.exists) {
+        throw new functions.https.HttpsError("not-found", "Project not found");
+    }
+    // get the project document data
+    const projectData = projectSnapshot.data();
+
+    if (!isSuperAdmin(context) && !isGroupAdmin(context, projectData) && !isGroupEditor(context, projectData) && !isCollaborator(context, projectData)) {
+        throw new functions.https.HttpsError("permission-denied", "User must be a superadmin, a group admin, a group editor or a collaborator to get areas.");
     }
 
     // Fetch the area with the ID matching projectId
@@ -681,13 +689,25 @@ const earthMapBucket = getStorage().bucket('fao-ferm-earthmap-export');
 
 // This function returns a FeatureCollection of all the areas in a project - for use in the EarthMap
 exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context) => {
-    // for now, if not admin send error
-    if (!isSuperAdmin(context)) {
-        throw new functions.https.HttpsError("permission-denied", "User must be a superadmin to get all project areas.");
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const projectId = data.projectId;
+    // get the project document from Firestore
+    const projectSnapshot = await registryCollection.doc(projectId).get();
+    // check that the project exists
+    if (!projectSnapshot.exists) {
+        throw new functions.https.HttpsError("not-found", "Project not found");
+    }
+    // get the project document data
+    const projectData = projectSnapshot.data();
+
+    if (!isSuperAdmin(context) && !isGroupAdmin(context, projectData) && !isGroupEditor(context, projectData) && !isCollaborator(context, projectData)) {
+        throw new functions.https.HttpsError("permission-denied", "User must be a superadmin, a group admin, a group editor or a collaborator to get areas.");
     }
 
     // get all the areas document with id = projectId
-    const projectId = data.projectId;
     const areaDocRef = areasCollection.doc(projectId);
     const areaDocSnap = await areaDocRef.get();
 

@@ -65,7 +65,6 @@ onBeforeMount(() => {
 onMounted(async () => {
     try {
         userGroups.value = await fetchAllGroupNames();
-        console.log(userGroups.value);
     } catch (e) {
         console.error(e);
     }

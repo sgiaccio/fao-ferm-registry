@@ -165,6 +165,11 @@ function isGroupEditor(context, project) {
     return groupsWhereEditor.includes(project.group);
 }
 
+function isCollaborator(context, project) {
+    const collaboratorIds = project.collaborators || [];
+    return collaboratorIds.includes(context.auth.uid) && isGroupEditor(context, project);
+}
+
 async function isProjectPublic(projectId) {
     const projectSnapshot = await registryCollection.doc(projectId).get();
     if (!projectSnapshot.exists) {
@@ -250,6 +255,7 @@ exports = module.exports = {
     getGroupsWhereAdmin,
     getGroupsWhereEditor,
     isGroupAdmin,
+    isCollaborator,
     getGroupAdminEmails,
     getSuperAdminEmails,
     isGroupEditor,
