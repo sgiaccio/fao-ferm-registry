@@ -73,7 +73,7 @@ module.exports = {
         },
       },
       height: {
-        '128': '32rem',
+        '192': '48rem',
       },
     },
   },

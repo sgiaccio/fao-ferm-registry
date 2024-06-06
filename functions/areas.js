@@ -1,4 +1,6 @@
 const functions = require("firebase-functions");
+const { getStorage } = require('firebase-admin/storage');
+
 const { Pool } = require("pg");
 const axios = require("axios");
 
@@ -674,7 +676,7 @@ exports.getProjectAreas = functions.https.onCall(async (data, context) => {
 });
 
 
-const earthMapBucket = admin.storage().bucket('earthmap-geojsons');
+const earthMapBucket = getStorage().bucket('fao-ferm-earthmap-export');
 
 exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context) => {
     // for now, if not admin send error
@@ -723,8 +725,11 @@ exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context)
         const geoJsonString = JSON.stringify(geoJson);
         if (geoJsonString.length > 2000) {
             // save the geoJson to a bucket
-            const bucket = admin.storage().bucket(earthMapBucket);
-            const file = bucket.file(`areas/${projectId}.geojson`);
+            // create a random filename for export
+            const randomString = Math.random().toString(36).substring(2);
+            const filename = `${projectId}-${randomString}-${Date.now()}.geojson`;
+
+            const file = earthMapBucket.file(filename);
             await file.save(geoJsonString, { contentType: 'application/json' });
 
             return { url: file.publicUrl() };
@@ -743,8 +748,7 @@ exports.deleteOldAreasGeoJson = functions.pubsub.schedule('every 1 hours').onRun
     const now = Date.now();
     const oneHourAgo = now - 3600000;
 
-    const bucket = admin.storage().bucket(earthMapBucket);
-    const [files] = await bucket.getFiles({ prefix: 'areas/' });
+    const [files] = await earthMapBucket.getFiles({ prefix: 'areas/' });
 
     const filesToDelete = files.filter(file => file.metadata.timeCreated < oneHourAgo);
 
