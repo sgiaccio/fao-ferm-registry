@@ -48,10 +48,12 @@ async function refresh() {
         geoJsonLoaded.value = true;
     
         const url = new URL('https://dev.ferm.earthmap.org/');
-        url.searchParams.append('embed', 'true');
-        if (props.countries.length) {
-            url.searchParams.append('aoi', JSON.stringify(props.countries[0]));
-        }
+        // url.searchParams.append('embed', 'true');
+        // if (props.countries.length) {
+        //     url.searchParams.append('aoi', props.countries[0]);
+        // }
+        const nCountries = props.countries.length;
+        url.searchParams.append('aoi', nCountries === 0 || nCountries > 1 ? 'global' : props.countries[0]);
         if (response.geoJson) {
             url.searchParams.append('polygon', JSON.stringify(response.geoJson));
         } else {
@@ -109,7 +111,7 @@ function enlargeEarthMap() {
             >
                 <div class="flex flex-col items-center">
                     <SpinningThing />
-                    <div class="mt-4 font-bold text-gray-600">Loading EarthMap...</div>
+                    <div class="mt-4 font-bold text-gray-600">Loading Earth Map...</div>
                 </div>
             </div>
         </div>
