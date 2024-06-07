@@ -48,12 +48,9 @@ async function refresh() {
         geoJsonLoaded.value = true;
     
         const url = new URL('https://dev.ferm.earthmap.org/');
-        // url.searchParams.append('embed', 'true');
-        // if (props.countries.length) {
-        //     url.searchParams.append('aoi', props.countries[0]);
-        // }
+        url.searchParams.append('embed', 'true');
         const nCountries = props.countries.length;
-        url.searchParams.append('aoi', nCountries === 0 || nCountries > 1 ? 'global' : props.countries[0]);
+        url.searchParams.append('aoi', nCountries === 0 || nCountries > 1 ? 'global' : props.countries[0].toLowerCase());
         if (response.geoJson) {
             url.searchParams.append('polygon', JSON.stringify(response.geoJson));
         } else {

@@ -25,7 +25,7 @@ module.exports = {
           DEFAULT: '#F4F4F4',
         },
         'ferm-black': {
-          DEFAULT: '##1D1D1B',
+          DEFAULT: '#1D1D1B',
         },
         'ferm-red': {
           light: '#E5243B',

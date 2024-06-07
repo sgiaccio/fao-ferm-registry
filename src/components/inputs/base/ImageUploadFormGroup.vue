@@ -220,7 +220,7 @@ function notify(nFiles: number) {
 async function makeCover(path: string) {
     if (path === props.modelValue) return;
     
-    const toastId = toast.loading('Creating the thumbnail...');
+    const toastId = toast.loading('Creating the thumbnail image...');
     try {
         await makeCoverPhoto(props.projectId, path);
         emit('update:modelValue', path);
@@ -233,9 +233,9 @@ async function makeCover(path: string) {
             isLoading: false,
         });
     } catch (error) {
-        console.error('Failed to create thumbnail:', error);
+        console.error('Failed to create the thumbnail image:', error);
         toast.update(toastId, {
-            render: 'Failed to create thumbnail',
+            render: 'Failed to create the thumbnail image',
             autoClose: false,
             closeOnClick: true,
             closeButton: true,
