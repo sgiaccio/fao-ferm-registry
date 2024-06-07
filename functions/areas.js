@@ -791,72 +791,126 @@ async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
         const areaValues = areaUuids.map((_uuid, i) => `($${i + 2}::uuid, $${i + 2 + areaUuids.length}::text)`).join(", ");
 
         const query = `
-            WITH area_names AS (
-                SELECT *
-                FROM (
+        WITH area_names AS (
+            SELECT
+                *
+            FROM
+                (
                     VALUES ${areaValues}
                 ) AS t (area_uuid, name)
-            ),
-            individual_geoms AS (
-                SELECT 
-                    pa.area_uuid,
-                    an.name,
-                    ST_AsGeoJSON(pa.geom::geometry) AS geojson
-                FROM 
-                    project_areas pa
-                JOIN
-                    area_names an
-                ON
-                    pa.area_uuid = an.area_uuid
-                WHERE
-                    pa.project_id = $1
-            ),
-            grouped_geoms AS (
-                SELECT 
-                    area_uuid,
-                    name,
-                    json_agg(geojson::json) AS geoms
-                FROM 
-                    individual_geoms
-                GROUP BY 
-                    area_uuid, name
-            ),
-            geometry_collections AS (
-                SELECT 
-                    area_uuid,
-                    name,
-                    json_build_object(
-                        'type', 'GeometryCollection',
-                        'geometries', geoms
-                    ) AS geojson
-                FROM 
-                    grouped_geoms
-            )
-            SELECT 
+        ),
+        geoms AS (
+            SELECT
+                -- the first ST_CollectionExtract merges all the polygons into a single geometry
+                -- ST_Collect merges all the geometries into a single geometry
+                -- and the last ST_CollectionExtract merges the geometry into a single geometry again
+                -- looks ugly but it works, at least for the use cases we tested
+                ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson,
+                pa.area_uuid,
+                an.name AS name
+            FROM
+                project_areas pa
+                JOIN area_names an ON pa.area_uuid = an.area_uuid::uuid
+            WHERE
+                project_id = $1
+                AND pa.area_uuid = ANY($${areaUuids.length * 2 + 2})
+            GROUP BY pa.area_uuid, an.name
+        )
+        SELECT
+            json_build_object(
+                'type',
+                'FeatureCollection',
+                'name',
                 json_build_object(
-                    'type', 'FeatureCollection',
-                    'name', json_build_object(
-                        'en', 'FERM Restoration sites',
-		                'fr', 'Espaces de restauration FERM',
-		                'pt', 'Áreas de Restauração FERM',
-		                'es', 'Áreas de restauración FERM'
-                    ),
-                    'features', json_agg(
-                        json_build_object(
-                            'type', 'Feature',
-                            'geometry', geojson,
-                            'properties', json_build_object(
-                                'uuid', area_uuid,
-                                'name', name
-                            )
+                    'en', 'FERM Restoration sites',
+                    'fr', 'Espaces de restauration FERM',
+                    'pt', 'Áreas de Restauração FERM',
+                    'es', 'Áreas de restauración FERM'
+                ),
+                'features',
+                json_agg(
+                    json_build_object(
+                        'type', 'Feature',
+                        'geometry', geojson::json,
+                        'properties', json_build_object(
+                            'uuid',
+                            area_uuid,
+                            'name',
+                            name
                         )
                     )
-                ) AS geojson
-            FROM 
-                geometry_collections;
+                )
+            ) AS geojson
+        FROM
+            geoms;
         `;
+        // const query = `
+        //     WITH area_names AS (
+        //         SELECT *
+        //         FROM (
+        //             VALUES ${areaValues}
+        //         ) AS t (area_uuid, name)
+        //     ),
+        //     individual_geoms AS (
+        //         SELECT 
+        //             pa.area_uuid,
+        //             an.name,
+        //             ST_AsGeoJSON(pa.geom::geometry) AS geojson
+        //         FROM 
+        //             project_areas pa
+        //         JOIN
+        //             area_names an
+        //         ON
+        //             pa.area_uuid = an.area_uuid
+        //         WHERE
+        //             pa.project_id = $1
+        //     ),
+        //     grouped_geoms AS (
+        //         SELECT 
+        //             area_uuid,
+        //             name,
+        //             json_agg(geojson::json) AS geoms
+        //         FROM 
+        //             individual_geoms
+        //         GROUP BY 
+        //             area_uuid, name
+        //     ),
+        //     geometry_collections AS (
+        //         SELECT 
+        //             area_uuid,
+        //             name,
+        //             json_build_object(
+        //                 'type', 'GeometryCollection',
+        //                 'geometries', geoms
+        //             ) AS geojson
+        //         FROM 
+        //             grouped_geoms
+        //     )
+        //     SELECT 
+        //         json_build_object(
+        //             'type', 'FeatureCollection',
+        //             'name', json_build_object(
+        //                 'en', 'FERM Restoration sites',
+        //                 'fr', 'Espaces de restauration FERM',
+        //                 'pt', 'Áreas de Restauração FERM',
+        //                 'es', 'Áreas de restauración FERM'
+        //             ),
+        //             'features', json_agg(
+        //                 json_build_object(
+        //                     'type', 'Feature',
+        //                     'geometry', geojson,
+        //                     'properties', json_build_object(
+        //                         'uuid', area_uuid,
+        //                         'name', name
+        //                     )
+        //                 )
+        //             )
+        //         ) AS geojson
+        //     FROM 
+        //         geometry_collections;
+        // `;
 
-        const values = [projectId, ...areaUuids, ...areaNames];
+        const values = [projectId, ...areaUuids, ...areaNames, areaUuids];
         const result = await client.query(query, values);
 
         if (!result?.rows?.length) {
