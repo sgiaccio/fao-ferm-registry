@@ -24,6 +24,7 @@ import RecursiveMenuFormGroup from '@/components/inputs/base/RecursiveMenuFormGr
 import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import ImageUploadFormGroup from '@/components/inputs/base/ImageUploadFormGroup.vue';
+import InfoButton from '@/components/InfoButton.vue';
 
 import { storeToRefs } from 'pinia';
 
@@ -171,7 +172,7 @@ watch(() => store.project?.project.restorationStatus, newValue => {
 }, { immediate: true });
 
 
-const { additionalInformationRef } = storeToRefs(store.project.project.objectivesAdditionalInformation);
+// const { additionalInformationRef } = storeToRefs(store.project.project.objectivesAdditionalInformation);
 watch(() => store.project?.project.objectives, newValue => {
     if (!newValue.length) {
         delete (store.project.project.objectivesAdditionalInformation);
@@ -200,6 +201,7 @@ watch(() => store.project?.project.objectives, newValue => {
                 description="Title of the initiative as stated in the official initiative document"
             />
             <RecursiveMenuFormGroup
+                v-if="store.project.reportingLine === 'GEF'"
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.gefImplementingAgencies"
@@ -381,9 +383,8 @@ watch(() => store.project?.project.objectives, newValue => {
             <FormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 label="Objectives"
-                :dangerousHtmlDescription='"Please select the primary aims) of the restoration initiative. Reference: <a class=\"text-blue-600\" target=\"_blank\" href=\"https://gbf-indicators.org/metadata/headline/2-2\">https://gbf-indicators.org/metadata/headline/2-2</a>"'
+                :dangerousHtmlDescription='"Please select the primary aim(s) of the restoration initiative. Reference: <a class=\"text-blue-600\" target=\"_blank\" href=\"https://gbf-indicators.org/metadata/headline/2-2\">https://gbf-indicators.org/metadata/headline/2-2</a>"'
             >
-
                 <RecursiveMenu
                     :edit="edit"
                     v-model="store.project.project.objectives"
@@ -397,7 +398,19 @@ watch(() => store.project?.project.objectives, newValue => {
                     v-if="store.project.project.objectives?.length"
                     class="mt-3"
                 >
-                    <p class="font-semibold text-sm text-gray-500 mb-3">Please provide additional information on the primary aims of the restoration initiative.</p>
+                    <p class="font-semibold text-sm text-gray-500 mb-3">Please provide additional information on the primary aims of the restoration initiative.
+                        <InfoButton title="Objectives additional information">
+                            <slot>
+                                <p>
+                                    Please explain how your project contributes to the selected objectives. If applicable, please provide for each objective selected: specific objectives, description of the project's impacts, and other relevant information. See an example below.
+                                </p>
+                                <p class="mt-2">
+                                    <b>Example:</b> The project aims to restore local biodiversity by reintroducing species that play key roles in ecosystem functioning and enhancing conditions that support the return and increase of migratory species populations. 30 wolves were reintroduced in a previously wolf-free area to control deer populations. Additionally, 15 species of migratory birds were observed in a wetland area.
+                                </p>
+                            </slot>
+                        </InfoButton>
+
+                    </p>
                     <textarea
                         v-if="edit"
                         rows="3"

@@ -31,7 +31,6 @@ const result = z.object({
     names: z.array(z.object({ name: z.string().min(1, { message: "First Name is required" }) })),
 }).safeParse({ names: [{ name: '' }, { name: 'b' }] });
 
-console.log(result);
 
 export function validate(data: any) {
     const result = projectSchema.safeParse(data);

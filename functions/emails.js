@@ -8,7 +8,6 @@ const beginDate = new Date("2024-04-16");
 exports.resendEmails = functions.pubsub
     .schedule("6 0 * * *") // run every day at 6:00 AM
     .onRun(async (_context) => {
-        console.log('ecchice');
         try {
             // get all the emails that were supposed to be sent after the given date but were not sent
             const snapshot = await util.db.collection("mail").where("delivery.startTime", ">", beginDate).where("delivery.state", "==", "ERROR").get();
