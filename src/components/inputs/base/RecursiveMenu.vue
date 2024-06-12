@@ -195,7 +195,7 @@ watch(() => props.modelValue, (newValue, oldValue) => {
                             </div>
                         </div>
                         <div
-                            v-if="option.value"
+                            v-if="typeof option.value !== 'undefined'"
                             class="flex items-start"
                         >
                             <div class="flex h-5 items-center">

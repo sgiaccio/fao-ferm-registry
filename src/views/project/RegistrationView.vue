@@ -25,8 +25,7 @@ import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vu
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import ImageUploadFormGroup from '@/components/inputs/base/ImageUploadFormGroup.vue';
 import InfoButton from '@/components/InfoButton.vue';
-
-import { storeToRefs } from 'pinia';
+import TextInput from '@/components/inputs/base/TextInput.vue';
 
 
 withDefaults(defineProps<{
@@ -171,10 +170,10 @@ watch(() => store.project?.project.restorationStatus, newValue => {
     }
 }, { immediate: true });
 
+const otherObjectives = vueRef(store.project.project.otherObjectives ? [0] : []);
 
-// const { additionalInformationRef } = storeToRefs(store.project.project.objectivesAdditionalInformation);
-watch(() => store.project?.project.objectives, newValue => {
-    if (!newValue.length) {
+watch(() => [...store.project?.project.objectives, ...otherObjectives.value], newValue => {
+    if (newValue.length === 0) {
         delete (store.project.project.objectivesAdditionalInformation);
     }
 });
@@ -388,14 +387,37 @@ watch(() => store.project?.project.objectives, newValue => {
                 <RecursiveMenu
                     :edit="edit"
                     v-model="store.project.project.objectives"
-                    label="Objectives"
                     :options="menus.projectObjectives"
                     :searchable="false"
                     :showSelection="false"
-                    class="px-4 odd:bg-white even:bg-slate-50"
                 />
+                <div class="flex items-center gap-x-3 w-full">
+                    <RecursiveMenu
+                        v-if="edit"
+                        :edit="edit"
+                        v-model="otherObjectives"
+                        :options="[{ value: 0, label: 'Other' }]"
+                        :searchable="false"
+                        :showSelection="false"
+                    />
+                    <span
+                        v-else
+                        class="text-sm font-bold text-gray-600"
+                    >Other objectives:</span>
+                    <div class="flex-1">
+                        <TextInput
+                            ref="otherObjectivesTextInput"
+                            :enabled="!!otherObjectives.length"
+                            :edit="edit"
+                            v-model="store.project.project.otherObjectives"
+                            :placeholder="otherObjectives.length ? 'Please specify' : ''"
+                        />
+                    </div>
+                </div>
+
+
                 <div
-                    v-if="store.project.project.objectives?.length"
+                    v-if="store.project.project.objectives?.length || store.project.project.otherObjectives"
                     class="mt-3"
                 >
                     <p class="font-semibold text-sm text-gray-500 mb-3">Please provide additional information on the primary aims of the restoration initiative.
@@ -409,7 +431,6 @@ watch(() => store.project?.project.objectives, newValue => {
                                 </p>
                             </slot>
                         </InfoButton>
-
                     </p>
                     <textarea
                         v-if="edit"

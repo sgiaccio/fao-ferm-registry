@@ -103,7 +103,7 @@ async function uploadToBucket(bpId: string, file: File) {
     formData.append('file', file);
     formData.append('bp_id', bpId);
 
-    const accessToken = authStore!.getIdToken();
+    const accessToken = await authStore!.getIdToken();
     return fetch('https://europe-west3-fao-ferm.cloudfunctions.net/upload_bp_image', {
         method: 'POST',
         body: formData,

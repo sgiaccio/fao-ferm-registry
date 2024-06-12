@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 
 const props = defineProps({
     modelValue: { type: String },
@@ -16,9 +16,11 @@ watch(() => props.enabled, () => {
     if (!props.enabled) {
         emit('update:modelValue', undefined);
     } else {
-        // focus on the text input
-        inputRef.value?.focus();
-        inputRef.value?.select();
+        // focus and place cursor at the end of the text (which should be empty)
+        nextTick(() => {
+            inputRef.value?.focus();
+            inputRef.value?.select();
+        });
     }
 });
 
