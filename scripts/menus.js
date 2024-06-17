@@ -1408,6 +1408,7 @@ exports.gef6Programs = [
 exports.gef7Programs = [
     { value: "7.1", label: "Food Systems, Land Use and Restoration" },
     { value: "7.2", label: "Drylands Sustainable Landscapes" },
+    { value: "7.3", label: "Amazon Sustainable Landscapes Program" }
 ];
 
 exports.gef8Programs = [
