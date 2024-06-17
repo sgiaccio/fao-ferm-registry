@@ -159,8 +159,8 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
             }
             throw error;
         }
-        
-        return newVersionNumber;
+
+        // return newVersionNumber;
     });
 
     try {
@@ -173,8 +173,8 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
         if (ownerEmail) {
             const ownerName = await util.getUserDisplayName(ownerId) || ownerEmail;
             const groupName = await util.getGroupName(projectData.group);
-            const mailDoc = emailTemplates.initiativePublished([ownerEmail], groupName, 
-            projectId, projectData.project.title, ownerName, new Date());
+            const mailDoc = emailTemplates.initiativePublished([ownerEmail], groupName,
+                projectId, projectData.project.title, ownerName, new Date());
             await util.mailCollection.add(mailDoc);
             console.log("Email sent to the project author");
         } else {
@@ -244,3 +244,81 @@ exports.reviseProject = functions.https.onCall(async ({ projectId }, context) =>
 // exports.unpublishProject = functions.https.onCall(async ({ projectId }, context) => {
 //     await _unpublish(projectId, context);
 // });
+
+const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
+
+/**
+ * Copies the project and related areas to the publicProjects collection.
+ * @param {string} projectId The project ID
+ * @param {Object} newData The project data
+ */
+async function _copyProjectAndAreasToPublicProjects(projectId, newData, versionId) {
+    await db.runTransaction(async transaction => {
+        console.log("Copying the project to the publicProjects collection");
+        transaction.set(db.collection("publicProjects").doc(projectId), newData);
+
+        console.log("Copying the related areas to the publicProjects collection");
+        const areasSnapshot = await db.collection("projectVersions").doc(projectId).collection("versions").doc(versionId).collection("areas").get();
+        console.log(`Found ${areasSnapshot.size} areas`);
+        areasSnapshot.forEach(areaDoc => {
+            transaction.set(db.collection("publicProjects").doc(projectId).collection("areasPublic").doc(areaDoc.id), areaDoc.data());
+        });
+    });
+}
+
+/**
+ * This function is triggered when a new project version is created. It copies the project and related areas to the publicProjects collection.
+ * @param {functions.EventContext} event The event context
+ */
+exports.copyProjectToPublicProjects = onDocumentCreated({region: 'europe-west3', document: "projectVersions/{projectId}/versions/{versionId}"}, async event => {
+    const { projectId, versionId } = event.params;
+    console.log(`New project version created: ${projectId}, ${versionId} - copying project to publicProjects collection`);
+    
+    const snapshot = event.data;
+    if (!snapshot) {
+        console.log("No data associated with the event");
+        return;
+    }
+    const data = snapshot.data();
+
+    try {
+        await _copyProjectAndAreasToPublicProjects(projectId, data, versionId);
+    } catch (error) {
+        console.error("Error copying project to publicProjects", error);
+    }
+});
+
+exports.updatePublicProject = onDocumentUpdated({ region: 'europe-west3', document: "projectVersions/{projectId}" }, async (event) => {
+    const previousData = event.data.before.data();
+    const newData = event.data.after.data();
+
+    const oldVersionNumber = previousData.publishedVersion;
+    const newVersionNumber = newData.publishedVersion;
+
+    console.log(`Project updated: ${event.params.projectId}, ${oldVersionNumber} -> ${newVersionNumber}`);
+
+    if (newVersionNumber && oldVersionNumber !== newVersionNumber) {
+
+        console.log(`Project version updated: ${event.params.projectId}, ${oldVersionNumber} -> ${newVersionNumber} - copying new project version to publicProjects collection`);
+        try {
+            await _copyProjectAndAreasToPublicProjects(event.params.projectId, newData, newVersionNumber);
+        } catch (error) {
+            console.error("Error copying project to publicProjects", error);
+        }
+    } else if (!newVersionNumber) {
+        console.log(`The project was unpublished: ${event.params.projectId} - deleting project from publicProjects collection`);
+        try {
+            // get all the areas - to be deleted
+            const areasSnapshot = await db.collection("publicProjects").doc(event.params.projectId).collection("areasPublic").get();
+            const batch = db.batch();
+            areasSnapshot.forEach(areaDoc => {
+                batch.delete(areaDoc.ref);
+            });
+            batch.delete(db.collection("publicProjects").doc(event.params.projectId));
+            await batch.commit();
+        } catch (error) {
+            console.error("Error removing project from publicProjects", error);
+        }
+    }
+    // the other case (newVersion === oldVersion) will never happen, or if it does, it will not be handled
+});
