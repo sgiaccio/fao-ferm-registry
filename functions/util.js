@@ -241,7 +241,8 @@ exports = module.exports = {
     areasCollection,
     applicationStateCollection,
     firestore: admin.firestore,
-
+    gcFirestore: firestore,
+    
     findAsync,
 
     GROUP_ROLES,

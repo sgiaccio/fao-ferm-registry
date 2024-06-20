@@ -23,20 +23,25 @@ function getVersionsSubcollection(projectId) {
     return db.collection("projectVersions").doc(projectId).collection("versions");
 }
 
+const getLatestVersionNumber = async function (projectId, transaction) {
+    const versionsCollectionRef = getVersionsSubcollection(projectId);
+    const projectVersionsSnapshot = await transaction.get(versionsCollectionRef);
+    let versionId = 1;
+    if (!projectVersionsSnapshot.empty) {
+        versionId = projectVersionsSnapshot.docs.map(doc => +doc.id).reduce((a, b) => Math.max(a, b));
+    }
+    return versionId;
+}
+
 /**
  * This function returns the next version id for a project
  * @param {String} projectId - the id of the project
  * @param {Transaction} transaction - the Firestore transaction
  * @returns the next version id for the project
  */
-exports.getNewVersionNumber = async function (projectId, transaction) {
-    const versionsCollectionRef = getVersionsSubcollection(projectId);
-    const projectVersionsSnapshot = await transaction.get(versionsCollectionRef);
-    let versionId = 1;
-    if (!projectVersionsSnapshot.empty) {
-        versionId = projectVersionsSnapshot.docs.map(doc => +doc.id).reduce((a, b) => Math.max(a, b)) + 1;
-    }
-    return versionId;
+exports.getNextVersionNumber = async function (projectId, transaction) {
+    const versionId = await getLatestVersionNumber(projectId, transaction);
+    return versionId + 1;
 }
 
 /**
