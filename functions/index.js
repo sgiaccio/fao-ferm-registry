@@ -964,7 +964,7 @@ const projectPublishWorkflow = require("./projectPublishWorkflow");
 exports.submitProject = projectPublishWorkflow.submitProject;
 exports.publishAndVersionProject = projectPublishWorkflow.publishAndVersionProject; 
 exports.rejectProject = projectPublishWorkflow.rejectProject;
-
+exports.resetPublicProjects = projectPublishWorkflow.resetPublicProjectsHttp;
 
 /************************************************
  *
@@ -1039,6 +1039,8 @@ exports.resendEmails = emails.resendEmails;
 const projectVersions = require("./projectVersions");
 exports.createNewProjectVersion = projectVersions.createNewProjectVersion;
 exports.reviseProject = projectPublishWorkflow.reviseProject;
+exports.copyProjectToPublicProjects = projectPublishWorkflow.copyProjectToPublicProjects;
+exports.updatePublicProject = projectPublishWorkflow.updatePublicProject;
 
 
 /************************************************

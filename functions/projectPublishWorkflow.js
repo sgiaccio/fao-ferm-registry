@@ -15,7 +15,7 @@ const {
     createGeoDbVersion,
     createBucketVersion,
     deleteFiles,
-    getNewVersionNumber
+    getNextVersionNumber
 } = require("./projectVersions");
 
 
@@ -122,7 +122,7 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
         let newVersionNumber;
 
         try {
-            newVersionNumber = await getNewVersionNumber(projectId, transaction);
+            newVersionNumber = await getNextVersionNumber(projectId, transaction);
 
             const bestPracticesSnapshot = await util.registryCollection.doc(projectId).collection("bestPractices").get();
             const bestPracticeIds = bestPracticesSnapshot.docs.map(doc => doc.id);
@@ -159,8 +159,8 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
             }
             throw error;
         }
-        
-        return newVersionNumber;
+
+        // return newVersionNumber;
     });
 
     try {
@@ -173,8 +173,8 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
         if (ownerEmail) {
             const ownerName = await util.getUserDisplayName(ownerId) || ownerEmail;
             const groupName = await util.getGroupName(projectData.group);
-            const mailDoc = emailTemplates.initiativePublished([ownerEmail], groupName, 
-            projectId, projectData.project.title, ownerName, new Date());
+            const mailDoc = emailTemplates.initiativePublished([ownerEmail], groupName,
+                projectId, projectData.project.title, ownerName, new Date());
             await util.mailCollection.add(mailDoc);
             console.log("Email sent to the project author");
         } else {
@@ -244,3 +244,179 @@ exports.reviseProject = functions.https.onCall(async ({ projectId }, context) =>
 // exports.unpublishProject = functions.https.onCall(async ({ projectId }, context) => {
 //     await _unpublish(projectId, context);
 // });
+
+const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { onRequest } = require("firebase-functions/v2/https");
+const {onSchedule} = require("firebase-functions/v2/scheduler");
+
+/**
+ * Copies the project and related areas to the publicProjects collection.
+ * @param {string} projectId - The project ID.
+ * @param {Object} newData - The data of the project.
+ * @param {string} versionId - The version ID.
+ * @param {Object} transaction - The Firestore transaction object.
+ */
+async function _copyProjectAndAreasToPublicProjects(projectId, newData, versionId, transaction = null) {
+    const performCopy = async (_transaction) => {
+        console.log(`Copying project ${projectId} to publicProjects collection`);
+
+        const areasSnapshot = await db.collection("projectVersions").doc(projectId).collection("versions").doc(versionId).collection("areas").get();
+
+        _transaction.set(db.collection("publicProjects").doc(projectId), newData);
+
+        // delete the previous areas in the publicAreas subcollection
+        const oldAreasSnapshot = await db.collection("publicProjects").doc(projectId).collection("publicAreas").get();
+        oldAreasSnapshot.forEach(areaDoc => {
+            _transaction.delete(areaDoc.ref);
+        });
+
+        console.log("Copying the related areas to the publicProjects collection");
+        console.log(`Found ${areasSnapshot.size} areas`);
+        areasSnapshot.forEach(areaDoc => {
+            _transaction.set(db.collection("publicProjects").doc(projectId).collection("publicAreas").doc(areaDoc.id), areaDoc.data());
+        });
+    };
+
+    if (transaction) {
+        await performCopy(transaction);
+    } else {
+        await db.runTransaction(performCopy);
+    }
+}
+
+/**
+ * Processes items in batches.
+ * @param {Array} items - The items to process.
+ * @param {number} batchSize - The number of items to process in each batch.
+ * @param {Function} processItem - The function to process each item.
+ */
+async function processInBatch(items, batchSize, processItem) {
+    let index = 0;
+
+    while (index < items.length) {
+        const batch = items.slice(index, index + batchSize);
+        await Promise.all(batch.map(processItem));
+        index += batchSize;
+    }
+}
+
+/**
+ * This function is triggered when a new project version is created. It copies the project and related areas to the publicProjects collection.
+ * @param {functions.EventContext} event The event context
+ */
+exports.copyProjectToPublicProjects = onDocumentCreated({ region: 'europe-west3', document: "projectVersions/{projectId}/versions/{versionId}" }, async event => {
+    const { projectId, versionId } = event.params;
+    console.log(`New project version created: ${projectId}, ${versionId} - copying project to publicProjects collection`);
+
+    const snapshot = event.data;
+    if (!snapshot) {
+        console.log("No data associated with the event");
+        return;
+    }
+    const data = snapshot.data();
+
+    try {
+        await _copyProjectAndAreasToPublicProjects(projectId, data, versionId);
+    } catch (error) {
+        console.error("Error copying project to publicProjects", error);
+    }
+});
+
+exports.updatePublicProject = onDocumentUpdated({ region: 'europe-west3', document: "projectVersions/{projectId}" }, async (event) => {
+    const previousData = event.data.before.data();
+    const newData = event.data.after.data();
+
+    const oldVersionNumber = previousData.versionNumber;
+    const newVersionNumber = newData.versionNumber;
+
+    console.log(`Project updated: ${event.params.projectId}, ${oldVersionNumber} -> ${newVersionNumber}`);
+
+    if (newVersionNumber && oldVersionNumber !== newVersionNumber) {
+        console.log(`Project version updated: ${event.params.projectId}, ${oldVersionNumber} -> ${newVersionNumber} - copying new project version to publicProjects collection`);
+        try {
+            await _copyProjectAndAreasToPublicProjects(event.params.projectId, newData, newVersionNumber);
+        } catch (error) {
+            console.error("Error copying project to publicProjects", error);
+        }
+    } else if (!newVersionNumber) {
+        console.log(`The project was unpublished: ${event.params.projectId} - deleting project from publicProjects collection`);
+        try {
+            await db.recursiveDelete(db.collection("publicProjects").doc(event.params.projectId));
+        } catch (error) {
+            console.error("Error removing project from publicProjects", error);
+        }
+    }
+    // the other case (newVersion === oldVersion) will never happen, or if it does, it will not be handled
+});
+
+/**
+ * Copies all latest project versions to the publicProjects collection.
+ * @param {Array} projects - Array of project IDs to copy.
+ * @returns {Promise<void>}
+ */
+async function copyProjectsToPublicProjects(projects) {
+    await processInBatch(projects, 10, async (projectId) => {
+        // Get all versions of the project and find the latest one
+        const versionsSnapshot = await db.collection("projectVersions").doc(projectId).collection("versions").orderBy(util.gcFirestore.FieldPath.documentId(), "desc").limit(1).get();
+        if (versionsSnapshot.empty) {
+            console.log(`No versions found for project ${projectId}`);
+            return;
+        }
+
+        const latestVersionDoc = versionsSnapshot.docs[0];
+        const versionId = latestVersionDoc.id;
+        const data = latestVersionDoc.data();
+
+        await db.runTransaction(async transaction => {
+            await _copyProjectAndAreasToPublicProjects(projectId, data, versionId, transaction);
+        });
+    });
+}
+
+/**
+ * Resets the publicProjects collection by deleting all documents and copying the latest versions.
+ * @returns {Promise<void>}
+ */
+async function resetPublicProjects() {
+    // Initialize BulkWriter
+    const bulkWriter = db.bulkWriter();
+    bulkWriter.onWriteError((error) => {
+        console.log(`Error deleting document: ${error.documentRef.path}, Attempts: ${error.failedAttempts}`);
+        return error.failedAttempts < 5;
+    });
+
+    // Recursively delete the publicProjects collection
+    await db.recursiveDelete(db.collection('publicProjects'), bulkWriter);
+
+    // Get all project IDs
+    const projectsSnapshot = await db.collection('projectVersions').get();
+    const projectIds = projectsSnapshot.docs.map(doc => doc.id);
+
+    // Copy all latest versions to publicProjects
+    await copyProjectsToPublicProjects(projectIds);
+}
+
+/**
+ * HTTP function to reset the publicProjects collection.
+ */
+exports.resetPublicProjectsHttp = onRequest(async (req, res) => {
+    try {
+        await resetPublicProjects();
+        res.status(200).send('publicProjects collection reset successfully.');
+    } catch (error) {
+        console.error("Error resetting publicProjects collection", error);
+        res.status(500).send('Error resetting publicProjects collection.');
+    }
+});
+
+/**
+ * Scheduled function to reset the publicProjects collection.
+ */
+exports.scheduledResetPublicProjects = onSchedule('every 24 hours', async () => {
+    try {
+        await resetPublicProjects();
+        console.log('publicProjects collection reset successfully.');
+    } catch (error) {
+        console.error("Error resetting publicProjects collection", error);
+    }
+});
