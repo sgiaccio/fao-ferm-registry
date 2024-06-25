@@ -1,7 +1,4 @@
-<script
-    setup
-    lang="ts"
->
+<script setup lang="ts">
 import { ref, watch } from 'vue'
 
 import router from '@/router';
@@ -95,6 +92,7 @@ const searchTermsGoodPractices = ref(Object.fromEntries(queryGoodPractices.map((
 const searchTermsInitiatives = ref(Object.fromEntries(queryInitiatives.map((q) => [q.queryName, []])));
 const countriesBestPractices = ref([]);
 const countriesInitiatives = ref([]);
+const language = ref<'en' | 'es' | 'fr'>('en');
 </script>
 
 <template>
@@ -283,7 +281,7 @@ const countriesInitiatives = ref([]);
                                 />
                             </a>
                         </div>
-                </div>
+                    </div>
                     <div
                         v-if="whatToSearch === 'goodPractices'"
                         class="absolute top-3 right-3"
@@ -363,6 +361,7 @@ const countriesInitiatives = ref([]);
                                         :query="queryGoodPractices"
                                         v-model:searchTerms="searchTermsGoodPractices"
                                         v-model:countries="countriesBestPractices"
+                                        v-model:language="language"
                                     />
                                     <SidebarInitiatives
                                         v-else
@@ -383,6 +382,7 @@ const countriesInitiatives = ref([]);
                     :query="queryGoodPractices"
                     v-model:searchTerms="searchTermsGoodPractices"
                     v-model:countries="countriesBestPractices"
+                    v-model:language="language"
                 />
                 <SidebarInitiatives
                     v-else
@@ -502,6 +502,7 @@ const countriesInitiatives = ref([]);
                             :searchText="searchTextGoodPractices"
                             :searchTerms="searchTermsGoodPractices"
                             :countries="countriesBestPractices"
+                            :language="language"
                         />
                         <ProjectsSearchResultView
                             v-else

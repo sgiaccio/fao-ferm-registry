@@ -41,7 +41,7 @@ const selectedOption = computed(() => {
             class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md"
             :value="modelValue"
             @input="onInput">
-            <option value="">{{placeholder}}</option>
+            <option value="" v-if="placeholder">{{placeholder}}</option>
             <option
                 v-for="option in options"
                 :key="option.value"

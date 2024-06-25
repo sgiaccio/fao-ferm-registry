@@ -18,6 +18,7 @@ import {
     // RadioGroupOption
 } from '@headlessui/vue'
 
+import SelectInput from '@/components/inputs/base/SelectInput.vue';
 import CountrySelect from './CountrySelect.vue'
 
 
@@ -32,6 +33,7 @@ const props = defineProps<{
 
 const countries = defineModel('countries');
 // const searchTerms = defineModel('searchTerms');
+const language = defineModel<'en' | 'es' | 'fr'>('language');
 
 const emit = defineEmits(['update:searchTerms'])
 
@@ -99,6 +101,15 @@ function toggleSearchTerm(queryName: string, value: string) {
                     </li>
                 </DisclosurePanel>
             </Disclosure>
+            <div class="pl-5 border-b-2 border-b-gray-100 pb-4">
+                <div class="flex flex-row w-full font-bold uppercase text-gray-600 cursor-pointer items-center text-md leading-6 pb-2">Language</div>
+                <SelectInput
+                    v-model="language"
+                    :options="[{ label: 'English', value: 'en' }, { label: 'French', value: 'fr' }, { label: 'Spanish', value: 'es' }]"
+                    :edit="true"
+                    :placeholder="null"
+                />
+            </div>
             <div class="pl-5">
                 <CountrySelect v-model="countries" />
             </div>

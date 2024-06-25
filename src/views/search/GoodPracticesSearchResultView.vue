@@ -1,7 +1,4 @@
-<script
-    setup
-    lang="ts"
->
+<script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 
 import {
@@ -23,8 +20,8 @@ const props = defineProps<{
     searchText: string
     searchTerms: any
     countries: []
+    language: string
 }>();
-
 
 onMounted(() => {
     loadMore();
@@ -69,12 +66,17 @@ watch(() => props.countries, debounce((val: []) => {
     debouncedCountries.value = [...val]
 }, 1000), { deep: true });
 
+const debouncedLanguage = ref('');
+watch(() => props.language, debounce((val: string) => {
+    debouncedLanguage.value = val
+}, 1000));
+
 const isLoading = ref(false);
 const searchResults = ref<any>([]);
 const totalCount = ref(null);
 const hasMore = ref(true);
 
-watch([debouncedSearchTerms, debouncedSearchText, debouncedCountries], () => {
+watch([debouncedSearchTerms, debouncedSearchText, debouncedCountries, debouncedLanguage], () => {
     isLoading.value = true;
     searchResults.value = [];
     totalCount.value = null;
@@ -83,7 +85,22 @@ watch([debouncedSearchTerms, debouncedSearchText, debouncedCountries], () => {
 }, { deep: true });
 
 function buildQuery() {
-    const queryStart = 'WITH data AS ( SELECT * FROM fao-maps-review.fao_cse.vw_cse_en ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data '
+    let table: string;
+    switch (props.language) {
+        case 'en':
+            table = 'vw_cse_en'
+            break;
+        case 'es':
+            table = 'mvw_cse_es'
+            break;
+        case 'fr':
+            table = 'mvw_cse_fr'
+            break;
+        default:
+            table = 'vw_cse_en'
+    }
+
+    const queryStart = `WITH data AS ( SELECT * FROM fao-maps-review.fao_cse.${table} ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data `
 
     let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
         if (values.length === 0) return ''
@@ -185,7 +202,6 @@ async function loadMore() {
                     leave-from="opacity-100 translate-y-0 sm:scale-100"
                     leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
-
                     <DialogPanel class="w-full max-w-4xl rounded-md bg-white overflow-hidden min-h-64 shadow-md flex flex-col">
                         <!-- <Detail :practice="currentResult" /> -->
                         <Detail
