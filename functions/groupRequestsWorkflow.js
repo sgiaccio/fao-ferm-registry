@@ -1,4 +1,6 @@
 const functions = require("firebase-functions");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
+
 const admin = require("firebase-admin");
 const { Firestore } = require("firebase-admin/firestore");
 const { newGroupApproval, newGroupRequest, newGroupRejection } = require('./emailTemplates');
@@ -20,6 +22,46 @@ exports.sendNewGroupRequestEmail = functions.firestore.document('newGroupRequest
 
     // add mail document to mail collection
     await util.mailCollection.add(mailDoc);
+});
+
+exports.submitNewGroup = onCall(async (request) => {
+    if (!request.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const userId = request.auth.uid;
+    const formData = request.data;
+
+    try {
+        // Check if a document with the same name already exists
+        const newGroupRequestsSnapshot = await util.newGroupRequestsCollection.where('name', '==', formData.name).get();
+        if (!newGroupRequestsSnapshot.empty) {
+            throw new functions.https.HttpsError('already-exists', 'A group with the same name already exists.');
+        }
+
+        // check if a group with the same name exists in the groups collection
+        const existingGroupSnapshot = await util.groupsCollection.where('name', '==', formData.name).get();
+        if (!existingGroupSnapshot.empty) {
+            throw new functions.https.HttpsError('already-exists', 'A group with the same name already exists.');
+        }
+
+        const docRef = util.newGroupRequestsCollection.doc();
+        await docRef.set({
+            ...formData,
+            userId: userId,
+            status: 'pending',
+            private: false,
+            createTime: Firestore.FieldValue.serverTimestamp()
+        });
+
+        return { message: 'Group submitted successfully.' };
+    } catch (error) {
+        console.error('Error submitting group:', error);
+        if (error instanceof functions.https.HttpsError) {
+            throw error; // Re-throw if it's already an HttpsError
+        }
+        throw new functions.https.HttpsError('internal', 'Unable to submit group.');
+    }
 });
 
 exports.getMyNewGroupRequests = functions.https.onCall(async (_, context) => {

@@ -162,3 +162,9 @@ export async function getAllProjectAreasGeoJson(projectId: string, uuids: string
     const result = await getAllProjectAreasGeoJson({ projectId, uuids });
     return result.data;
 }
+
+export async function submitNewGroup(request: any) {
+    const functions = getFunctions();
+    const submitNewGroup = httpsCallable(functions, 'submitNewGroup');
+    return submitNewGroup(request);
+}

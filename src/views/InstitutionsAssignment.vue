@@ -10,14 +10,16 @@ import {
 } from '@headlessui/vue';
 
 import { useAuthStore } from '@/stores/auth';
-// import { useProjectStore } from '../../stores/project';
+
+import { toast } from 'vue3-toastify';
 
 import {
     requestGroupAssignment,
     getUserAssignmentRequests,
-    submitNewGroup,
     fetchPublicGroups
 } from '@/firebase/firestore';
+
+import { submitNewGroup } from '@/firebase/functions';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
 import AlertModal from '@/views/AlertModal.vue';
@@ -120,7 +122,7 @@ function cancelAssignment() {
 
 const showAssignmentError = ref(false);
 
-const newInstitutionFormData = ref({
+const blankInstitution = {
     name: '',
     type: '',
     otherType: '',
@@ -129,10 +131,11 @@ const newInstitutionFormData = ref({
         actor: false,
         flagship: false
     },
-    status: 'pending',
     description: '',
     website: ''
-});
+};
+
+const newInstitutionFormData = ref({ ...blankInstitution });
 
 const otherTypeRef = ref();
 
@@ -151,7 +154,7 @@ function validateNewInstitution() {
         && newInstitutionFormData.value.description !== '';
 }
 
-const isDisabled = computed(() => {
+const isNewInstitutionRequestDisabled = computed(() => {
     return !validateNewInstitution();
 });
 
@@ -163,126 +166,136 @@ function submitNewInstitutionRequest() {
 
 const showSubmitSuccess = ref(false);
 
+function showExistsError(name: string) {
+    toast.error(`<p>An institution with the name <span class="font-bold">${name}</span> already exists, or a request for it is pending.</p><p class="mt-1">Please check the list of institutions and try again. If you believe this is an error, please contact us.</p>`, {
+        dangerouslyHTMLString: true,
+        autoClose: false,
+        closeOnClick: false
+    });
+}
+
 async function confirmSubmit() {
     if (!validateNewInstitution()) {
         return;
     }
+
+    const groupName = newInstitutionFormData.value.name;
     try {
         showSubmitNew.value = false;
-        await submitNewGroup({
-            ...newInstitutionFormData.value,
-            userId: authStore.user!.uid
-            // createdAt: new Date().toISOString()
-        });
+        // check if a group with the same name already exists
+        if (allGroups.value.some(g => g.group.name.toLowerCase() === groupName.toLowerCase())) {
+            showExistsError(groupName);
+            throw new Error('Group already exists');
+        }
+
+        await submitNewGroup(newInstitutionFormData.value);
         showSubmitSuccess.value = true;
-        newInstitutionFormData.value = {
-            name: '',
-            type: '',
-            otherType: '',
-            isa: {
-                partner: false,
-                actor: false,
-                flagship: false
-            },
-            status: 'pending',
-            description: '',
-            website: ''
-        };
     } catch (e) {
-        alert('There was an error submitting the request, please try again later.');
-        throw (e);
+        if (e.code === 'functions/already-exists') {
+            showExistsError(groupName);
+        }
+        console.error(e);
+    } finally {
+        newInstitutionFormData.value = { ...blankInstitution };
     }
 }
 
 function cancelSubmit() {
     showSubmitNew.value = false;
-    newInstitutionFormData.value = {
-        name: '',
-        type: '',
-        otherType: '',
-        isa: {
-            partner: false,
-            actor: false,
-            flagship: false
-        },
-        status: 'pending',
-        description: '',
-        website: ''
-    };
+    newInstitutionFormData.value = { ...blankInstitution };
 }
 </script>
 
 <template>
     <!-- Group assignment confirmation modal -->
-    <ConfirmModal :title="`Join ${selectedGroup?.group.name}`"
-                  :onConfirm="() => { confirmAssignment() }"
-                  :onCancel="() => { cancelAssignment() }"
-                  :okButtonEnabled="selectedGroup !== null && reasons !== ''"
-                  :open="showConfirmDialog"
-                  ok-button-text="Join">
+    <ConfirmModal
+        :title="`Join ${selectedGroup?.group.name}`"
+        :onConfirm="() => { confirmAssignment() }"
+        :onCancel="() => { cancelAssignment() }"
+        :okButtonEnabled="selectedGroup !== null && reasons !== ''"
+        :open="showConfirmDialog"
+        ok-button-text="Join"
+    >
         <p class="text-sm text-gray-700">Please provide your reasons for joining <span class="font-bold">{{ selectedGroup?.group.name }}</span>; your response will be sent to the administrator for
             review.</p>
         <div>
             <div class="mt-2">
-                <textarea rows="2"
-                          v-model="reasons"
-                          name="reasons"
-                          id="reasons"
-                          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                <textarea
+                    rows="2"
+                    v-model="reasons"
+                    name="reasons"
+                    id="reasons"
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
             </div>
         </div>
     </ConfirmModal>
 
     <!-- Group assignment success modal -->
-    <AlertModal type="success"
-                title="Request sent"
-                :onClose="() => { showAssignmentSuccess = false; props.onFinished() }"
-                :open="showAssignmentSuccess"
-                buttonText="Ok">
+    <AlertModal
+        type="success"
+        title="Request sent"
+        :onClose="() => { showAssignmentSuccess = false; props.onFinished() }"
+        :open="showAssignmentSuccess"
+        buttonText="Ok"
+    >
         <p class="text-sm text-gray-500">Your request has been sent to the administrator. You will be notified by email
             once it is processed.</p>
     </AlertModal>
 
     <!-- Group assignment error modal -->
-    <AlertModal type="error"
-                title="Error sending request"
-                :onClose="() => { showAssignmentError = false; props.onFinished() }"
-                :open="showAssignmentError"
-                buttonText="Ok">
+    <AlertModal
+        type="error"
+        title="Error sending request"
+        :onClose="() => { showAssignmentError = false; props.onFinished() }"
+        :open="showAssignmentError"
+        buttonText="Ok"
+    >
         <p class="text-sm text-gray-500">There was an error sending the request, please try again later.</p>
     </AlertModal>
 
     <!-- Submit new institution modal -->
     <ConfirmModal
-                  title="Submit a new institution"
-                  :onConfirm="() => { confirmSubmit() }"
-                  :onCancel="() => cancelSubmit()"
-                  :open="showSubmitNew"
-                  okButtonText="Submit"
-                  :okButtonEnabled="!isDisabled">
-        <p class="text-sm text-gray-700">Please submit your institution for inclusion in the registry.</p>
+        title="SUBMIT A NEW INSTITUTION"
+        :onConfirm="() => { confirmSubmit() }"
+        :onCancel="() => cancelSubmit()"
+        :open="showSubmitNew"
+        okButtonText="Submit"
+        :okButtonEnabled="!isNewInstitutionRequestDisabled"
+    >
+        <p class="text-sm text-gray-700">Please submit your institution for inclusion in the registry. Your request will be reviewed.</p>
         <div class="mt-2">
-            <label for="institution"
-                   class="block text-sm font-medium leading-6 text-gray-900">Name <span class="text-red-600">*</span></label>
+            <label
+                for="institution"
+                class="block text-sm font-medium leading-6 text-gray-900"
+            >Name <span class="text-red-600">*</span></label>
             <div class="mt-2">
-                <input v-model="newInstitutionFormData.name"
-                       id="institution"
-                       placeholder="Please enter the name of the institution"
-                       name="institution"
-                       type="text"
-                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                <input
+                    v-model="newInstitutionFormData.name"
+                    id="institution"
+                    placeholder="Please enter the name of the institution"
+                    name="institution"
+                    type="text"
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
             </div>
         </div>
         <div class="mt-2">
-            <label for="institutionType"
-                   class="block text-sm font-medium leading-6 text-gray-900">Type <span class="text-red-600">*</span></label>
-            <select v-model="newInstitutionFormData.type"
-                    id="institutionType"
-                    name="institutionType"
-                    class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
-                <option value=""
-                        disabled
-                        selected>Select type
+            <label
+                for="institutionType"
+                class="block text-sm font-medium leading-6 text-gray-900"
+            >Type <span class="text-red-600">*</span></label>
+            <select
+                v-model="newInstitutionFormData.type"
+                id="institutionType"
+                name="institutionType"
+                class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            >
+                <option
+                    value=""
+                    disabled
+                    selected
+                >Select type
                 </option>
                 <option>Government</option>
                 <option>NGO</option>
@@ -295,100 +308,130 @@ function cancelSubmit() {
             </select>
         </div>
         <div class="mt-2">
-            <label for="institutionTypeOther"
-                   :class="[newInstitutionFormData.type === 'Other' ? 'text-gray-900' : 'text-gray-400', 'block text-sm font-medium leading-6']">Please
-                specify type if other <span v-if="newInstitutionFormData.type === 'Other'"
-                      class="text-red-600">*</span></label>
+            <label
+                for="institutionTypeOther"
+                :class="[newInstitutionFormData.type === 'Other' ? 'text-gray-900' : 'text-gray-400', 'block text-sm font-medium leading-6']"
+            >Please
+                specify type if other <span
+                    v-if="newInstitutionFormData.type === 'Other'"
+                    class="text-red-600"
+                >*</span></label>
             <div class="mt-2">
-                <input v-model="newInstitutionFormData.otherType"
-                       ref="otherTypeRef"
-                       :disabled="newInstitutionFormData.type !== 'Other'"
-                       id="institutionTypeOther"
-                       name="institutionTypeOther"
-                       type="text"
-                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                <input
+                    v-model="newInstitutionFormData.otherType"
+                    ref="otherTypeRef"
+                    :disabled="newInstitutionFormData.type !== 'Other'"
+                    id="institutionTypeOther"
+                    name="institutionTypeOther"
+                    type="text"
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
             </div>
         </div>
         <div class="pt-4">
             <fieldset>
                 <legend class="sr-only">The institution is a</legend>
-                <div class="block text-sm font-medium leading-6 text-gray-900"
-                     aria-hidden="true">The institution is a
+                <div
+                    class="block text-sm font-medium leading-6 text-gray-900"
+                    aria-hidden="true"
+                >The institution is a
                 </div>
                 <div class="mt-2">
                     <div class="relative flex items-start">
                         <div class="flex h-6 items-center">
-                            <input v-model="newInstitutionFormData.isa.partner"
-                                   id="partner"
-                                   name="partner"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                            <input
+                                v-model="newInstitutionFormData.isa.partner"
+                                id="partner"
+                                name="partner"
+                                type="checkbox"
+                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                            />
                         </div>
                         <div class="ml-3 text-sm leading-6">
-                            <label for="partner"
-                                   class="font-normal text-gray-900">UN Decade partner</label>
+                            <label
+                                for="partner"
+                                class="font-normal text-gray-900"
+                            >UN Decade partner</label>
                         </div>
                     </div>
                     <div class="relative flex items-start">
                         <div class="flex h-6 items-center">
-                            <input v-model="newInstitutionFormData.isa.actor"
-                                   id="actor"
-                                   name="actor"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                            <input
+                                v-model="newInstitutionFormData.isa.actor"
+                                id="actor"
+                                name="actor"
+                                type="checkbox"
+                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                            />
                         </div>
                         <div class="ml-3 text-sm leading-6">
-                            <label for="actor"
-                                   class="font-normal text-gray-900">UN Decade actor</label>
+                            <label
+                                for="actor"
+                                class="font-normal text-gray-900"
+                            >UN Decade actor</label>
                         </div>
                     </div>
                     <div class="relative flex items-start">
                         <div class="flex h-6 items-center">
-                            <input v-model="newInstitutionFormData.isa.flagship"
-                                   id="flagship"
-                                   name="flagship"
-                                   type="checkbox"
-                                   class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                            <input
+                                v-model="newInstitutionFormData.isa.flagship"
+                                id="flagship"
+                                name="flagship"
+                                type="checkbox"
+                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                            />
                         </div>
                         <div class="ml-3 text-sm leading-6">
-                            <label for="flagship"
-                                   class="font-normal text-gray-900">Global Flagship </label>
+                            <label
+                                for="flagship"
+                                class="font-normal text-gray-900"
+                            >Global Flagship </label>
                         </div>
                     </div>
                 </div>
             </fieldset>
         </div>
         <div class="pt-4">
-            <label for="description"
-                   class="block text-sm font-medium leading-6 text-gray-900">Description <span class="text-red-600">*</span></label>
+            <label
+                for="description"
+                class="block text-sm font-medium leading-6 text-gray-900"
+            >Description <span class="text-red-600">*</span></label>
             <div class="mt-2">
-                <textarea v-model="newInstitutionFormData.description"
-                          id="description"
-                          placeholder="Please enter a description of the institution"
-                          name="description"
-                          class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                <textarea
+                    v-model="newInstitutionFormData.description"
+                    id="description"
+                    placeholder="Please enter a description of the institution"
+                    name="description"
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
             </div>
         </div>
         <div class="mt-2">
-            <label for="website"
-                   class="block text-sm font-medium leading-6 text-gray-900">Website</label>
+            <label
+                for="website"
+                class="block text-sm font-medium leading-6 text-gray-900"
+            >Website</label>
             <div class="mt-2">
-                <input v-model="newInstitutionFormData.website"
-                       id="website"
-                       placeholder="Please the website of the institution if any"
-                       name="website"
-                       type="text"
-                       class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                <input
+                    v-model="newInstitutionFormData.website"
+                    id="website"
+                    placeholder="Please the website of the institution if any"
+                    name="website"
+                    type="text"
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
             </div>
         </div>
     </ConfirmModal>
 
     <!-- Group submit success modal -->
-    <AlertModal type="success"
-                title="Request sent"
-                :onClose="() => { showSubmitSuccess = false; props.onFinished() }"
-                :open="showSubmitSuccess"
-                buttonText="Ok">
+    <AlertModal
+        type="success"
+        title="Request sent"
+        :onClose="() => { showSubmitSuccess = false; props.onFinished() }"
+        :open="showSubmitSuccess"
+        buttonText="Ok"
+    >
         <p class="text-sm text-gray-500">Your request has been sent to the administrator. You will be notified by email
             once it is processed.</p>
     </AlertModal>
@@ -411,33 +454,47 @@ function cancelSubmit() {
             </div>
 
             <div class="mt-5 sm:flex sm:items-center">
-                <Combobox as="div"
-                          v-model="selectedGroup">
+                <Combobox
+                    as="div"
+                    v-model="selectedGroup"
+                >
                     <div class="relative">
-                        <ComboboxInput class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                       @change="query = $event.target.value"
-                                       :display-value="(group) => group?.group.name" />
+                        <ComboboxInput
+                            class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            @change="query = $event.target.value"
+                            :display-value="(group) => group?.group.name"
+                        />
                         <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
-                                               aria-hidden="true" />
+                            <ChevronUpDownIcon
+                                class="h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                            />
                         </ComboboxButton>
 
-                        <ComboboxOptions v-if="filteredGroups.length > 0"
-                                         class="bottom-10 absolute z-10 mt-1 max-h-60 w-full_ w-96 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                            <ComboboxOption v-for="group in filteredGroups"
-                                            :key="group.id"
-                                            :value="group"
-                                            as="template"
-                                            v-slot="{ active, selected }">
+                        <ComboboxOptions
+                            v-if="filteredGroups.length > 0"
+                            class="bottom-10 absolute z-10 mt-1 max-h-60 w-full_ w-96 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                        >
+                            <ComboboxOption
+                                v-for="group in filteredGroups"
+                                :key="group.id"
+                                :value="group"
+                                as="template"
+                                v-slot="{ active, selected }"
+                            >
                                 <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
                                     <span :class="['block truncate_', selected && 'font-semibold']">
                                         {{ group.group.name }}
                                     </span>
 
-                                    <span v-if="selected"
-                                          :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
-                                        <CheckIcon class="h-5 w-5"
-                                                   aria-hidden="true" />
+                                    <span
+                                        v-if="selected"
+                                        :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']"
+                                    >
+                                        <CheckIcon
+                                            class="h-5 w-5"
+                                            aria-hidden="true"
+                                        />
                                     </span>
                                 </li>
                             </ComboboxOption>
@@ -485,29 +542,36 @@ function cancelSubmit() {
                         </ComboboxOptions>
                     </div>
                 </Combobox> -->
-                <button @click="() => selectedGroup && (showConfirmDialog = true)"
-                        :class="[selectedGroup ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400', 'mt-3 inline-flex w-full items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']">
+                <button
+                    @click="() => selectedGroup && (showConfirmDialog = true)"
+                    :class="[selectedGroup ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400', 'mt-3 inline-flex w-full items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']"
+                >
                     Join
                 </button>
                 <div class="sm:justify-items-end sm:text-right flex-grow">
-                    <button v-if="Object.keys(authStore.userGroups).length || authStore.isAdmin"
-                            @click.prevent="router.push({ name: 'initiatives' })"
-                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <button
+                        v-if="Object.keys(authStore.userGroups).length || authStore.isAdmin"
+                        @click.prevent="router.push({ name: 'initiatives' })"
+                        class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
                         Cancel
                     </button>
-                    <button @click.prevent="submitNewInstitutionRequest"
-                            :class="['mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']">
+                    <button
+                        @click.prevent="submitNewInstitutionRequest"
+                        :class="['mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']"
+                    >
                         Submit new institution
                     </button>
                 </div>
             </div>
 
-            <div v-if="selectedGroup && selectedGroup.group.description"
-                 class="mt-6 text-sm border border-gray-400 rounded-md px-3 py-2">
+            <div
+                v-if="selectedGroup && selectedGroup.group.description"
+                class="mt-6 text-sm border border-gray-400 rounded-md px-3 py-2"
+            >
                 <h1 class="font-bold mb-1">{{ selectedGroup.group.name }}</h1>
                 <span class="italic">{{ selectedGroup.group.description }}</span>
             </div>
         </div>
     </div>
 </template>
-  

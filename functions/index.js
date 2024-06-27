@@ -977,7 +977,7 @@ exports.sendNewGroupRequestEmail = groupRequestsWorkflow.sendNewGroupRequestEmai
 exports.getMyNewGroupRequests = groupRequestsWorkflow.getMyNewGroupRequests;
 exports.approveNewGroupRequest = groupRequestsWorkflow.approveNewGroupRequest;
 exports.rejectNewGroupRequest = groupRequestsWorkflow.rejectNewGroupRequest;
-
+exports.submitNewGroup = groupRequestsWorkflow.submitNewGroup;
 
 /************************************************
  *

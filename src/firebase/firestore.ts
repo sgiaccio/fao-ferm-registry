@@ -17,10 +17,10 @@ import { getGroupsWhereEditor } from '@/lib/util';
 */
 export async function requestGroupAssignment(uid: string, groupId: string, reasons: string, email: string) {
     if (!uid || !groupId || !reasons || !email) {
-        throw new Error("Missing uid or groupId or reasons");
+        throw new Error('Missing uid or groupId or reasons');
     }
 
-    const usersCollection = collection(db, "assignementRequests");
+    const usersCollection = collection(db, 'assignementRequests');
     const docRef = doc(usersCollection);
     await setDoc(docRef, {
         userId: uid,
@@ -38,28 +38,26 @@ export async function requestGroupAssignment(uid: string, groupId: string, reaso
  * @param userId
  */
 export async function getUserAssignmentRequests(uid: string) {
-    const usersCollection = collection(db, "assignementRequests");
-    const q = query(usersCollection, where("userId", "==", uid));
+    const usersCollection = collection(db, 'assignementRequests');
+    const q = query(usersCollection, where('userId', '==', uid));
     const querySnapshot = await getDocs(q);
     const requests = querySnapshot.docs.map(doc => doc.data());
 
     return requests;
 }
 
-export async function submitNewGroup(formData: any) {
-    // TODO check if the data is valid
-
-    const newGroupRequests = collection(db, "newGroupRequests");
-    const docRef = doc(newGroupRequests);
-    await setDoc(docRef, {
-        ...formData,
-        private: false,
-        createTime: serverTimestamp()
-    });
-}
+// export async function submitNewGroup(formData: any) {
+//     const newGroupRequests = collection(db, 'newGroupRequests');
+//     const docRef = doc(newGroupRequests);
+//     await setDoc(docRef, {
+//         ...formData,
+//         private: false,
+//         createTime: serverTimestamp()
+//     });
+// }
 
 async function getGroups() {
-    const groupsCollection = collection(db, "groups");
+    const groupsCollection = collection(db, 'groups');
     const groups = await getDocs(query(groupsCollection));
     return groups.docs;
 }
@@ -88,17 +86,17 @@ export async function fetchSubmittedProjects(groupIds: string[]) {
     if (!groupIds || groupIds.length === 0) {
         return [];
     }
-    const projectsCollection = collection(db, "registry");
+    const projectsCollection = collection(db, 'registry');
     // fetch the projects that belong to the groups that the user is a member of and that are published
     const projects = await getDocs(query(projectsCollection,
-        where("group", "in", groupIds),
-        where("status", "==", "submitted")));
+        where('group', 'in', groupIds),
+        where('status', '==', 'submitted')));
     return projects.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
 }
 
 export async function fetchAllSubmittedProjects() {
-    const projectsCollection = collection(db, "registry");
-    const projects = await getDocs(query(projectsCollection, where("status", "==", "submitted")));
+    const projectsCollection = collection(db, 'registry');
+    const projects = await getDocs(query(projectsCollection, where('status', '==', 'submitted')));
     return projects.docs.map(doc => ({ id: doc.id, data: snakeToCamel(doc.data()) }));
 }
 
@@ -119,7 +117,7 @@ function memoize<T extends (...args: any[]) => Promise<any>>(fn: T): (...x: Para
 }
 
 export const getGaulLevel0 = memoize(async () => {
-    const gaulCollection = collection(db, "adminAreas");
+    const gaulCollection = collection(db, 'adminAreas');
     const level0AreasDocs = await getDocs(query(gaulCollection));
     return level0AreasDocs.docs
         .filter(doc => doc.data().iso2)
@@ -129,24 +127,24 @@ export const getGaulLevel0 = memoize(async () => {
 
 
 export const getGaulLevel1 = memoize(async (admin0: string) => {
-    const gaulCollection = collection(db, "adminAreas", admin0, "children");
+    const gaulCollection = collection(db, 'adminAreas', admin0, 'children');
     const level1AreasDocs = await getDocs(query(gaulCollection));
     return level1AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name })).sort((a, b) => a.label.localeCompare(b.label));
 });
 
 export const getGaulLevel2 = memoize(async (admin0: string, admin2: string) => {
-    const gaulCollection = collection(db, "adminAreas", admin0, "children", admin2, "children");
+    const gaulCollection = collection(db, 'adminAreas', admin0, 'children', admin2, 'children');
     const level2AreasDocs = await getDocs(query(gaulCollection));
     return level2AreasDocs.docs.map(doc => ({ value: doc.id, label: doc.data().name })).sort((a, b) => a.label.localeCompare(b.label));
 });
 
 export async function getMenus(): Promise<{ [key: string]: (Menu | RecursiveMenu) }> {
-    const menusCollection = collection(db, "menus");
+    const menusCollection = collection(db, 'menus');
     return (await getDocs(query(menusCollection))).docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().items }), {});
 };
 
 // export const getMenu = memoize(async (id) => {
-//     const menusCollection = collection(db, "menus", id);
+//     const menusCollection = collection(db, 'menus', id);
 //     return getDocs(query(menusCollection));
 // });
 

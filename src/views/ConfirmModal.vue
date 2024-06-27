@@ -138,10 +138,7 @@ function cancel() {
                                     :class="[okButtonEnabled ? 'bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600' : 'bg-gray-400', 'inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto']"
                                     @click="onConfirm"
                                 >
-                                    <template v-if="okButtonEnabled">
-                                        {{ okButtonText }}
-                                    </template>
-                                    <ButtonWait v-else />
+                                    {{ okButtonText }}
                                 </button>
                                 <button
                                     type="button"
