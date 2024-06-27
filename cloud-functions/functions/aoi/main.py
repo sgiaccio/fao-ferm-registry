@@ -200,9 +200,11 @@ def _insert_into_postgis(project_id, shp_file_path, bucket_path, orig_filename, 
     try:
         with fiona.open(shp_file_path) as source:
             p_in = pyproj.Proj(source.crs)
-            project = pyproj.Transformer.from_proj(
-                p_in, # source coordinate system
-                pyproj.Proj(init='epsg:4326')) # destination coordinate system
+            p_out = pyproj.Proj('EPSG:4326')
+            project = pyproj.Transformer.from_proj(p_in, p_out, always_xy=True)  # Ensure correct order of x, y
+            # project = pyproj.Transformer.from_proj(
+            #     p_in, # source coordinate system
+            #     pyproj.Proj(init='epsg:4326')) # destination coordinate system
 
             # Read and transform the geometries to EPSG:4326
             for record in source:

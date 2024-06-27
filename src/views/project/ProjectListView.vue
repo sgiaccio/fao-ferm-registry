@@ -64,7 +64,11 @@ onBeforeMount(() => {
 
 onMounted(async () => {
     try {
-        userGroups.value = await fetchAllGroupNames();
+        if (authStore.isAdmin) {
+            userGroups.value = await fetchAllGroupNames();
+        } else {
+            userGroups.value = authStore.userGroups
+        }
     } catch (e) {
         console.error(e);
     }

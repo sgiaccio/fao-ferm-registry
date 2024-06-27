@@ -32,4 +32,5 @@ const { isLoading } = storeToRefs(useLoadingStore());
 
 <template>
     <component :is="isLoading ? LoadingView : RouterView"></component>
+    <CustomAlert ref="customAlert" />
 </template>

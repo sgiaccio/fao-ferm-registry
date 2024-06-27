@@ -557,7 +557,12 @@ ee.data.authenticateViaPrivateKey(serviceAccount, () => {
     console.error('Failed to authenticate GEE:', err);
 });
 
-// Function to use the fetched GeoJSON in GEE
+/**
+ * Fetches the intersecting countries from the Earth Engine API.
+ * @param {Object} polygons The GeoJSON polygons to analyze.
+ * @returns {Promise<Object[]>} A promise that resolves to an array of country objects.
+ * @throws {Error} If the API call fails.
+ */
 function getIntersectingCountriesFromGee(polygons) {
     return new Promise((resolve, reject) => {
         // Convert GeoJSON to an Earth Engine Geometry
@@ -582,6 +587,12 @@ function getIntersectingCountriesFromGee(polygons) {
             }
         });
     });
+}
+
+// this function gets the intersecting countries of a set of polygons from the database
+function getIntersectingCountriesFromDatabase(client, polygonsData) {
+    const query = "SELECT * from gaul_0 WHERE ST_Intersects(geom_simple, ST_GeomFromGeoJSON($1))";
+    return client.query(query, [JSON.stringify(polygonsData)]);
 }
 
 exports.getIntersectingCountries = functions.runWith({ timeoutSeconds: 120 }).https.onCall(async (data, context) => {
@@ -610,10 +621,12 @@ exports.getIntersectingCountries = functions.runWith({ timeoutSeconds: 120 }).ht
         if (!polygonsData) {
             throw new functions.https.HttpsError('not-found', 'No polygons found for the given UUIDs.');
         }
-        const analysisResults = await getIntersectingCountriesFromGee(polygonsData);
 
-        // Return the ISO 2 codes array of intersecting countries
-        return analysisResults.map(c => gaul2iso(c.code)).filter(c => c);
+        // const analysisResults = await getIntersectingCountriesFromGee(polygonsData);
+        // return analysisResults.map(c => gaul2iso(c.code)).filter(c => c);
+
+        const analysisResults = await getIntersectingCountriesFromDatabase(client, polygonsData);
+        return analysisResults.rows.map(c => gaul2iso(c.adm0_code)).filter(c => c);
     } catch (error) {
         if (error instanceof functions.https.HttpsError) {
             throw error; // Re-throw if it's already an HttpsError
@@ -924,62 +937,3 @@ async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
         throw error;
     }
 }
-
-/*
-WITH area_names AS (
-    VALUES
-        ('4ee3e540-19ac-11ef-95b9-07c01b311bea'::uuid, 'Area 1'),
-        ('6da2508a-0ede-11ef-b4c3-8fff922eef8c'::uuid, 'Area 2')
-),
-individual_geoms AS (
-    SELECT 
-        pa.area_uuid,
-        an.name,
-        ST_AsGeoJSON(pa.geom::geometry) AS geojson
-    FROM 
-        project_areas pa
-    JOIN
-        (SELECT * FROM area_names) an(area_uuid, name)
-    ON
-        pa.area_uuid = an.area_uuid
-    WHERE 
-        pa.project_id = 'YJEHbBMIM7k3xMjPQvqJ'
-),
-grouped_geoms AS (
-    SELECT 
-        area_uuid,
-        name,
-        json_agg(geojson::json) AS geoms
-    FROM 
-        individual_geoms
-    GROUP BY 
-        area_uuid, name
-),
-geometry_collections AS (
-    SELECT 
-        area_uuid,
-        name,
-        json_build_object(
-            'type', 'GeometryCollection',
-            'geometries', geoms
-        ) AS geojson
-    FROM 
-        grouped_geoms
-)
-SELECT 
-    json_build_object(
-        'type', 'FeatureCollection',
-        'features', json_agg(
-            json_build_object(
-                'type', 'Feature',
-                'geometry', geojson,
-                'properties', json_build_object(
-                    'area_uuid', area_uuid,
-                    'name', name
-                )
-            )
-        )
-    ) AS geojson
-FROM 
-    geometry_collections;
-*/

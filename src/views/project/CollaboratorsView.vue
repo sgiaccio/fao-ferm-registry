@@ -112,7 +112,7 @@ async function save() {
     <pre>{{ JSON.stringify(availableUsers || [], null, 2) }}</pre> -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-1">
         <div class="max-w-3xl mx-auto">
-            <div class="max-w-lg m-auto border rounded-lg mt-6 px-6 py-6">
+            <div class="max-w-lg m-auto border rounded-lg mt-28 px-6 py-6">
                 <h1 class="block text-xl mb-6 font-bold leading-6 text-gray-800">Collaborators of the
                     <span class="italic">{{ projectTitle }}</span> project</h1>
                 <ul
