@@ -35,6 +35,20 @@ export const useMenusStore = defineStore({
             //     }
             // });
             this.loaded = true;
+        },
+        getRecursiveMenuItem(menu: RecursiveMenu, value: string): RecursiveMenuItem | null {
+            for (const item of menu) {
+                if (item.value === value) {
+                    return item;
+                }
+                if ('items' in item) {
+                    const found = this.getRecursiveMenuItem(item.items!, value);
+                    if (found) {
+                        return found;
+                    }
+                }
+            }
+            return null;
         }
     }
 });

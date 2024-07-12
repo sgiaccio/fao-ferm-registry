@@ -167,18 +167,21 @@ const router = createRouter({
                 }
             ]
         }, {
+            // results
+            path: '/results/:id',
+            name: 'resultsNaked',
+            beforeEnter: async (_to, _from) => {
+                _loadMenus();
+            },
+            component: () => import('../views/project/NakedResultsView.vue'),
+            meta: { newLayout: true }
+        }, {
             path: '/registry',
             name: 'registry',
             component: () => import('../views/RegistryView.vue'),
 
             beforeEnter: async (_to, _from) => {
-                // dynamically load the menus store to save bandwidth
-                const { useMenusStore } = await import('../stores/menus');
-                const menusStore = useMenusStore();
-
-                if (!menusStore.loaded) {
-                    await menusStore.fetchMenus();
-                }
+                _loadMenus();
             },
             redirect: { name: 'initiatives' },
             children: [
@@ -333,5 +336,15 @@ router.afterEach((to) => {
         loadingStore.setRegistryLoaded(true)
     }
 });
+
+async function _loadMenus() {
+    // dynamically load the menus store to save bandwidth
+    const { useMenusStore } = await import('../stores/menus');
+    const menusStore = useMenusStore();
+
+    if (!menusStore.loaded) {
+        await menusStore.fetchMenus();
+    }
+}
 
 export default router;

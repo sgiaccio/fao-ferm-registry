@@ -138,7 +138,7 @@ export async function saveProjectCollaborators(projectId: string, collaboratorsU
 
 export async function getProjectAreas(projectId: string) {
     const functions = getFunctions();
-    const getProjectAreas = httpsCallable(functions, 'getProjectAreas');
+    const getProjectAreas = httpsCallable(functions, 'getSavedProjectAreasGeoJson');
     const result = await getProjectAreas({ projectId });
     return result.data;
 }

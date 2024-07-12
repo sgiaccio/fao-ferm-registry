@@ -4,7 +4,6 @@ import { initializeFirestore, Firestore, connectFirestoreEmulator } from 'fireba
 import { getFunctions, connectFunctionsEmulator, type Functions } from 'firebase/functions';
 import { getStorage, connectStorageEmulator, type FirebaseStorage } from 'firebase/storage';
 
-
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,

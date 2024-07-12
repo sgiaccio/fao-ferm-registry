@@ -2,9 +2,9 @@
     setup
     lang="ts"
 >
-import * as L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-bing-layer';
+// import * as L from 'leaflet';
+// import 'leaflet/dist/leaflet.css';
+// import 'leaflet-bing-layer';
 
 import { ref, onMounted } from 'vue';
 

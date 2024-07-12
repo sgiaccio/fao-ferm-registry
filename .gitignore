@@ -27,6 +27,7 @@ coverage
 *.sln
 *.sw?
 
+tsbuildinfo
 emulator_data*/
 firestore-coverage.html
 .firebase

@@ -184,7 +184,6 @@ function resetFilters() {
     selectedCountry.value = '';
     selectedGefCycle.value = '';
 }
-
 </script>
 
 <template>
