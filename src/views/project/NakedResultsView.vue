@@ -8,7 +8,7 @@ import { useMenusStore } from '@/stores/menus';
 
 import { getRecursiveMenuLabel } from '@/lib/util';
 
-import { roundToPrecisionAsString } from '@/lib/util';
+// import { roundToPrecisionAsString } from '@/lib/util';
 
 // import SnailChart from '@/components/charts/SnailChart.vue';
 
@@ -21,6 +21,20 @@ import { getGaulLevel0 } from '@/firebase/firestore';
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 import ResultPanel from './ResultPanel.vue';
+
+import Skeleton from 'primevue/skeleton';
+
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+// import './style.css';
+
+// import required modules
+import { Navigation } from 'swiper/modules';
+
+
+const modules = [Navigation];
 
 // SDG images
 import sdg1 from '@/assets/SDG/E_WEB_01.png';
@@ -941,6 +955,7 @@ async function initMap() {
             layerBounds.extend(latLng);
         });
     });
+
     map.fitBounds(layerBounds);
 
     function getCentroid(geometry: google.maps.Data.Geometry) {
@@ -1081,62 +1096,113 @@ const timeframe = computed(() => {
 
 
 
+function getAllActivities() {
+    const areas = store.projectAreas;
+    const activities = areas.reduce((acc, area) => {
+        const areaObjValue = Object.values(area)[0];
+        const areaActivities = areaObjValue.activities;
+        console.log('areaActivities', areaActivities);
+        return areaActivities ? [...acc, ...areaActivities] : acc;
+    }, []);
+    return activities.map(a => getRecursiveMenuItem(menus.activities, a)).map(i => i.label).sort();
+}
 
-
+console.log(getAllActivities());
 </script>
 
 <template>
     <div class="mx-auto sm:px-6_ lg:px-8_ bg-black h-screen font-serif">
         <div class="flex flex-col md:flex-row h-full">
-            <div class="h-full w-full md:w-[400px] lg:w-[500px] xl:w-[600px] bg-slate-100 p-6 text-gray-800 overflow-auto">
-                <template v-if="store.project">
-                    <div>
-                        <h1 class="text-2xl">{{ store.project.project.title }}</h1>
-                    </div>
-                    <div class="mt-2">
-                        <p>{{ countriesString }}</p>
+            <div
+                id="projectInfo"
+                class="h-full w-full md:w-[400px] lg:w-[500px] xl:w-[600px] bg-slate-100 p-6 text-gray-800 overflow-auto"
+            >
+                <div
+                    v-if="store.project"
+                    class="space-y-4"
+                >
+                    <div class="relative shadow rounded-lg overflow-hidden aspect-[162/100]">
+                        <div class="absolute bottom-0 px-3 py-2 left-0 right-0 z-50 w-full bg-blend-multiply bg-black/60 text-white">
+                            <div>
+                                <h1 class="text-2xl">{{ store.project.project.title }}</h1>
+                            </div>
+                            <div class="mt-1 text-base">
+                                <p>{{ countriesString }}</p>
+                            </div>
+
+                        </div>
+                        <swiper
+                            v-if="uploadedFiles?.length > 0 && uploadedFiles[0]?.imageUrl"
+                            :navigation="true"
+                            :modules="modules"
+                            class="z-10"
+                        >
+                            <swiper-slide
+                                v-for="file in uploadedFiles"
+                                :key="file.path"
+                            >
+                                <img
+                                    v-if="file?.imageUrl"
+                                    :src="file.imageUrl"
+                                    alt="File Image"
+                                    class="object-cover aspect-[162/100]"
+                                />
+                            </swiper-slide>
+                        </swiper>
+                        <Skeleton
+                            v-else
+                            width="100%"
+                            height="100%"
+                        />
                     </div>
 
                     <ResultPanel>
-                        <!-- <div class="px-4 sm:px-0">
-                                    <h3 class="text-base font-semibold leading-7 text-gray-900">Applicant Information</h3>
-                                    <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Personal details and application.</p>
-                                </div> -->
-                        <div class="border-gray-100">
-                            <dl class="divide-y divide-gray-100">
-                                <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Description</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ store.project.project.description }}</dd>
-                                </div>
-                                <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Timeframe</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ timeframe }}</dd>
-                                </div>
-                                <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ getRecursiveMenuItem(menus.restorationStatuses, store.project.project.restorationStatus)?.label }}</dd>
-                                </div>
-                                <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Restoration types</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ store.project.project.restorationTypes?.map(type => getRecursiveMenuItem(menus.restorationTypes, type)?.label).join(', ') }}</dd>
-                                </div>
-                                <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Tenure statuses</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ store.project.project.tenureStatuses?.map(status => getRecursiveMenuItem(menus.tenureStatuses, status)?.label).join(', ') }}</dd>
-                                </div>
-                                <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Website</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"><a
-                                            :href="store.project.project.website"
-                                            target="_blank"
-                                        >{{ store.project.project.website }}</a></dd>
-                                </div>
-                                <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                    <dt class="text-sm font-medium leading-6 text-gray-900">Keywords</dt>
-                                    <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ store.project.project.keywords?.join(', ') }}</dd>
-                                </div>
-                            </dl>
-                        </div>
+                        <!-- <div class="
+                            px-4
+                            sm:px-0"
+                        >
+                            <h3 class="text-base font-semibold leading-7 text-gray-900">Applicant Information</h3>
+                            <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Personal details and application.</p>
+                    </div> -->
+                    <div class="border-gray-100">
+                        <dl class="divide-y divide-gray-100">
+                            <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Description</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ store.project.project.description }}</dd>
+                            </div>
+                            <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Timeframe</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ timeframe }}</dd>
+                            </div>
+                            <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ getRecursiveMenuItem(menus.restorationStatuses, store.project.project.restorationStatus)?.label }}</dd>
+                            </div>
+                            <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Restoration types</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ store.project.project.restorationTypes?.map(type => getRecursiveMenuItem(menus.restorationTypes, type)?.label).join(', ') }}</dd>
+                            </div>
+                            <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Tenure statuses</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ store.project.project.tenureStatuses?.map(status => getRecursiveMenuItem(menus.tenureStatuses, status)?.label).join(', ') }}</dd>
+                            </div>
+                            <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Website</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 underline hover:text-gray-900"><a
+                                        :href="store.project.project.website"
+                                        target="_blank"
+                                    >{{ store.project.project.website }}</a></dd>
+                            </div>
+                            <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">Keywords</dt>
+                                <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ store.project.project.keywords?.join(', ') }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                    </ResultPanel>
+
+                    <ResultPanel title="Activities">
+                        {{ getAllACtivities() }}
                     </ResultPanel>
 
                     <ResultPanel title="Contributions to SDGs">
@@ -1146,6 +1212,7 @@ const timeframe = computed(() => {
                                 target="_blank"
                                 v-for="sdg in store.project.contributionToSdg"
                                 :key="sdg"
+                                class="shadow-sm hover:scale-110 transition-all hover:shadow-md hover:brightness-105"
                             >
                                 <img
                                     :key="sdg"
@@ -1202,7 +1269,7 @@ const timeframe = computed(() => {
                         class="rounded-md text-base h-48 w-full mt-8 overflow-hidden"
                     />
 
-                    <div class="grid-cols-4 grid md:grid-cols-3 lg:grid-cols-4 mt-8 justify-between content-around gap-5">
+                    <!-- <div class="grid-cols-4 grid md:grid-cols-3 lg:grid-cols-4 mt-8 justify-between content-around gap-5">
                         <div
                             class="w-24 h-24"
                             v-for="file in uploadedFiles"
@@ -1215,9 +1282,11 @@ const timeframe = computed(() => {
                                 class="rounded-full object-cover w-24 h-24"
                             />
                         </div>
-                    </div>
+                    </div> -->
+
+
                     <!-- <p class="mt-6 text-base font-serif">Congratulations! Your project has achieved <span class="font-bold">{{ roundToPrecisionAsString(store.project.project.areaUnderRestoration / store.project.project.targetArea * 100) }}%</span> <span class="font-bold">({{ store.project.project.areaUnderRestoration }} {{ store.project.project.areaUnits || '' }})</span> of your total committed land <span class="font-bold">({{ store.project.project.targetArea }} {{ store.project.project.areaUnits || '' }})</span>.</p> -->
-                </template>
+                </div>
             </div>
             <div
                 id="map"
@@ -1227,3 +1296,10 @@ const timeframe = computed(() => {
         </div>
     </div>
 </template>
+
+<style scoped>
+#projectInfo {
+    scrollbar-color: #bbb transparent;
+    scrollbar-width: thin;
+}
+</style>
