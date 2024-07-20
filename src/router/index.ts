@@ -173,7 +173,7 @@ const router = createRouter({
             beforeEnter: async (_to, _from) => {
                 _loadMenus();
             },
-            component: () => import('../views/project/NakedResultsView.vue'),
+            component: () => import('../views/project/resultView/NakedResultsView.vue'),
             meta: { newLayout: true }
         }, {
             path: '/registry',

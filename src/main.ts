@@ -9,8 +9,8 @@ import './index.css'
 import Vue3Toasity, { type ToastContainerOptions } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
-import PrimeVue from 'primevue/config';
-import Lara from '@/presets/lara';
+// import PrimeVue from 'primevue/config';
+// import Lara from '@/presets/lara';
 
 (async () => {
     const app = createApp(App);
@@ -41,10 +41,10 @@ import Lara from '@/presets/lara';
         console.error(error);
     };
 
-    app.use(PrimeVue, {
-        unstyled: true,
-        pt: Lara
-    });
+    // app.use(PrimeVue, {
+    //     unstyled: true,
+    //     pt: Lara
+    // });
     
     app.mount('#app');
 })();

@@ -62,7 +62,7 @@ withDefaults(defineProps<{
                                     <InformationCircleIcon class="h-6 w-6 text-yellow-600"
                                                             aria-hidden="true" />
                                 </div>
-                                <div class="mt-3 text-center sm:mt-5">
+                                <div :class="['mt-3 text-center', type ? 'sm:mt-5' : '']">
                                     <DialogTitle as="h3"
                                                     class="text-base font-semibold leading-6 text-gray-900">
                                         {{ title }}
