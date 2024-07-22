@@ -136,12 +136,20 @@ export async function saveProjectCollaborators(projectId: string, collaboratorsU
     return saveProjectCollaborators({ projectId, collaboratorsUids });
 }
 
-export async function getProjectAreas(projectId: string) {
+export async function getProjectAreas(projectId: string, getPublic = false) {
     const functions = getFunctions();
     const getProjectAreas = httpsCallable(functions, 'getSavedProjectAreasGeoJson');
-    const result = await getProjectAreas({ projectId });
+    const result = await getProjectAreas({ projectId, public: getPublic});
     return result.data;
 }
+
+export async function getProjectAdminAreas(projectId: string, getPublic = false) {
+    const functions = getFunctions();
+    const getAdminProjectAreas = httpsCallable(functions, 'getSavedProjectAdminAreasGeoJson');
+    const result = await getAdminProjectAreas({ projectId, public: getPublic });
+    return result.data;
+}
+
 
 export async function createNewProjectVersion(projectId: string) {
     const reviseProject = httpsCallable(functions, 'reviseProject');
@@ -167,4 +175,11 @@ export async function submitNewGroup(request: any) {
     const functions = getFunctions();
     const submitNewGroup = httpsCallable(functions, 'submitNewGroup');
     return submitNewGroup(request);
+}
+
+export async function getPublicProject(projectId: string) {
+    const functions = getFunctions();
+    const getPublicProject = httpsCallable(functions, 'getPublicProject');
+    const result = await getPublicProject({ projectId });
+    return result.data;
 }

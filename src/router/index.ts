@@ -174,7 +174,7 @@ const router = createRouter({
                 _loadMenus();
             },
             component: () => import('../views/project/resultView/NakedResultsView.vue'),
-            meta: { newLayout: true }
+            meta: { newLayout: true, public: true }
         }, {
             path: '/registry',
             name: 'registry',

@@ -953,6 +953,41 @@ exports.updateBestPracticesCount = functions.firestore.document("registry/{proje
 //     }
 // });
 
+exports.getPublicProject = functions.https.onCall(async ({ projectId }, _context) => {
+    if (!projectId) {
+        throw new functions.https.HttpsError("invalid-argument", "Missing arguments");
+    }
+
+    const publicProjectsCollection = admin.firestore().collection("publicProjects");
+    const publicProjectDoc = await publicProjectsCollection.doc(projectId).get();
+
+    if (!publicProjectDoc.exists) {
+        throw new functions.https.HttpsError("not-found", "Project not found");
+    }
+
+    // get the areas in the publicAreas subcollection
+    const publicAreasRef = publicProjectDoc.ref.collection("publicAreas");
+    const publicAreas = await publicAreasRef.get();
+
+    const publicProject = publicProjectDoc.data();
+
+    // delete sensitive infocmation
+    delete publicProject.created_by;
+    delete publicProject.created_by_name;
+    delete publicProject.group;
+    delete publicProject.collaborators;
+    delete publicProject.bestPracticesCount;
+    delete publicProject.createTime
+    delete publicProject.publishedVersion;
+    delete publicProject.termsAndConditionsAccepted;
+    delete publicProject.updateTime;
+    delete publicProject.pointsOfContact;
+
+    publicProject.areas = publicAreas.docs.map(doc => doc.data());
+
+    console.log(publicProject);
+    return publicProject;
+});
 
 /************************************************
  *
@@ -993,7 +1028,8 @@ exports.deleteDanglingAreaRecords = areas.deleteDanglingAreaRecords;
 exports.getIntersectingCountries = areas.getIntersectingCountries;
 exports.getProjectAreas = areas.getProjectAreas;
 exports.getAllProjectAreasGeoJson = areas.getAllProjectAreasGeoJson;
-
+exports.getSavedProjectAreasGeoJson = areas.getSavedProjectAreasGeoJson;
+exports.getSavedProjectAdminAreasGeoJson = areas.getSavedProjectAdminAreasGeoJson;
 
 /************************************************
  *

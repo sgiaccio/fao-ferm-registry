@@ -293,11 +293,11 @@ service cloud.firestore {
         }
 
         match /adminAreas/{document=**} {
-            allow read: if isSignedIn()
+            allow read: if true
         }
 
         match /menus/{document=**} {
-            allow read: if isSignedIn()
+            allow read: if true
         }
     }
 }

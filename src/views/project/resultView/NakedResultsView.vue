@@ -3,13 +3,13 @@ import { ref, onMounted, onBeforeMount, onUnmounted, computed, watch } from 'vue
 
 import { useRoute } from 'vue-router'
 
-import { listProjectFiles, getFileAsBlob } from '@/firebase/storage';
-import { getProjectAreas } from '@/firebase/functions';
+// import { listProjectFiles, getFileAsBlob } from '@/firebase/storage';
+import { getProjectAreas, getProjectAdminAreas, getPublicProject } from '@/firebase/functions';
 import { getGaulLevel0 } from '@/firebase/firestore';
 
-import { useProjectStore } from '@/stores/project';
+// import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
-import { useAuthStore } from '@/stores/auth';
+// import { useAuthStore } from '@/stores/auth';
 
 // import { getRecursiveMenuLabel } from '@/lib/util';
 // import { roundToPrecisionAsString } from '@/lib/util';
@@ -18,7 +18,7 @@ import { useAuthStore } from '@/stores/auth';
 // const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
-import { Swiper, SwiperSlide } from 'swiper/vue';
+// import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
@@ -27,11 +27,12 @@ import ActivitiesPanel from './ActivitiesPanel.vue';
 import SdgPanel from './SdgPanel.vue';
 import AreasCharts from './AreasCharts.vue';
 import AlertModal from '@/views/AlertModal.vue';
-import Navbar from '@/views/Navbar.vue';
+import SpinningThing from '@/components/SpinningThing.vue';
+// import Navbar from '@/views/Navbar.vue';
 
 
 // import required modules
-import { Navigation } from 'swiper/modules';
+// import { Navigation } from 'swiper/modules';
 
 
 withDefaults(defineProps<{
@@ -41,18 +42,25 @@ withDefaults(defineProps<{
 });
 
 
-const modules = [Navigation]; // Swiper modules
+// const modules = [Navigation]; // Swiper modules
 
 const route = useRoute();
 const { menus, getRecursiveMenuItem } = useMenusStore();
-const store = useProjectStore();
-const authStore = useAuthStore();
+// const store = useProjectStore();
+// const authStore = useAuthStore();
 
 const countries = ref<{ iso2: string, label: string }[] | null>(null);
 
+const project = ref<any>(null);
+
 onBeforeMount(async () => {
-    await store.fetchProject(route.params.id as string);
-    countries.value = await getGaulLevel0();
+    // await store.fetchProject(route.params.id as string);
+    const [fetchedProject, fetchedCountries] = await Promise.all([
+        getPublicProject(route.params.id as string),
+        getGaulLevel0()
+    ]);
+    project.value = fetchedProject;
+    countries.value = fetchedCountries;
 });
 
 onUnmounted(() => {
@@ -67,30 +75,30 @@ onUnmounted(() => {
 const uploadedFiles = ref<{ name: string, path: string, imageUrl?: string }[]>([]);
 
 
-async function getUploadedFiles() {
-    try {
-        const accessToken = await authStore.getIdToken();
-        uploadedFiles.value = await listProjectFiles(route.params.id, "images", accessToken);
+// async function getUploadedFiles() {
+//     try {
+//         const accessToken = await authStore.getIdToken();
+//         uploadedFiles.value = await listProjectFiles(route.params.id, "images", accessToken);
 
-        // Load each file in parallel
-        uploadedFiles.value.forEach(async (file: { name: string, path: string }, index: number) => {
-            try {
-                const blob = await getFileAsBlob(route.params.id, file.path, accessToken);
-                const imageUrl = URL.createObjectURL(blob);
+//         // Load each file in parallel
+//         uploadedFiles.value.forEach(async (file: { name: string, path: string }, index: number) => {
+//             try {
+//                 const blob = await getFileAsBlob(route.params.id, file.path, accessToken);
+//                 const imageUrl = URL.createObjectURL(blob);
 
-                // Place the file at the correct index
-                uploadedFiles.value[index] = { ...file, imageUrl };
-                // Trigger a reactive update
-                uploadedFiles.value = [...uploadedFiles.value];
-            } catch (error) {
-                console.error(`Failed to load file ${file.path}:`, error);
-            }
-        });
-    } catch (error) {
-        console.error(error);
-        alert('Failed to load files: ' + error);
-    }
-}
+//                 // Place the file at the correct index
+//                 uploadedFiles.value[index] = { ...file, imageUrl };
+//                 // Trigger a reactive update
+//                 uploadedFiles.value = [...uploadedFiles.value];
+//             } catch (error) {
+//                 console.error(`Failed to load file ${file.path}:`, error);
+//             }
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         alert('Failed to load files: ' + error);
+//     }
+// }
 
 // GEF
 // function getLastTargetArea() {
@@ -105,7 +113,7 @@ async function getUploadedFiles() {
 
 let chartData: { value: number, name: string }[] = [];
 const chartDiv = ref(null);
-watch([() => store.project, chartDiv], ([project, chartDiv]) => {
+watch([project, chartDiv], ([project, chartDiv]) => {
     if (!project || !chartDiv) return;
 
     // if (project.reportingLine === 'GEF') {
@@ -203,7 +211,7 @@ onMounted(async () => {
     if (mapDiv.value) {
         initMap();
     }
-    await getUploadedFiles();
+    // await getUploadedFiles(); // TODO add getPublicUploadedFiles cloud function
 });
 
 // const numberFormatter = new Intl.NumberFormat('en-US', {
@@ -348,7 +356,15 @@ async function initChart() {
 
 let map: google.maps.Map;
 
+const geoJsonLoaded = ref(false);
+const geoJsonLoadError = ref(false);
+
 async function initMap() {
+    if (!mapDiv.value) return;
+
+    geoJsonLoaded.value = false;
+    geoJsonLoadError.value = false;
+
     const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
 
@@ -372,10 +388,18 @@ async function initMap() {
         mapId: 'acfd9aecb62ff17c',
     });
 
-    //load the json data
-    const geojson = await getProjectAreas(route.params.id);
-
+    // Load the json data
+    const [geojson, adminGeoJson] = await Promise.all([
+        getProjectAreas(route.params.id, true),
+        getProjectAdminAreas(route.params.id, true),
+    ]).catch((error) => {
+        console.error('Failed to load geojson:', error);
+        geoJsonLoadError.value = true;
+    }).finally(() => {
+        geoJsonLoaded.value = true;
+    });
     map.data.addGeoJson(geojson);
+    map.data.addGeoJson(adminGeoJson);
 
     // hide by default
     map.data.setStyle({
@@ -395,10 +419,10 @@ async function initMap() {
     });
 
     // zoom to the layer
-    if (geojson.features.length > 0) {
+    if (geojson.features.length > 0 || adminGeoJson.features.length > 0) {
         const layerBounds = new google.maps.LatLngBounds();
         map.data.forEach(feature => {
-            feature.getGeometry().forEachLatLng((latLng) => {
+            feature.getGeometry().forEachLatLng(latLng => {
                 layerBounds.extend(latLng);
             });
         });
@@ -406,7 +430,7 @@ async function initMap() {
         map.setCenter(layerBounds.getCenter());
     }
 
-    function getCentroid(geometry: google.maps.Data.Geometry) {
+    function getPseudoCentroid(geometry: google.maps.Data.Geometry) {
         if (geometry.getType() === 'Point') {
             return geometry.get();
         }
@@ -433,9 +457,9 @@ async function initMap() {
         return null;
     }
 
-    const centroidsAndFeatures = [];
+    const centroidsAndFeatures: { centroid: google.maps.LatLng, feature: google.maps.Data.Feature }[] = [];
     map.data.forEach(feature => {
-        const centroid = getCentroid(feature.getGeometry());
+        const centroid = getPseudoCentroid(feature.getGeometry());
         centroidsAndFeatures.push({ centroid, feature });
     });
     const parser = new DOMParser();
@@ -506,8 +530,8 @@ function zoomAndHighlightFeature(feature) {
 }
 
 const countriesString = computed(() => {
-    if (!countries.value || !store.project.project.countries) return '';
-    const countryNames = (store.project.project.countries || []).map((iso2: string) => {
+    if (!countries.value || !project.value.project.countries) return '';
+    const countryNames = (project.value.project.countries || []).map((iso2: string) => {
         return countries.value.find(c => c.iso2 === iso2)
     });
     return countryNames.map(c => c.label).join(', ');
@@ -515,11 +539,11 @@ const countriesString = computed(() => {
 
 
 const timeframe = computed(() => {
-    const project = store.project.project;
-    if (!project.startingYear && !project.endingYear) return 'No timeframe specified';
-    if (project.startingYear && project.endingYear) return `${project.startingYear} – ${project.endingYear}`;
-    if (project.startingYear) return `from ${project.startingYear}`;
-    if (project.endingYear) return `until ${project.endingYear}`;
+    const p = project.value.project;
+    if (!p.startingYear && !p.endingYear) return 'No timeframe specified';
+    if (p.startingYear && p.endingYear) return `${p.startingYear} – ${p.endingYear}`;
+    if (p.startingYear) return `from ${p.startingYear}`;
+    if (p.endingYear) return `until ${p.endingYear}`;
 });
 
 function zoomToArea(uuid: string) {
@@ -569,7 +593,7 @@ function formatNumber(n: number) {
         :open="showFullDescription"
         buttonText="Close"
     >
-        <p class="whitespace-pre-wrap text-sm text-gray-800 text-left font-serif">{{ store.project?.project.description }}</p>
+        <p class="whitespace-pre-wrap text-sm text-gray-800 text-left font-serif">{{ project?.project.description }}</p>
     </AlertModal>
     <header class="top-0 h-20 md:h-24">
         <div class="overflow-hidden bg-slate-200 relative h-20 md:h-24">
@@ -615,12 +639,12 @@ function formatNumber(n: number) {
                 class="h-full w-full md:w-[400px] lg:w-[500px] xl:w-[600px] py-6 pl-4 pr-3 text-gray-800 overflow-auto"
             >
                 <div
-                    v-if="store.project"
+                    v-if="project"
                     class="space-y-4"
                 >
                     <div class="text-gray-800">
                         <div>
-                            <h1 class="text-2xl">{{ store.project.project.title }}</h1>
+                            <h1 class="text-2xl">{{ project.project.title }}</h1>
                         </div>
                         <div class="mt-1 text-base">
                             <p>{{ countriesString }}</p>
@@ -629,11 +653,21 @@ function formatNumber(n: number) {
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-8 font-roboto text-black">
                         <div class="flex flex-col rounded-md p-2 h-full bg-[#589C33]">
-                            <div class="flex-0 text-2xl">🌳</div>
+                            <div class="flex-0">
+                                <svg
+                                    class="h-10 w-10 text-green-900"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                >
+                                    <title>forest</title>
+                                    <path d="M16 12L9 2L2 12H3.86L0 18H7V22H11V18H18L14.14 12H16M20.14 12H22L15 2L12.61 5.41L17.92 13H15.97L19.19 18H24L20.14 12M13 19H17V22H13V19Z" />
+                                </svg>
+                            </div>
                             <div class="flex-0 flex items-center">
                                 <div>
-                                    <span class="font-bold text-3xl mr-1">{{ store.project.project.targetArea ? formatNumber(store.project.project.targetArea) : 'n/a' }}</span>
-                                    <span class="text-xl">{{ store.project.project.areaUnits || '' }}</span>
+                                    <span class="font-bold text-3xl mr-1">{{ project.project.targetArea ? formatNumber(project.project.targetArea) : 'n/a' }}</span>
+                                    <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
                                 </div>
                             </div>
                             <div class="flex-grow flex items-end">
@@ -641,11 +675,21 @@ function formatNumber(n: number) {
                             </div>
                         </div>
                         <div class="flex flex-col rounded-md p-2 h-full bg-[#dd6b66]">
-                            <div class="flex-0 text-2xl">🌱</div>
+                            <div class="flex-0">
+                                <svg
+                                    class="h-10 w-10 text-red-900"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                >
+                                    <title>sprout</title>
+                                    <path d="M2,22V20C2,20 7,18 12,18C17,18 22,20 22,20V22H2M11.3,9.1C10.1,5.2 4,6.1 4,6.1C4,6.1 4.2,13.9 9.9,12.7C9.5,9.8 8,9 8,9C10.8,9 11,12.4 11,12.4V17C11.3,17 11.7,17 12,17C12.3,17 12.7,17 13,17V12.8C13,12.8 13,8.9 16,7.9C16,7.9 14,10.9 14,12.9C21,13.6 21,4 21,4C21,4 12.1,3 11.3,9.1Z" />
+                                </svg>
+                            </div>
                             <div class="flex-0 flex items-center">
-                                <div class="">
-                                    <span class="font-bold text-3xl mr-1">{{ store.project.project.areaUnderRestoration ? formatNumber(store.project.project.areaUnderRestoration) : 'n/a' }}</span>
-                                    <span class="text-xl">{{ store.project.project.areaUnits || '' }}</span>
+                                <div>
+                                    <span class="font-bold text-3xl mr-1">{{ project.project.areaUnderRestoration ? formatNumber(project.project.areaUnderRestoration) : 'n/a' }}</span>
+                                    <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
                                 </div>
                             </div>
                             <div class="flex-grow flex items-end">
@@ -653,11 +697,21 @@ function formatNumber(n: number) {
                             </div>
                         </div>
                         <div class="flex flex-col rounded-md p-2 h-full bg-[#69B2BA]">
-                            <div class="flex-0 text-2xl">🌵</div>
+                            <div class="flex-0">
+                                <svg
+                                    class="h-10 w-10 text-ferm-blue-light-900"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                >
+                                    <title>cactus</title>
+                                    <path d="M14,16V21H10V18H9A3,3 0 0,1 6,15V12A1,1 0 0,1 7,11A1,1 0 0,1 8,12V15C8,15.56 8.45,16 9,16H10V6A2,2 0 0,1 12,4A2,2 0 0,1 14,6V14H15A1,1 0 0,0 16,13V11A1,1 0 0,1 17,10A1,1 0 0,1 18,11V13A3,3 0 0,1 15,16H14Z" />
+                                </svg>
+                            </div>
                             <div class="flex-0 flex items-center">
                                 <div class="">
-                                    <span class="font-bold text-3xl mr-1">{{ store.project.project.targetArea && store.project.project.areaUnderRestoration ? formatNumber(store.project.project.targetArea - store.project.project.areaUnderRestoration) : 'n/a' }}</span>
-                                    <span class="text-xl">{{ store.project.project.areaUnits || '' }}</span>
+                                    <span class="font-bold text-3xl mr-1">{{ project.project.targetArea && project.project.areaUnderRestoration ? formatNumber(project.project.targetArea - project.project.areaUnderRestoration) : 'n/a' }}</span>
+                                    <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
                                 </div>
                             </div>
                             <div class="flex-grow flex items-end">
@@ -667,21 +721,21 @@ function formatNumber(n: number) {
                     </div>
 
                     <!-- <div
-                        v-if="store.project.project.targetArea && store.project.project.areaUnderRestoration"
+                        v-if="project.project.targetArea && project.project.areaUnderRestoration"
                         id="chart"
                         ref="chartDiv"
                         class="rounded-md text-base h-48 w-full mt-8 overflow-hidden"
                     /> -->
 
-                    <div class="shadow rounded-lg overflow-hidden aspect-[162/100]">
-                        <!-- <div class="absolute bottom-0 px-3 py-2 left-0 right-0 z-50 w-full bg-blend-multiply bg-black/40 text-white">
+                    <!-- <div class="shadow rounded-lg overflow-hidden aspect-[162/100]">
+                        <!- - <div class="absolute bottom-0 px-3 py-2 left-0 right-0 z-50 w-full bg-blend-multiply bg-black/40 text-white">
                             <div>
-                                <h1 class="text-2xl">{{ store.project.project.title }}</h1>
+                                <h1 class="text-2xl">{{ project.project.title }}</h1>
                             </div>
                             <div class="mt-1 text-base">
                                 <p>{{ countriesString }}</p>
                             </div>
-                        </div> -->
+                        </div> - ->
 
                         <swiper
                             v-if="uploadedFiles?.length > 0 && uploadedFiles[0]?.imageUrl"
@@ -706,9 +760,9 @@ function formatNumber(n: number) {
                             height="100%"
                             class="bg-red-400"
                         />
-                    </div>
+                    </div> -->
 
-                    <!-- <pre>{{ JSON.stringify(store.project, null, 2) }}</pre> -->
+                    <!-- <pre>{{ JSON.stringify(project, null, 2) }}</pre> -->
 
                     <!-- <Galleria
                         v-if="uploadedFiles?.length > 0 && uploadedFiles[0]?.imageUrl"
@@ -751,9 +805,9 @@ function formatNumber(n: number) {
                                 <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                     <dt class="text-sm font-medium leading-6 text-gray-900">Description</dt>
                                     <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                        <template v-if="store.project.project.description">
-                                            <template v-if="store.project.project.description.length > 250">
-                                                <p>{{ store.project.project.description.substring(0, 250) }}...</p>
+                                        <template v-if="project.project.description">
+                                            <template v-if="project.project.description.length > 250">
+                                                <p>{{ project.project.description.substring(0, 250) }}...</p>
                                                 <button
                                                     @click="showFullDescription = !showFullDescription"
                                                     class="text-blue-500 hover:text-blue-700"
@@ -761,7 +815,7 @@ function formatNumber(n: number) {
                                             </template>
 
                                             <template v-else>
-                                                <p>{{ store.project.project.description }}</p>
+                                                <p>{{ project.project.description }}</p>
                                             </template>
                                         </template>
                                         <template v-else>
@@ -776,8 +830,8 @@ function formatNumber(n: number) {
                                 <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                     <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
                                     <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                        <template v-if="store.project.project.restorationStatus">
-                                            {{ getRecursiveMenuItem(menus.restorationStatuses, store.project.project.restorationStatus)?.label }}
+                                        <template v-if="project.project.restorationStatus">
+                                            {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
                                         </template>
                                         <span
                                             v-else
@@ -788,8 +842,8 @@ function formatNumber(n: number) {
                                 <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                     <dt class="text-sm font-medium leading-6 text-gray-900">Restoration types</dt>
                                     <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                        <template v-if="store.project.project.restorationTypes?.length > 0">
-                                            {{ store.project.project.restorationTypes.map(type => getRecursiveMenuItem(menus.restorationTypes, type)?.label).join(', ') }}
+                                        <template v-if="project.project.restorationTypes?.length > 0">
+                                            {{ project.project.restorationTypes.map(type => getRecursiveMenuItem(menus.restorationTypes, type)?.label).join(', ') }}
                                         </template>
                                         <span
                                             v-else
@@ -800,8 +854,8 @@ function formatNumber(n: number) {
                                 <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                     <dt class="text-sm font-medium leading-6 text-gray-900">Tenure statuses</dt>
                                     <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                        <template v-if="store.project.project.tenureStatuses?.length > 0">
-                                            {{ store.project.project.tenureStatuses.map(status => getRecursiveMenuItem(menus.tenureStatuses, status)?.label).join(', ') }}
+                                        <template v-if="project.project.tenureStatuses?.length > 0">
+                                            {{ project.project.tenureStatuses.map(status => getRecursiveMenuItem(menus.tenureStatuses, status)?.label).join(', ') }}
                                         </template>
                                         <span
                                             v-else
@@ -813,11 +867,11 @@ function formatNumber(n: number) {
                                     <dt class="text-sm font-medium leading-6 text-gray-900">Website</dt>
                                     <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 hover:text-gray-900">
                                         <a
-                                            v-if="store.project.project.website"
-                                            :href="store.project.project.website.startsWith('http') ? store.project.project.website : 'http://' + store.project.project.website"
+                                            v-if="project.project.website"
+                                            :href="project.project.website.startsWith('http') ? project.project.website : 'http://' + project.project.website"
                                             target="_blank"
                                             class="underline"
-                                        >{{ store.project.project.website }}</a>
+                                        >{{ project.project.website }}</a>
                                         <span
                                             v-else
                                             class="italic text-gray-500"
@@ -827,8 +881,8 @@ function formatNumber(n: number) {
                                 <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                     <dt class="text-sm font-medium leading-6 text-gray-900">Keywords</dt>
                                     <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                        <template v-if="store.project.project.keywords?.length > 0">
-                                            {{ store.project.project.keywords.join(', ') }}
+                                        <template v-if="project.project.keywords?.length > 0">
+                                            {{ project.project.keywords.join(', ') }}
                                         </template>
                                         <span
                                             v-else
@@ -840,28 +894,55 @@ function formatNumber(n: number) {
                         </div>
                     </ResultPanel>
 
-                    <ActivitiesPanel :areas="store.projectAreas" />
+                    <ActivitiesPanel :areas="project.areas" />
 
-                    <SdgPanel :sdgs="store.project.contributionToSdg" />
+                    <SdgPanel :sdgs="project.contributionToSdg" />
 
                     <AreasCharts
-                        :areas="store.projectAreas"
+                        :areas="project.areas"
                         @zoomToArea="zoomToArea"
                     />
                 </div>
             </div>
-            <div class="flex-grow p-4 bg-slate-200">
+            <div class="flex-grow p-4 bg-slate-200 relative">
                 <div
                     id="map"
                     ref="mapDiv"
                     class="rounded-md focus:ring-0"
-                />
+                ></div>
+                <div
+                    v-if="!geoJsonLoaded || geoJsonLoadError"
+                    class="absolute inset-0 flex items-center justify-center font-sans"
+                >
+                    <div
+                        v-if="!geoJsonLoaded"
+                        class="text-black flex flex-col items-center border border-gray-500 bg-white px-10 py-6 rounded"
+                    >
+                        <SpinningThing />
+                        <div class="mt-3">
+                            Loading map
+                        </div>
+                    </div>
+                    <div
+                        v-else-if="geoJsonLoadError"
+                        class="text-black flex flex-col items-center border border-gray-500 bg-white px-10 py-6 rounded"
+                    >
+                        <div>
+                            Failed to load map
+                        </div>
+
+                        <div class="mt-3">
+                            <button
+                                @click="initMap"
+                                class="bg-gray-700 text-white px-4 py-2 rounded-sm"
+                            >
+                                Retry
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- <div
-                id="map"
-                ref="mapDiv"
-                class="border-gray-100 h-full flex-grow"
-            /> -->
         </div>
     </div>
 </template>
@@ -874,5 +955,7 @@ function formatNumber(n: number) {
 </style>
 
 <style>
-.gm-style iframe + div { border:none!important; }
+.gm-style iframe+div {
+    border: none !important;
+}
 </style>
