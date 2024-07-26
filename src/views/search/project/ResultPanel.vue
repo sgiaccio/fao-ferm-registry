@@ -10,7 +10,7 @@ defineProps<{
         <div class="px-0 py-5 sm:p-6">
             <div
                 v-if="title || description"
-                class="px-4 sm:px-0"
+                class="px-4 sm:px-0 mb-2"
             >
                 <h3
                     v-if="title"

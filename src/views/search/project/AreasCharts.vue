@@ -14,7 +14,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { MapPinIcon } from '@heroicons/vue/24/outline'
 
 
-const modules = [Navigation];
+const modules = [ Navigation ];
 
 const props = defineProps<{
     areas: any

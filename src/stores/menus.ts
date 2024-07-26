@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { getMenus } from "@/firebase/firestore";
 
-import type { Menu } from "@/components/project/menus";
+import type { Menu, RecursiveMenu } from "@/components/project/menus";
 
 // Define the type guard functions
 // function isMenu(menu: Menu | RecursiveMenu): menu is Menu {
@@ -49,6 +49,18 @@ export const useMenusStore = defineStore({
                 }
             }
             return null;
+        },
+        flattenMenu(menu: RecursiveMenu): Menu {
+            const result: Menu = [];
+            for (const item of menu) {
+                if (item.value) {
+                    result.push(item);
+                }
+                if (item.items) {
+                    result.push(...this.flattenMenu(item.items));
+                }
+            }
+            return result;
         }
     }
 });

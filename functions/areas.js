@@ -963,7 +963,7 @@ async function getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, v
                 -- the first ST_CollectionExtract merges all the polygons into a single geometry
                 -- ST_Collect merges all the geometries into a single geometry
                 -- and the last ST_CollectionExtract merges the geometry into a single geometry again
-                -- looks ugly but it works, at least for the use cases we tested
+                -- looks ugly but it works, at least with the use cases we tested
                 ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson,
                 pa.area_uuid,
                 an.name AS name
@@ -1004,6 +1004,13 @@ async function getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, v
             geoms;
         `;
         const values = [version, projectId, ...areaUuids, ...areaNames, areaUuids];
+
+        console.log('query', query);
+        console.log('version', version);
+        console.log('projectId', projectId);
+        console.log('areaUuids', areaUuids);
+        console.log('areaNames', areaNames);
+
         const result = await client.query(query, values);
 
         if (!result?.rows?.length) {
@@ -1043,7 +1050,7 @@ async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
                 -- the first ST_CollectionExtract merges all the polygons into a single geometry
                 -- ST_Collect merges all the geometries into a single geometry
                 -- and the last ST_CollectionExtract merges the geometry into a single geometry again
-                -- looks ugly but it works, at least for the use cases we tested
+                -- looks ugly but it works, at least with the use cases we tested
                 ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson,
                 pa.area_uuid,
                 an.name AS name

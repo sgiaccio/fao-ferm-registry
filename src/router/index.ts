@@ -112,6 +112,15 @@ const router = createRouter({
                     props: { type: 'initiatives' },
                     meta: { public: true }
                 }, {
+                    // results
+                    path: 'initiatives/:id',
+                    name: 'publicInitiativePage',
+                    beforeEnter: async (_to, _from) => {
+                        _loadMenus();
+                    },
+                    component: () => import('../views/search/project/ProjectView.vue'),
+                    meta: { newLayout: true, public: true }
+                }, {
                     path: 'good-practices',
                     name: 'searchGoodPractices',
                     component: () => import('../views/search/SearchView.vue'),
@@ -166,15 +175,6 @@ const router = createRouter({
                     component: () => import('../views/admin/AppState.vue')
                 }
             ]
-        }, {
-            // results
-            path: '/results/:id',
-            name: 'resultsNaked',
-            beforeEnter: async (_to, _from) => {
-                _loadMenus();
-            },
-            component: () => import('../views/project/resultView/NakedResultsView.vue'),
-            meta: { newLayout: true, public: true }
         }, {
             path: '/registry',
             name: 'registry',

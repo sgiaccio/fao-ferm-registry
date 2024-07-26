@@ -32,16 +32,15 @@ const landCoverTypes = {
 
 <template>
     <div class="grid grid-cols-2 gap-x-3 gap-y-2">
-        <template class=""
-                  v-for="lc in value">
-            <div :class="['group relative cursor-default font-medium', landCoverTypes[lc.id].description ? 'text-blue-500' : '']"
-                 data-tooltip-target="tooltip-default">
-                {{ landCoverTypes[lc.id].label || `Label not found for class ${[lc.id]}` }}
-                <span v-if="landCoverTypes[lc.id].description"
-                      class="absolute hidden group-hover:flex -left-5 -top-2 -translate-y-full w-48 px-2 py-1 bg-gray-700 rounded-lg text-center text-white text-sm after:content-[''] after:absolute after:left-1/2 after:top-[100%] after:-translate-x-1/2 after:border-8 after:border-x-transparent after:border-b-transparent after:border-t-gray-700">
-                    {{ landCoverTypes[lc.id].description }}
-                </span>
-            </div>
-            <div>{{ lc.value }}</div>
+        <template v-for="lc in value">
+        <div :class="['group relative cursor-default font-medium', landCoverTypes[lc.id].description ? 'text-blue-500' : '']"
+                data-tooltip-target="tooltip-default">
+            {{ landCoverTypes[lc.id].label || `Label not found for class ${[lc.id]}` }}
+            <span v-if="landCoverTypes[lc.id].description"
+                    class="absolute hidden group-hover:flex -left-5 -top-2 -translate-y-full w-48 px-2 py-1 bg-gray-700 rounded-lg text-center text-white text-sm after:content-[''] after:absolute after:left-1/2 after:top-[100%] after:-translate-x-1/2 after:border-8 after:border-x-transparent after:border-b-transparent after:border-t-gray-700">
+                {{ landCoverTypes[lc.id].description }}
+            </span>
+        </div>
+        <div>{{ lc.value }}</div>
         </template>
     </div></template>

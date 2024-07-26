@@ -19,8 +19,8 @@ import { useMenusStore } from '@/stores/menus';
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 // import { Swiper, SwiperSlide } from 'swiper/vue';
-import 'swiper/css';
-import 'swiper/css/navigation';
+// import 'swiper/css';
+// import 'swiper/css/navigation';
 
 import ResultPanel from './ResultPanel.vue';
 import ActivitiesPanel from './ActivitiesPanel.vue';
@@ -28,7 +28,7 @@ import SdgPanel from './SdgPanel.vue';
 import AreasCharts from './AreasCharts.vue';
 import AlertModal from '@/views/AlertModal.vue';
 import SpinningThing from '@/components/SpinningThing.vue';
-// import Navbar from '@/views/Navbar.vue';
+import IndicatorsPanel from './IndicatorsPanel.vue';
 
 
 // import required modules
@@ -431,11 +431,34 @@ async function initMap() {
     }
 
     function getPseudoCentroid(geometry: google.maps.Data.Geometry) {
+        console.log('type', geometry.getType());
         if (geometry.getType() === 'Point') {
             return geometry.get();
         }
+        
+        const bounds = new google.maps.LatLngBounds();
+        if (geometry.getType() === 'MultiPoint') {
+            geometry.getArray().forEach((point) => {
+                bounds.extend(point);
+            });
+            return bounds.getCenter();
+        }
+        if (geometry.getType() === 'LineString') {
+            geometry.getArray().forEach((latLng) => {
+                bounds.extend(latLng);
+            });
+            return bounds.getCenter();
+        }
+
+        if (geometry.getType() === 'MultiLineString') {
+            geometry.getArray().forEach((line) => {
+                line.getArray().forEach((latLng) => {
+                    bounds.extend(latLng);
+                });
+            });
+            return bounds.getCenter();
+        }
         if (geometry.getType() === 'Polygon') {
-            const bounds = new google.maps.LatLngBounds();
             geometry.getArray().forEach((path) => {
                 path.getArray().forEach((latLng) => {
                     bounds.extend(latLng);
@@ -444,7 +467,6 @@ async function initMap() {
             return bounds.getCenter();
         }
         if (geometry.getType() === 'MultiPolygon') {
-            const bounds = new google.maps.LatLngBounds();
             geometry.getArray().forEach((polygon) => {
                 polygon.getArray().forEach((path) => {
                     path.getArray().forEach((latLng) => {
@@ -473,7 +495,8 @@ async function initMap() {
 
     // Create markers based on centroids
     const markers = centroidsAndFeatures.map(({ centroid, feature }) => {
-
+        console.log('centroid', centroid);
+        console.log('feature', feature);
         const marker = new AdvancedMarkerElement({
             position: centroid,
             content: pinSvg.cloneNode(true),
@@ -494,7 +517,6 @@ async function initMap() {
     });
     // Add a marker clusterer to manage the markers.
     new MarkerClusterer({ markers, map });
-
 }
 
 function zoomToFeature(feature) {
@@ -655,7 +677,7 @@ function formatNumber(n: number) {
                         <div class="flex flex-col rounded-md p-2 h-full bg-[#589C33]">
                             <div class="flex-0">
                                 <svg
-                                    class="h-10 w-10 text-green-900"
+                                    class="h-10 w-10 text-gray-400 mix-blend-multiply"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
@@ -677,7 +699,7 @@ function formatNumber(n: number) {
                         <div class="flex flex-col rounded-md p-2 h-full bg-[#dd6b66]">
                             <div class="flex-0">
                                 <svg
-                                    class="h-10 w-10 text-red-900"
+                                    class="h-10 w-10 text-gray-400 mix-blend-multiply"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
@@ -699,7 +721,7 @@ function formatNumber(n: number) {
                         <div class="flex flex-col rounded-md p-2 h-full bg-[#69B2BA]">
                             <div class="flex-0">
                                 <svg
-                                    class="h-10 w-10 text-ferm-blue-light-900"
+                                    class="h-10 w-10 text-gray-400 mix-blend-multiply"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
@@ -763,34 +785,6 @@ function formatNumber(n: number) {
                     </div> -->
 
                     <!-- <pre>{{ JSON.stringify(project, null, 2) }}</pre> -->
-
-                    <!-- <Galleria
-                        v-if="uploadedFiles?.length > 0 && uploadedFiles[0]?.imageUrl"
-                        :value="uploadedFiles.map(file => ({ itemImageSrc: file.imageUrl, alt: file.name }))"
-                        :numVisible="5"
-                        containerStyle="max-width: 640px"
-                        :showItemNavigators="true"
-                        :showThumbnails="false"
-                        :circular="true"
-                    >
-                        <template #item="slotProps">
-                            <img
-                                :src="slotProps.item.itemImageSrc"
-                                :alt="slotProps.item.alt"
-                                style="width: 100%; display: block;"
-                                class="shadow rounded-lg overflow-hidden object-cover aspect-[162/100]"
-                            />
-                        </template>
-</Galleria>
-<Galleria v-else :value="['']" :numVisible="5" containerStyle="max-width: 640px" :showItemNavigators="false" :showThumbnails="false">
-    <template #item="">
-                            <Skeleton
-                                width="100%"
-                                height="100%"
-                                class="shadow rounded-lg overflow-hidden object-cover aspect-[162/100]"
-                            />
-                        </template>
-</Galleria> -->
 
                     <ResultPanel>
                         <!-- <div class="
@@ -898,13 +892,15 @@ function formatNumber(n: number) {
 
                     <SdgPanel :sdgs="project.contributionToSdg" />
 
+                    <IndicatorsPanel :areas="project.areas" />
+
                     <AreasCharts
                         :areas="project.areas"
                         @zoomToArea="zoomToArea"
                     />
                 </div>
             </div>
-            <div class="flex-grow p-4 bg-slate-200 relative">
+            <div class="flex-grow p-4 bg-slate-300 relative">
                 <div
                     id="map"
                     ref="mapDiv"
@@ -912,11 +908,11 @@ function formatNumber(n: number) {
                 ></div>
                 <div
                     v-if="!geoJsonLoaded || geoJsonLoadError"
-                    class="absolute inset-0 flex items-center justify-center font-sans"
+                    class="absolute inset-0 flex items-center justify-center font-sans text-gray-100"
                 >
                     <div
-                        v-if="!geoJsonLoaded"
-                        class="text-black flex flex-col items-center border border-gray-500 bg-white px-10 py-6 rounded"
+                        v-if="!geoJsonLoaded && !geoJsonLoadError"
+                        class="flex flex-col items-center border border-gray-500 bg-black/60 px-10 py-6 rounded-md"
                     >
                         <SpinningThing />
                         <div class="mt-3">
@@ -924,8 +920,8 @@ function formatNumber(n: number) {
                         </div>
                     </div>
                     <div
-                        v-else-if="geoJsonLoadError"
-                        class="text-black flex flex-col items-center border border-gray-500 bg-white px-10 py-6 rounded"
+                        v-else
+                        class="flex flex-col items-center border border-gray-500 bg-black/60 px-10 py-6 rounded-md"
                     >
                         <div>
                             Failed to load map
@@ -934,7 +930,7 @@ function formatNumber(n: number) {
                         <div class="mt-3">
                             <button
                                 @click="initMap"
-                                class="bg-gray-700 text-white px-4 py-2 rounded-sm"
+                                class="bg-gray-600 text-white px-4 py-2 rounded-sm border border-gray-500"
                             >
                                 Retry
                             </button>
