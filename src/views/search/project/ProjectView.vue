@@ -4,7 +4,7 @@ import { ref, onMounted, onBeforeMount, onUnmounted, computed, watch } from 'vue
 import { useRoute } from 'vue-router'
 
 // import { listProjectFiles, getFileAsBlob } from '@/firebase/storage';
-import { getProjectAreas, getProjectAdminAreas, getPublicProject } from '@/firebase/functions';
+import { getProjectAreas, getProjectAdminAreas, getPublicProject, getPublicProjectThumbnail } from '@/firebase/functions';
 import { getGaulLevel0 } from '@/firebase/firestore';
 
 // import { useProjectStore } from '@/stores/project';
@@ -70,10 +70,22 @@ onUnmounted(() => {
             URL.revokeObjectURL(file.imageUrl);
         }
     });
+
+    if (thumbnail.value) {
+        URL.revokeObjectURL(thumbnail.value);
+    }
 });
 
 const uploadedFiles = ref<{ name: string, path: string, imageUrl?: string }[]>([]);
 
+async function getThumbnail() {
+    try {
+        const blob = await getPublicProjectThumbnail(route.params.id as string);
+        return URL.createObjectURL(blob);
+    } catch (error) {
+        console.error('Error displaying the thumbnail:', error);
+    }
+}
 
 // async function getUploadedFiles() {
 //     try {
@@ -207,11 +219,21 @@ echarts.use([
 
 const mapDiv = ref<HTMLDivElement | null>(null);
 
+const thumbnail = ref<string | null>(null);
+
 onMounted(async () => {
     if (mapDiv.value) {
         initMap();
     }
+
     // await getUploadedFiles(); // TODO add getPublicUploadedFiles cloud function
+
+    const imageUrl = await getThumbnail();
+    if (!imageUrl) {
+        console.error('Failed to load thumbnail:', imageUrl);
+        return;
+    }
+    thumbnail.value = imageUrl;
 });
 
 // const numberFormatter = new Intl.NumberFormat('en-US', {
@@ -431,45 +453,44 @@ async function initMap() {
     }
 
     function getPseudoCentroid(geometry: google.maps.Data.Geometry) {
-        console.log('type', geometry.getType());
         if (geometry.getType() === 'Point') {
             return geometry.get();
         }
-        
+
         const bounds = new google.maps.LatLngBounds();
         if (geometry.getType() === 'MultiPoint') {
-            geometry.getArray().forEach((point) => {
+            geometry.getArray().forEach(point => {
                 bounds.extend(point);
             });
             return bounds.getCenter();
         }
         if (geometry.getType() === 'LineString') {
-            geometry.getArray().forEach((latLng) => {
+            geometry.getArray().forEach(latLng => {
                 bounds.extend(latLng);
             });
             return bounds.getCenter();
         }
 
         if (geometry.getType() === 'MultiLineString') {
-            geometry.getArray().forEach((line) => {
-                line.getArray().forEach((latLng) => {
+            geometry.getArray().forEach(line => {
+                line.getArray().forEach(latLng => {
                     bounds.extend(latLng);
                 });
             });
             return bounds.getCenter();
         }
         if (geometry.getType() === 'Polygon') {
-            geometry.getArray().forEach((path) => {
-                path.getArray().forEach((latLng) => {
+            geometry.getArray().forEach(path => {
+                path.getArray().forEach(latLng => {
                     bounds.extend(latLng);
                 });
             });
             return bounds.getCenter();
         }
         if (geometry.getType() === 'MultiPolygon') {
-            geometry.getArray().forEach((polygon) => {
-                polygon.getArray().forEach((path) => {
-                    path.getArray().forEach((latLng) => {
+            geometry.getArray().forEach(polygon => {
+                polygon.getArray().forEach(path => {
+                    path.getArray().forEach(latLng => {
                         bounds.extend(latLng);
                     });
                 });
@@ -495,8 +516,6 @@ async function initMap() {
 
     // Create markers based on centroids
     const markers = centroidsAndFeatures.map(({ centroid, feature }) => {
-        console.log('centroid', centroid);
-        console.log('feature', feature);
         const marker = new AdvancedMarkerElement({
             position: centroid,
             content: pinSvg.cloneNode(true),
@@ -549,14 +568,20 @@ function highlightFeature(feature) {
 function zoomAndHighlightFeature(feature) {
     zoomToFeature(feature);
     highlightFeature(feature);
+
+    // get the area object related to the feature
+    if (feature.getProperty('uuid'))
+        showAreaInfo(feature.getProperty('uuid'));
+    else
+        showAreaInfo(null);
 }
 
-const countriesString = computed(() => {
-    if (!countries.value || !project.value.project.countries) return '';
-    const countryNames = (project.value.project.countries || []).map((iso2: string) => {
-        return countries.value.find(c => c.iso2 === iso2)
+const countriesObj = computed(() => {
+    if (!countries.value || !project?.value?.project?.countries) return '';
+    const projectCountries = (project?.value?.project?.countries || []).map((iso2: string) => {
+        return countries.value!.find(c => c.iso2 === iso2)
     });
-    return countryNames.map(c => c.label).join(', ');
+    return projectCountries.map(c => ({ name: c?.label, iso2: c?.iso2 })).sort((a, b) => a.name.localeCompare(b.name));
 });
 
 
@@ -664,17 +689,42 @@ function formatNumber(n: number) {
                     v-if="project"
                     class="space-y-4"
                 >
-                    <div class="text-gray-800">
+                    <div class="text-gray-800 text-sm">
                         <div>
                             <h1 class="text-2xl">{{ project.project.title }}</h1>
                         </div>
-                        <div class="mt-1 text-base">
-                            <p>{{ countriesString }}</p>
+                        <div class="mt-1 flex flex-wrap gap-x-3 gap-y-2">
+                            <div
+                                v-for="c in countriesObj"
+                                :key="c.iso2"
+                                class="flex items-center"
+                            >
+                                <img
+                                    :src="`/flags/iso2/${c.iso2.toLowerCase()}.svg`"
+                                    :alt="`${c.name} flag`"
+                                    class="h-6 w-6 flex-shrink-0 rounded-full"
+                                />
+                                <span class="ml-2">{{ c.name }}</span>
+                            </div>
+
+
                         </div>
                     </div>
 
+                    <div
+                        v-if="thumbnail"
+                        class="shadow rounded-lg overflow-hidden aspect-[162/100] border border-gray-200"
+                    >
+                        <img
+                            v-if="project.project.thumbnailUrl"
+                            :src="thumbnail"
+                            alt="Project thumbnail"
+                            class="object-cover aspect-[162/100]"
+                        />
+                    </div>
+
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-8 font-roboto text-black">
-                        <div class="flex flex-col rounded-md p-2 h-full bg-[#589C33]">
+                        <div class="flex flex-row lg:flex-col gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#589C33]">
                             <div class="flex-0">
                                 <svg
                                     class="h-10 w-10 text-gray-400 mix-blend-multiply"
@@ -686,17 +736,19 @@ function formatNumber(n: number) {
                                     <path d="M16 12L9 2L2 12H3.86L0 18H7V22H11V18H18L14.14 12H16M20.14 12H22L15 2L12.61 5.41L17.92 13H15.97L19.19 18H24L20.14 12M13 19H17V22H13V19Z" />
                                 </svg>
                             </div>
-                            <div class="flex-0 flex items-center">
-                                <div>
-                                    <span class="font-bold text-3xl mr-1">{{ project.project.targetArea ? formatNumber(project.project.targetArea) : 'n/a' }}</span>
-                                    <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
+                            <div class="flex flex-col flex-grow">
+                                <div class="flex-0 flex flex-grow">
+                                    <div>
+                                        <span class="font-bold text-3xl mr-1">{{ project.project.targetArea ? formatNumber(project.project.targetArea) : 'n/a' }}</span>
+                                        <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-end">
+                                    <div>Committed area</div>
                                 </div>
                             </div>
-                            <div class="flex-grow flex items-end">
-                                <div>Committed area</div>
-                            </div>
                         </div>
-                        <div class="flex flex-col rounded-md p-2 h-full bg-[#dd6b66]">
+                        <div class="flex flex-row lg:flex-col gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#dd6b66]">
                             <div class="flex-0">
                                 <svg
                                     class="h-10 w-10 text-gray-400 mix-blend-multiply"
@@ -708,17 +760,19 @@ function formatNumber(n: number) {
                                     <path d="M2,22V20C2,20 7,18 12,18C17,18 22,20 22,20V22H2M11.3,9.1C10.1,5.2 4,6.1 4,6.1C4,6.1 4.2,13.9 9.9,12.7C9.5,9.8 8,9 8,9C10.8,9 11,12.4 11,12.4V17C11.3,17 11.7,17 12,17C12.3,17 12.7,17 13,17V12.8C13,12.8 13,8.9 16,7.9C16,7.9 14,10.9 14,12.9C21,13.6 21,4 21,4C21,4 12.1,3 11.3,9.1Z" />
                                 </svg>
                             </div>
-                            <div class="flex-0 flex items-center">
-                                <div>
-                                    <span class="font-bold text-3xl mr-1">{{ project.project.areaUnderRestoration ? formatNumber(project.project.areaUnderRestoration) : 'n/a' }}</span>
-                                    <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
+                            <div class="flex flex-col flex-grow">
+                                <div class="flex-0 flex flex-grow">
+                                    <div>
+                                        <span class="font-bold text-3xl mr-1">{{ project.project.areaUnderRestoration ? formatNumber(project.project.areaUnderRestoration) : 'n/a' }}</span>
+                                        <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-end">
+                                    <div>Area under restoration</div>
                                 </div>
                             </div>
-                            <div class="flex-grow flex items-end">
-                                <div>Area under restoration</div>
-                            </div>
                         </div>
-                        <div class="flex flex-col rounded-md p-2 h-full bg-[#69B2BA]">
+                        <div class="flex flex-row lg:flex-col gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#69B2BA]">
                             <div class="flex-0">
                                 <svg
                                     class="h-10 w-10 text-gray-400 mix-blend-multiply"
@@ -730,14 +784,18 @@ function formatNumber(n: number) {
                                     <path d="M14,16V21H10V18H9A3,3 0 0,1 6,15V12A1,1 0 0,1 7,11A1,1 0 0,1 8,12V15C8,15.56 8.45,16 9,16H10V6A2,2 0 0,1 12,4A2,2 0 0,1 14,6V14H15A1,1 0 0,0 16,13V11A1,1 0 0,1 17,10A1,1 0 0,1 18,11V13A3,3 0 0,1 15,16H14Z" />
                                 </svg>
                             </div>
-                            <div class="flex-0 flex items-center">
-                                <div class="">
-                                    <span class="font-bold text-3xl mr-1">{{ project.project.targetArea && project.project.areaUnderRestoration ? formatNumber(project.project.targetArea - project.project.areaUnderRestoration) : 'n/a' }}</span>
-                                    <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
+
+
+                            <div class="flex flex-col flex-grow">
+                                <div class="flex-0 flex flex-grow">
+                                    <div>
+                                        <span class="font-bold text-3xl mr-1">{{ project.project.targetArea && project.project.areaUnderRestoration ? formatNumber(project.project.targetArea - project.project.areaUnderRestoration) : 'n/a' }}</span>
+                                        <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="flex-grow flex items-end">
-                                <div>Area not achieved</div>
+                                <div class="flex items-end">
+                                    <div>Area not achieved</div>
+                                </div>
                             </div>
                         </div>
                     </div>

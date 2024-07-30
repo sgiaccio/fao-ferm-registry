@@ -574,7 +574,7 @@ exports.beforeSignIn = functions.auth.user().beforeSignIn((user, context) => {
     }
 
     util.usersCollection.doc(user.uid).update({
-        lastSignInTime:Firestore.FieldValue.serverTimestamp(),
+        lastSignInTime: Firestore.FieldValue.serverTimestamp(),
     });
 });
 
@@ -989,6 +989,37 @@ exports.getPublicProject = functions.https.onCall(async ({ projectId }, _context
     return publicProject;
 });
 
+const cors = require('cors')({ origin: true });
+
+exports.getPublicProjectThumbnail = functions.region('europe-west3').https.onRequest(async (req, res) => {
+    cors(req, res, async () => {
+        const projectId = req.query.projectId;
+
+        if (!projectId) {
+            return res.status(400).send('Missing projectId');
+        }
+
+        const version = await util.getLastProjectVersion(projectId);
+        if (!version) {
+            return res.status(404).send('Project not found');
+        }
+
+        const bucketName = 'fao-ferm-project-versions';
+        const coverPhotoUrl = `${projectId}/${version}/project/images/cover_photo/cover.png`;
+
+        try {
+            const thumbnail = await admin.storage().bucket(bucketName).file(coverPhotoUrl).download();
+
+            res.setHeader('Content-Type', 'image/png');
+            return res.status(200).send(thumbnail[0]);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+            return res.status(500).send('Internal Server Error');
+        }
+    });
+});
+
+
 /************************************************
  *
  * PROJECT PUBLISHING WORKFLOW
@@ -997,7 +1028,7 @@ exports.getPublicProject = functions.https.onCall(async ({ projectId }, _context
 
 const projectPublishWorkflow = require("./projectPublishWorkflow");
 exports.submitProject = projectPublishWorkflow.submitProject;
-exports.publishAndVersionProject = projectPublishWorkflow.publishAndVersionProject; 
+exports.publishAndVersionProject = projectPublishWorkflow.publishAndVersionProject;
 exports.rejectProject = projectPublishWorkflow.rejectProject;
 exports.resetPublicProjects = projectPublishWorkflow.resetPublicProjectsHttp;
 

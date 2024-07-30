@@ -27,7 +27,6 @@ const sorted = getSortedIndicatorsAndMonitoring(goalIndicators);
 </script>
 
 <template>
-    {{ customIndicators }}
     <ResultPanel title="Indicators">
         <div
             v-if="goalIndicators.length === 0 && customIndicators.length === 0"

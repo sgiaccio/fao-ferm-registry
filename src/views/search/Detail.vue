@@ -121,7 +121,7 @@ if (props.source === 'FERM') {
                         <Tooltip>
                             <img
                                 class="w-6 h-6"
-                                :src="`/flags-iso3/${iso3}.svg`"
+                                :src="`/flags/iso3/${iso3}.svg`"
                                 alt="flag"
                             />
                             <template #description>

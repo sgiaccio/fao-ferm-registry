@@ -183,3 +183,20 @@ export async function getPublicProject(projectId: string) {
     const result = await getPublicProject({ projectId });
     return result.data;
 }
+
+export async function getPublicProjectThumbnail(projectId: string) {
+    if (!projectId) {
+        throw new Error("Missing projectId");
+    }
+
+    // const response = await fetch(`https://<your-region>-<your-project-id>.cloudfunctions.net/getPublicProjectThumbnail?projectId=${projectId}`);
+
+    const response = await fetch(`https://europe-west3-fao-ferm.cloudfunctions.net/getPublicProjectThumbnail?projectId=${projectId}`);
+
+    if (!response.ok) {
+        throw new Error(`Error fetching thumbnail: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+    return blob;
+}

@@ -9,6 +9,7 @@ const db = admin.firestore();
 const usersCollection = db.collection("users");
 const groupsCollection = db.collection("groups");
 const registryCollection = db.collection("registry");
+const publicProjectsCollection = db.collection("publicProjects");
 // const bestPracticesCollection = db.collection("bestPractices");
 const assignmentRequestsCollection = db.collection("assignementRequests"); // Typo in the name
 const newGroupRequestsCollection = db.collection("newGroupRequests");
@@ -228,7 +229,16 @@ async function isProjectPublic(projectId) {
 //         throw new Error("Error creating new user");
 //     }
 // };
-  
+
+async function getLastProjectVersion(projectId) {
+    const publicProjectDoc = publicProjectsCollection.doc(projectId);
+    const doc = await publicProjectDoc.get();
+    if (!doc.exists) {
+        return null;
+    }
+    return doc.data().publishedVersion;
+}
+
 exports = module.exports = {
     db,
     usersCollection,
@@ -264,5 +274,6 @@ exports = module.exports = {
     checkValidGroups,
     checkValidLevels,
 
-    isProjectPublic
+    isProjectPublic,
+    getLastProjectVersion
 };

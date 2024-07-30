@@ -83,7 +83,7 @@ function updateModelValue(value: string[]) {
                         <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
                             <div class="flex items-center">
                                 <img
-                                    :src="`/flags-iso3/${country.ISO3}.svg`"
+                                    :src="`/flags/iso3/${country.ISO3}.svg`"
                                     :alt="`${country.name} flag`"
                                     class="h-6 w-6 flex-shrink-0 rounded-full"
                                 />
@@ -122,7 +122,7 @@ function updateModelValue(value: string[]) {
         >
             <div class="flex items-center max-w-full">
                 <img
-                    :src="`/flags-iso3/${country.ISO3}.svg`"
+                    :src="`/flags/iso3/${country.ISO3}.svg`"
                     :alt="`${country.name} flag`"
                     class="h-4 w-4 flex-shrink-0 rounded-full"
                 />
