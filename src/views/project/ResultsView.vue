@@ -19,7 +19,7 @@ import { roundToPrecisionAsString } from '@/lib/util';
 
 // import SnailChart from '@/components/charts/SnailChart.vue';
 
-import { getProjectAreas } from '@/firebase/functions';
+import { getProjectAreas, getProjectAdminAreas } from '@/firebase/functions';
 
 
 withDefaults(defineProps<{
@@ -356,37 +356,18 @@ async function initMap() {
     });
 
     //load the json data
-    const area = await getProjectAreas(store.id!);
+    const geojson = await getProjectAreas(store.id!);
+    const adminGeojson = await getProjectAdminAreas(store.id!);
     // if area is not a valid GeoJSON object, return
-    if (!area) {
+    if (!geojson && !adminGeojson) {
         return;
     }
 
-    const geojson = {
-        type: "FeatureCollection",
-        features: [{
-            type: "Feature",
-            properties: {},
-            geometry: area
-        }]
-    }
-
-    // let geojson;
-    // // area is a GeometryCollection, wrap in a FeatureCollection
-    // if (area.type === 'GeometryCollection') {
-    //     geojson = {
-    //         type: 'FeatureCollection',
-    //         features: area.geometries.map((geometry: any) => ({
-    //             type: 'Feature',
-    //             properties: {},
-    //             geometry
-    //         })),
-    //     };
-    // }
-
-
-    map.data.addGeoJson(geojson);
-
+    if (geojson)
+        map.data.addGeoJson(geojson);
+    if (adminGeojson)
+        map.data.addGeoJson(adminGeojson);
+    
     map.data.setStyle({
         fillColor: '#ff0000',
         fillOpacity: 0,

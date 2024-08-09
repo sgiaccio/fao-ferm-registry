@@ -1,4 +1,4 @@
-import type { RecursiveMenu } from '@/components/project/menus';
+import type { Menu, RecursiveMenuItem, RecursiveMenu } from '@/components/project/menus';
 import { sortedGoalIndicators } from './auroraIndicators';
 
 
@@ -189,3 +189,68 @@ export function debounce(func: Function, wait: number) {
         }, wait);
     };
 };
+
+export function getRecursiveMenuItem(menu: RecursiveMenu, value: string): RecursiveMenuItem | null {
+    for (const item of menu) {
+        if (item.value === value) {
+            return item;
+        }
+        if ('items' in item) {
+            const found = getRecursiveMenuItem(item.items!, value);
+            if (found) {
+                return found;
+            }
+        }
+    }
+    return null;
+}
+
+export function flattenMenu(menu: RecursiveMenu): Menu {
+    const result: Menu = [];
+    for (const item of menu) {
+        if (item.value) {
+            result.push(item);
+        }
+        if (item.items) {
+            result.push(...flattenMenu(item.items));
+        }
+    }
+    return result;
+}
+
+export function getAllSelectedItemsInAreas(areas: any, key: string, menu: RecursiveMenu) {
+    if (areas.length === 0) return [];
+    const items = areas.reduce((acc: any, area: any) => {
+        const areaObjValue: any = Object.values(area)[0];
+        const areaItems = areaObjValue[key];
+        return areaItems ? [...acc, ...areaItems] : acc;
+    }, []);
+    // remove duplicates
+    const uniqueItems = [...new Set(items)];
+    return uniqueItems.map(i => getRecursiveMenuItem(menu, i)).map(i => i.value)
+}
+
+export function groupBiomesByRealm(biomes: any, realms: any) {
+    if (biomes?.length) {
+        const biomesByRealm = biomes.reduce((acc: any, curr: string) => {
+            // Realm is the first characters before the first digit
+            const realm = curr.substring(0, curr.search(/\d/));
+            if (!acc[realm]) {
+                acc[realm] = [];
+            }
+            acc[realm].push(curr);
+            return acc;
+        }, {});
+
+        const biomesByRealmArr = Object.entries(biomesByRealm).map(([realm, biomes]) => ({ realm, biomes }));
+
+        // Sort according to the order in the realms array
+        const sortedBiomesByRealmArr = biomesByRealmArr.sort((a, b) => {
+            return realms.findIndex(r => r.value === a.realm) > realms.findIndex(r => r.value === b.realm) ? 1 : -1;
+        });
+
+        return sortedBiomesByRealmArr;
+    } else {
+        return [];
+    }
+}

@@ -735,14 +735,8 @@ exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context)
         const areasWithUuids = data.areas
             .filter(a => Object.values(a)[0].uuid && isValidUuid(Object.values(a)[0].uuid))
             .filter(a => uuids.includes(Object.values(a)[0].uuid));
-        const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
-        const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
 
-        // delete the areasUuids and areaNames that are not in the uuids array
-        const filteredAreaUuids = areaUuids.filter(uuid => uuids.includes(uuid));
-        const filteredAreaNames = areaNames.filter((_, i) => uuids.includes(areaUuids[i]));
-
-        if (!areaUuids.length) {
+        if (!areasWithUuids.length) {
             // return an empty GeoJSON object
             return {
                 type: 'FeatureCollection',
@@ -750,8 +744,15 @@ exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context)
             };
         }
 
+        // const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
+        // const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
+
+        // delete the areasUuids and areaNames that are not in the uuids array
+        // const filteredAreaUuids = areaUuids.filter(uuid => uuids.includes(uuid));
+        // const filteredAreaNames = areaNames.filter((_, i) => uuids.includes(areaUuids[i]));
+
         // now perform the database query
-        const geoJson = await getAggregatedPolygons(projectId, filteredAreaUuids, filteredAreaNames);
+        const geoJson = await getAggregatedPolygons(projectId, areasWithUuids);
 
         // if the size of the geoJson as a string is greater than 2kb, save it into a bucket and return the url, otherwise return the geoJson directly
         const geoJsonString = JSON.stringify(geoJson);
@@ -802,7 +803,7 @@ exports.getSavedProjectAdminAreasGeoJson = functions.https.onCall(async (data, c
         } else if (areaData.admin1) {
             query = 'SELECT ST_AsGeoJSON(geom) as geojson, adm1_name as name FROM g2015_2014_1 WHERE adm1_code = $1';
         } else if (areaData.admin0) {
-            query = 'SELECT ST_AsGeoJSON(geom) as geojson, adm0_name as name FROM gaul_0 WHERE adm0_code = $1';
+            query = 'SELECT ST_AsGeoJSON(geom_simple) as geojson, adm0_name as name FROM gaul_0 WHERE adm0_code = $1';
         } else {
             return Promise.resolve({
                 type: 'FeatureCollection',
@@ -812,7 +813,9 @@ exports.getSavedProjectAdminAreasGeoJson = functions.https.onCall(async (data, c
         return client.query(query, [areaData.admin2 || areaData.admin1 || areaData.admin0]).then(
             res => ({
                 geometry: JSON.parse(res.rows[0].geojson),
-                areaName: res.rows[0].name
+                areaName: res.rows[0].name,
+                // attach the area object to the result
+                areaObject: areaData
             })
         );
     });
@@ -825,7 +828,8 @@ exports.getSavedProjectAdminAreasGeoJson = functions.https.onCall(async (data, c
             type: 'Feature',
             geometry: r.geometry,
             properties: {
-                name: areasWithoutUuids[i].siteName || r.areaName
+                name: areasWithoutUuids[i].siteName || r.areaName,
+                areaObject: r.areaObject
             }
         }))
     };
@@ -873,8 +877,8 @@ exports.getSavedProjectAreasGeoJson = functions.https.onCall(async (data, contex
         };
     }
 
-    const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
-    const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
+    // const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
+    // const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
 
     // now perform the database query
     let geoJson;
@@ -885,10 +889,10 @@ exports.getSavedProjectAreasGeoJson = functions.https.onCall(async (data, contex
         }
         const publicProjectData = publicProject.data();
         const version = publicProjectData.publishedVersion;
-        geoJson = await getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, version);
+        geoJson = await getVersionedAggregatedPolygons(projectId, areasWithUuids, version);
     }
     else {
-        geoJson = await getAggregatedPolygons(projectId, areaUuids, areaNames);
+        geoJson = await getAggregatedPolygons(projectId, areasWithUuids);
     }
     return geoJson;
 });
@@ -930,7 +934,7 @@ async function authorize(context, data) {
 }
 
 
-async function getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, version) {
+async function getVersionedAggregatedPolygons(projectId, areas, version) {
     const client = await getDatabaseClient({
         user: dbUser.value(),
         host: dbHost.value(),
@@ -939,7 +943,13 @@ async function getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, v
     });
 
     try {
-        const areaValues = areaUuids.map((_uuid, i) => `($${i + 3}::uuid, $${i + 3 + areaUuids.length}::text)`).join(", ");
+        const areaUuids = areas.map(a => Object.values(a)[0].uuid);
+        const areaNames = areas.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
+        const areaJsons = areas.map(a => JSON.stringify(Object.values(a)[0]));
+
+        // const areaValues = areaUuids.map((_uuid, i) => `($${i + 3}::uuid, $${i + 3 + areaUuids.length}::text)`).join(", ");
+        const areaValues = areaUuids.map((_uuid, i) =>
+            `($${i + 3}::uuid, $${i + 3 + areaUuids.length}::text, $${i + 3 + areaUuids.length * 2}::jsonb)`).join(", ");
 
         const query = `
         WITH area_names AS (
@@ -948,7 +958,7 @@ async function getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, v
             FROM
                 (
                     VALUES ${areaValues}
-                ) AS t (area_uuid, name)
+                ) AS t (area_uuid, name, areaJson)
         ),
         pa AS (
             SELECT
@@ -966,14 +976,15 @@ async function getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, v
                 -- looks ugly but it works, at least with the use cases we tested
                 ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson,
                 pa.area_uuid,
-                an.name AS name
+                an.name AS name,
+                an.areaJson AS areaJson
             FROM
                 project_areas pa
                 JOIN area_names an ON pa.area_uuid = an.area_uuid::uuid
             WHERE
                 project_id = $2
-                AND pa.area_uuid = ANY($${areaUuids.length * 2 + 3})
-            GROUP BY pa.area_uuid, an.name
+                AND pa.area_uuid = ANY($${areaUuids.length * 3 + 3})
+            GROUP BY pa.area_uuid, an.name, an.areaJson
         )
         SELECT
             json_build_object(
@@ -995,7 +1006,9 @@ async function getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, v
                             'uuid',
                             area_uuid,
                             'name',
-                            name
+                            name,
+                            'areaObject',
+                            areaJson::json
                         )
                     )
                 )
@@ -1003,13 +1016,7 @@ async function getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, v
         FROM
             geoms;
         `;
-        const values = [version, projectId, ...areaUuids, ...areaNames, areaUuids];
-
-        console.log('query', query);
-        console.log('version', version);
-        console.log('projectId', projectId);
-        console.log('areaUuids', areaUuids);
-        console.log('areaNames', areaNames);
+        const values = [version, projectId, ...areaUuids, ...areaNames, ...areaJsons, areaUuids];
 
         const result = await client.query(query, values);
 
@@ -1025,7 +1032,7 @@ async function getVersionedAggregatedPolygons(projectId, areaUuids, areaNames, v
     }
 }
 
-async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
+async function getAggregatedPolygons(projectId, areas) {
     const client = await getDatabaseClient({
         user: dbUser.value(),
         host: dbHost.value(),
@@ -1034,7 +1041,16 @@ async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
     });
 
     try {
-        const areaValues = areaUuids.map((_uuid, i) => `($${i + 2}::uuid, $${i + 2 + areaUuids.length}::text)`).join(", ");
+        const areaUuids = areas.map(a => Object.values(a)[0].uuid);
+        const areaNames = areas.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
+
+        const areaJsons = areas.map(a => JSON.stringify(Object.values(a)[0]));
+
+        // const areaValues = areaUuids.map((_uuid, i) =>
+        //     `($${i + 2}::uuid, $${i + 2 + areaUuids.length}::text)`).join(", ");
+
+        const areaValues = areaUuids.map((_uuid, i) =>
+            `($${i + 2}::uuid, $${i + 2 + areaUuids.length}::text, $${i + 2 + areaUuids.length * 2}::jsonb)`).join(", ");
 
         const query = `
         WITH area_names AS (
@@ -1043,7 +1059,7 @@ async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
             FROM
                 (
                     VALUES ${areaValues}
-                ) AS t (area_uuid, name)
+                ) AS t (area_uuid, name, json)
         ),
         geoms AS (
             SELECT
@@ -1053,14 +1069,15 @@ async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
                 -- looks ugly but it works, at least with the use cases we tested
                 ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson,
                 pa.area_uuid,
-                an.name AS name
+                an.name AS name,
+                an.json AS json
             FROM
                 project_areas pa
                 JOIN area_names an ON pa.area_uuid = an.area_uuid::uuid
             WHERE
                 project_id = $1
-                AND pa.area_uuid = ANY($${areaUuids.length * 2 + 2})
-            GROUP BY pa.area_uuid, an.name
+                AND pa.area_uuid = ANY($${areaUuids.length * 3 + 2})
+            GROUP BY pa.area_uuid, an.name, an.json
         )
         SELECT
             json_build_object(
@@ -1082,7 +1099,9 @@ async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
                             'uuid',
                             area_uuid,
                             'name',
-                            name
+                            name,
+                            'areaObject',
+                            json
                         )
                     )
                 )
@@ -1090,7 +1109,7 @@ async function getAggregatedPolygons(projectId, areaUuids, areaNames) {
         FROM
             geoms;
         `;
-        const values = [projectId, ...areaUuids, ...areaNames, areaUuids];
+        const values = [projectId, ...areaUuids, ...areaNames, ...areaJsons, areaUuids];
         const result = await client.query(query, values);
 
         if (!result?.rows?.length) {

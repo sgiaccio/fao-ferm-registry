@@ -36,31 +36,31 @@ export const useMenusStore = defineStore({
             // });
             this.loaded = true;
         },
-        getRecursiveMenuItem(menu: RecursiveMenu, value: string): RecursiveMenuItem | null {
-            for (const item of menu) {
-                if (item.value === value) {
-                    return item;
-                }
-                if ('items' in item) {
-                    const found = this.getRecursiveMenuItem(item.items!, value);
-                    if (found) {
-                        return found;
-                    }
-                }
-            }
-            return null;
-        },
-        flattenMenu(menu: RecursiveMenu): Menu {
-            const result: Menu = [];
-            for (const item of menu) {
-                if (item.value) {
-                    result.push(item);
-                }
-                if (item.items) {
-                    result.push(...this.flattenMenu(item.items));
-                }
-            }
-            return result;
-        }
+        // getRecursiveMenuItem(menu: RecursiveMenu, value: string): RecursiveMenuItem | null {
+        //     for (const item of menu) {
+        //         if (item.value === value) {
+        //             return item;
+        //         }
+        //         if ('items' in item) {
+        //             const found = this.getRecursiveMenuItem(item.items!, value);
+        //             if (found) {
+        //                 return found;
+        //             }
+        //         }
+        //     }
+        //     return null;
+        // },
+        // flattenMenu(menu: RecursiveMenu): Menu {
+        //     const result: Menu = [];
+        //     for (const item of menu) {
+        //         if (item.value) {
+        //             result.push(item);
+        //         }
+        //         if (item.items) {
+        //             result.push(...this.flattenMenu(item.items));
+        //         }
+        //     }
+        //     return result;
+        // }
     }
 });

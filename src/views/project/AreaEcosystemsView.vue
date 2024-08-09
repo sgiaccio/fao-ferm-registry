@@ -11,7 +11,7 @@ import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 
 import { getPolygonZonalStats } from '@/firebase/functions';
 
-
+import { groupBiomesByRealm } from '@/lib/util';
 
 const props = withDefaults(defineProps<{
     edit?: boolean,
@@ -90,28 +90,7 @@ const realms = [
 
 const groupedBiomes = computed(() => {
     const areaBiomes = props.area.ecosystems;
-    if (areaBiomes && areaBiomes?.length) {
-        const areaBiomesByRealm = areaBiomes.reduce((acc: any, curr: string) => {
-            // Realm is the first characters before the first digit
-            const realm = curr.substring(0, curr.search(/\d/));
-            if (!acc[realm]) {
-                acc[realm] = [];
-            }
-            acc[realm].push(curr);
-            return acc;
-        }, {});
-
-        const areaBiomesByRealmArr = Object.entries(areaBiomesByRealm).map(([realm, biomes]) => ({ realm, biomes }));
-
-        // Sort according to the order in the realms array
-        const sortedAreaBiomesByRealmArr = areaBiomesByRealmArr.sort((a, b) => {
-            return realms.findIndex(r => r.value === a.realm) > realms.findIndex(r => r.value === b.realm) ? 1 : -1;
-        });
-
-        return sortedAreaBiomesByRealmArr;
-    } else {
-        return [];
-    }
+    return groupBiomesByRealm(areaBiomes, realms);
 });
 
 async function getAreaBiomeStats() {

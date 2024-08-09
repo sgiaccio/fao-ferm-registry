@@ -5,7 +5,7 @@ export type MenuValue = string | number
 export type Menu = RecursiveMenu;
 export type MenuItem = RecursiveMenuItem;
 
-interface RecursiveMenuItem {
+export interface RecursiveMenuItem {
     label?: string
     value?: MenuValue
     items?: RecursiveMenu

@@ -53,7 +53,7 @@ function changeSrc(index: number, isHover: boolean) {
 </script>
 
 <template>
-    <ResultPanel title="Contributions to SDGs">
+    <ResultPanel title="Contributions to SDGs" titleLink="https://www.un.org/sustainabledevelopment/">
         <div
             v-if="sdgs?.length > 0"
             class="grid grid-cols-4 gap-4"

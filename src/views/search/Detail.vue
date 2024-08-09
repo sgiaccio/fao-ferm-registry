@@ -33,10 +33,10 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
     day: 'numeric',
 });
 
-// transform the URL if the source is 'FERM'
+// transform the URL if the source is 'FERM' and it's a project, not a best practice
 const source = props.source.toLowerCase();
 let _url = props.url;
-if (props.source === 'FERM') {
+if (props.source === 'FERM' && props.url.includes('/initiatives/')) {
     const projectId = props.url.split('/').pop();
     _url = `/search/initiatives/${projectId}`;
 }
@@ -64,8 +64,6 @@ if (props.source === 'FERM') {
         </div> -->
         <div class="py-4 flex flex-col w-full mr-4 ml-4 sm:ml-0">
             <div class="flex-1 flex flex-col">
-
-
                 <div class="flex-1">
                     <h3 class="text-md font-medium line-clamp-2">{{ title }}</h3>
                     <p

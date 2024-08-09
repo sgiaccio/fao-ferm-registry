@@ -2,6 +2,7 @@
 defineProps<{
     title?: string,
     description?: string
+    titleLink?: string
 }>();
 </script>
 
@@ -14,8 +15,18 @@ defineProps<{
             >
                 <h3
                     v-if="title"
-                    class="text-base font-semibold leading-7 text-gray-900"
-                >{{ title }}</h3>
+                    class="text-base font-bold leading-7 text-gray-900"
+                >
+                    <a
+                        v-if="titleLink"
+                        :href="titleLink"
+                        target="_blank"
+                        class="text-blue-800 hover:underline"
+                    >
+                        {{ title }}
+                    </a>
+                    <template v-else>{{ title }}</template>
+                </h3>
                 <p
                     v-if="description"
                     class="mt-1 max-w-2xl text-sm leading-6 text-gray-500"

@@ -27,7 +27,10 @@ const sorted = getSortedIndicatorsAndMonitoring(goalIndicators);
 </script>
 
 <template>
-    <ResultPanel title="Indicators">
+    <ResultPanel
+        title="Aurora Indicators"
+        titleLink="https://auroramonitoring.org"
+    >
         <div
             v-if="goalIndicators.length === 0 && customIndicators.length === 0"
             class="italic text-gray-500"
