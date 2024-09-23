@@ -200,3 +200,10 @@ export async function getPublicProjectThumbnail(projectId: string) {
     const blob = await response.blob();
     return blob;
 }
+
+export async function gefQc() {
+    const functions = getFunctions();
+    const qcGef = httpsCallable(functions, 'qcGef');
+    const result = await qcGef();
+    return result.data;
+}

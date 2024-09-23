@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth';
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router';
 
 import Navbar from '@/views/Navbar.vue';
 
@@ -14,7 +14,8 @@ const tabs = [
     { name: 'Institution assignments requests', routeName: 'groupAssignments', current: false, superAdminOnly: false },
     { name: 'New institution requests', routeName: 'newGroups', current: false, superAdminOnly: true },
     // { name: 'Application state', routeName: 'appState', current: false, superAdminOnly: true },
-]
+    { name: 'Quality Control (β)', routeName: 'qc', current: false, supeAdminOnly: true }
+];
 
 const store = useAuthStore();
 
@@ -36,26 +37,36 @@ if (store.user) {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-3xl_ mx-auto mt-6">
                 <div class="sm:hidden">
-                    <label for="tabs"
-                           class="sr-only">Select a tab</label>
+                    <label
+                        for="tabs"
+                        class="sr-only"
+                    >Select a tab</label>
                     <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-                    <select id="tabs"
-                            name="tabs"
-                            class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                        <option v-for="tab in tabs"
-                                :key="tab.name"
-                                :selected="tab.current">{{ tab.name }}</option>
+                    <select
+                        id="tabs"
+                        name="tabs"
+                        class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    >
+                        <option
+                            v-for="tab in tabs"
+                            :key="tab.name"
+                            :selected="tab.current"
+                        >{{ tab.name }}</option>
                     </select>
                 </div>
                 <div class="hidden sm:block">
                     <div class="border-b border-gray-200">
-                        <nav class="-mb-px flex"
-                             aria-label="Tabs">
-                            <router-link v-for="tab in filteredTabs"
-                                         :key="tab.name"
-                                         :to="{ name: tab.routeName }"
-                                         :class="[route.name === tab.routeName ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'w-1/4 border-b-2 py-4 px-1 text-center text-sm font-medium']"
-                                         :aria-current="route.name === tab.routeName ? 'page' : undefined">{{ tab.name }}</router-link>
+                        <nav
+                            class="-mb-px flex"
+                            aria-label="Tabs"
+                        >
+                            <router-link
+                                v-for="tab in filteredTabs"
+                                :key="tab.name"
+                                :to="{ name: tab.routeName }"
+                                :class="[route.name === tab.routeName ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'w-1/4 border-b-2 py-4 px-1 text-center text-sm font-medium']"
+                                :aria-current="route.name === tab.routeName ? 'page' : undefined"
+                            >{{ tab.name }}</router-link>
                         </nav>
                     </div>
                 </div>

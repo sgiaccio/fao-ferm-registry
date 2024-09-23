@@ -31,7 +31,7 @@ withDefaults(defineProps<{
     >
         <div :class="[title? 'border-t border-l border-r rounded-tl-md rounded-tr-md' : 'border-r border-gray-200', 'flex-1 flex items-center bg-white']">
             <img
-                class="w-2/3 self-center mx-auto"
+                class="w-2/3 self-center mx-auto max-h-24"
                 :src="`/interop_logos/${source.toLowerCase()}.svg`"
                 :alt="source"
             />

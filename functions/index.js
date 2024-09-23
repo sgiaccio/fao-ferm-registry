@@ -1118,3 +1118,12 @@ exports.updatePublicProject = projectPublishWorkflow.updatePublicProject;
 
 const storage = require("./storage");
 exports.makeCoverPhoto = storage.makeCoverPhoto;
+
+
+/************************************************
+ * 
+ * QUALITY CONTROL
+ * 
+ * **********************************************/
+const qc = require("./qc");
+exports.qcGef = qc.qcGef;

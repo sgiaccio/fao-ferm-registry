@@ -74,7 +74,7 @@ const queryInitiatives = [
     }, {
         name: 'Source',
         queryName: 'source',
-        queryValues: ['FERM', 'Nature Commitments']
+        queryValues: ['FERM', 'GEF', 'Nature Commitments']
     }, {
         name: 'Restoration Type',
         queryName: 'restoration_types',

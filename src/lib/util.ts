@@ -254,3 +254,20 @@ export function groupBiomesByRealm(biomes: any, realms: any) {
         return [];
     }
 }
+
+export function getLastTargetArea(project: any) {
+    return project.project?.targetAreaDesignPhase || project.project?.targetAreaReviewPhase || project.project?.targetAreaEvaluationPhase;
+}
+
+export function getPolygonsArea(areasObj: any) {
+    const getValue = (area: any) => Object.values(area)[0];
+    try {
+        const areas = areasObj
+            // .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
+            .map((a: any) => +((getValue(a) as { area: number }).area || 0));
+        return areas.reduce((a: number, b: number) => a + b, 0);
+    } catch (e) {
+        console.error('Error calculating polygons area', e);
+        return NaN;
+    }
+}

@@ -154,7 +154,6 @@ async function initMap() {
         centroidsAndFeatures.push({ centroid, feature });
     });
 
-    console.log(centroidsAndFeatures);
     // if any set of centroids match exactly, offset them slightly
     centroidsAndFeatures.forEach((cf, i) => {
         const { centroid, feature } = cf;

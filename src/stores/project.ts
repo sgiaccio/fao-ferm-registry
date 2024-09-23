@@ -20,7 +20,7 @@ import { defineStore } from 'pinia';
 
 import { db } from '../firebase';
 
-import { setsContainSameValues, snakeToCamel } from '../lib/util'
+import { setsContainSameValues, snakeToCamel, getPolygonsArea as getPolygonsAreaUtil } from '../lib/util'
 
 import { useAuthStore } from './auth';
 import { GoalIndicator, rawGoalIndicators as _rawGoalIndicators } from '@/lib/auroraIndicators';
@@ -352,16 +352,17 @@ export const useProjectStore = defineStore('', () => {
         resetProjectState();
     }
     function polygonsArea() {
-        const getValue = (area: any) => Object.values(area)[0];
-        try {
-            const areas = projectAreas.value
-                // .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
-                .map((a: any) => +((getValue(a) as { area: number }).area || 0));
-            return areas.reduce((a: number, b: number) => a + b, 0);
-        } catch (e) {
-            console.error('Error calculating polygons area', e);
-            return NaN;
-        }
+        return getPolygonsAreaUtil(projectAreas.value);
+        // const getValue = (area: any) => Object.values(area)[0];
+        // try {
+        //     const areas = projectAreas.value
+        //         // .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
+        //         .map((a: any) => +((getValue(a) as { area: number }).area || 0));
+        //     return areas.reduce((a: number, b: number) => a + b, 0);
+        // } catch (e) {
+        //     console.error('Error calculating polygons area', e);
+        //     return NaN;
+        // }
     }
 
     async function deleteProject(projectId: string) {

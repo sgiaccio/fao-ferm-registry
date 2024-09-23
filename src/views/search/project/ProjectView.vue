@@ -33,7 +33,7 @@ import EcosystemsPanel from './EcosystemsPanel.vue';
 // import required modules
 // import { Navigation } from 'swiper/modules';
 
-import { getRecursiveMenuItem } from '@/lib/util';
+import { getRecursiveMenuItem, getLastTargetArea, getPolygonsArea } from '@/lib/util';
 
 
 withDefaults(defineProps<{
@@ -435,6 +435,24 @@ function areaClicked(area: any) {
 function deselectArea() {
     selectedArea.value = null;
 }
+
+
+
+const targetArea = computed(() => {
+    if (project.value.reportingLine === 'GEF') {
+        return getLastTargetArea(project.value);
+    } else {
+        return project.value.project.targetArea;
+    }
+});
+
+const areaUnderRestoration = computed(() => {
+    if (project.value.reportingLine === 'GEF') {
+        return getPolygonsArea(project.value.areas);
+    } else {
+        return project.value.project.areaUnderRestoration;
+    }
+});
 </script>
 
 <template>
@@ -574,7 +592,7 @@ function deselectArea() {
                                     <div class="flex flex-col flex-grow">
                                         <div class="flex-0 flex flex-grow">
                                             <div>
-                                                <span class="font-bold text-3xl mr-1">{{ project.project.targetArea ? formatNumber(project.project.targetArea) : 'n/a' }}</span>
+                                                <span class="font-bold text-3xl mr-1">{{ targetArea ? formatNumber(targetArea) : 'n/a' }}</span>
                                                 <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
                                             </div>
                                         </div>
@@ -598,7 +616,7 @@ function deselectArea() {
                                     <div class="flex flex-col flex-grow">
                                         <div class="flex-0 flex flex-grow">
                                             <div>
-                                                <span class="font-bold text-3xl mr-1">{{ project.project.areaUnderRestoration ? formatNumber(project.project.areaUnderRestoration) : 'n/a' }}</span>
+                                                <span class="font-bold text-3xl mr-1">{{ areaUnderRestoration ? formatNumber(areaUnderRestoration) : 'n/a' }}</span>
                                                 <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
                                             </div>
                                         </div>

@@ -173,6 +173,10 @@ const router = createRouter({
                     path: "appState",
                     name: "appState",
                     component: () => import('../views/admin/AppState.vue')
+                }, {
+                    path: "qc",
+                    name: "qc",
+                    component: () => import('../views/admin/Qc.vue')
                 }
             ]
         }, {

@@ -21,6 +21,7 @@ import { roundToPrecisionAsString } from '@/lib/util';
 
 import { getProjectAreas, getProjectAdminAreas } from '@/firebase/functions';
 
+import { getLastTargetArea } from '@/lib/util';
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -30,15 +31,6 @@ withDefaults(defineProps<{
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
-
-function getLastTargetArea() {
-    const registration = store.project.project;
-    const targetAreaDesignPhase = registration.targetAreaDesignPhase;
-    const targetAreaReviewPhase = registration.targetAreaReviewPhase;
-    const targetAreaEvaluationPhase = registration.targetAreaEvaluationPhase;
-
-    return targetAreaEvaluationPhase || targetAreaReviewPhase || targetAreaDesignPhase;
-}
 
 const areaByGefIndicator = store.areaByGefIndicator();
 // const areaForGefIndicator3 = areaByGefIndicator.reduce((total, [indicator, area]) => {
@@ -78,9 +70,9 @@ if (store.project.reportingLine === 'GEF') {
 // })
 
 const totalArea = chartData.reduce((total, { value }) => total + value, 0);
-if (totalArea < getLastTargetArea()) {
+if (totalArea < getLastTargetArea(store.project)) {
     chartData.push({
-        value: getLastTargetArea() - totalArea,
+        value: getLastTargetArea(store.project) - totalArea,
         name: 'Not achieved'
     });
 }
@@ -111,7 +103,7 @@ import {
 // Note that including the CanvasRenderer or SVGRenderer is a required step
 import { SVGRenderer } from 'echarts/renderers';
 
-import type { GeoJSONObject } from 'ol/format/GeoJSON';
+// import type { GeoJSONObject } from 'ol/format/GeoJSON';
 
 echarts.use([
     PieChart,
@@ -552,13 +544,13 @@ async function initMap() {
 
             <!-- GEF charts -->
             <div
-                v-else-if="chartData.length > 0 && getLastTargetArea()"
+                v-else-if="chartData.length > 0 && getLastTargetArea(store.project)"
                 class="flex flex-col gap-6 mt-6"
             >
 
                 <template v-if="store.project.project.areaAchievedMatch === 1">
                     <div
-                        v-if="chartData.length > 0 && getLastTargetArea()"
+                        v-if="chartData.length > 0 && getLastTargetArea(store.project)"
                         id="chart"
                         ref="chartDiv"
                         class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
@@ -575,7 +567,7 @@ async function initMap() {
                         :labels="chartLabels h-64 w-full"
                         :targetValue="getLastTargetArea()"
                     /> -->
-                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has {{ Math.trunc(store.polygonsArea() / getLastTargetArea() * 100) }}% of committed land under restoration.</p>
+                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has {{ Math.trunc(store.polygonsArea() / getLastTargetArea(store.project) * 100) }}% of committed land under restoration.</p>
                 </template>
                 <!-- <div
                     v-else
@@ -599,7 +591,7 @@ async function initMap() {
 
                     <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-green-light/20">
                         <div class="col-span-2">Target area in last project phase</div>
-                        <div class="col-span-1">{{ roundToPrecisionAsString(getLastTargetArea(), 2) }} Ha</div>
+                        <div class="col-span-1">{{ roundToPrecisionAsString(getLastTargetArea(store.project), 2) }} Ha</div>
                     </div>
                 </div>
 

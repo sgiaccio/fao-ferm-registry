@@ -27,12 +27,14 @@ import ImageUploadFormGroup from '@/components/inputs/base/ImageUploadFormGroup.
 import InfoButton from '@/components/InfoButton.vue';
 import TextInput from '@/components/inputs/base/TextInput.vue';
 
-
-withDefaults(defineProps<{
-    edit?: boolean
-}>(), {
-    edit: true
-});
+withDefaults(
+    defineProps<{
+        edit?: boolean;
+    }>(),
+    {
+        edit: true,
+    },
+);
 
 // import { h } from 'vue'
 
@@ -46,16 +48,16 @@ const organizations = {
     organization: {
         component: Organization,
         newData: {},
-        addItemLabel: 'Add organization'
-    }
+        addItemLabel: 'Add organization',
+    },
 };
 
 const pointsOfContact = {
     poc: {
         component: PointOfContact,
         newData: {},
-        addItemLabel: 'Add point of contact'
-    }
+        addItemLabel: 'Add point of contact',
+    },
 };
 
 const store = useProjectStore();
@@ -73,14 +75,18 @@ const fileName = vueRef<string | null>();
 
 async function getFiles(id: string) {
     const fList = await listFiles(id);
-    fileName.value = fList.items && fList.items.length && fList.items[0].name || null; // only one file can be uploaded
+    fileName.value =
+        (fList.items && fList.items.length && fList.items[0].name) || null; // only one file can be uploaded
 }
 
-watch(() => store.id as string, async id => {
-    if (id) {
-        getFiles(id);
-    }
-});
+watch(
+    () => store.id as string,
+    async (id) => {
+        if (id) {
+            getFiles(id);
+        }
+    },
+);
 
 const gefPrograms = vueRef<any>(null);
 
@@ -120,36 +126,49 @@ function setGefPrograms(gefCycle: number | null) {
     }
 }
 
-const gefInvestmentType = computed(() => store.project?.project?.gefInvestmentType);
+const gefInvestmentType = computed(
+    () => store.project?.project?.gefInvestmentType,
+);
 const gefCycle = computed(() => store.project?.project?.gefCycle);
 
 // Watch gefType
-watch(gefInvestmentType, (type, oldType) => {
-    if (oldType) {
-        handleDeletionByGefType(oldType);
-    }
-    // handleDeletionByGefType(type);
-    if (type === 'program') {
-        setGefPrograms(gefCycle.value);
-    } else {
-        setGefPrograms(null);
-    }
-}, { immediate: true });
+watch(
+    gefInvestmentType,
+    (type, oldType) => {
+        if (oldType) {
+            handleDeletionByGefType(oldType);
+        }
+        // handleDeletionByGefType(type);
+        if (type === 'program') {
+            setGefPrograms(gefCycle.value);
+        } else {
+            setGefPrograms(null);
+        }
+    },
+    { immediate: true },
+);
 
 // Watch gefCycle
-watch(gefCycle, (cycle, oldCycle) => {
-    if (!store.project) {
-        return;
-    }
-    if (oldCycle) {
-        delete store.project.project.gefProgram;
-    }
-    if (gefInvestmentType.value === 'program') {
-        setGefPrograms(cycle);
-    }
-}, { immediate: true });
+watch(
+    gefCycle,
+    (cycle, oldCycle) => {
+        if (!store.project) {
+            return;
+        }
+        if (oldCycle) {
+            delete store.project.project.gefProgram;
+        }
+        if (gefInvestmentType.value === 'program') {
+            setGefPrograms(cycle);
+        }
+    },
+    { immediate: true },
+);
 
-function generateYearOptions(start: number, end: number): { value: number; label: string }[] {
+function generateYearOptions(
+    start: number,
+    end: number,
+): { value: number; label: string }[] {
     const length = end - start + 1;
     return Array.from({ length }, (_, i) => {
         const year = start + i;
@@ -159,34 +178,57 @@ function generateYearOptions(start: number, end: number): { value: number; label
 
 const years = generateYearOptions(1950, 2050);
 
-const selectedItemInRestorationStatusInfo = vueRef<string>("1");
-watch(() => store.project?.project.restorationStatus, newValue => {
-    if (store.project) {
-        if (newValue) {
-            selectedItemInRestorationStatusInfo.value = '' + newValue;
-        } else {
-            selectedItemInRestorationStatusInfo.value = '1';
+const selectedItemInRestorationStatusInfo = vueRef<string>('1');
+watch(
+    () => store.project?.project.restorationStatus,
+    (newValue) => {
+        if (store.project) {
+            if (newValue) {
+                selectedItemInRestorationStatusInfo.value = '' + newValue;
+            } else {
+                selectedItemInRestorationStatusInfo.value = '1';
+            }
         }
-    }
-}, { immediate: true });
+    },
+    { immediate: true },
+);
 
-const otherObjectives = vueRef(store.project.project.otherObjectives ? [0] : []);
+const otherObjectives = vueRef(
+    store.project.project.otherObjectives ? [0] : [],
+);
 
-watch(() => [...store.project?.project.objectives, ...otherObjectives.value], newValue => {
-    if (newValue.length === 0) {
-        delete (store.project.project.objectivesAdditionalInformation);
-    }
-});
+watch(
+    () => [...store.project?.project.objectives, ...otherObjectives.value],
+    (newValue) => {
+        if (newValue.length === 0) {
+            delete store.project.project.objectivesAdditionalInformation;
+        }
+    },
+);
 </script>
 
 <template>
     <TabTemplate title="General">
         <template #description>
             <p v-if="store.project.reportingLine === 'GEF'">
-                In this tab, you can provide basic information about your initiative. The title and a summary of the aims and expected results of the initiative can be provided in the description section. Further information can be provided such as when the initiative is expected to start and end, web links or documentation that you find relevant, responsible organisms and the contact person who can provide further technical details of the initiative.
+                In this tab, you can provide basic information about your
+                initiative. The title and a summary of the aims and expected
+                results of the initiative can be provided in the description
+                section. Further information can be provided such as when the
+                initiative is expected to start and end, web links or
+                documentation that you find relevant, responsible organisms and
+                the contact person who can provide further technical details of
+                the initiative.
             </p>
             <p v-else>
-                In this tab, you can provide basic information about your restoration initiative. The title and a summary of the aims and expected results of the initiative can be provided in the description section. Further information can be provided such as when the initiative is expected to start and end, the restoration status, web links or documentation that you find relevant, responsible organisms and the contact person who can provide further technical details of the restoration initiative.
+                In this tab, you can provide basic information about your
+                restoration initiative. The title and a summary of the aims and
+                expected results of the initiative can be provided in the
+                description section. Further information can be provided such as
+                when the initiative is expected to start and end, the
+                restoration status, web links or documentation that you find
+                relevant, responsible organisms and the contact person who can
+                provide further technical details of the restoration initiative.
             </p>
         </template>
         <div class="divide-y divide-slate-100 border-2 border-slate-200 rounded-md shadow-sm mt-4 mb-6 overflow-hidden">
@@ -278,8 +320,18 @@ watch(() => [...store.project?.project.objectives, ...otherObjectives.value], ne
                 description="Short description of the initiative"
             >
                 <template v-slot:info>
-                    <p v-if="store.project.reportingLine === 'GEF'">Provide a short context of the initiative in terms of actors and partners leading it, a short background, main management or restoration activities that will be implemented, expected results of the initiative.</p>
-                    <p v-else>Provide a short context of the initiative in terms of actors and partners leading it, a short background, main restoration activities that will be implemented, expected results of the initiative.</p>
+                    <p v-if="store.project.reportingLine === 'GEF'">
+                        Provide a short context of the initiative in terms of
+                        actors and partners leading it, a short background, main
+                        management or restoration activities that will be
+                        implemented, expected results of the initiative.
+                    </p>
+                    <p v-else>
+                        Provide a short context of the initiative in terms of
+                        actors and partners leading it, a short background, main
+                        restoration activities that will be implemented,
+                        expected results of the initiative.
+                    </p>
                 </template>
             </TextareaFormGroup>
 
@@ -328,12 +380,19 @@ watch(() => [...store.project?.project.objectives, ...otherObjectives.value], ne
                 :edit="edit"
             >
                 <template v-slot:info>
-                    <p>Provides an indication of whether the restoration area can be counted towards a reporting period. Restoration status is broken down into four components and an area specifies one of the components to represent its status. Each restoration status is characterized by a temporal component, which includes the start year of the restoration activities and end year, if applicable.
+                    <p>
+                        Provides an indication of whether the restoration area
+                        can be counted towards a reporting period. Restoration
+                        status is broken down into four components and an area
+                        specifies one of the components to represent its status.
+                        Each restoration status is characterized by a temporal
+                        component, which includes the start year of the
+                        restoration activities and end year, if applicable.
                     </p>
 
                     <p class="mt-2">
                         References:
-                        <br>
+                        <br />
                         <a
                             href="https://www.post-2020indicators.org/metadata/headline/2-2"
                             target="_blank"
@@ -353,27 +412,47 @@ watch(() => [...store.project?.project.objectives, ...otherObjectives.value], ne
                     </select>
 
                     <p v-if="selectedItemInRestorationStatusInfo === '1'">
-                        It is considered that the initiative is enabled, has been launched, has the necessary funds committed or the restoration areas has been officially gazetted. Still the the activities have not started in the field and the effect of restoration may not yet be measurable.
+                        It is considered that the initiative is enabled, has
+                        been launched, has the necessary funds committed or the
+                        restoration areas has been officially gazetted. Still
+                        the the activities have not started in the field and the
+                        effect of restoration may not yet be measurable.
                     </p>
                     <p v-if="selectedItemInRestorationStatusInfo === '2'">
-                        Restoration activities have started in the site and depending on the time that the activities have been ongoing, impacts may start to be measurable.
+                        Restoration activities have started in the site and
+                        depending on the time that the activities have been
+                        ongoing, impacts may start to be measurable.
                     </p>
                     <p v-if="selectedItemInRestorationStatusInfo === '3'">
-                        Restoration activities have finished and the focus is now on monitoring results. It is acknowledged that an area will not be restored as soon as activities are completed, therefore, post-completion assessments on the restoration status shall be made periodically.
+                        Restoration activities have finished and the focus is
+                        now on monitoring results. It is acknowledged that an
+                        area will not be restored as soon as activities are
+                        completed, therefore, post-completion assessments on the
+                        restoration status shall be made periodically.
                     </p>
                 </template>
             </RecursiveRadioFormGroup>
             <RecursiveMenuFormGroup
                 :edit="edit"
                 v-model="store.project.project.restorationTypes"
-                :label="store.project.reportingLine === 'GEF' ? 'Intervention/restoration types' : 'Restoration types'"
+                :label="store.project.reportingLine === 'GEF'
+                    ? 'Intervention/restoration types'
+                    : 'Restoration types'
+                    "
                 :options="menus.restorationTypes"
                 :searchable="false"
                 :showSelection="false"
                 class="px-4 odd:bg-white even:bg-slate-50"
             >
                 <template v-slot:info>
-                    The possible values are ecological restoration and rehabilitation. This can be determined by analyzing the current and target ecosystem (natural or transformed). Examples of transformed ecosystems are: farmlands, forest plantation, urban ecosystems. As a useful rule of thumb, if the target ecosystem is natural, the restoration will be ecological restoration. If the target ecosystem is transformed, the restoration will be rehabilitation.
+                    The possible values are ecological restoration and
+                    rehabilitation. This can be determined by analyzing the
+                    current and target ecosystem (natural or transformed).
+                    Examples of transformed ecosystems are: farmlands, forest
+                    plantation, urban ecosystems. As a useful rule of thumb, if
+                    the target ecosystem is natural, the restoration will be
+                    ecological restoration. If the target ecosystem is
+                    transformed, the restoration will be rehabilitation.
                     <!-- <span class="font-bold"
                           v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span> -->
                 </template>
@@ -382,7 +461,7 @@ watch(() => [...store.project?.project.objectives, ...otherObjectives.value], ne
             <FormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 label="Objectives"
-                :dangerousHtmlDescription='"Please select the primary aim(s) of the restoration initiative. Reference: <a class=\"text-blue-600\" target=\"_blank\" href=\"https://gbf-indicators.org/metadata/headline/2-2\">https://gbf-indicators.org/metadata/headline/2-2</a>"'
+                :dangerousHtmlDescription="'Please select the primary aim(s) of the restoration initiative. Reference: <a class=&quot;text-blue-600&quot; target=&quot;_blank&quot; href=&quot;https://gbf-indicators.org/metadata/headline/2-2&quot;>https://gbf-indicators.org/metadata/headline/2-2</a>'"
             >
                 <RecursiveMenu
                     :edit="edit"
@@ -410,24 +489,43 @@ watch(() => [...store.project?.project.objectives, ...otherObjectives.value], ne
                             :enabled="!!otherObjectives.length"
                             :edit="edit"
                             v-model="store.project.project.otherObjectives"
-                            :placeholder="otherObjectives.length ? 'Please specify' : ''"
+                            :placeholder="otherObjectives.length ? 'Please specify' : ''
+                                "
                         />
                     </div>
                 </div>
 
-
                 <div
-                    v-if="store.project.project.objectives?.length || store.project.project.otherObjectives"
+                    v-if="
+                        store.project.project.objectives?.length ||
+                        store.project.project.otherObjectives
+                    "
                     class="mt-3"
                 >
-                    <p class="font-semibold text-sm text-gray-500 mb-3">Please provide additional information on the primary aims of the restoration initiative.
+                    <p class="font-semibold text-sm text-gray-500 mb-3">
+                        Please provide additional information on the primary
+                        aims of the restoration initiative.
                         <InfoButton title="Objectives additional information">
                             <slot>
                                 <p>
-                                    Please explain how your project contributes to the selected objectives. If applicable, please provide for each objective selected: specific objectives, description of the project's impacts, and other relevant information. See an example below.
+                                    Please explain how your project contributes
+                                    to the selected objectives. If applicable,
+                                    please provide for each objective selected:
+                                    specific objectives, description of the
+                                    project's impacts, and other relevant
+                                    information. See an example below.
                                 </p>
                                 <p class="mt-2">
-                                    <b>Example:</b> The project aims to restore local biodiversity by reintroducing species that play key roles in ecosystem functioning and enhancing conditions that support the return and increase of migratory species populations. 30 wolves were reintroduced in a previously wolf-free area to control deer populations. Additionally, 15 species of migratory birds were observed in a wetland area.
+                                    <b>Example:</b> The project aims to restore
+                                    local biodiversity by reintroducing species
+                                    that play key roles in ecosystem functioning
+                                    and enhancing conditions that support the
+                                    return and increase of migratory species
+                                    populations. 30 wolves were reintroduced in
+                                    a previously wolf-free area to control deer
+                                    populations. Additionally, 15 species of
+                                    migratory birds were observed in a wetland
+                                    area.
                                 </p>
                             </slot>
                         </InfoButton>
@@ -437,12 +535,22 @@ watch(() => [...store.project?.project.objectives, ...otherObjectives.value], ne
                         rows="3"
                         :disabled="false"
                         class="block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm focus:ring-0"
-                        v-model="store.project.project.objectivesAdditionalInformation"
+                        v-model="store.project.project
+                            .objectivesAdditionalInformation
+                            "
                     ></textarea>
                     <div
-                        v-else-if="store.project.project.objectivesAdditionalInformation"
+                        v-else-if="
+                            store.project.project
+                                .objectivesAdditionalInformation
+                        "
                         class="whitespace-pre-wrap"
-                    >{{ store.project.project.objectivesAdditionalInformation }}</div>
+                    >
+                        {{
+                            store.project.project
+                                .objectivesAdditionalInformation
+                        }}
+                    </div>
                     <div
                         v-else
                         class="italic text-gray-400"
@@ -461,21 +569,34 @@ watch(() => [...store.project?.project.objectives, ...otherObjectives.value], ne
             >
                 <template v-slot:info>
                     <p>
-                        It is the legal status of the area under restoration. Information on tenure status should include documentation of Free and Prior Consent (FPIC) to ensure that people's rights are respected in the process of restoration and adherence to the UN Decade principles (FAO, IUCN CEM & SER, 2021) as well as the Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) (FAO, 2022).
+                        It is the legal status of the area under restoration.
+                        Information on tenure status should include
+                        documentation of Free and Prior Consent (FPIC) to ensure
+                        that people's rights are respected in the process of
+                        restoration and adherence to the UN Decade principles
+                        (FAO, IUCN CEM & SER, 2021) as well as the Voluntary
+                        Guidelines on the Responsible Governance of Tenure
+                        (VGGT) (FAO, 2022).
                         <!-- <span class="font-bold"
                               v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3.</span> -->
                     </p>
                     <p class="pt-4">
                         References:
-                        <br>
-                        FAO. 2022. Voluntary Guidelines on the Responsible Governance of Tenure of Land, Fisheries and Forests in the Context of National Food Security. First revision. Rome. <a
+                        <br />
+                        FAO. 2022. Voluntary Guidelines on the Responsible
+                        Governance of Tenure of Land, Fisheries and Forests in
+                        the Context of National Food Security. First revision.
+                        Rome.
+                        <a
                             href="https://doi.org/10.4060/i2801e"
                             target="_blank"
                             class="text-ferm-blue-dark-700 hover:text-ferm-blue-dark-600"
                         >https://doi.org/10.4060/i2801e</a>
                     </p>
                     <p class="pt-4">
-                        FAO, IUCN CEM & SER. (2021). Principles for ecosystem restoration to guide the United Nations Decade 2021&mdash;2030. Rome, FAO.
+                        FAO, IUCN CEM & SER. (2021). Principles for ecosystem
+                        restoration to guide the United Nations Decade
+                        2021&mdash;2030. Rome, FAO.
                     </p>
                 </template>
             </RecursiveMenuFormGroup>
@@ -491,7 +612,10 @@ watch(() => [...store.project?.project.objectives, ...otherObjectives.value], ne
             />
 
             <FileUploadFormGroup2
-                :label="store.project.reportingLine === 'GEF' ? 'Upload the GEF project document' : 'Upload one initiative document'"
+                :label="store.project.reportingLine === 'GEF'
+                    ? 'Upload the GEF project document'
+                    : 'Upload one initiative document'
+                    "
                 :projectId="store.id!"
                 folder="documents"
                 :multiple="false"
@@ -514,7 +638,7 @@ watch(() => [...store.project?.project.objectives, ...otherObjectives.value], ne
                 label="Keywords"
             />
             <MultiInputFormGroup
-                class="px-4 odd:bg-white even:bg-slate-50 "
+                class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 label="Organizations"
                 description="Organizations that implement the project/initiative"
