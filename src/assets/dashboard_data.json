@@ -1,0 +1,148 @@
+[
+  {
+    "country": "Brazil",
+    "iso2": "BR",
+    "profile": [
+      {
+        "landArea": 8358140,
+        "source": "UN STAT"
+      },
+      {
+        "degradedLand": null,
+        "source": "UNCCD"
+      },
+      {
+        "forests": 496619600,
+        "source": "BOH"
+      },
+      {
+        "AAA": 496619600,
+        "source": "SOURCE_A"
+      },
+      {
+        "BBB": 496619600,
+        "source": "SOURCE_B"
+      },
+      {
+        "CCC": 496619600,
+        "source": "SOURCE_C"
+      },
+      {
+        "DDD": 496619600,
+        "source": "SOURCE_D"
+      },
+      {
+        "EEE": 496619600,
+        "source": "SOURCE_E"
+      }
+    ],
+    "commitment": {
+      "area": 12000000,
+      "source": "NBSAP"
+    },
+    "unDecadeHeadlineIndicator": {
+      "progressing": 6,
+      "regressing": 4
+    },
+    "areaUnderRestoration": [
+      {
+        "area": 2621624,
+        "breakdown": [
+          {
+            "type": "forests",
+            "area": 2000000
+          },
+          {
+            "type": "grasslands",
+            "area": 621624
+          }
+        ],
+        "source": "Restoration barometer"
+      },
+      {
+        "area": null,
+        "breakdown": null,
+        "source": "FRA"
+      },
+      {
+        "area": 3,
+        "breakdown": [
+          {
+            "type": "ecosystem y1",
+            "area": 1
+          },
+          {
+            "type": "ecosystem y2",
+            "area": 2
+          },
+          {
+            "type": "ecosystem y2",
+            "area": 2
+          },
+          {
+            "type": "ecosystem y2",
+            "area": 2
+          },
+          {
+            "type": "ecosystem y2",
+            "area": 2
+          },
+          {
+            "type": "ecosystem y1",
+            "area": 1
+          },
+          {
+            "type": "ecosystem y2",
+            "area": 2
+          },
+          {
+            "type": "ecosystem y2",
+            "area": 2
+          },
+          {
+            "type": "ecosystem y2",
+            "area": 2
+          },
+          {
+            "type": "ecosystem y2",
+            "area": 2
+          }
+        ],
+        "source": "FERM"
+      },
+      {
+        "area": 1234567,
+        "breakdown": [
+          {
+            "type": "ecoregion a",
+            "area": 1000000
+          },
+          {
+            "type": "ecoregion b",
+            "area": 234567
+          }
+        ],
+        "source": "RESTOR"
+      },
+      {
+        "area": 1222333,
+        "breakdown": [
+          {
+            "type": "biome A",
+            "area": 1000333
+          },
+          {
+            "type": "biome B",
+            "area": 111000
+          }
+        ],
+        "source": "ORR"
+      },
+      {
+        "area": 1000,
+        "breakdown": null,
+        "source": "GEF"
+      }
+    ]
+  }
+]
