@@ -115,11 +115,6 @@ function slideChanged(swiper: any) {
     myChart.setOption(option);
 }
 
-// option && myChart.setOption(option);
-// onMounted(() => {
-//     slideChanged({ activeIndex: 0 });
-// });
-
 // when areasWithMonitoring changes, move to the first slide
 watch([areasWithMonitoring, chartDivRefs], () => {
     if (chartDivRefs.value === null) {
