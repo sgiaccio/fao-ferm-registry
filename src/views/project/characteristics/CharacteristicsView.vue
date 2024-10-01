@@ -403,7 +403,101 @@ const statistics: Statistics[] = [
                        href="https://www.iucnredlist.org/resources/other-spatial-downloads#SR_2022 ">https://www.iucnredlist.org/resources/other-spatial-downloads#SR_2022</a>
                 </p>` });
         }
+    }, {
+        type: 'em',
+        requestId: 'precipitationECMWFLand',
+        requestOptions: {
+            firstYear: 2013,
+            lastYear: 2023,
+            timePeriod: 'monthlyAverages',
+        },
+        dbId: 'precipitationMonthlyAvg',
+        label: 'Precipitation Monthly Average [mm]',
+        transformFn: result => {
+            // the first row is the header
+            const data = result.statisticResults.data.slice(1);
+            return data.map(([month, temp]: [string, number]) => {
+                return {
+                    month: month,
+                    value: temp
+                }
+            });
+        },
+        template: (props) => {
+            return h(LineChart, {
+                values: props.value.map((area: any) => ({
+                    label: area.month,
+                    value: area.value
+                })),
+                legend: 'Precipitation',
+                nDecimals: 0,
+                unit: 'mm'
+            })
+        },
+        infoTemplate: () => {
+            return h('div', {
+                class: 'class="font-light mt-4 text-sm"',
+                innerHTML: `<p class="4">
+                    <span class="font-bold">Precipitation:</span>
+                    Precipitation influences water availability, hydrological processes, soi erosion, nutrient cycling and species community composition. Estimates of precipitation are computed from 2013 to 2023.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Values:</span> Mean monthly precipitation sum for the period 2013 to 2023.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Units:</span> mm
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Spatial resolution:</span> 11132 meters
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">References:</span> Muñoz Sabater, J., (2019): ERA5-Land monthly averaged data from 1981 to present. Copernicus Climate Change Service (C3S) Climate Data Store (CDS). (<date of access>), doi:10.24381/cds.68d2bb30.
+                </p>
+                <p class="mt-1">
+                    <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+                       target="_blank"
+                       href="https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR#citation">https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR#citation</a>
+                </p>` });
+        }
     }
+    // , {
+    //     type: 'gee',
+    //     requestId: 'CCILC',
+    //     dbId: 'CCILC',
+    //     label: 'CCILC',
+    //     transformFn: (val: any) => any,
+    //     template: (props) => {
+    //         return h(BarChart, {
+    //             values: props.value.map((area: any) => ({
+    //                 label: area.year,
+    //                 value: area.value
+    //             })),
+    //             legend: 'Number of species',
+    //         })
+    //     },
+    //     infoTemplate: () => {
+    //         return h('div', {
+    //             class: 'class="font-light mt-4 text-sm"',
+    //             innerHTML: `<p class="4">
+    //                 <span class="font-bold">Species Richness:</span>
+    //                 Is a fundamental component to measure biodiversity, which is an essential component to achieve target 2. Biodiversity is key for ecosystem functioning, resilience to environmental change and genetic diversity. Estimates of species richness are for the year 2021 and 2022.
+    //             </p>
+    //             <p class="mt-1">
+    //                 <span class="font-medium">Values:</span> Count of the maximum number of terrestrial species potentially occurring in each grid cell in 2021 and 2022.
+    //             </p>
+    //             <p class="mt-1">
+    //                 <span class="font-medium">Units:</span> Number of species
+    //             </p>
+    //             <p class="mt-1">
+    //                 <span class="font-medium">Spatial resolution:</span> 30000 meters
+    //             </p>
+    //             <p class="mt-1">
+    //                 <span class="font-medium">Source:</span> <a class="text-blue-600 underline hover:text-blue-500"
+    //                    target="_blank"
+    //                    href="https://www.iucnredlist.org/resources/other-spatial-downloads#SR_2022 ">https://www.iucnredlist.org/resources/other-spatial-downloads#SR_2022</a>
+    //             </p>` });
+    //     }
+    // }
 ];
 
 const t = statistics.reduce((prev, curr) => ({ ...prev, [curr.dbId]: 'idle' }), {})

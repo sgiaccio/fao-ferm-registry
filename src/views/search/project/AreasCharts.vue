@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
@@ -24,50 +24,58 @@ const emit = defineEmits(['zoomToArea']);
 
 echarts.use([GridComponent, BarChart, CanvasRenderer]);
 
-const areasWithMonitoring_ = props.areas
-    .map(area => Object.values(area)[0]).
-    filter((areaData: any) => {
-        if (!areaData) return false;
-        const { goalIndicators, customIndicators } = areaData;
+function getAreasWithMonitoring(areas: any) {
+    return areas
+        .map((area: any) => Object.values(area)[0]).
+        filter((areaData: any) => {
+            if (!areaData) return false;
+            const { goalIndicators, customIndicators } = areaData;
 
-        let flag = false;
-        if (goalIndicators) {
-            flag = goalIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
-        }
-        if (customIndicators) {
-            flag ||= customIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
-        }
-        return flag;
-    })
-
-const areasWithMonitoring = [];
-areasWithMonitoring_.forEach((area: any) => {
-    const areaClone = { ...area };
-    delete (areaClone.goalIndicators);
-    delete (areaClone.customIndicators);
-
-    if (area.goalIndicators?.length > 0) {
-        area.goalIndicators.forEach((indicator: any) => {
-            if (indicator.monitoring?.length > 0) {
-                areasWithMonitoring.push({
-                    areaData: areaClone,
-                    indicator: indicator.indicator,
-                    monitoring: indicator.monitoring,
-                });
+            let flag = false;
+            if (goalIndicators) {
+                flag = goalIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
             }
-        });
-    }
-    if (area.customIndicators?.length > 0) {
-        area.customIndicators.forEach((indicator: any) => {
-            if (indicator.monitoring?.length > 0) {
-                areasWithMonitoring.push({
-                    areaData: areaClone,
-                    indicator: indicator.indicator,
-                    monitoring: indicator.monitoring,
-                });
+            if (customIndicators) {
+                flag ||= customIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
             }
+            return flag;
         });
-    }
+}
+
+const areasWithMonitoring = computed(() => {
+    const areasWithMonitoring_ = getAreasWithMonitoring(props.areas);
+
+    // areasWithMonitoring__ is a temporary variable to store the computed value, which contains the areaData, indicator, and monitoring data in a single object
+    const areasWithMonitoringRet = [];
+    areasWithMonitoring_.forEach((area: any) => {
+        const areaClone = { ...area };
+        delete (areaClone.goalIndicators);
+        delete (areaClone.customIndicators);
+
+        if (area.goalIndicators?.length > 0) {
+            area.goalIndicators.forEach((indicator: any) => {
+                if (indicator.monitoring?.length > 0) {
+                    areasWithMonitoringRet.push({
+                        areaData: areaClone,
+                        indicator: indicator.indicator,
+                        monitoring: indicator.monitoring,
+                    });
+                }
+            });
+        }
+        if (area.customIndicators?.length > 0) {
+            area.customIndicators.forEach((indicator: any) => {
+                if (indicator.monitoring?.length > 0) {
+                    areasWithMonitoringRet.push({
+                        areaData: areaClone,
+                        indicator: indicator.indicator,
+                        monitoring: indicator.monitoring,
+                    });
+                }
+            });
+        }
+    });
+    return areasWithMonitoringRet;
 });
 
 const chartDivRefs = ref<HTMLDivElement[] | null>(null);
@@ -76,12 +84,11 @@ function slideChanged(swiper: any) {
     if (chartDivRefs.value === null) {
         return;
     }
-
     const slideIndex = swiper.activeIndex;
 
     // init the related chart
     const myChart = echarts.init(chartDivRefs.value[slideIndex]);
-    const monitoring = areasWithMonitoring[slideIndex].monitoring;
+    const monitoring = areasWithMonitoring.value[slideIndex].monitoring;
 
     const option = {
         xAxis: {
@@ -105,13 +112,21 @@ function slideChanged(swiper: any) {
         }
     };
 
-    option && myChart.setOption(option);
+    myChart.setOption(option);
 }
 
 // option && myChart.setOption(option);
-onMounted(() => {
+// onMounted(() => {
+//     slideChanged({ activeIndex: 0 });
+// });
+
+// when areasWithMonitoring changes, move to the first slide
+watch([areasWithMonitoring, chartDivRefs], () => {
+    if (chartDivRefs.value === null) {
+        return;
+    }
     slideChanged({ activeIndex: 0 });
-});
+}, { immediate: true });
 </script>
 
 <template>
@@ -127,7 +142,7 @@ onMounted(() => {
         <template v-for="area in areasWithMonitoring">
             <swiper-slide
                 v-if="area.monitoring?.length > 0"
-                class="overflow-scroll h-full"
+                class="h-full"
             >
                 <div class="px-0 py-5 sm:p-6">
                     <div class="px-4 sm:px-0 flex">

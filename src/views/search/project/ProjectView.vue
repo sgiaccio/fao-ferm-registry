@@ -33,7 +33,12 @@ import EcosystemsPanel from './EcosystemsPanel.vue';
 // import required modules
 // import { Navigation } from 'swiper/modules';
 
-import { getRecursiveMenuItem, getLastTargetArea, getPolygonsArea } from '@/lib/util';
+import {
+    getRecursiveMenuItem,
+    getLastTargetArea,
+    getPolygonsArea,
+    areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil
+} from '@/lib/util';
 
 
 withDefaults(defineProps<{
@@ -51,6 +56,17 @@ const countries = ref<{ iso2: string, label: string }[] | null>(null);
 
 const project = ref<any>(null);
 
+const areaByGefIndicatorGroup = ref<any[]>([]);
+
+const indicatorGroupNames = [
+    { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use (hectares)' },
+    { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use (hectares)' },
+    { value: 3, label: '3. Area of land and ecosystems under restoration (hectares)' },
+    { value: 4, label: '4. Area of landscapes under improved practices (hectares; excluding protected areas)' },
+    { value: 5, label: '5. Area of marine habitat under improved practices to benefit biodiversity (hectares; excluding protected areas)' },
+    { value: '2LDCF', label: '2 (LDCF). Area of land managed for climate resilience (hectares)' }
+];
+
 onBeforeMount(async () => {
     const [fetchedProject, fetchedCountries] = await Promise.all([
         getPublicProject(route.params.id as string),
@@ -58,6 +74,10 @@ onBeforeMount(async () => {
     ]);
     project.value = fetchedProject;
     countries.value = fetchedCountries;
+
+    if (fetchedProject.reportingLine === 'GEF') {
+        areaByGefIndicatorGroup.value = areaByGefIndicatorGroupUtil(fetchedProject.areas);
+    }
 });
 
 onUnmounted(() => {
@@ -533,9 +553,10 @@ const areaUnderRestoration = computed(() => {
 
                             <IndicatorsPanel :areas="[{ dummy: selectedArea }]" />
 
-                            <!-- <pre>{{ [{ dummy: selectedArea }] }}</pre> -->
-                            <!-- -------------------------- -->
-                            <!-- <pre>{{ JSON.stringify(project.areas, null, 2) }}</pre> -->
+                            <AreasCharts
+                                :areas="[{ dummy: selectedArea }]"
+                                @zoomToArea="zoomToArea"
+                            />
                         </div>
                     </transition>
                     <transition name="disappear_to_left">
@@ -661,6 +682,27 @@ const areaUnderRestoration = computed(() => {
                                     </div>
                                 </div> -->
                             </div>
+                            <div
+                                v-if="project.reportingLine === 'GEF'"
+                                class="gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#dd6b66]"
+                            >
+                                <div class="font-bold">GEF Core Indicators</div>
+                                <div
+                                    v-for="group in areaByGefIndicatorGroup"
+                                    :key="group[0]"
+                                    class="flex mt-2"
+                                >
+                                    <div class="flex flex-row gap-4">
+                                        <div class="flex-grow">
+                                            {{ indicatorGroupNames.find(i => '' + i.value === '' + group[0])?.label }}
+                                        </div>
+                                        <div>
+                                            <span class="font-bold text-xl mr-1">{{ group[1] ? formatNumber(group[1]) : 'n/a' }}</span>
+                                            <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- <div
                         v-if="project.project.targetArea && project.project.areaUnderRestoration"
@@ -741,9 +783,28 @@ const areaUnderRestoration = computed(() => {
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
-                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                            <dd
+                                                v-if="project.reportingLine !== 'GEF'"
+                                                class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+                                            >
+                                                <!-- for gef project is: in preparation, in progress or post completion depending on the last target area -->
                                                 <template v-if="project.project.restorationStatus">
                                                     {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
+                                                </template>
+                                                <span
+                                                    v-else
+                                                    class="italic text-gray-500"
+                                                >n/a</span>
+                                            </dd>
+                                            <dd v-else>
+                                                <template v-if="project.project.targetAreaEvaluationPhase">
+                                                    Post-completion
+                                                </template>
+                                                <template v-else-if="project.project.targetAreaReviewPhase">
+                                                    In progress
+                                                </template>
+                                                <template v-else-if="project.project.targetAreaDesignPhase">
+                                                    In preparation
                                                 </template>
                                                 <span
                                                     v-else
