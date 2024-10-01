@@ -1005,17 +1005,21 @@ exports.getPublicProjectThumbnail = functions.region('europe-west3').https.onReq
         }
 
         const bucketName = 'fao-ferm-project-versions';
-        const coverPhotoUrl = `${projectId}/${version}/project/images/cover_photo/cover.png`;
 
-        try {
-            const thumbnail = await admin.storage().bucket(bucketName).file(coverPhotoUrl).download();
+        // get the cover, the url is '${projectId}/${version}/project/images/cover_photo/cover.extension' but the extension can be any
+        const prefix = `${projectId}/${version}/project/images/cover_photo/cover.`;
+        const [files] = await admin.storage().bucket(bucketName).getFiles({ prefix });
 
-            res.setHeader('Content-Type', 'image/png');
-            return res.status(200).send(thumbnail[0]);
-        } catch (error) {
-            console.error('Error downloading file:', error);
-            return res.status(500).send('Internal Server Error');
+        if (files.length === 0) {
+            return res.status(404).send('Cover photo not found');
         }
+
+        const coverPhoto = files[0];
+
+        const thumbnail = await coverPhoto.download();
+
+        res.setHeader('Content-Type', 'image/png');
+        return res.status(200).send(thumbnail[0]);
     });
 });
 

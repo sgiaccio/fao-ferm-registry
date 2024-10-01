@@ -59,12 +59,12 @@ const project = ref<any>(null);
 const areaByGefIndicatorGroup = ref<any[]>([]);
 
 const indicatorGroupNames = [
-    { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use (hectares)' },
-    { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use (hectares)' },
-    { value: 3, label: '3. Area of land and ecosystems under restoration (hectares)' },
-    { value: 4, label: '4. Area of landscapes under improved practices (hectares; excluding protected areas)' },
-    { value: 5, label: '5. Area of marine habitat under improved practices to benefit biodiversity (hectares; excluding protected areas)' },
-    { value: '2LDCF', label: '2 (LDCF). Area of land managed for climate resilience (hectares)' }
+    { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use' },
+    { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use' },
+    { value: 3, label: '3. Area of land and ecosystems under restoration' },
+    { value: 4, label: '4. Area of landscapes under improved practices' },
+    { value: 5, label: '5. Area of marine habitat under improved practices to benefit biodiversity' },
+    { value: '2LDCF', label: '2 (LDCF). Area of land managed for climate resilience' }
 ];
 
 onBeforeMount(async () => {
@@ -565,8 +565,21 @@ const areaUnderRestoration = computed(() => {
                             class="space-y-4 py-6 pl-4"
                         >
                             <div class="text-gray-800 text-sm">
-                                <div>
-                                    <h1 class="text-2xl font-akrobat font-semibold">{{ project.project.title }}</h1>
+                                <div class="flex flex-row w-full">
+                                    <div class="flex-1">
+                                        <h1 class="text-2xl font-akrobat font-semibold">{{ project.project.title }}</h1>
+                                    </div>
+                                    <!-- add GEF logo if GEF project -->
+                                    <div
+                                        v-if="project.reportingLine === 'GEF'"
+                                        class="mt-2"
+                                    >
+                                        <img
+                                            src="/interop_logos/gef.svg"
+                                            alt="GEF logo"
+                                            class="h-12 w-auto"
+                                        />
+                                    </div>
                                 </div>
                                 <div class="mt-1 flex flex-wrap gap-x-3 gap-y-2">
                                     <div
@@ -784,32 +797,32 @@ const areaUnderRestoration = computed(() => {
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
                                             <dd
-                                                v-if="project.reportingLine !== 'GEF'"
                                                 class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
                                             >
-                                                <!-- for gef project is: in preparation, in progress or post completion depending on the last target area -->
-                                                <template v-if="project.project.restorationStatus">
-                                                    {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
+                                                <template v-if="project.reportingLine !== 'GEF'">
+                                                    <template v-if="project.project.restorationStatus">
+                                                        {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
+                                                    </template>
+                                                    <span
+                                                        v-else
+                                                        class="italic text-gray-500"
+                                                    >n/a</span>
                                                 </template>
-                                                <span
-                                                    v-else
-                                                    class="italic text-gray-500"
-                                                >n/a</span>
-                                            </dd>
-                                            <dd v-else>
-                                                <template v-if="project.project.targetAreaEvaluationPhase">
-                                                    Post-completion
+                                                <template v-else>
+                                                    <template v-if="project.project.targetAreaEvaluationPhase">
+                                                        Post-completion
+                                                    </template>
+                                                    <template v-else-if="project.project.targetAreaReviewPhase">
+                                                        In progress
+                                                    </template>
+                                                    <template v-else-if="project.project.targetAreaDesignPhase">
+                                                        In preparation
+                                                    </template>
+                                                    <span
+                                                        v-else
+                                                        class="italic text-gray-500"
+                                                    >n/a</span>
                                                 </template>
-                                                <template v-else-if="project.project.targetAreaReviewPhase">
-                                                    In progress
-                                                </template>
-                                                <template v-else-if="project.project.targetAreaDesignPhase">
-                                                    In preparation
-                                                </template>
-                                                <span
-                                                    v-else
-                                                    class="italic text-gray-500"
-                                                >n/a</span>
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
