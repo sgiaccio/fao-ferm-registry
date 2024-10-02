@@ -45,8 +45,7 @@ function getAreasWithMonitoring(areas: any) {
 const areasWithMonitoring = computed(() => {
     const areasWithMonitoring_ = getAreasWithMonitoring(props.areas);
 
-    // areasWithMonitoring__ is a temporary variable to store the computed value, which contains the areaData, indicator, and monitoring data in a single object
-    const areasWithMonitoringRet = [];
+    const areasWithMonitoringRet = [] as { areaData: any, indicator: any, monitoring: any, action?: any }[];
     areasWithMonitoring_.forEach((area: any) => {
         const areaClone = { ...area };
         delete (areaClone.goalIndicators);
@@ -58,7 +57,8 @@ const areasWithMonitoring = computed(() => {
                     areasWithMonitoringRet.push({
                         areaData: areaClone,
                         indicator: indicator.indicator,
-                        monitoring: indicator.monitoring,
+                        action: indicator.action,
+                        monitoring: indicator.monitoring
                     });
                 }
             });
@@ -151,7 +151,6 @@ watch([areasWithMonitoring, chartDivRefs], () => {
                             @click="area.areaData.uuid && emit('zoomToArea', area.areaData.uuid)"
                         />
                     </div>
-
                     <dl class="divide-y divide-gray-100">
                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt class="text-sm font-medium leading-6 text-gray-900">Indicator</dt>
@@ -159,9 +158,12 @@ watch([areasWithMonitoring, chartDivRefs], () => {
                         </div>
                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt class="text-sm font-medium leading-6 text-gray-900">Metric</dt>
-                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.metric }} <span class="whitespace-nowrap">[{{ area.indicator.indicator.unit }}]</span></dd>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.metric }} <span class="whitespace-nowrap">[{{ area.indicator.unit }}]</span></dd>
                         </div>
-                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                        <div
+                            v-if="area.indicator.action"
+                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
+                        >
                             <dt class="text-sm font-medium leading-6 text-gray-900">Action</dt>
                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.action }}</dd>
                         </div>
@@ -202,9 +204,4 @@ watch([areasWithMonitoring, chartDivRefs], () => {
             </swiper-slide>
         </template>
     </swiper>
-    <!-- <Skeleton
-        v-else
-        width="100%"
-        height="100%"
-    /> -->
 </template>
