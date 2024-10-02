@@ -183,7 +183,7 @@
       }
     ],
     "commitment": {
-      "area": 12000000,
+      "area": 8000000,
       "source": "NBSAP"
     },
     "unDecadeHeadlineIndicator": {
