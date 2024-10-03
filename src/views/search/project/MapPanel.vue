@@ -28,6 +28,8 @@ const geoJsonLoadError = ref(false);
 let map: google.maps.Map | null = null;
 
 const pinSvgString = '<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="#EEA63A" stroke="white" stroke-width="3" /></svg>';
+// same as above but without fill and with slightly transparent stroke
+const pinActiveSvgString = '<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="3" /></svg>';
 const parser = new DOMParser();
 
 async function initMap() {
@@ -107,25 +109,39 @@ async function initMap() {
         }
 
         const bounds = new google.maps.LatLngBounds();
+        const xs = [];
+        const ys = [];
+
         if (geometry.getType() === 'MultiPoint') {
             geometry.getArray().forEach(point => {
-                bounds.extend(point);
+                xs.push(point.lng());
+                ys.push(point.lat());
             });
-            return bounds.getCenter();
+            const x = xs.reduce((a, b) => a + b) / xs.length;
+            const y = ys.reduce((a, b) => a + b) / ys.length;
+            return new google.maps.LatLng(y, x);
         }
+
         if (geometry.getType() === 'LineString') {
             geometry.getArray().forEach(latLng => {
-                bounds.extend(latLng);
+                xs.push(latLng.lng());
+                ys.push(latLng.lat());
             });
-            return bounds.getCenter();
+            const x = xs.reduce((a, b) => a + b) / xs.length;
+            const y = ys.reduce((a, b) => a + b) / ys.length;
+            return new google.maps.LatLng(y, x);
         }
+
         if (geometry.getType() === 'MultiLineString') {
             geometry.getArray().forEach(line => {
                 line.getArray().forEach(latLng => {
-                    bounds.extend(latLng);
+                    xs.push(latLng.lng());
+                    ys.push(latLng.lat());
                 });
             });
-            return bounds.getCenter();
+            const x = xs.reduce((a, b) => a + b) / xs.length;
+            const y = ys.reduce((a, b) => a + b) / ys.length;
+            return new google.maps.LatLng(y, x);
         }
         if (geometry.getType() === 'Polygon') {
             geometry.getArray().forEach(path => {
@@ -139,11 +155,14 @@ async function initMap() {
             geometry.getArray().forEach(polygon => {
                 polygon.getArray().forEach(path => {
                     path.getArray().forEach(latLng => {
-                        bounds.extend(latLng);
+                        xs.push(latLng.lng());
+                        ys.push(latLng.lat());
                     });
                 });
             });
-            return bounds.getCenter();
+            const x = xs.reduce((a, b) => a + b) / xs.length;
+            const y = ys.reduce((a, b) => a + b) / ys.length;
+            return new google.maps.LatLng(y, x);
         }
         return null;
     }
@@ -174,6 +193,13 @@ async function initMap() {
     pinSvg.style.left = '50%';
     pinSvg.style.transform = 'translate(-50%, -50%)';
 
+    const pinActiveSvg = parser.parseFromString(pinActiveSvgString, 'image/svg+xml').documentElement;
+    // Center the SVG using CSS
+    pinActiveSvg.style.position = 'absolute';
+    pinActiveSvg.style.top = '50%';
+    pinActiveSvg.style.left = '50%';
+    pinActiveSvg.style.transform = 'translate(-50%, -50%)';
+    
     // Create markers based on centroids
     const markers = centroidsAndFeatures.map(({ centroid, feature }) => {
         const marker = new AdvancedMarkerElement({
@@ -185,6 +211,12 @@ async function initMap() {
         marker.addListener("click", () => {
             zoomAndHighlightFeature(feature);
             emit('areaClicked', feature.getProperty('areaObject'));
+
+            // reset all markers to default style
+            markers.forEach(marker => {
+                marker.content = pinSvg.cloneNode(true);
+            });
+            marker.content = pinActiveSvg;
         });
         return marker;
     });

@@ -101,7 +101,10 @@ function slideChanged(swiper: any) {
         series: [
             {
                 data: monitoring.map((item: any) => item.value),
-                type: 'bar'
+                type: 'bar',
+                itemStyle: {
+                    borderRadius: [8, 8, 0, 0]
+                }
             }
         ],
         tooltip: {
@@ -154,18 +157,18 @@ watch([areasWithMonitoring, chartDivRefs], () => {
                     <dl class="divide-y divide-gray-100">
                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt class="text-sm font-medium leading-6 text-gray-900">Indicator</dt>
-                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.indicator }}</dd>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.indicator.trim() }}</dd>
                         </div>
                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt class="text-sm font-medium leading-6 text-gray-900">Metric</dt>
-                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.metric }} <span class="whitespace-nowrap">[{{ area.indicator.unit }}]</span></dd>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.metric.trim() }} <span class="whitespace-nowrap">[{{ area.indicator.unit.trim() }}]</span></dd>
                         </div>
                         <div
                             v-if="area.indicator.action"
                             class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
                         >
                             <dt class="text-sm font-medium leading-6 text-gray-900">Action</dt>
-                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.action }}</dd>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.action.trim() }}</dd>
                         </div>
                     </dl>
                     <div
