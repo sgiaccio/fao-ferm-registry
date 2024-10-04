@@ -256,7 +256,8 @@ export function groupBiomesByRealm(biomes: any, realms: any) {
 }
 
 export function getLastTargetArea(project: any) {
-    return project.project?.targetAreaDesignPhase || project.project?.targetAreaReviewPhase || project.project?.targetAreaEvaluationPhase;
+    // reverse the order of the phases and return the first one that is not null
+    return project.project?.targetAreaEvaluationPhase || project.project?.targetAreaReviewPhase || project.project?.targetAreaDesignPhase;
 }
 
 export function getPolygonsArea(areasObj: any) {
