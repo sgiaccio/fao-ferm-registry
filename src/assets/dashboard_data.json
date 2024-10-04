@@ -111,18 +111,9 @@
         "source": "FERM"
       },
       {
-        "area": 1234567,
-        "breakdown": [
-          {
-            "type": "ecoregion a",
-            "area": 1000000
-          },
-          {
-            "type": "ecoregion b",
-            "area": 234567
-          }
-        ],
-        "source": "RESTOR"
+        "area": 1000,
+        "breakdown": null,
+        "source": "GEF"
       },
       {
         "area": 1222333,
@@ -139,9 +130,18 @@
         "source": "ORR"
       },
       {
-        "area": 1000,
-        "breakdown": null,
-        "source": "GEF"
+        "area": 1234567,
+        "breakdown": [
+          {
+            "type": "ecoregion a",
+            "area": 1000000
+          },
+          {
+            "type": "ecoregion b",
+            "area": 234567
+          }
+        ],
+        "source": "RESTOR"
       }
     ]
   },
@@ -257,18 +257,9 @@
         "source": "FERM"
       },
       {
-        "area": 1234567,
-        "breakdown": [
-          {
-            "type": "ecoregion a",
-            "area": 1000000
-          },
-          {
-            "type": "ecoregion b",
-            "area": 234567
-          }
-        ],
-        "source": "RESTOR"
+        "area": 1000,
+        "breakdown": null,
+        "source": "GEF"
       },
       {
         "area": 1222333,
@@ -285,9 +276,18 @@
         "source": "ORR"
       },
       {
-        "area": 1000,
-        "breakdown": null,
-        "source": "GEF"
+        "area": 1234567,
+        "breakdown": [
+          {
+            "type": "ecoregion a",
+            "area": 1000000
+          },
+          {
+            "type": "ecoregion b",
+            "area": 234567
+          }
+        ],
+        "source": "RESTOR"
       }
     ]
   }

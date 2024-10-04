@@ -7,6 +7,12 @@ import worldJson from '@/assets/world_stylized.json';
 import data from '@/assets/dashboard_data.json';
 import { geoWinkel3 } from 'd3-geo-projection';
 
+import echartConfig from '@/assets/echarts/themes/dark.json'
+echarts.registerTheme('dark', echartConfig)
+
+// set a dark background for the body
+document.body.style.backgroundColor = '#1a202c';
+
 const chartRef = ref(null);
 const countryChartRefs = ref([]);
 const selectedCountry = ref(null);
@@ -22,14 +28,12 @@ const worldJsonFeatures = worldJson.features.map(f => ({
 worldJson.features = worldJsonFeatures;
 
 // Prepare map data
-const minCommittedArea = Math.min(...data.map(d => d.commitment?.area || 0));
+// const minCommittedArea = Math.min(...data.map(d => d.commitment?.area || 0));
 const maxCommittedArea = Math.max(...data.map(d => d.commitment?.area).filter(d => d));
 
 data.forEach(d => {
     console.log(d.commitment?.area);
 });
-alert(minCommittedArea);
-alert(maxCommittedArea);
 
 function formatNumber(value) {
     if (value >= 1e9) {
@@ -63,7 +67,7 @@ const colorList = [
 
 // Map of sources to icon URLs
 const iconMap = {
-    'Restoration barometer': '/interop_logos/rb.jpg',
+    'Restoration barometer': '/interop_logos/rb.svg',
     // 'FRA': '/path/to/fra_icon.png',
     'FERM': '/interop_logos/ferm.svg',
     'RESTOR': '/interop_logos/restor.svg',
@@ -77,7 +81,7 @@ onMounted(() => {
     const projection = geoWinkel3();
 
     const chartDom = chartRef.value;
-    const mapChart = echarts.init(chartDom);
+    const mapChart = echarts.init(chartDom, 'dark');
 
     echarts.registerMap('world', worldJson);
     const option = {

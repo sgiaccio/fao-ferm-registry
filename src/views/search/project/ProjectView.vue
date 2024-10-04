@@ -181,9 +181,6 @@ import {
     LegendComponent
 } from 'echarts/components';
 
-import echartConfig from './echarts_config.json'
-echarts.registerTheme('dark', echartConfig);
-
 
 // Features like Universal Transition and Label Layout
 // import { LabelLayout, UniversalTransition } from 'echarts/features';
@@ -235,7 +232,7 @@ onMounted(async () => {
 async function initChart() {
     if (!chartDiv.value) return;
 
-    const myChart = echarts.init(chartDiv.value, 'dark');
+    const myChart = echarts.init(chartDiv.value);
 
     var option = {
         series: [
