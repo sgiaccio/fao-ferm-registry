@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
@@ -24,50 +24,58 @@ const emit = defineEmits(['zoomToArea']);
 
 echarts.use([GridComponent, BarChart, CanvasRenderer]);
 
-const areasWithMonitoring_ = props.areas
-    .map(area => Object.values(area)[0]).
-    filter((areaData: any) => {
-        if (!areaData) return false;
-        const { goalIndicators, customIndicators } = areaData;
+function getAreasWithMonitoring(areas: any) {
+    return areas
+        .map((area: any) => Object.values(area)[0]).
+        filter((areaData: any) => {
+            if (!areaData) return false;
+            const { goalIndicators, customIndicators } = areaData;
 
-        let flag = false;
-        if (goalIndicators) {
-            flag = goalIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
-        }
-        if (customIndicators) {
-            flag ||= customIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
-        }
-        return flag;
-    })
-
-const areasWithMonitoring = [];
-areasWithMonitoring_.forEach((area: any) => {
-    const areaClone = { ...area };
-    delete (areaClone.goalIndicators);
-    delete (areaClone.customIndicators);
-
-    if (area.goalIndicators?.length > 0) {
-        area.goalIndicators.forEach((indicator: any) => {
-            if (indicator.monitoring?.length > 0) {
-                areasWithMonitoring.push({
-                    areaData: areaClone,
-                    indicator: indicator.indicator,
-                    monitoring: indicator.monitoring,
-                });
+            let flag = false;
+            if (goalIndicators) {
+                flag = goalIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
             }
-        });
-    }
-    if (area.customIndicators?.length > 0) {
-        area.customIndicators.forEach((indicator: any) => {
-            if (indicator.monitoring?.length > 0) {
-                areasWithMonitoring.push({
-                    areaData: areaClone,
-                    indicator: indicator.indicator,
-                    monitoring: indicator.monitoring,
-                });
+            if (customIndicators) {
+                flag ||= customIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
             }
+            return flag;
         });
-    }
+}
+
+const areasWithMonitoring = computed(() => {
+    const areasWithMonitoring_ = getAreasWithMonitoring(props.areas);
+
+    const areasWithMonitoringRet = [] as { areaData: any, indicator: any, monitoring: any, action?: any }[];
+    areasWithMonitoring_.forEach((area: any) => {
+        const areaClone = { ...area };
+        delete (areaClone.goalIndicators);
+        delete (areaClone.customIndicators);
+
+        if (area.goalIndicators?.length > 0) {
+            area.goalIndicators.forEach((indicator: any) => {
+                if (indicator.monitoring?.length > 0) {
+                    areasWithMonitoringRet.push({
+                        areaData: areaClone,
+                        indicator: indicator.indicator,
+                        action: indicator.action,
+                        monitoring: indicator.monitoring
+                    });
+                }
+            });
+        }
+        if (area.customIndicators?.length > 0) {
+            area.customIndicators.forEach((indicator: any) => {
+                if (indicator.monitoring?.length > 0) {
+                    areasWithMonitoringRet.push({
+                        areaData: areaClone,
+                        indicator: indicator.indicator,
+                        monitoring: indicator.monitoring,
+                    });
+                }
+            });
+        }
+    });
+    return areasWithMonitoringRet;
 });
 
 const chartDivRefs = ref<HTMLDivElement[] | null>(null);
@@ -76,12 +84,11 @@ function slideChanged(swiper: any) {
     if (chartDivRefs.value === null) {
         return;
     }
-
     const slideIndex = swiper.activeIndex;
 
     // init the related chart
     const myChart = echarts.init(chartDivRefs.value[slideIndex]);
-    const monitoring = areasWithMonitoring[slideIndex].monitoring;
+    const monitoring = areasWithMonitoring.value[slideIndex].monitoring;
 
     const option = {
         xAxis: {
@@ -94,7 +101,10 @@ function slideChanged(swiper: any) {
         series: [
             {
                 data: monitoring.map((item: any) => item.value),
-                type: 'bar'
+                type: 'bar',
+                itemStyle: {
+                    borderRadius: [8, 8, 0, 0]
+                }
             }
         ],
         tooltip: {
@@ -105,13 +115,16 @@ function slideChanged(swiper: any) {
         }
     };
 
-    option && myChart.setOption(option);
+    myChart.setOption(option);
 }
 
-// option && myChart.setOption(option);
-onMounted(() => {
+// when areasWithMonitoring changes, move to the first slide
+watch([areasWithMonitoring, chartDivRefs], () => {
+    if (chartDivRefs.value === null) {
+        return;
+    }
     slideChanged({ activeIndex: 0 });
-});
+}, { immediate: true });
 </script>
 
 <template>
@@ -127,7 +140,7 @@ onMounted(() => {
         <template v-for="area in areasWithMonitoring">
             <swiper-slide
                 v-if="area.monitoring?.length > 0"
-                class="overflow-scroll h-full"
+                class="h-full"
             >
                 <div class="px-0 py-5 sm:p-6">
                     <div class="px-4 sm:px-0 flex">
@@ -141,19 +154,21 @@ onMounted(() => {
                             @click="area.areaData.uuid && emit('zoomToArea', area.areaData.uuid)"
                         />
                     </div>
-
                     <dl class="divide-y divide-gray-100">
                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt class="text-sm font-medium leading-6 text-gray-900">Indicator</dt>
-                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.indicator }}</dd>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.indicator.trim() }}</dd>
                         </div>
                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt class="text-sm font-medium leading-6 text-gray-900">Metric</dt>
-                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.metric }} <span class="whitespace-nowrap">[{{ area.indicator.indicator.unit }}]</span></dd>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.metric.trim() }} <span class="whitespace-nowrap">[{{ area.indicator.unit.trim() }}]</span></dd>
                         </div>
-                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                        <div
+                            v-if="area.indicator.action"
+                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
+                        >
                             <dt class="text-sm font-medium leading-6 text-gray-900">Action</dt>
-                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.action }}</dd>
+                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.action.trim() }}</dd>
                         </div>
                     </dl>
                     <div
@@ -192,9 +207,4 @@ onMounted(() => {
             </swiper-slide>
         </template>
     </swiper>
-    <!-- <Skeleton
-        v-else
-        width="100%"
-        height="100%"
-    /> -->
 </template>

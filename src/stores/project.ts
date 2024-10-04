@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
 import {
     getDocs,
@@ -20,7 +20,13 @@ import { defineStore } from 'pinia';
 
 import { db } from '../firebase';
 
-import { setsContainSameValues, snakeToCamel, getPolygonsArea as getPolygonsAreaUtil } from '../lib/util'
+import {
+    setsContainSameValues,
+    snakeToCamel,
+    getPolygonsArea as getPolygonsAreaUtil,
+    areaByGefIndicator as areaByGefIndicatorUtil,
+    areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil,
+} from '../lib/util'
 
 import { useAuthStore } from './auth';
 import { GoalIndicator, rawGoalIndicators as _rawGoalIndicators } from '@/lib/auroraIndicators';
@@ -54,7 +60,7 @@ export const useProjectStore = defineStore('', () => {
     const loadingNext = ref(false);
     const validation = ref();
 
-    const validating = ref(false);
+    // const validating = ref(false);
 
     // watch(() => project.value, (p) => {
     //     if (!validating.value) {
@@ -212,34 +218,13 @@ export const useProjectStore = defineStore('', () => {
     }
 
     function areaByGefIndicator() {
-        // Use the reduce function to accumulate areas by their respective indicators
-        return Object.entries(
-            projectAreas.value.reduce((acc: { [indicator: string]: number }, area) => {
-                // Destructure the first value of the area object to get the gefIndicator and areaValue
-                const { gefIndicator, area: areaValue } = Object.values(area)[0] as any;
-
-                // If the gefIndicator exists, accumulate the areaValue for that indicator
-                // Otherwise, return the accumulator as is
-                return gefIndicator ? {
-                    ...acc,
-                    [gefIndicator]: (acc[gefIndicator] || 0) + (+areaValue || 0)
-                } : acc;
-            }, {}))
-            // Sort the resulting entries by indicator name in ascending order
-            .sort((a, b) => {
-                if (a[0] > b[0]) return 1;
-                if (a[0] < b[0]) return -1;
-                return 0;
-            });
+        const areas = projectAreas.value;
+        return areaByGefIndicatorUtil(areas);
     }
 
     function areaByGefIndicatorGroup() {
-        const indicators = areaByGefIndicator();
-        const areabyIndicatorGroup = indicators.reduce((prev, [id, area]) => {
-            const newId = id === 'GEF2LDCF' ? '2LDCF' : id.slice(3, 4);
-            return prev.set(newId, (prev.get(newId) || 0) + area);
-        }, new Map());
-        return Array.from(areabyIndicatorGroup);
+        const areas = projectAreas.value;
+        return areaByGefIndicatorGroupUtil(areas);
     }
 
     function createEmptyProject(groupId: string) {

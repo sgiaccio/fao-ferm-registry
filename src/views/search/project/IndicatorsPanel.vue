@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 import { getSortedIndicatorsAndMonitoring } from '@/lib/util';
 import { GoalIndicator, getGoalColor } from '@/lib/auroraIndicators';
 import ResultPanel from './ResultPanel.vue';
@@ -7,23 +9,25 @@ const props = defineProps<{
     areas: any
 }>();
 
-const areasWithIndicators = props.areas
+const areasWithIndicators = computed(() => props.areas
     .map(area => Object.values(area)[0])
-    .filter((areaData: any) => areaData?.goalIndicators?.length > 0 || areaData?.customIndicators?.length > 0);
+    .filter((areaData: any) => areaData?.goalIndicators?.length > 0 || areaData?.customIndicators?.length > 0)
+);
 
-
-const goalIndicators = areasWithIndicators
+const goalIndicators = computed(() => areasWithIndicators.value
     .map(area => area.goalIndicators || [])
     .flat()
     .map(i => ({ indicator: new GoalIndicator(i.indicator) }))
     // remove duplicates
-    .filter((value, index, self) => self.findIndex(i => i.indicator.equals(value.indicator)) === index);
+    .filter((value, index, self) => self.findIndex(i => i.indicator.equals(value.indicator)) === index)
+);
 
-const customIndicators = areasWithIndicators
+const customIndicators = computed(() => areasWithIndicators.value
     .map(area => area.customIndicators || [])
     .flat()
+);
 
-const sorted = getSortedIndicatorsAndMonitoring(goalIndicators);
+const sorted = computed(() => getSortedIndicatorsAndMonitoring(goalIndicators.value));
 </script>
 
 <template>
