@@ -11,7 +11,7 @@ import echartConfig from '@/assets/echarts/themes/dark.json'
 echarts.registerTheme('dark', echartConfig)
 
 // set a dark background for the body
-document.body.style.backgroundColor = '#1a202c';
+// document.body.style.backgroundColor = '#1a202c';
 
 const chartRef = ref(null);
 const countryChartRefs = ref([]);
