@@ -8,10 +8,11 @@ import data from '@/assets/dashboard_data.json';
 import { geoWinkel3 } from 'd3-geo-projection';
 
 import echartConfig from '@/assets/echarts/themes/dark.json'
+console.log(echartConfig);
 echarts.registerTheme('dark', echartConfig)
 
 // set a dark background for the body
-// document.body.style.backgroundColor = '#1a202c';
+document.body.style.backgroundColor = '#1a202c';
 
 const chartRef = ref(null);
 const countryChartRefs = ref([]);
@@ -117,7 +118,7 @@ onMounted(() => {
                 name: 'Committed area',
                 type: 'map',
                 itemStyle: {
-                    areaColor: '#f3f3f3',
+                    areaColor: '#606060',
                 },
                 roam: false,
                 map: 'world',
@@ -157,7 +158,7 @@ watch(selectedCountry, (newVal) => {
                 const chartDom = countryChartRefs.value[index];
                 if (!chartDom) return;
 
-                const chartInstance = echarts.init(chartDom);
+                const chartInstance = echarts.init(chartDom, 'dark');
 
                 // Prepare chart data
                 const chartData = restoration.breakdown
@@ -318,7 +319,7 @@ watch(selectedCountry, (newVal) => {
             </div>
             <div
                 ref="chartRef"
-                class="w-full aspect-video shadow rounded-xl border"
+                class="w-full aspect-video shadow rounded-lg border border-gray-700 overflow-hidden"
             />
             <!-- Restoration Charts -->
             <div v-if="selectedCountry">
@@ -330,7 +331,7 @@ watch(selectedCountry, (newVal) => {
                         v-for="(restoration, index) in selectedCountry.areaUnderRestoration"
                         :key="index"
                         :ref="el => (countryChartRefs[index] = el)"
-                        class="border rounded-lg shadow w-full aspect-video p-4"
+                        class="border border-gray-700 rounded-lg shadow w-full aspect-video overflow-hidden"
                     />
                 </div>
             </div>
