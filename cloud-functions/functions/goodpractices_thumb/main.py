@@ -43,21 +43,20 @@ headers = {
 
 
 def get_bp_data(bp_id):
-    doc_ref = db.collection_group('bestPractices').where('id', '==', bp_id).limit(1)
+    doc_ref = db.collection_group('bestPractices').where('id', '==', bp_id)
     docs = doc_ref.get()
 
-    if not docs:
-        raise Exception('Best practice not found')
-    doc = docs[0]
-    if not doc.exists:
+    # look for the best practice that is in the registry - this is needed as we named other sub-collections "bestPractices"
+    # Name of the other bestPractices subcollections will be changed in the future
+    bp_docs_arr = [doc for doc in docs if doc.reference.parent.parent.parent.id == 'registry']
+    if (len(bp_docs_arr) == 0 or not bp_docs_arr[0].exists):
         raise Exception('Best practice not found')
 
-    # Get the parent document
-    project_ref = doc.reference.parent.parent
-    project = project_ref.get()
-    
-    project_dict = project.to_dict()
-    return (project_dict.get('group'), project_dict.get('status'), project_dict.get('created_by'))
+    bp_doc = bp_docs_arr[0]
+    parent_doc_dict = bp_doc.reference.parent.parent.get().to_dict()
+    right_doc_dict = bp_doc.to_dict()
+    return (parent_doc_dict.get('group'), right_doc_dict.get('status'), right_doc_dict.get('created_by'))
+
 
 def authenticated(fn):
     @wraps(fn)
