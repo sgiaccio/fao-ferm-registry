@@ -8,7 +8,8 @@ import data from '@/assets/dashboard_data.json';
 import { geoWinkel3 } from 'd3-geo-projection';
 
 import echartConfig from '@/assets/echarts/themes/dark.json'
-console.log(echartConfig);
+
+
 echarts.registerTheme('dark', echartConfig)
 
 // set a dark background for the body
@@ -31,10 +32,6 @@ worldJson.features = worldJsonFeatures;
 // Prepare map data
 // const minCommittedArea = Math.min(...data.map(d => d.commitment?.area || 0));
 const maxCommittedArea = Math.max(...data.map(d => d.commitment?.area).filter(d => d));
-
-data.forEach(d => {
-    console.log(d.commitment?.area);
-});
 
 function formatNumber(value) {
     if (value >= 1e9) {
@@ -97,24 +94,65 @@ onMounted(() => {
             min: 0,
             max: maxCommittedArea,
             inRange: {
+                // color: [
+                //     '#313695',
+                //     '#4575b4',
+                //     '#74add1',
+                //     '#abd9e9',
+                //     '#e0f3f8',
+                //     '#ffffbf',
+                //     '#fee090',
+                //     '#fdae61',
+                //     '#f46d43',
+                //     '#d73027',
+                //     '#a50026',
+                // ],
                 color: [
-                    '#313695',
-                    '#4575b4',
-                    '#74add1',
-                    '#abd9e9',
-                    '#e0f3f8',
-                    '#ffffbf',
-                    '#fee090',
-                    '#fdae61',
-                    '#f46d43',
-                    '#d73027',
-                    '#a50026',
+                    '#a50026',  // Dark red
+                    '#d73027',  // Red
+                    '#f46d43',  // Lighter red
+                    '#fdae61',  // Orange
+                    '#fee090',  // Light orange
+                    '#ffffbf',  // Yellow
+                    '#d9ef8b',  // Light greenish yellow
+                    '#a6d96a',  // Greenish yellow
+                    '#66bd63',  // Light green
+                    '#5cb85c',  // Soft natural green
+                    '#2ca02c'   // Balanced green
                 ],
             },
             calculable: true,
         },
+
+        // geo: {
+        //     map: 'world',
+        //     roam: true, // Enables zoom and pan
+        //     projection: {
+        //         project: point => projection(point),
+        //         unproject: point => projection.invert(point),
+        //     },
+        //     itemStyle: {
+        //         areaColor: '#808080',
+        //         borderColor: '#303030',
+        //         borderWidth: 1
+        //     },
+        //     emphasis: {
+        //         label: {
+        //             show: true,
+        //             //halo
+        //             color: '#fff',
+        //             fontSize: 12,
+        //             fontWeight: 'bold',
+        //             backgroundColor: 'rgba(0,0,0,0.5)',
+        //             padding: [3, 6],
+        //             borderRadius: 2,
+        //         },
+        //     },
+        // },
+
         series: [
             {
+                geoIndex: 0,
                 name: 'Committed area',
                 type: 'map',
                 itemStyle: {
@@ -159,6 +197,10 @@ watch(selectedCountry, (newVal) => {
                 if (!chartDom) return;
 
                 const chartInstance = echarts.init(chartDom, 'dark');
+
+                if (!restoration.breakdown && !restoration.area) {
+                    return;
+                }
 
                 // Prepare chart data
                 const chartData = restoration.breakdown
@@ -207,7 +249,7 @@ watch(selectedCountry, (newVal) => {
                         text: '',
                         left: 'center',
                         top: '5%',
-                        left: 'left',
+                        left: '10',
                         // Title style is left empty since we're adding an icon via the graphic component
                     },
                     tooltip: {
@@ -219,7 +261,7 @@ watch(selectedCountry, (newVal) => {
                             const param = params[0]; // Since trigger is 'axis', params is an array
                             const name = param.name;
                             const value = param.value;
-                            return `${name}: ${formatNumber(value)} ha`;
+                            return `${name}: ${formatNumber(value)}ha`;
                         },
                     },
                     legend: {
@@ -231,6 +273,7 @@ watch(selectedCountry, (newVal) => {
                         right: '10%',
                         top: '25%', // Adjust top to make space for the icon
                         bottom: '10%',
+
                     },
                     xAxis: {
                         type: 'value',
@@ -261,7 +304,7 @@ watch(selectedCountry, (newVal) => {
                                 // formatter: '{c} ha',
                                 // use k mega, giga, etc.
                                 formatter: function (params) {
-                                    return formatNumber(params.value) + ' ha';
+                                    return formatNumber(params.value) + 'ha';
                                 },
                             },
                             emphasis: {
@@ -277,7 +320,7 @@ watch(selectedCountry, (newVal) => {
                     option.graphic = {
                         type: 'image',
                         id: 'logo',
-                        left: 'left',
+                        left: '10',
                         top: '5%',
                         z: 10,
                         bounding: 'raw',
@@ -315,25 +358,27 @@ watch(selectedCountry, (newVal) => {
         <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
         <div class="mx-auto max-w-5xl">
             <div class="mt-12 mb-6">
-                <h1 class="text-7xl font-bold font-akrobat uppercase text-center text-gray-700">FERM Country Dashboard</h1>
+                <h1 class="text-7xl font-bold font-akrobat uppercase text-center text-gray-100">FERM Country Dashboard</h1>
             </div>
-            <div
-                ref="chartRef"
-                class="w-full aspect-video shadow rounded-lg border border-gray-700 overflow-hidden"
-            />
-            <!-- Restoration Charts -->
-            <div v-if="selectedCountry">
-                <!-- <h2 class="mt-4 text-xl font-bold">
+            <div class="grid grid-cols-2 gap-3 lg:gap-6 mt-6">
+                <div
+                    ref="chartRef"
+                    class="col-span-2 w-full aspect-video shadow rounded-lg border border-gray-700 overflow-hidden"
+                />
+                <!-- Restoration Charts -->
+                <template v-if="selectedCountry">
+                    <!-- <h2 class="mt-4 text-xl font-bold">
                     {{ selectedCountry.country }} Restoration Data
                 </h2> -->
-                <div class="grid grid-cols-2 gap-6 mt-6">
+
                     <div
-                        v-for="(restoration, index) in selectedCountry.areaUnderRestoration"
+                        v-for="(_restoration, index) in selectedCountry.areaUnderRestoration"
                         :key="index"
                         :ref="el => (countryChartRefs[index] = el)"
-                        class="border border-gray-700 rounded-lg shadow w-full aspect-video overflow-hidden"
+                        class="col-span-2 md:col-span-1 border border-gray-700 rounded-lg shadow w-full aspect-video overflow-hidden"
                     />
-                </div>
+
+                </template>
             </div>
         </div>
     </div>
