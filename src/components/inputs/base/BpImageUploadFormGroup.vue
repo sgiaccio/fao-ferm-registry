@@ -141,12 +141,12 @@ function uploadFile() {
 //     return listAll(dirRef);
 // }
 
-function deleteFile() {
+async function deleteFile() {
     const params = new URLSearchParams({
         'bp_id': props.bpId
     });
 
-    const accessToken = authStore!.getIdToken();
+    const accessToken = await authStore!.getIdToken();
     return fetch('https://europe-west3-fao-ferm.cloudfunctions.net/delete_bp_image?' + params, {
         method: 'DELETE',
         headers: {
@@ -162,15 +162,6 @@ function deleteFile() {
         loadThumbnail();
         uploadStatus.value = 'idle';
     });
-
-    // if (!confirm('Are you sure you want to delete the image?')) return;
-    // const fRef = ref(storage, `${props.folder}/${fileName.value}`);
-    // deleteObject(fRef)
-    //     .catch(_ => alert('Error deleting the file'))
-    //     .finally(() => {
-    //         getFiles();
-    //         loadThumbnail(5);
-    //     });
 }
 </script>
 
