@@ -22,6 +22,7 @@
     "echarts": "^5.5.1",
     "firebase": "^10.12.3",
     "jszip": "^3.10.1",
+    "maplibre-gl": "^4.7.1",
     "ol": "^9.2.4",
     "parsedbf": "^1.1.1",
     "pinia": "^2.1.7",

@@ -9,6 +9,19 @@ export default defineConfig({
   plugins: [
     vue(),
     vueDevTools(),
+    {
+      name: 'configure-pbf-middleware',
+      configureServer(server) {
+        // Middleware to set correct headers for .pbf files
+        server.middlewares.use((req, res, next) => {
+          if (req.url.endsWith('.pbf')) {
+            res.setHeader('Content-Type', 'application/vnd.mapbox-vector-tile');
+            res.setHeader('Content-Encoding', 'gzip'); // If files are gzipped
+          }
+          next();
+        });
+      }
+    }
   ],
   resolve: {
     alias: {

@@ -37,152 +37,6 @@
       }
     ],
     "commitment": {
-      "area": 12000000,
-      "source": "NBSAP"
-    },
-    "unDecadeHeadlineIndicator": {
-      "progressing": 6,
-      "regressing": 4
-    },
-    "areaUnderRestoration": [
-      {
-        "area": 2621624,
-        "breakdown": [
-          {
-            "type": "forests",
-            "area": 2000000
-          },
-          {
-            "type": "grasslands",
-            "area": 621624
-          }
-        ],
-        "source": "Restoration barometer"
-      },
-      {
-        "area": null,
-        "breakdown": null,
-        "source": "FRA"
-      },
-      {
-        "area": 3,
-        "breakdown": [
-          {
-            "type": "ecosystem y1",
-            "area": 1
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y1",
-            "area": 1
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          }
-        ],
-        "source": "FERM"
-      },
-      {
-        "area": 1000,
-        "breakdown": null,
-        "source": "GEF"
-      },
-      {
-        "area": 1222333,
-        "breakdown": [
-          {
-            "type": "biome A",
-            "area": 1000333
-          },
-          {
-            "type": "biome B",
-            "area": 111000
-          }
-        ],
-        "source": "ORR"
-      },
-      {
-        "area": 1234567,
-        "breakdown": [
-          {
-            "type": "ecoregion a",
-            "area": 1000000
-          },
-          {
-            "type": "ecoregion b",
-            "area": 234567
-          }
-        ],
-        "source": "RESTOR"
-      }
-    ]
-  },
-  {
-    "country": "China",
-    "iso2": "CN",
-    "profile": [
-      {
-        "landArea": 8358140,
-        "source": "UN STAT"
-      },
-      {
-        "degradedLand": null,
-        "source": "UNCCD"
-      },
-      {
-        "forests": 496619600,
-        "source": "BOH"
-      },
-      {
-        "AAA": 496619600,
-        "source": "SOURCE_A"
-      },
-      {
-        "BBB": 496619600,
-        "source": "SOURCE_B"
-      },
-      {
-        "CCC": 496619600,
-        "source": "SOURCE_C"
-      },
-      {
-        "DDD": 496619600,
-        "source": "SOURCE_D"
-      },
-      {
-        "EEE": 496619600,
-        "source": "SOURCE_E"
-      }
-    ],
-    "commitment": {
       "area": 8000000,
       "source": "NBSAP"
     },
@@ -192,102 +46,174 @@
     },
     "areaUnderRestoration": [
       {
+        "source": "Restoration barometer",
         "area": 2621624,
         "breakdown": [
           {
-            "type": "forests",
-            "area": 2000000
-          },
-          {
-            "type": "grasslands",
-            "area": 621624
+            "by": "type",
+            "values": [
+              {
+                "label": "Forests and woodlands",
+                "area": 2000000
+              },
+              {
+                "label": "Grasslands, shrublands and savannahs",
+                "area": 621624
+              },
+              {
+                "label": "Coasts and mangroves",
+                "area": 621624
+              },
+              {
+                "label": "Deserts and semi-deserts",
+                "area": 621624
+              },
+              {
+                "label": "Farmlands and mixed-use areas",
+                "area": 621624
+              },
+              {
+                "label": "Rivers, streams, lakes (wetlands)",
+                "area": 621624
+              },
+              {
+                "label": "Urban areas",
+                "area": 621624
+              }
+            ]
           }
-        ],
-        "source": "Restoration barometer"
+        ]
       },
       {
+        "_comment": "Some sources don't have area nor breakdown",
+        "source": "FRA",
         "area": null,
-        "breakdown": null,
-        "source": "FRA"
+        "breakdown": null
       },
       {
+        "source": "FERM",
         "area": 3,
         "breakdown": [
           {
-            "type": "ecosystem y1",
-            "area": 1
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y1",
-            "area": 1
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
-          },
-          {
-            "type": "ecosystem y2",
-            "area": 2
+            "by": "ecosystem",
+            "_comment": "some brakedowns have labels and short labels",
+            "values": [
+              {
+                "label": "Tropical-subtropical forests biome",
+                "shortLabel": "T1",
+                "area": 1
+              },
+              {
+                "label": "Temperate-boreal forests and woodlands biome",
+                "shortLabel": "T2",
+                "area": 2
+              },
+              {
+                "label": "Shrublands and shrubby woodlands biome",
+                "shortLabel": "T3",
+                "area": 2
+              },
+              {
+                "label": "Savannas and grasslands biome",
+                "shortLabel": "T4",
+                "area": 2
+              },
+              {
+                "label": "Deserts and semi-deserts biome",
+                "shortLabel": "T5",
+                "area": 2
+              },
+              {
+                "label": "Polar/alpine (cryogenic) biome",
+                "shortLabel": "T6",
+                "area": 1
+              },
+              {
+                "label": "Intensive land-use biome",
+                "shortLabel": "T7",
+                "area": 2
+              },
+              {
+                "label": "Rivers and streams biome",
+                "shortLabel": "F1",
+                "area": 2
+              },
+              {
+                "label": "Lakes biome",
+                "shortLabel": "F2",
+                "area": 2
+              },
+              {
+                "label": "Palustrine wetlands biome",
+                "shortLabel": "TF1",
+                "area": 2
+              }
+            ]
           }
-        ],
-        "source": "FERM"
+        ]
       },
       {
+        "_comment": "Some souces have total area but not a brakedown",
+        "source": "GEF",
         "area": 1000,
-        "breakdown": null,
-        "source": "GEF"
+        "breakdown": null
       },
       {
+        "source": "ORR",
         "area": 1222333,
+        "_comment": "Some sources have more than one breakdown",
         "breakdown": [
           {
-            "type": "biome A",
-            "area": 1000333
+            "by": "biome",
+            "values": [
+              {
+                "label": "biome-level organization A",
+                "area": 1000333
+              },
+              {
+                "label": "biome-level organization B",
+                "area": 111000
+              }
+            ]
           },
           {
-            "type": "biome B",
-            "area": 111000
+            "by": "boh?",
+            "values": [
+              {
+                "label": "AAA",
+                "area": 1000333
+              },
+              {
+                "label": "BBB",
+                "area": 111000
+              }
+            ]
           }
-        ],
-        "source": "ORR"
+        ]
       },
       {
+        "source": "RESTOR",
         "area": 1234567,
         "breakdown": [
           {
-            "type": "ecoregion a",
-            "area": 1000000
+            "by": "ecoregion",
+            "values": [
+              {
+                "label": "ecoregion a",
+                "area": 1000000
+              },
+              {
+                "label": "ecoregion b",
+                "area": 234567
+              }
+            ]
           },
           {
-            "type": "ecoregion b",
-            "area": 234567
+            "by": "ecoregion",
+            "values": null,
+            "_comment": "It might happen that a brake down is not available"
           }
-        ],
-        "source": "RESTOR"
+        ]
       }
     ]
   }

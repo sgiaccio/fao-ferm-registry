@@ -2,15 +2,17 @@
 import { ref, onMounted, watch, nextTick } from 'vue';
 import * as echarts from 'echarts';
 
+
 // Import the JSON files
 import worldJson from '@/assets/world_stylized.json';
 import data from '@/assets/dashboard_data.json';
 import { geoWinkel3 } from 'd3-geo-projection';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
-import echartConfig from '@/assets/echarts/themes/dark.json'
+import echartConfig from '@/assets/echarts/themes/dark.json';
 
-
-echarts.registerTheme('dark', echartConfig)
+echarts.registerTheme('dark', echartConfig);
 
 // set a dark background for the body
 document.body.style.backgroundColor = '#1a202c';
@@ -25,6 +27,7 @@ const worldJsonFeatures = worldJson.features.map(f => ({
     properties: {
         ...f.properties,
         name: f.properties?.nam_en,
+        // name: f.properties.iso2cd,
     },
 }));
 worldJson.features = worldJsonFeatures;
@@ -32,6 +35,16 @@ worldJson.features = worldJsonFeatures;
 // Prepare map data
 // const minCommittedArea = Math.min(...data.map(d => d.commitment?.area || 0));
 const maxCommittedArea = Math.max(...data.map(d => d.commitment?.area).filter(d => d));
+
+
+const mapData = worldJson.features.map((f, i) => {
+    const found = data.find(d => d.iso2 === f.properties.iso2cd);
+    return {
+        name: f.properties?.nam_en || i,
+        value: found?.commitment?.area || null,
+        iso2: f.properties.iso2cd,
+    };
+});
 
 function formatNumber(value) {
     if (value >= 1e9) {
@@ -44,15 +57,6 @@ function formatNumber(value) {
         return value.toFixed(2);
     }
 }
-
-const mapData = worldJson.features.map((f, i) => {
-    const found = data.find(d => d.iso2 === f.properties.iso2cd);
-    return {
-        name: f.properties?.nam_en || i,
-        value: found?.commitment?.area || null,
-        iso2: f.properties.iso2cd,
-    };
-});
 
 const colorList = [
     '#5470C6', '#91CC75', '#EE6666', '#73C0DE',
@@ -67,7 +71,7 @@ const colorList = [
 const iconMap = {
     'Restoration barometer': '/interop_logos/rb.svg',
     // 'FRA': '/path/to/fra_icon.png',
-    'FERM': '/interop_logos/ferm.svg',
+    'FERM': '/interop_logos/ferm_dark_bg.svg',
     'RESTOR': '/interop_logos/restor.svg',
     'ORR': '/interop_logos/orr.png',
     'GEF': '/interop_logos/gef.svg',
@@ -76,113 +80,180 @@ const iconMap = {
 onMounted(() => {
     if (!chartRef.value) return;
 
-    const projection = geoWinkel3();
+    // const projection = geoWinkel3();
 
-    const chartDom = chartRef.value;
-    const mapChart = echarts.init(chartDom, 'dark');
+    // const chartDom = chartRef.value;
+    // const mapChart = echarts.init(chartDom, 'dark');
 
-    echarts.registerMap('world', worldJson);
-    const option = {
-        tooltip: {
-            trigger: 'item',
-            showDelay: 0,
-            transitionDuration: 0.2,
-        },
-        visualMap: {
-            left: 'right',
-            top: 'top',
-            min: 0,
-            max: maxCommittedArea,
-            inRange: {
-                // color: [
-                //     '#313695',
-                //     '#4575b4',
-                //     '#74add1',
-                //     '#abd9e9',
-                //     '#e0f3f8',
-                //     '#ffffbf',
-                //     '#fee090',
-                //     '#fdae61',
-                //     '#f46d43',
-                //     '#d73027',
-                //     '#a50026',
-                // ],
-                color: [
-                    '#a50026',  // Dark red
-                    '#d73027',  // Red
-                    '#f46d43',  // Lighter red
-                    '#fdae61',  // Orange
-                    '#fee090',  // Light orange
-                    '#ffffbf',  // Yellow
-                    '#d9ef8b',  // Light greenish yellow
-                    '#a6d96a',  // Greenish yellow
-                    '#66bd63',  // Light green
-                    '#5cb85c',  // Soft natural green
-                    '#2ca02c'   // Balanced green
-                ],
-            },
-            calculable: true,
-        },
+    // echarts.registerMap('world', worldJson);
+    // const option = {
+    //     tooltip: {
+    //         trigger: 'item',
+    //         showDelay: 0,
+    //         transitionDuration: 0.2,
+    //     },
+    //     visualMap: {
+    //         left: 'right',
+    //         top: 'top',
+    //         min: 0,
+    //         max: maxCommittedArea,
+    //         inRange: {
+    //             // color: [
+    //             //     '#313695',
+    //             //     '#4575b4',
+    //             //     '#74add1',
+    //             //     '#abd9e9',
+    //             //     '#e0f3f8',
+    //             //     '#ffffbf',
+    //             //     '#fee090',
+    //             //     '#fdae61',
+    //             //     '#f46d43',
+    //             //     '#d73027',
+    //             //     '#a50026',
+    //             // ],
+    //             color: [
+    //                 '#a50026',  // Dark red
+    //                 '#d73027',  // Red
+    //                 '#f46d43',  // Lighter red
+    //                 '#fdae61',  // Orange
+    //                 '#fee090',  // Light orange
+    //                 '#ffffbf',  // Yellow
+    //                 '#d9ef8b',  // Light greenish yellow
+    //                 '#a6d96a',  // Greenish yellow
+    //                 '#66bd63',  // Light green
+    //                 '#5cb85c',  // Soft natural green
+    //                 '#2ca02c'   // Balanced green
+    //             ],
+    //         },
+    //         calculable: true,
+    //     },
 
-        // geo: {
-        //     map: 'world',
-        //     roam: true, // Enables zoom and pan
-        //     projection: {
-        //         project: point => projection(point),
-        //         unproject: point => projection.invert(point),
-        //     },
-        //     itemStyle: {
-        //         areaColor: '#808080',
-        //         borderColor: '#303030',
-        //         borderWidth: 1
-        //     },
-        //     emphasis: {
-        //         label: {
-        //             show: true,
-        //             //halo
-        //             color: '#fff',
-        //             fontSize: 12,
-        //             fontWeight: 'bold',
-        //             backgroundColor: 'rgba(0,0,0,0.5)',
-        //             padding: [3, 6],
-        //             borderRadius: 2,
-        //         },
-        //     },
-        // },
+    //     // geo: {
+    //     //     map: 'world',
+    //     //     roam: true, // Enables zoom and pan
+    //     //     projection: {
+    //     //         project: point => projection(point),
+    //     //         unproject: point => projection.invert(point),
+    //     //     },
+    //     //     itemStyle: {
+    //     //         areaColor: '#808080',
+    //     //         borderColor: '#303030',
+    //     //         borderWidth: 1
+    //     //     },
+    //     //     emphasis: {
+    //     //         label: {
+    //     //             show: true,
+    //     //             //halo
+    //     //             color: '#fff',
+    //     //             fontSize: 12,
+    //     //             fontWeight: 'bold',
+    //     //             backgroundColor: 'rgba(0,0,0,0.5)',
+    //     //             padding: [3, 6],
+    //     //             borderRadius: 2,
+    //     //         },
+    //     //     },
+    //     // },
 
-        series: [
-            {
-                geoIndex: 0,
-                name: 'Committed area',
-                type: 'map',
-                itemStyle: {
-                    areaColor: '#606060',
-                },
-                roam: false,
-                map: 'world',
-                emphasis: {
-                    label: {
-                        show: true,
-                    },
-                },
-                projection: {
-                    project: point => projection(point),
-                    unproject: point => projection.invert(point),
-                },
-                data: mapData,
-            },
-        ],
-    };
+    //     series: [
+    //         {
+    //             geoIndex: 0,
+    //             name: 'Committed area',
+    //             type: 'map',
+    //             itemStyle: {
+    //                 areaColor: '#606060',
+    //             },
+    //             roam: false,
+    //             map: 'world',
+    //             emphasis: {
+    //                 label: {
+    //                     show: true,
+    //                     // halo
+    //                     color: '#fff',
+    //                     fontSize: 12,
+    //                     fontWeight: 'bold',
+    //                     backgroundColor: 'rgba(0,0,0,0.5)',
+    //                     padding: [3, 6],
+    //                 },
+    //             },
+    //             projection: {
+    //                 project: point => projection(point),
+    //                 unproject: point => projection.invert(point),
+    //             },
+    //             data: mapData,
+    //         },
+    //     ],
+    // };
 
-    mapChart.on('click', function (params) {
-        const countryData = data.find(d => d.iso2 === params.data.iso2);
-        selectedCountry.value = countryData;
+    // mapChart.on('click', function (params) {
+    //     const countryData = data.find(d => d.iso2 === params.data.iso2);
+    //     selectedCountry.value = countryData;
+    // });
+
+    // mapChart.setOption(option);
+
+    // window.addEventListener('resize', () => {
+    //     mapChart.resize();
+    // });
+
+
+
+    // Initialize the map with globe projection
+    const map = new maplibregl.Map({
+        container: chartRef.value,
+        style: '/maplibre_style.json',
+        center: [0, 0],
+        zoom: 1,
+        projection: { " type": "globe" }  // Set projection to 'globe'
     });
 
-    mapChart.setOption(option);
+    // Add your GeoJSON data
+    map.on('load', () => {
+        map.addSource('raster-source', {
+            'type': 'raster',
+            'tiles': ['https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+            'tileSize': 256,
+        });
+        // map.addSource('myGeoJSON', {
+        //     type: 'geojson',
+        //     data: worldJson  // Your GeoJSON file path
+        // });
 
-    window.addEventListener('resize', () => {
-        mapChart.resize();
+        // map.addLayer({
+        //     id: 'myGeoJSON-layer',
+        //     type: 'fill',
+        //     source: 'myGeoJSON',
+        //     layout: {},
+        //     paint: {
+        //         'fill-color': '#ffcc00',
+        //         'fill-opacity': 0.6
+        //     }
+        // });
+        // Get the first layer's ID to place the new layer underneath all other layers
+        const firstLayerId = map.getStyle().layers[0].id;
+
+        // Add the raster layer, placing it below the first layer
+        map.addLayer({
+            'id': 'raster-layer',
+            'type': 'raster',
+            'source': 'raster-source',
+            'paint': {}
+        }, firstLayerId); // Place this layer below the first layer
+    });
+
+    map.on('click', (e) => {
+        const features = map.queryRenderedFeatures(e.point, {
+            // layers: ['countries-label', 'geolines-label'] // Specify the layers you want to inspect
+        });
+
+        if (features.length) {
+            console.log('Features under the click:', features);
+            features.forEach(feature => {
+                console.log('Feature properties:', feature.properties);
+                console.log('Feature geometry:', feature.geometry);
+            });
+        } else {
+            console.log('No features found at this location.');
+        }
     });
 });
 
@@ -196,16 +267,20 @@ watch(selectedCountry, (newVal) => {
                 const chartDom = countryChartRefs.value[index];
                 if (!chartDom) return;
 
-                const chartInstance = echarts.init(chartDom, 'dark');
+                const chartInstance = echarts.init(chartDom, 'dark', { renderer: 'svg' });
 
                 if (!restoration.breakdown && !restoration.area) {
                     return;
                 }
 
                 // Prepare chart data
-                const chartData = restoration.breakdown
-                    ? restoration.breakdown.map(item => ({
-                        name: item.type,
+                console.log(restoration);
+                const restorationCategory = restoration.breakdown ? Object.values(restoration.breakdown)[0] : null;
+
+                const chartData = restorationCategory
+                    ? restorationCategory.values.map(item => ({
+                        name: item.label,
+                        shortName: item.shortLabel,
                         value: item.area,
                     }))
                     : [{ name: 'Area', value: restoration.area }];
@@ -246,11 +321,9 @@ watch(selectedCountry, (newVal) => {
                 const option = {
                     title: {
                         // Use an image as the title
-                        text: '',
                         left: 'center',
                         top: '5%',
                         left: '10',
-                        // Title style is left empty since we're adding an icon via the graphic component
                     },
                     tooltip: {
                         trigger: 'axis',
@@ -258,7 +331,9 @@ watch(selectedCountry, (newVal) => {
                             type: 'shadow', // Displays a shadow to indicate the axis pointer
                         },
                         formatter: function (params) {
+                            console.log(params);
                             const param = params[0]; // Since trigger is 'axis', params is an array
+                            console.log(param);
                             const name = param.name;
                             const value = param.value;
                             return `${name}: ${formatNumber(value)}ha`;
@@ -281,7 +356,7 @@ watch(selectedCountry, (newVal) => {
                     },
                     yAxis: {
                         type: 'category',
-                        data: chartData.map(item => item.name),
+                        data: chartData.map(item => item.shortName || item.name),
                         axisLabel: {
                             interval: 0,
                             align: 'right',
@@ -317,7 +392,7 @@ watch(selectedCountry, (newVal) => {
                 const source = restoration.source;
                 if (iconMap[source]) {
                     // Add a graphic component to display the icon in place of the title
-                    option.graphic = {
+                    option.graphic = [{
                         type: 'image',
                         id: 'logo',
                         left: '10',
@@ -331,7 +406,17 @@ watch(selectedCountry, (newVal) => {
                             height: 40,
                             opacity: 1,
                         },
-                    };
+                    }, {
+                        type: 'text',
+                        align: 'left',
+                        top: 30,
+                        right: 50,
+                        style: {
+                            text: `Total area: ${formatNumber(restoration.area)}ha`,
+                            fill: '#fff',
+                            font: 'bold 18px Akrobat',
+                        },
+                    }];
                 } else {
                     // Use a text title if no icon is available
                     option.title.text = source;
