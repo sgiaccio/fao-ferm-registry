@@ -19,7 +19,7 @@ import FormGroup from '../../components/inputs/FormGroup.vue';
 import NumberInput from '../../components/inputs/base/NumberInput.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
-// import SmallCardsFormGroup from '@/components/inputs/base/SmallCardsFormGroup.vue';
+import countryEcosystemsFormGroup from '@/components/inputs/base/CountryEcosystemsFormGroup.vue';
 
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
@@ -27,7 +27,7 @@ import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
 import AlertModal from '@/views/AlertModal.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
-import { roundToPrecisionAsString } from '@/lib/util';
+import { roundToPrecisionAsString, getLastTargetArea } from '@/lib/util';
 
 import { getGaulLevel0 } from '@/firebase/firestore';
 
@@ -160,9 +160,21 @@ provide('applyToAll', () => {
     });
 });
 
-function onUploadProgress({ loaded, total }: { loaded: number, total: number }) {
-    
-}
+// function onUploadProgress({ loaded, total }: { loaded: number, total: number }) {
+// TODO
+// }
+
+const uniqueEcosystems = computed(() => {
+    if (!countries.value) return [];
+    const ecosystems = new Set<string>();
+    store.projectAreas.forEach(area => {
+        const areaEcosystems = getAreaValue(area).ecosystems;
+        if (areaEcosystems) {
+            areaEcosystems.forEach((ecosystem: string) => ecosystems.add(ecosystem));
+        }
+    });
+    return [...ecosystems];
+});
 </script>
 
 <template>
@@ -417,7 +429,7 @@ function onUploadProgress({ loaded, total }: { loaded: number, total: number }) 
                     :projectId="store.id!"
                     folder="documents/gef/plans"
                     :multiple="true"
-                    :getAccessTokenFn ="authStore!.getIdToken"
+                    :getAccessTokenFn="authStore!.getIdToken"
                     :edit="edit"
                 >
 
@@ -565,6 +577,19 @@ function onUploadProgress({ loaded, total }: { loaded: number, total: number }) 
                     />
                     Delete all areas
                 </button>
+            </div>
+            <div
+                v-if="countries"
+                class="my-4 "
+            >
+                <countryEcosystemsFormGroup
+                    v-model="store.project.project.ecosystems"
+                    :edit="edit"
+                    :countries="store.project.project.countries"
+                    :ecosystems="uniqueEcosystems"
+                    :totalArea="getLastTargetArea(store.project)"
+                    :areaUnits="store.project.project.areaUnits"
+                />
             </div>
         </template>
     </TabTemplate>

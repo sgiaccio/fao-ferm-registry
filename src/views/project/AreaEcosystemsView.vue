@@ -11,7 +11,7 @@ import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 
 import { getPolygonZonalStats } from '@/firebase/functions';
 
-import { groupBiomesByRealm } from '@/lib/util';
+import { groupBiomesByRealm, getRealmLabel, getRealmColor, getRealmBorderColor } from '@/lib/util';
 
 const props = withDefaults(defineProps<{
     edit?: boolean,
@@ -75,22 +75,9 @@ type Status = 'idle' | 'loading' | 'success' | 'error';
 const areaBiomesLoadingStatus = ref<Status>('idle');
 
 
-const realms = [
-    { value: 'T', label: 'Terrestrial realm', color: '#1f77b4', borderColor: '#0d4d8a' },
-    { value: 'M', label: 'Marine realm', color: '#ff7f0e', borderColor: '#cc6608' },
-    { value: 'F', label: 'Freshwater realm', color: '#2ca02c', borderColor: '#1e6a1e' },
-    { value: 'S', label: 'Subterranean realm', color: '#d62728', borderColor: '#9a1c1c' },
-    { value: 'MT', label: 'Marine-Terrestrial realm', color: '#9467bd', borderColor: '#6b4c8a' },
-    { value: 'SF', label: 'Subterranean-Freshwater realm', color: '#8c564b', borderColor: '#623c34' },
-    { value: 'FM', label: 'Freshwater-Marine realm', color: '#e377c2', borderColor: '#b25399' },
-    { value: 'MFT', label: 'Marine-Freshwater-Terrestrial realm', color: '#7f7f7f', borderColor: '#595959' },
-    { value: 'SM', label: 'Subterranean-Marine realm', color: '#bcbd22', borderColor: '#8a8c16' },
-    { value: 'TF', label: 'Terrestrial-Freshwater realm', color: '#17becf', borderColor: '#11a3ac' }
-];
-
 const groupedBiomes = computed(() => {
     const areaBiomes = props.area.ecosystems;
-    return groupBiomesByRealm(areaBiomes, realms);
+    return groupBiomesByRealm(areaBiomes, menus.iucnEcosystems);
 });
 
 async function getAreaBiomeStats() {
@@ -235,11 +222,11 @@ function handleAfterLeave(el: any) {
             <div
                 v-for="realm in groupedBiomes"
                 :key="realm.realm"
-                :style="`background-color: ${realms.find(r => r.value === realm.realm)?.color};border-color: ${realms.find(r => r.value === realm.realm)?.borderColor};`"
+                :style="`background-color: ${getRealmColor(realm.realm)};border-color: ${getRealmBorderColor(realm.realm)};`"
                 class="basis-1/3 rounded-lg px-2 py-2 font-sm flex flex-col gap-y-2 border-2"
             >
 
-                <span class="text-xm font-medium text-white">{{ (realms.find(r => r.value === realm.realm))?.label }}</span>
+                <span class="text-xm font-medium text-white">{{ getRealmLabel(realm.realm) }}</span>
                 <div class="flex flex-col gap-y-2">
                     <div
                         v-for="biome in (realm.biomes)"

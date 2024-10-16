@@ -19,6 +19,7 @@ import NumberInput from '@/components/inputs/base/NumberInput.vue';
 import SelectInput from '@/components/inputs/base/SelectInput.vue';
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
+import CountryEcosystemsFormGroup from '@/components/inputs/base/CountryEcosystemsFormGroup.vue';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
@@ -160,6 +161,18 @@ provide('applyToAll', () => {
         }
     });
 });
+
+const uniqueEcosystems = computed(() => {
+    if (!countries.value) return [];
+    const ecosystems = new Set<string>();
+    store.projectAreas.forEach(area => {
+        const areaEcosystems = getAreaValue(area).ecosystems;
+        if (areaEcosystems) {
+            areaEcosystems.forEach((ecosystem: string) => ecosystems.add(ecosystem));
+        }
+    });
+    return [...ecosystems];
+});
 </script>
 
 <template>
@@ -290,6 +303,19 @@ provide('applyToAll', () => {
                     />
                     Delete all areas
                 </button>
+            </div>
+            <div
+                v-if="countries"
+                class="my-4 "
+            >
+                <countryEcosystemsFormGroup
+                    v-model="store.project.project.ecosystems"
+                    :edit="edit"
+                    :countries="store.project.project.countries"
+                    :ecosystems="uniqueEcosystems"
+                    :totalArea="store.project.project.areaUnderRestoration"
+                    :areaUnits="store.project.project.areaUnits"
+                />
             </div>
         </template>
     </TabTemplate>
