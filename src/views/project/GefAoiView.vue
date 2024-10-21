@@ -20,6 +20,8 @@ import NumberInput from '../../components/inputs/base/NumberInput.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
 import countryEcosystemsFormGroup from '@/components/inputs/base/CountryEcosystemsFormGroup.vue';
+import paAndTraditionalTerritories from './paAndTraditionalTerritories.vue';
+import MultiInputPassive from '@/components/inputs/base/MultiInputPassive.vue';
 
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
@@ -93,6 +95,20 @@ const multiInputComponents = {
     },
 };
 
+const paAndTraditionalTerritoriesComponent = {
+    component: paAndTraditionalTerritories,
+    newData: {
+        localCommunities: undefined,
+        protectedAreas: undefined
+    },
+    addItemLabel: 'Add admin area',
+    labelFn: (_i, v) => countries.value.find(c => c.iso2 === v.id)?.label || 'Unknown country',
+    // calculatedProps: [
+    //     { key: 'country', f: (_: any, i: number) => store.project.project.countries[i] },
+    // ],
+    // has to be calculated props to be dynamic
+    calculatedProps: [{key: 'units', f: (_: any, i: number) => store.project.project.areaUnits}]
+};
 
 const showUploadInfoModal = ref(false);
 const showDrawInfoModal = ref(false);
@@ -589,6 +605,16 @@ const uniqueEcosystems = computed(() => {
                     :ecosystems="uniqueEcosystems"
                     :totalArea="getLastTargetArea(store.project)"
                     :areaUnits="store.project.project.areaUnits"
+                />
+                <div class="mt-4 text-lg text-gray-700 font-bold mb-2">
+                    Protected Area (PA), Other Effective Area-based Conservation Measures (OECM) and Indigenous and Traditional Territory (ITT)
+                </div>
+                <MultiInputPassive
+                    :edit="edit"
+                    :numbering="(n, v) => 'n'"
+                    :ids="store.project.project.countries"
+                    :input-component="paAndTraditionalTerritoriesComponent"
+                    v-model="store.project.paAndTraditionalTerritories"
                 />
             </div>
         </template>

@@ -2,7 +2,6 @@
 import { watch, ref, computed } from "vue";
 
 import baseProps from "../formGroupProps"
-// import FormGroup from "../FormGroup.vue"
 
 // import trangle mark to indicate that the value is required
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/solid';
@@ -41,7 +40,9 @@ watch(() => props.enabled(), e => {
 });
 
 const errorMessages = computed(() => {
-    if (!props.modelValue) return;
+    if (!props.modelValue || !props.modelValue.length || !props.ecosystems || !props.ecosystems.length) {
+        return [];
+    }
 
     const totalPercentage = props.modelValue.reduce((acc: number, country: any) => {
         return acc + country.ecosystems.reduce((acc: number, ecosystem: any) => {
@@ -50,7 +51,8 @@ const errorMessages = computed(() => {
     }, 0);
 
     if (totalPercentage < 99.99 || totalPercentage > 100.01) {
-        return [`The total percentage must be 100. It is currently ${totalPercentage.toFixed(2)}`];
+        // return [`The total percentage must be 100. It is currently ${totalPercentage.toFixed(2)}`];
+        return [`The total percentage should equal 100%, but it currently sums to ${totalPercentage.toFixed(2)}%.`];
     }
 });
 
@@ -133,7 +135,7 @@ watch(() => percentValues, value => {
                 const e = ecosystem.value
                 return {
                     ecosystem: ecosystem.ecosystem,
-                    value: (e !== undefined && e !== null) ? e * (props.totalArea || 0) / 100 : undefined
+                    value: (e !== undefined && e !== null) ? +(e * (props.totalArea || 0) / 100).toFixed(2) : undefined
                 }
             })
         }
@@ -153,137 +155,109 @@ function updateAreaValue(country: string, ecosystem: string, newValue: number) {
         return;
     }
 
-    areaValues.value[countryIndex].ecosystems[ecosystemIndex].value = newValue;
-    percentValues.value[countryIndex].ecosystems[ecosystemIndex].value = props.totalArea ? newValue / props.totalArea * 100 : 0
+    areaValues.value[countryIndex].ecosystems[ecosystemIndex].value = +newValue;
+    const percentage = props.totalArea ? newValue / +props.totalArea * 100 : 0;
+    percentValues.value[countryIndex].ecosystems[ecosystemIndex].value = +(percentage.toFixed(2));
 
     emit('update:modelValue', percentValues.value);
 }
 
-watch(areaValues, value => {
-    updateFromAreaValue.value = true;
-
-    // update the related percent value
-    value.forEach(country => {
-        country.ecosystems.forEach(ecosystem => {
-            const e = ecosystem.value;
-            const countryIndex = percentValues.value.findIndex((c: any) => c.country === country.country);
-            if (countryIndex === -1) {
-                return;
-            }
-            const ecosystemIndex = percentValues.value[countryIndex].ecosystems.findIndex((e: any) => e.ecosystem === ecosystem.ecosystem);
-            if (ecosystemIndex === -1) {
-                return;
-            }
-
-            // using == null here to also catch undefined
-            percentValues.value[countryIndex].ecosystems[ecosystemIndex].value = (props.totalArea == null || e == null) ?  undefined : e / props.totalArea * 100;
-        });
-    });
-}, { deep: true });
-
 function calculateSum(values: any[]) {
     try {
-        return values.reduce((acc, country) => acc + country.ecosystems.reduce((acc, ecosystem) => acc + (ecosystem.value || 0), 0), 0);
+        return values.reduce((acc, country) => acc + country.ecosystems.reduce((acc, ecosystem) => acc + (+ecosystem.value || 0), 0), 0);
     } catch (e) {
-        alert();
         console.error(e);
     }
 }
 </script>
 
 <template>
-    <div class="flex flex-row items-center justify-between mb-2">
-        <h2 class="text-2xl font-semibold">Area by {{ countries?.length > 1 ? 'country and' : '' }} ecosystem</h2>
-        <div class="flex flex-row items-center gap-x-2">
-            <div class="font-medium">Total area: {{ totalArea }}</div>
-            <div class="font-medium">[{{ areaUnits }}]</div>
-            -
-            <div class="font-medium">Area sum: {{ Math.round(calculateSum(areaValues)) }}</div>
-            <div class="font-medium">[{{ areaUnits }}]</div>
-            -
-            <div class="font-medium">Total percentage: {{ Math.round(calculateSum(percentValues)) }}</div>
-        </div>
-    </div>
-
-    <!-- Display Validation Messages -->
-    <div :class="['mt-2 text-sm font-bold text-red-600', showValidation ? 'visible' : 'invisible']">
-        <div>
-            {{ errorMessages?.length ? errorMessages[0] : 'errors' }}
-        </div>
-    </div>
-
-    <!-- Iterate Over Countries -->
-    <div
-        v-for="country in percentValues"
-        :key="country.country"
-        class="border rounded-xl shadow-md mb-6 overflow-hidden"
-    >
-        <!-- Country Header -->
-        <div class="bg-gray-600 text-white h-12 flex items-center">
-            <h2 class="text-lg font-semibold px-4">{{ getCountryNameByIso2(country.country) }}</h2>
+    <template v-if="countries && countries.length && ecosystems && ecosystems.length">
+        <div class="flex flex-row items-center justify-between mb-2">
+            <h2 class="text-2xl font-semibold">Area by {{ countries?.length > 1 ? 'country and' : '' }} ecosystem</h2>
+            <div class="flex flex-row items-center gap-x-2">
+                <div class="font-medium">Total percentage: {{ Math.round(calculateSum(percentValues)) }}% ({{ Math.round(calculateSum(areaValues)) }}/{{ totalArea }})</div>
+            </div>
         </div>
 
-        <!-- Iterate Over Ecosystems -->
-        <div class="flex flex-col divide-y_ divide-gray-200_">
-            <div
-                v-for="ecosystem in country.ecosystems"
-                :key="ecosystem.ecosystem"
-                :style="`background-color: ${getEcosystemColor(ecosystem.ecosystem)}`"
-            >
-                <div class="px-4 py-3.5">
-                    <!-- Ecosystem Header export function getRecursiveMenuLabel(value: string | number, menu: RecursiveMenu): string { -->
-                    <h3 class="text-xs font-medium mb-2 text-white">{{ getRecursiveMenuLabel(ecosystem.ecosystem, menus.iucnEcosystems) }}</h3>
+        <!-- Display Validation Messages -->
+        <div :class="['mt-2 text-sm font-bold text-red-600', showValidation ? 'visible' : 'invisible']">
+            <div>
+                {{ errorMessages?.length ? errorMessages[0] : 'errors' }}
+            </div>
+        </div>
 
-                    <div class="flex flex-row items-center">
-                        <!-- Input Group -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center flex-grow">
-                            <div class="flex flex-row items-center gap-x-2">
-                                <div class="text-white text-xs font-medium">%</div>
-                                <!-- <number-input
-                                    v-model="ecosystem.value"
-                                    :edit="edit"
-                                    class="px-2 py-1"
-                                /> -->
-                                <input
-                                    type="number"
-                                    v-model.number="ecosystem.value"
-                                    :placeholder="placeholder"
-                                    class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md p-1"
-                                >
+        <!-- Iterate Over Countries -->
+        <div
+            v-for="country in percentValues"
+            :key="country.country"
+            class="border rounded-xl shadow-md mb-6 overflow-hidden"
+        >
+            <!-- Country Header -->
+            <div class="bg-gray-600 text-white h-12 flex items-center">
+                <h2 class="text-lg font-semibold px-4">{{ getCountryNameByIso2(country.country) }}</h2>
+            </div>
+
+            <!-- Iterate Over Ecosystems -->
+            <div class="flex flex-col divide-y_ divide-gray-200_">
+                <div
+                    v-for="ecosystem in country.ecosystems"
+                    :key="ecosystem.ecosystem"
+                    :style="`background-color: ${getEcosystemColor(ecosystem.ecosystem)}`"
+                >
+                    <div class="px-4 py-3.5">
+                        <!-- Ecosystem Header export function getRecursiveMenuLabel(value: string | number, menu: RecursiveMenu): string { -->
+                        <h3 class="text-xs font-medium mb-2 text-white">{{ getRecursiveMenuLabel(ecosystem.ecosystem, menus.iucnEcosystems) }}</h3>
+
+                        <div class="flex flex-row items-center">
+                            <!-- Input Group -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center flex-grow">
+                                <div class="flex flex-row items-center gap-x-2">
+                                    <div class="text-white text-xs font-medium">%</div>
+                                    <input
+                                        v-if="edit"
+                                        type="number"
+                                        v-model.number="ecosystem.value"
+                                        :placeholder="placeholder"
+                                        class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md p-1"
+                                    >
+                                    <div
+                                        v-else
+                                        class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md p-1"
+                                    >
+                                        {{ ecosystem.value }}
+                                    </div>
+                                </div>
+                                <div class="flex flex-row items-center gap-x-2">
+                                    <div class="text-nowrap text-white text-xs font-medium">Area [{{ areaUnits }}]</div>
+                                    <input
+                                        v-if="edit"
+                                        type="number"
+                                        :value="areaValues
+                                            .find((c: any) => c.country === country.country)
+                                            .ecosystems.find((e: any) => e.ecosystem === ecosystem.ecosystem).value"
+                                        @input="event => updateAreaValue(country.country, ecosystem.ecosystem, event.target.value)"
+                                        :edit="edit"
+                                        class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md p-1"
+                                    />
+                                    <div
+                                        v-else
+                                        class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md p-1"
+                                    >
+                                        {{ areaValues
+                                            .find((c: any) => c.country === country.country)
+                                            .ecosystems.find((e: any) => e.ecosystem === ecosystem.ecosystem).value }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex flex-row items-center gap-x-2">
-                                <div class="text-nowrap text-white text-xs font-medium">Area [{{ areaUnits }}]</div>
-                                <!-- <number-input
-                                    :value="areaValues
-                                        .find((c: any) => c.country === country.country)
-                                        .ecosystems.find((e: any) => e.ecosystem === ecosystem.ecosystem).value"
-                                    @input="event => updateAreaValue(country.country, ecosystem.ecosystem, event.target.value)"
-                                    :edit="edit"
-                                    class="px-2 py-1"
-                                /> -->
-                                <!-- <number-input
-                                    v-model="areaValues
-                                        .find((c: any) => c.country === country.country)
-                                        .ecosystems.find((e: any) => e.ecosystem === ecosystem.ecosystem).value"
-                                    :edit="edit"
-                                    class="px-2 py-1"
-                                /> -->
-                                <input
-                                    type="number"
-                                    v-model.number="areaValues
-                                        .find((c: any) => c.country === country.country)
-                                        .ecosystems.find((e: any) => e.ecosystem === ecosystem.ecosystem).value"
-                                    :placeholder="placeholder"
-                                    class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md p-1"
+                            <!-- Validation Icon -->
+                            <div :class="['text-red-600 flex-shrink ml-4', showValidation ? 'visible' : 'invisible']">
+                                <ExclamationTriangleIcon class="h-6 w-6" />
                             </div>
-                        </div>
-                        <!-- Validation Icon -->
-                        <div :class="['text-red-600 flex-shrink ml-4', showValidation ? 'visible' : 'invisible']">
-                            <ExclamationTriangleIcon class="h-6 w-6" />
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </template>
 </template>

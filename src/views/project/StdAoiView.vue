@@ -20,6 +20,8 @@ import SelectInput from '@/components/inputs/base/SelectInput.vue';
 import InfoButton from '@/components/InfoButton.vue';
 import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
 import CountryEcosystemsFormGroup from '@/components/inputs/base/CountryEcosystemsFormGroup.vue';
+import paAndTraditionalTerritories from './paAndTraditionalTerritories.vue';
+import MultiInputPassive from '@/components/inputs/base/MultiInputPassive.vue';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
@@ -89,6 +91,20 @@ const multiInputComponents = {
     }
 };
 
+const paAndTraditionalTerritoriesComponent = {
+    component: paAndTraditionalTerritories,
+    newData: {
+        localCommunities: undefined,
+        protectedAreas: undefined
+    },
+    addItemLabel: 'Add admin area',
+    labelFn: (_i, v) => countries.value.find(c => c.iso2 === v.id)?.label || 'Unknown country',
+    // calculatedProps: [
+    //     { key: 'country', f: (_: any, i: number) => store.project.project.countries[i] },
+    // ],
+    // has to be calculated props to be dynamic
+    calculatedProps: [{key: 'units', f: (_: any, i: number) => store.project.project.areaUnits}]
+};
 
 // watch store.project.project.areaUnits for changes
 // if units change, show alert
@@ -315,6 +331,13 @@ const uniqueEcosystems = computed(() => {
                     :ecosystems="uniqueEcosystems"
                     :totalArea="store.project.project.areaUnderRestoration"
                     :areaUnits="store.project.project.areaUnits"
+                />
+                <MultiInputPassive
+                    :edit="edit"
+                    :numbering="(n, v) => 'n'"
+                    :ids="store.project.project.countries"
+                    :input-component="paAndTraditionalTerritoriesComponent"
+                    v-model="store.project.paAndTraditionalTerritories"
                 />
             </div>
         </template>
