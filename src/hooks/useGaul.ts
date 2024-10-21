@@ -13,5 +13,10 @@ export function useGaul() {
         return gaulLevel0.value.find(i => i.iso2 === iso2);
     }
 
-    return { gaulLevel0, findGaulByIso2 };
+    const getCountryNameByIso2 = (iso2: string) => {
+        const gaul = findGaulByIso2(iso2);
+        return gaul ? gaul.label : iso2;
+    }
+
+    return { gaulLevel0, findGaulByIso2, getCountryNameByIso2 };
 }

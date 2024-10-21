@@ -7,7 +7,7 @@ import ResultPanel from './ResultPanel.vue';
 
 import { getAllSelectedItemsInAreas, getRecursiveMenuLabel } from '@/lib/util';
 
-import { groupBiomesByRealm } from '@/lib/util';
+import { groupBiomesByRealm, getRealmLabel } from '@/lib/util';
 
 import terrestrial from '@/assets/iucn_realms/terrestrial.svg';
 import marine from '@/assets/iucn_realms/marine.svg';
@@ -19,23 +19,6 @@ const { menus } = useMenusStore();
 const props = defineProps<{
     areas: any[]
 }>();
-
-const realms = [
-    { value: 'T', label: 'Terrestrial realm', color: '#1f77b4', borderColor: '#0d4d8a' },
-    { value: 'M', label: 'Marine realm', color: '#ff7f0e', borderColor: '#cc6608' },
-    { value: 'F', label: 'Freshwater realm', color: '#2ca02c', borderColor: '#1e6a1e' },
-    { value: 'S', label: 'Subterranean realm', color: '#d62728', borderColor: '#9a1c1c' },
-    { value: 'MT', label: 'Marine-Terrestrial realm', color: '#9467bd', borderColor: '#6b4c8a' },
-    { value: 'SF', label: 'Subterranean-Freshwater realm', color: '#8c564b', borderColor: '#623c34' },
-    { value: 'FM', label: 'Freshwater-Marine realm', color: '#e377c2', borderColor: '#b25399' },
-    { value: 'MFT', label: 'Marine-Freshwater-Terrestrial realm', color: '#7f7f7f', borderColor: '#595959' },
-    { value: 'SM', label: 'Subterranean-Marine realm', color: '#bcbd22', borderColor: '#8a8c16' },
-    { value: 'TF', label: 'Terrestrial-Freshwater realm', color: '#17becf', borderColor: '#11a3ac' }
-];
-
-function getRealmName(value: string) {
-    return realms.find(r => r.value === value)?.label;
-}
 
 function getRealmImages(value: string) {
     switch (value) {
@@ -66,14 +49,14 @@ function getRealmImages(value: string) {
 
 const areasBiomes = getAllSelectedItemsInAreas(props.areas, 'ecosystems', menus.iucnEcosystems);
 const groupedBiomes = computed(() => {
-    return groupBiomesByRealm(areasBiomes, realms);
+    return groupBiomesByRealm(areasBiomes, menus.iucnEcosystems);
 });
 </script>
 
 <template>
     <!-- {{ groupedBiomes }}
     <div v-for="realm in groupedBiomes">
-        {{ getRealmName(realm.realm) }}
+        {{ getRealmLabel(realm.realm) }}
         <div v-for="biome in realm.biomes">
             {{ getRecursiveMenuLabel(biome, menus.iucnEcosystems).split(' - ')[1] }}
         </div>
@@ -108,12 +91,12 @@ const groupedBiomes = computed(() => {
                         >
                             <img
                                 :src="image"
-                                :alt="getRealmName(realm.realm)"
+                                :alt="getRealmLabel(realm.realm)"
                                 class="w-8 h-8"
                             />
                         </div>
                         <div :class="getRealmImages(realm.realm).length === 2 ? 'ml-16' : getRealmImages(realm.realm).length === 3 ? 'ml-24' : 'ml-10'">
-                            {{ getRealmName(realm.realm) }}
+                            {{ getRealmLabel(realm.realm) }}
                         </div>
                     </a>
                 </div>
