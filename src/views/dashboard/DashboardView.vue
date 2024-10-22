@@ -6,7 +6,7 @@ import * as echarts from 'echarts';
 // Import the JSON files
 import worldJson from '@/assets/world_stylized.json';
 import data from '@/assets/dashboard_data.json';
-import { geoWinkel3 } from 'd3-geo-projection';
+// import { geoWinkel3 } from 'd3-geo-projection';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -250,6 +250,9 @@ onMounted(() => {
             features.forEach(feature => {
                 console.log('Feature properties:', feature.properties);
                 console.log('Feature geometry:', feature.geometry);
+                const iso3 = feature.properties.iso3cd;
+                const countryData = data.find(d => d.iso3 === iso3);
+                selectedCountry.value = countryData;
             });
         } else {
             console.log('No features found at this location.');
