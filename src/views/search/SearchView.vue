@@ -74,15 +74,15 @@ const queryInitiatives = [
     }, {
         name: 'Source',
         queryName: 'source',
-        queryValues: ['FERM', 'GEF', 'Nature Commitments']
+        queryValues: ['FERM', 'GEF', 'Nature Commitments', 'Restoration Resource Center', 'Brazilian Restoration and Reforestation Observatory']
     }, {
         name: 'Restoration Type',
         queryName: 'restoration_types',
-        queryValues: ['Ecological restoration', 'Rehabilitation']
+        queryValues: ['Ecological restoration', 'Rehabilitation', 'Other']
     }, {
         name: 'Restoration Status',
         queryName: 'restoration_status',
-        queryValues: ['In preparation', 'In progress', 'Post-completion monitoring']
+        queryValues: ['In preparation', 'In progress', 'Post-completion monitoring', 'Other']
     },
 ]
 

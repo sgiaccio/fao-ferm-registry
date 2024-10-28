@@ -10,13 +10,18 @@ withDefaults(defineProps<{
 }>(), {
     showTitle: true,
 });
+
+function changeSource(event, source) {
+    const img = event.target;
+    img.src = `/interop_logos/${source.toLowerCase()}.png`;
+}
 </script>
 
 <template>
     <div
         v-if="previewImage"
         class="aspect-square overflow-hidden flex"
-        :style="`background-image: url(${previewImage});background-size: cover; background-position: center;`"
+        :style="`background-image: url(${previewImage}); background-position: center;background-size: contain;background-repeat: no-repeat;`"
     >
         <div
             v-if="title"
@@ -33,6 +38,7 @@ withDefaults(defineProps<{
             <img
                 class="w-2/3 self-center mx-auto max-h-24"
                 :src="`/interop_logos/${source.toLowerCase()}.svg`"
+                @error="changeSource($event, source)"
                 :alt="source"
             />
         </div>
