@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute, onBeforeRouteLeave } from 'vue-router';
+
+import router from '@/router';
+
 import {
     InformationCircleIcon,
     GlobeAltIcon,
@@ -18,11 +23,6 @@ import {
     ChartBarIcon as ChartBarIconSolid,
     ListBulletIcon as ListBulletIconSolid,
 } from '@heroicons/vue/24/solid'
-
-import { computed } from 'vue';
-import { useRoute, onBeforeRouteLeave } from 'vue-router';
-
-import router from '@/router';
 
 import { useProjectStore } from '@/stores/project';
 
@@ -101,6 +101,10 @@ function gotoPreviousTab() {
         router.push('./' + flattenedTabs[currentRouteIdx.value - 1].path);
     }
 }
+
+const containerClass = computed(() => {
+  return route.name === 'projectResults' ? 'pt-8 max-w-full mx-auto' : 'pt-8 max-w-6xl mx-auto';
+});
 </script>
 
 
@@ -188,8 +192,8 @@ function gotoPreviousTab() {
             </nav>
         </div>
     </div>
-    <div class="mt-16 sm:ml-16 lg:ml-60 px-4 sm:px-6 lg:px-8">
-        <div class="pt-8 max-w-6xl mx-auto">
+    <div class="mt-16 sm:ml-16 lg:ml-60 px-4 sm:px-6 lg:px-8 h-[calc(100vh-4rem)] overflow-y-auto">
+        <div :class="containerClass">
             <router-view
                 :previous="gotoPreviousTab"
                 :next="gotoNextTab"

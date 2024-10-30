@@ -8,9 +8,12 @@ import { getProjectAreas, getProjectAdminAreas } from '@/firebase/functions';
 import SpinningThing from '@/components/SpinningThing.vue';
 
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     projectId: string;
-}>();
+    public: boolean;
+}>(), {
+    public: true,
+})
 
 const emit = defineEmits(['areaClicked']);
 
@@ -63,8 +66,8 @@ async function initMap() {
 
     // Load the json data
     const [geojson, adminGeoJson] = await Promise.all([
-        getProjectAreas(props.projectId, true),
-        getProjectAdminAreas(props.projectId, true),
+        getProjectAreas(props.projectId, props.public),
+        getProjectAdminAreas(props.projectId, props.true),
     ]).catch((error) => {
         console.error('Failed to load geojson:', error);
         geoJsonLoadError.value = true;
@@ -284,7 +287,8 @@ function highlightFeature(feature) {
     <div
         id="map"
         ref="mapDiv"
-        class="rounded-md focus:ring-0"
+        class="focus:ring-0"
+        v-bind="$attrs"
     />
     <div
         v-if="!geoJsonLoaded || geoJsonLoadError"
