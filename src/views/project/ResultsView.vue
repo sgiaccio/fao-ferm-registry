@@ -1,7 +1,4 @@
-<script
-    setup
-    lang="ts"
->
+<script setup lang="ts">
 // import * as L from 'leaflet';
 // import 'leaflet/dist/leaflet.css';
 // import 'leaflet-bing-layer';
@@ -359,7 +356,7 @@ async function initMap() {
         map.data.addGeoJson(geojson);
     if (adminGeojson)
         map.data.addGeoJson(adminGeojson);
-    
+
     map.data.setStyle({
         fillColor: '#ff0000',
         fillOpacity: 0,
@@ -548,27 +545,25 @@ async function initMap() {
                 class="flex flex-col gap-6 mt-6"
             >
 
-                <template v-if="store.project.project.areaAchievedMatch === 1">
-                    <div
-                        v-if="chartData.length > 0 && getLastTargetArea(store.project)"
-                        id="chart"
-                        ref="chartDiv"
-                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
-                    />
-                    <div
-                        ref="ciChartDiv"
-                        v-if="showCIChart"
-                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
-                    />
+                <div
+                    v-if="chartData.length > 0 && getLastTargetArea(store.project)"
+                    id="chart"
+                    ref="chartDiv"
+                    class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
+                />
+                <div
+                    ref="ciChartDiv"
+                    v-if="showCIChart"
+                    class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
+                />
 
-                    <!-- <SnailChart
+                <!-- <SnailChart
                         v-if="chartValues.length > 0 && getLastTargetArea()"
                         :values="chartValues"
                         :labels="chartLabels h-64 w-full"
                         :targetValue="getLastTargetArea()"
                     /> -->
-                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has {{ Math.trunc(store.polygonsArea() / getLastTargetArea(store.project) * 100) }}% of committed land under restoration.</p>
-                </template>
+                <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has {{ Math.trunc(store.polygonsArea() / getLastTargetArea(store.project) * 100) }}% of committed land under restoration.</p>
                 <!-- <div
                     v-else
                     class="shadow-md rounded px-4 py-3 text-base border"
