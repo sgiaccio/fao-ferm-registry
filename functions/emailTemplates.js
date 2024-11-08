@@ -119,7 +119,7 @@ exports.initiativePublished = function(emails, groupName, projectId, projectTitl
                 <p>
                     Feel free to share this exciting news with your colleagues, partners, and stakeholders. They can directly access your
                     initiative by following this link:
-                    <a href="${baseUrl}/registry/initiatives/${projectId}">${baseUrl}/registry/initiatives/${projectId}</a>.
+                    <a href="${baseUrl}/search/initiatives/${projectId}">${baseUrl}/search/initiatives/${projectId}</a>.
                 </p>
             
                 <p>
