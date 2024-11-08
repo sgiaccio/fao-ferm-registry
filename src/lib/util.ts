@@ -340,3 +340,75 @@ export function getEcosystemColor(ecosystem: string) {
 export function getRealmLabel(realm: string) {
     return realmColors.find(r => r.value === realm)?.label || '';
 }
+
+export function getEMStatsYears(stats: any) {
+    return stats.map((year: any) => year.year);
+}
+
+// Processing function for pushing area_ha values
+function pushAreaHa(values: any[], data: any) {
+    values.push(data.area_ha ?? 0);
+}
+
+// Processing function for calculating averages using a closure
+function accumulateAverage(totalYears: number) {
+    return function (values: any[], data: any) {
+        const addendum = (data.area_ha ?? 0) / totalYears;
+        if (values.length === 0) {
+            values.push(addendum);
+        } else {
+            values[0] += addendum;
+        }
+    };
+}
+
+// export function createEchartValuesFromEMStats(stats: any) {
+//     return stats.reduce((acc: any, year: any) => {
+//         for (const data of year.data) {
+//             if (!acc.find((a: any) => a.class_name === data.class_name)) {
+//                 acc.push({
+//                     class_name: data.class_name,
+//                     values: [data.area_ha ?? 0],
+//                 });
+//             } else {
+//                 acc.find((a: any) => a.class_name === data.class_name).values.push(data.area_ha ?? 0);
+//             }
+//         }
+//         return acc;
+//     }, []);
+// }
+
+function createValuesFromStats(stats: any[], processFn: (values: any[], data: any) => void, initialValue: any = []) {
+    return stats.reduce((acc: any[], year: any) => {
+        for (const data of year.data) {
+            const className = data.class_name;
+            let item = acc.find((a: any) => a.class_name === className);
+            if (!item) {
+                item = {
+                    class_name: className,
+                    values: [],
+                };
+                acc.push(item);
+            }
+            processFn(item.values, data);
+        }
+        return acc;
+    }, initialValue);
+}
+
+// Using the function to create Echart values
+export function createEchartValuesFromEMStats(stats: any[], initialValue: any = []) {
+    return createValuesFromStats(stats, pushAreaHa, initialValue);
+}
+
+// // Using the function to calculate averages
+// const totalYears = years2011to2020.length;
+// const averages2011to2020 = createValuesFromStats(
+//     years2011to2020,
+//     accumulateAverage(totalYears)
+// );
+
+export function createEchartValuesFromEMStatsAverages(stats: any[]) {
+    const totalYears = stats.length;
+    return createValuesFromStats(stats, accumulateAverage(totalYears));
+}

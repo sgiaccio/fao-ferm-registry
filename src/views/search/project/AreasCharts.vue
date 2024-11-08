@@ -88,7 +88,7 @@ function slideChanged(swiper: any) {
 
     // init the related chart
     const myChart = echarts.init(chartDivRefs.value[slideIndex]);
-    const monitoring = areasWithMonitoring.value[slideIndex].monitoring;
+    const monitoring = areasWithMonitoring.value[slideIndex]?.monitoring || [];
 
     const option = {
         xAxis: {
