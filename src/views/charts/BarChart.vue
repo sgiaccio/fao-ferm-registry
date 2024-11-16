@@ -2,7 +2,7 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 
 import * as echarts from 'echarts/core';
-import { LineChart } from 'echarts/charts';
+import { BarChart } from 'echarts/charts';
 import {
     TooltipComponent,
     GridComponent,
@@ -24,11 +24,10 @@ const props = defineProps<{
     xData: any
     tooltipFormatter?: any
     loading?: boolean
-    legend: { [key: string]: string }
 }>();
 
 echarts.use([
-    LineChart,
+    BarChart,
     TooltipComponent,
     GridComponent,
     SVGRenderer,
@@ -123,17 +122,17 @@ function showLoading() {
 async function showChart() {
     if (!props.yData) return;
 
-    // add type and emphasis to yData and apply the color from the legend object
-    const yData = props.yData.map((value: any) => ({
-        ...value,
-        type: 'line',
+    const series = {
+        type: 'bar',
+        barWidth: '66%',
+        data: props.yData,
         emphasis: {
             focus: 'series',
         },
         itemStyle: {
-            color: props.legend ? props.legend[value.name] : undefined
-        },
-    }));
+            color: '#0d6526'
+        }
+    };
 
     var option = {
         title: {
@@ -163,9 +162,11 @@ async function showChart() {
         },
         xAxis: {
             type: 'category',
-            boundaryGap: false,
+            // boundaryGap: true,
             data: props.xData,
             axisLabel: {
+                // rotate: 45,
+                margin: 20,
                 interval: 0,
                 rich: {
                     line1: {
@@ -184,7 +185,7 @@ async function showChart() {
         yAxis: {
             type: 'value',
         },
-        series: yData,
+        series,
         backgroundColor: 'transparent',
         legend: {
             show: true,

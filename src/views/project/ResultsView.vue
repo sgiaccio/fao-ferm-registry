@@ -29,7 +29,6 @@ import AlertModal from '@/views/AlertModal.vue';
 import IndicatorsPanel from '../search/project/IndicatorsPanel.vue';
 import MapPanel from '../search/project/MapPanel.vue';
 import EcosystemsPanel from '../search/project/EcosystemsPanel.vue';
-// import CCILCChart from '@/views/charts/CCILCChart.vue';
 import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
 
 import {
@@ -292,8 +291,6 @@ const areaUnderRestoration = computed(() => {
                                 </button>
                             </div>
 
-                            <ChartsSwiper :area="selectedArea" />
-
                             <EcosystemsPanel :areas="[{ dummy: selectedArea }]" />
 
                             <ActivitiesPanel :areas="[{ dummy: selectedArea }]" />
@@ -304,6 +301,8 @@ const areaUnderRestoration = computed(() => {
                                 :areas="[{ dummy: selectedArea }]"
                                 @zoomToArea="zoomToArea"
                             />
+
+                            <ChartsSwiper :area="selectedArea" />
                         </div>
                     </transition>
                     <transition name="disappear_to_left">
@@ -348,7 +347,7 @@ const areaUnderRestoration = computed(() => {
 
                             <div
                                 v-if="thumbnail"
-                                class="shadow rounded-lg overflow-hidden aspect-[162/100] border border-gray-200"
+                                class="shadow rounded-lg overflow-hidden aspect-[162/100]"
                             >
                                 <img
                                     v-if="project.project.thumbnailUrl"
@@ -552,6 +551,11 @@ const areaUnderRestoration = computed(() => {
                             <AreasCharts
                                 :areas="projectAreas"
                                 @zoomToArea="zoomToArea"
+                            />
+
+                            <ChartsSwiper
+                                v-if="projectAreas.length === 1 && Object.values(projectAreas[0])[0].uuid"
+                                :area="Object.values(projectAreas[0])[0]"
                             />
                         </div>
                     </transition>

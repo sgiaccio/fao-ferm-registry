@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref } from 'vue';
 
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
@@ -7,13 +7,18 @@ import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
 
 import CCILCChart from './CCILCChart.vue';
+import GFCChart from './GFCChart.vue';
 import LPDChart from './LPDChart.vue';
+import LCMChart from './LCMChart.vue';
+import BiodiversityChart from './BiodiversityChart.vue';
+import BiomassChart from './BiomassChart.vue';
 
-const chartComnponents = [CCILCChart, LPDChart];
 
-const modules = [Navigation];
+const chartComnponents = [ CCILCChart, GFCChart, LCMChart, LPDChart, BiodiversityChart, BiomassChart ];
 
-const props = defineProps<{
+const modules = [ Navigation ];
+
+defineProps<{
     area: any
 }>();
 
@@ -21,26 +26,9 @@ const props = defineProps<{
 const activeIndex = ref(0);
 const chartRefs = ref<Element[]>([]);
 
-const emit = defineEmits(['zoomToArea']);
-
-// onMounted(() => {
-//     if (chartRefs.value) {
-//         console.log(chartRefs);
-//         chartRefs.value[0].loadData();
-//     }
-// });
-
-function slideChanged(swiper) {
+function slideChanged(swiper: any) {
     activeIndex.value = swiper.activeIndex;
-    // chartRefs.value[activeIndex.value].loadData();
 }
-
-// watch(
-//     () => props.area,
-//     (_newArea) => {
-//         chartRefs.value[activeIndex.value].loadData();
-//     }
-// ); // it's not immediate because onMounted is already loading the first chart
 </script>
 
 <template>
@@ -66,17 +54,5 @@ function slideChanged(swiper) {
                 ref="chartRefs"
             />
         </swiper-slide>
-        <!-- <swiper-slide class="h-full">
-            <CCILCChart
-                ref="ccChartRef"
-                :area="area"
-            />
-        </swiper-slide>
-        <swiper-slide class="h-full">
-            <LPDChart
-                ref="lpdChartRef"
-                :area="area"
-            />
-        </swiper-slide> -->
     </swiper>
 </template>

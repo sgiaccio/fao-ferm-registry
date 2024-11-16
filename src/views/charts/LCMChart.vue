@@ -1,11 +1,6 @@
-<!-- CCILCChart.vue -->
 <script setup lang="ts">
 import EMChartContainer from './EMChartContainer.vue';
-import {
-    createEchartValuesFromEMStats,
-    createEchartValuesFromEMStatsAverages,
-    getEMStatsYears,
-} from '@/lib/util';
+import { createEchartValuesFromEMStats, getEMStatsYears, createEchartValuesFromEMStatsAverages } from '@/lib/util';
 
 
 defineProps<{
@@ -14,7 +9,6 @@ defineProps<{
 }>();
 
 function processData(stats: any) {
-    // Split the years into two groups: 2011-2020 and 2021 onwards
     const years2011to2020 = stats.statisticResults.years.filter((year: any) => year.year >= 2011 && year.year <= 2020);
     const years2021onwards = stats.statisticResults.years.filter((year: any) => year.year >= 2021);
 
@@ -55,8 +49,8 @@ const tooltipFormatter = (param: any) => {
   `;
 };
 
-const statisticType = 'CCILC';
-const title = 'CCI Land Cover Change';
+const statisticType = 'MODIS_COMBINED_LC';
+const title = 'Land Cover - MODIS Combined';
 </script>
 
 <template>
@@ -67,6 +61,7 @@ const title = 'CCI Land Cover Change';
         :tooltipFormatter="tooltipFormatter"
         :title="title"
         :isActive="isActive"
+        type="stacked-bar"
         :getLegendFromStats="true"
     />
 </template>

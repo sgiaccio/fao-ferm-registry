@@ -81,7 +81,7 @@ const areasWithMonitoring = computed(() => {
 const chartDivRefs = ref<HTMLDivElement[] | null>(null);
 
 function slideChanged(swiper: any) {
-    if (chartDivRefs.value === null) {
+    if (chartDivRefs.value?.length === 0) {
         return;
     }
     const slideIndex = swiper.activeIndex;

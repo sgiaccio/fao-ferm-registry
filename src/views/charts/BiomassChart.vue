@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import EMChartContainer from './EMChartContainer.vue';
-import { createEchartValuesFromEMStats, getEMStatsYears } from '@/lib/util';
 
 
 defineProps<{
@@ -9,29 +8,17 @@ defineProps<{
 }>();
 
 function processData(stats: any) {
-    const allYears = stats.statisticResults.years;
-
-    // Process data for these years
-    const values = createEchartValuesFromEMStats(allYears);
-
-    // Prepare x-axis and y-axis data
-    const xData = getEMStatsYears(allYears);
-    const yData = values.map((value: any, i: number) => ({
-        name: value.class_name,
-        data: value.values,
-        id: value.index
-    }));
+    const yData = stats.statisticResults.data.map((v: any) => v.total);
+    const xData = stats.statisticResults.data.map((v: any) => v.year);
 
     return { xData, yData };
 }
 
-const unit = 'ha';
+const unit = 'MT/ha';
 
 const tooltipFormatter = (param: any) => {
-    const fullName = param.seriesName;
     return `
     <div style="max-width: 200px; white-space: normal; line-height: 1.5;">
-      <div style="font-weight: bold;">${fullName}</div>
       <div>Year: ${param.name}</div>
       <div>Value: ${param.value.toLocaleString('en-US', {
         maximumFractionDigits: 0,
@@ -40,8 +27,8 @@ const tooltipFormatter = (param: any) => {
   `;
 };
 
-const statisticType = 'landProductivity';
-const title = 'Land Productivity Dynamics - MODIS';
+const statisticType = 'CCIBiomass';
+const title = 'ESA CCI Global Forest Above Ground Biomass';
 </script>
 
 <template>
@@ -52,7 +39,6 @@ const title = 'Land Productivity Dynamics - MODIS';
         :tooltipFormatter="tooltipFormatter"
         :title="title"
         :isActive="isActive"
-        type="stacked-bar"
-        :getLegendFromStats="true"
+        type="bar"
     />
 </template>
