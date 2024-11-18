@@ -167,16 +167,16 @@ async function showChart() {
             data: props.xData,
             axisLabel: {
                 interval: 0,
-                rich: {
-                    line1: {
-                        fontSize: 12,
-                        color: '#333',
-                    },
-                    line2: {
-                        fontSize: 10,
-                        color: '#666',
-                    }
-                },
+                // rich: {
+                //     line1: {
+                //         fontSize: 12,
+                //         color: '#333',
+                //     },
+                //     line2: {
+                //         fontSize: 10,
+                //         color: '#666',
+                //     }
+                // },
                 align: 'center',
                 lineHeight: 14,
             }

@@ -18,14 +18,17 @@ interface YData {
     data: number[];
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     title?: string
     yData?: YData[]
     xData: any
     tooltipFormatter?: any
     loading?: boolean,
-    legend: { [key: string]: string }
-}>();
+    legend: { [key: string]: string },
+    rotateXAxisLabels?: number
+}>(), {
+    rotateXAxisLabels: 45
+});
 
 echarts.use([
     BarChart,
@@ -181,7 +184,7 @@ async function showChart() {
                 },
                 align: 'center',
                 lineHeight: 14,
-                rotate: 45,
+                rotate: props.rotateXAxisLabels,
                 margin: 20
             }
         },

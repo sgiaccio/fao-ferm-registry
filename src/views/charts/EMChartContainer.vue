@@ -18,9 +18,11 @@ const props = withDefaults(defineProps<{
     isActive: boolean
     type?: string
     getLegendFromStats?: boolean
+    rotateXAxisLabels?: number
 }>(), {
     type: 'line',
-    getLegendFromStats: false
+    getLegendFromStats: false,
+    rotateXAxisLabels: 45
 });
 
 const xData = ref<any[]>();
@@ -113,6 +115,7 @@ watch(() => props.area, (newArea) => {
             :tooltipFormatter="tooltipFormatter"
             :loading="loading"
             :legend="legend"
+            :rotateXAxisLabels="props.rotateXAxisLabels"
         />
         <BarChartComponent
             v-else-if="type === 'bar'"

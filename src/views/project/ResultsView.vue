@@ -31,11 +31,15 @@ import MapPanel from '../search/project/MapPanel.vue';
 import EcosystemsPanel from '../search/project/EcosystemsPanel.vue';
 import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
 
+import CommittedAreaChart from '@/views/charts/CommittedAreaChart.vue';
+
+
 import {
     getRecursiveMenuItem,
     getLastTargetArea,
     getPolygonsArea,
-    areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil
+    areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil,
+    formatNumber
 } from '@/lib/util';
 
 
@@ -215,17 +219,17 @@ function zoomToArea(uuid: string) {
 
 const showFullDescription = ref(false);
 
-function formatNumber(n: number) {
-    // Use the toLocaleString method to add suffixes to the number
-    return n.toLocaleString('en-US', {
-        // add suffixes for thousands, millions, and billions
-        // the maximum number of decimal places to use
-        maximumFractionDigits: 0,
-        // specify the abbreviations to use for the suffixes
-        notation: 'compact',
-        compactDisplay: 'short'
-    });
-}
+// function formatNumber(n: number) {
+//     // Use the toLocaleString method to add suffixes to the number
+//     return n.toLocaleString('en-US', {
+//         // add suffixes for thousands, millions, and billions
+//         // the maximum number of decimal places to use
+//         maximumFractionDigits: 0,
+//         // specify the abbreviations to use for the suffixes
+//         notation: 'compact',
+//         compactDisplay: 'short'
+//     });
+// }
 
 const selectedArea = ref(null);
 function areaClicked(area: any) {
@@ -356,7 +360,7 @@ const areaUnderRestoration = computed(() => {
                                     class="object-cover aspect-[162/100]"
                                 />
                             </div>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8 font-roboto text-black">
+                            <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8 font-roboto text-black">
                                 <div class="flex flex-row lg:flex-col gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#589C33]">
                                     <div class="flex-0">
                                         <svg
@@ -405,7 +409,12 @@ const areaUnderRestoration = computed(() => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
+                            <CommittedAreaChart
+                                :areaUnderRestoration="areaUnderRestoration"
+                                :targetArea="targetArea"
+                                :units="project.project.areaUnits"
+                            />
                             <div
                                 v-if="project.reportingLine === 'GEF'"
                                 class="gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#dd6b66]"

@@ -16,12 +16,12 @@ function processData(stats: any) {
 
 const unit = 'MT/ha';
 
-const tooltipFormatter = (param: any) => {
+function tooltipFormatter(param: any) {
     return `
     <div style="max-width: 200px; white-space: normal; line-height: 1.5;">
       <div>Year: ${param.name}</div>
       <div>Value: ${param.value.toLocaleString('en-US', {
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 2,
     })} ${unit}</div>
     </div>
   `;

@@ -14,7 +14,7 @@ function processData(stats: any) {
     return { xData, yData };
 }
 
-const tooltipFormatter = (param: any) => {
+function tooltipFormatter(param: any) {
     return `
     <div style="max-width: 200px; white-space: normal; line-height: 1.5;">
       <div>Year: ${param.name}</div>

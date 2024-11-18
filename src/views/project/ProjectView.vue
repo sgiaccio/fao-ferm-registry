@@ -9,7 +9,7 @@ import {
     GlobeAltIcon,
     WrenchScrewdriverIcon,
     EyeIcon,
-    TrophyIcon,
+    ComputerDesktopIcon,
     ChartBarIcon,
     ListBulletIcon,
 } from '@heroicons/vue/24/outline'
@@ -19,7 +19,7 @@ import {
     GlobeAltIcon as GlobeAltIconSolid,
     WrenchScrewdriverIcon as WrenchScrewdriverIconSolid,
     EyeIcon as EyeIconSolid,
-    TrophyIcon as TrophyIconSolid,
+    ComputerDesktopIcon as ComputerDesktopIconSolid,
     ChartBarIcon as ChartBarIconSolid,
     ListBulletIcon as ListBulletIconSolid,
 } from '@heroicons/vue/24/solid'
@@ -69,10 +69,10 @@ const navigation = [{
         icon: EyeIcon,
         solidIcon: EyeIconSolid
     }, {
-        name: 'Results',
-        path: 'results',
-        icon: TrophyIcon,
-        solidIcon: TrophyIconSolid
+        name: 'Public Page Preview',
+        path: 'preview',
+        icon: ComputerDesktopIcon,
+        solidIcon: ComputerDesktopIconSolid
     }]
 }];
 

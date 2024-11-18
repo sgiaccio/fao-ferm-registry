@@ -1,4 +1,3 @@
-<!-- CCILCChart.vue -->
 <script setup lang="ts">
 import EMChartContainer from './EMChartContainer.vue';
 import {
@@ -13,21 +12,25 @@ defineProps<{
     isActive: boolean;
 }>();
 
+const referenceYearStart = 2011;
+const referenceYearEnd = 2020;
+
 function processData(stats: any) {
-    // Split the years into two groups: 2011-2020 and 2021 onwards
-    const years2011to2020 = stats.statisticResults.years.filter((year: any) => year.year >= 2011 && year.year <= 2020);
-    const years2021onwards = stats.statisticResults.years.filter((year: any) => year.year >= 2021);
+    // Split the years into two groups: referenceYearStart to referenceYearEnd and 
+    const referencePeriod = stats.statisticResults.years.filter((year: any) => year.year >= referenceYearStart && year.year <= referenceYearEnd);
+    const yearsOnwards = stats.statisticResults.years.filter((year: any) => year.year > referenceYearEnd);
 
-    // Calculate averages for the reference period (2011-2020)
-    const averages2011to2020 = createEchartValuesFromEMStatsAverages(years2011to2020);
+    // Calculate averages for the reference period
+    const referenceAvg = createEchartValuesFromEMStatsAverages(referencePeriod);
 
-    // Process data for years 2021 onwards, including averages
-    const values = createEchartValuesFromEMStats(years2021onwards, averages2011to2020);
+    // Process data for years onwards, including averages
+    const values = createEchartValuesFromEMStats(yearsOnwards, referenceAvg);
 
     // Prepare x-axis data, including the reference period label
     const xData = [
-        '{line1|Reference period}\n{line2|(2011-2020)}',
-        ...getEMStatsYears(years2021onwards),
+        // '{line1|Reference period}\n{line2|(2011-2020)}',
+        `Avg ${referenceYearStart}–${referenceYearEnd}`,
+        ...getEMStatsYears(yearsOnwards),
     ];
 
     // yData includes averages as the first data point
@@ -42,14 +45,14 @@ function processData(stats: any) {
 
 const unit = 'ha';
 
-const tooltipFormatter = (param: any) => {
+function tooltipFormatter(param: any) {
     const fullName = param.seriesName;
     return `
     <div style="max-width: 200px; white-space: normal; line-height: 1.5;">
       <div style="font-weight: bold;">${fullName}</div>
       <div>${param.dataIndex === 0 ? 'Reference period' : 'Year: ' + param.name}</div>
       <div>Value: ${param.value.toLocaleString('en-US', {
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 2,
     })} ${unit}</div>
     </div>
   `;
