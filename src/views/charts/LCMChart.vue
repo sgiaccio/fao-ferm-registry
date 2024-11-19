@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import EMChartContainer from './EMChartContainer.vue';
-import { createEchartValuesFromEMStats, getEMStatsYears, createEchartValuesFromEMStatsAverages } from '@/lib/util';
+import {
+    createEchartValuesFromEMStats,
+    getEMStatsYears,
+    createEchartValuesFromEMStatsAverages,
+    addMissingEMClasses
+} from '@/lib/util';
 
 
 defineProps<{
@@ -12,8 +17,10 @@ const referenceYearStart = 2011;
 const referenceYearEnd = 2020;
 
 function processData(stats: any) {
-    const referencePeriod = stats.statisticResults.years.filter((year: any) => year.year >= referenceYearStart && year.year <= referenceYearEnd);
-    const yearsOnwards = stats.statisticResults.years.filter((year: any) => year.year > referenceYearEnd);
+    const years = addMissingEMClasses(stats, referenceYearStart)
+
+    const referencePeriod = years.filter((year: any) => year.year >= referenceYearStart && year.year <= referenceYearEnd);
+    const yearsOnwards = years.filter((year: any) => year.year > referenceYearEnd);
 
     // Calculate averages for the reference period (2011-2020)
     const referenceAvg = createEchartValuesFromEMStatsAverages(referencePeriod);
@@ -23,7 +30,7 @@ function processData(stats: any) {
 
     // Prepare x-axis data, including the reference period label
     const xData = [
-        `Avg ${referenceYearStart}–${referenceYearEnd}`,
+        `Reference\n${referenceYearStart}-${referenceYearEnd}`,
         ...getEMStatsYears(yearsOnwards),
     ];
 
@@ -36,36 +43,18 @@ function processData(stats: any) {
 
     return { xData, yData };
 }
-
-const unit = 'ha';
-
-function tooltipFormatter(param: any) {
-    const fullName = param.seriesName;
-    return `
-    <div style="max-width: 200px; white-space: normal; line-height: 1.5;">
-      <div style="font-weight: bold;">${fullName}</div>
-      <div>${param.dataIndex === 0 ? 'Reference period' : 'Year: ' + param.name}</div>
-      <div>Value: ${param.value.toLocaleString('en-US', {
-        maximumFractionDigits: 2,
-    })} ${unit}</div>
-    </div>
-  `;
-};
-
-const statisticType = 'MODIS_COMBINED_LC';
-const title = 'Land Cover - MODIS Combined';
 </script>
 
 <template>
     <EMChartContainer
         :area="area"
-        :statisticType="statisticType"
+        statisticType="MODIS_COMBINED_LC"
         :processData="processData"
-        :tooltipFormatter="tooltipFormatter"
-        :title="title"
+        title="Land Cover - MODIS Combined"
         :isActive="isActive"
-        type="stacked-bar"
+        type="line"
         :getLegendFromStats="true"
         :rotateXAxisLabels="0"
+        unit="ha"
     />
 </template>

@@ -424,3 +424,49 @@ export function createEchartValuesFromEMStatsAverages(stats: any[]) {
     const totalYears = stats.length;
     return createValuesFromStats(stats, accumulateAverage(totalYears));
 }
+
+export function addMissingEMClasses(stats: any, startYear: number) {
+    const years = stats.statisticResults.years;
+    const firstYearInData = Math.min(...years.map((year: any) => year.year));
+    const firstYear = Math.max(startYear, firstYearInData);
+    const lastYear = Math.max(...years.map((year: any) => year.year));
+    const allYears = [];
+    for (let i = firstYear; i <= lastYear; i++) {
+        allYears.push(i);
+    }
+
+    const allClasses = years.reduce((acc: any, year: any) => {
+        year.data.forEach((data: any) => {
+            if (!acc.includes(data.class_name)) {
+                acc.push(data.class_name);
+            }
+        });
+        return acc;
+    }, []);
+
+    allYears.forEach((year: any) => {
+        const yearData = years.find((y: any) => y.year === year);
+        if (!yearData) {
+            years.push({
+                year,
+                data: allClasses.map((c: any) => ({
+                    class_name: c,
+                    value: 0,
+                })),
+            });
+        } else {
+            const classes = yearData.data.map((d: any) => d.class_name);
+            const missingClasses = allClasses.filter((c: any) => !classes.includes(c));
+            missingClasses.forEach((c: any) => {
+                yearData.data.push({
+                    class_name: c,
+                    value: 0,
+                });
+            });
+        }
+    });
+
+    // sort years
+    years.sort((a: any, b: any) => a.year - b.year);
+    return years;
+}

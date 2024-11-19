@@ -1,21 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeMount, onUnmounted, computed, watch } from 'vue';
+import { ref, onMounted, onBeforeMount, onUnmounted, computed } from 'vue';
 
 import { useRoute } from 'vue-router'
 
-import * as echarts from 'echarts/core';
-import { PieChart, BarChart, LineChart } from 'echarts/charts';
-import {
-    TooltipComponent,
-    GridComponent,
-    LegendComponent,
-    TitleComponent
-} from 'echarts/components';
-import { SVGRenderer } from 'echarts/renderers';
-
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
 
-import { getPublicProjectThumbnail, getPolygonZonalStats } from '@/firebase/functions';
+import { getPublicProjectThumbnail } from '@/firebase/functions';
 import { getGaulLevel0 } from '@/firebase/firestore';
 
 import { useProjectStore } from '@/stores/project';
@@ -33,6 +23,7 @@ import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
 
 import CommittedAreaChart from '@/views/charts/CommittedAreaChart.vue';
 
+import { useUserPrefsStore } from '@/stores/userPreferences';
 
 import {
     getRecursiveMenuItem,
@@ -48,6 +39,8 @@ withDefaults(defineProps<{
 }>(), {
     edit: true
 });
+
+const userPrefsStore = useUserPrefsStore();
 
 const route = useRoute();
 const { menus } = useMenusStore();
@@ -104,40 +97,14 @@ async function getThumbnail() {
     }
 }
 
-let chartData: { value: number, name: string }[] = [];
-const chartDiv = ref(null);
-
-watch([project, chartDiv], ([project, chartDiv]) => {
-    if (!project || !chartDiv) return;
-
-    chartData = [
-        {
-            value: project.project?.areaUnderRestoration || 0,
-            name: 'Area under restoration'
-        }, {
-            value: project.project?.targetArea || 0 - (project.project?.areaUnderRestoration || 0), // TODO
-            name: 'Not achieved'
-        }
-    ];
-    // }
-
-    initChart();
-});
-
-
-echarts.use([
-    PieChart,
-    BarChart,
-    LineChart,
-    TooltipComponent,
-    GridComponent,
-    SVGRenderer,
-    LegendComponent,
-    TitleComponent
-]);
-
-
 const thumbnail = ref<string | null>(null);
+
+const showDisclaimer = ref(!userPrefsStore.userPrefs.previewModalSeen);
+
+function hideDisclaimer() {
+    showDisclaimer.value = false;
+    userPrefsStore.setPreviewModalSeen();
+}
 
 onMounted(async () => {
     const imageUrl = await getThumbnail();
@@ -147,31 +114,6 @@ onMounted(async () => {
         thumbnail.value = imageUrl;
     }
 });
-
-async function initChart() {
-    if (!chartDiv.value) return;
-
-    const myChart = echarts.init(chartDiv.value);
-
-    var option = {
-        series: [
-            {
-                type: 'pie',
-                data: chartData,
-            }
-        ],
-        backgroundColor: 'transparent',
-    };
-
-    // Display the chart using the configuration items and data just specified.
-    myChart.setOption(option);
-
-    option && myChart.setOption(option);
-
-    window.addEventListener('resize', () => {
-        myChart.resize();
-    });
-}
 
 const countriesObj = computed(() => {
     if (!countries.value || !project?.value?.project?.countries) return '';
@@ -219,18 +161,6 @@ function zoomToArea(uuid: string) {
 
 const showFullDescription = ref(false);
 
-// function formatNumber(n: number) {
-//     // Use the toLocaleString method to add suffixes to the number
-//     return n.toLocaleString('en-US', {
-//         // add suffixes for thousands, millions, and billions
-//         // the maximum number of decimal places to use
-//         maximumFractionDigits: 0,
-//         // specify the abbreviations to use for the suffixes
-//         notation: 'compact',
-//         compactDisplay: 'short'
-//     });
-// }
-
 const selectedArea = ref(null);
 function areaClicked(area: any) {
     // if there's only one area, don't do anything because the information would be the same
@@ -263,12 +193,35 @@ const areaUnderRestoration = computed(() => {
 <template>
     <AlertModal
         title="Description"
-        :onClose="() => { showFullDescription = false }"
+        :onClose="() => showFullDescription = false"
         :open="showFullDescription"
         buttonText="Close"
     >
         <p class="whitespace-pre-wrap text-sm text-gray-800 text-left font-serif_">{{ project?.project.description }}</p>
     </AlertModal>
+
+    <AlertModal
+        :onClose="hideDisclaimer"
+        :open="showDisclaimer"
+        buttonText="Close"
+    >
+        <div class="text-left text-sm space-y-3">
+            <p>
+                The preview tab provides a comprehensive summary of the initiative's key features, including basic information about the initiative, the biomes and ecosystems involved, the areas committed to and currently under restoration, the restoration activities undertaken, progress on key indicators, and a selection of spatial datasets useful for monitoring restoration progress, all described in more detail in the <a
+                    href="/docs/ferm_user_guide_draft.pdf"
+                    target="_blank"
+                    class="underline text-blue-700"
+                >FERM guidance</a>.
+            </p>
+            <p>
+                Users can scroll down to review the initiative's details and explore interactive charts activated by clicking on individual areas highlighted by the yellow circles.
+            </p>
+            <p>
+                This section also offers a preview of the content that will be visible in the search engine once the initiative is published.
+            </p>
+        </div>
+    </AlertModal>
+
     <div class="h-[calc(100vh-5rem)] md:h-[calc(100vh-164px)] bg-slate-100">
         <div class="flex flex-col md:flex-row h-full">
             <div
@@ -360,56 +313,6 @@ const areaUnderRestoration = computed(() => {
                                     class="object-cover aspect-[162/100]"
                                 />
                             </div>
-                            <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8 font-roboto text-black">
-                                <div class="flex flex-row lg:flex-col gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#589C33]">
-                                    <div class="flex-0">
-                                        <svg
-                                            class="h-10 w-10 text-gray-400 mix-blend-multiply"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                        >
-                                            <title>forest</title>
-                                            <path d="M16 12L9 2L2 12H3.86L0 18H7V22H11V18H18L14.14 12H16M20.14 12H22L15 2L12.61 5.41L17.92 13H15.97L19.19 18H24L20.14 12M13 19H17V22H13V19Z" />
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col flex-grow">
-                                        <div class="flex-0 flex flex-grow">
-                                            <div>
-                                                <span class="font-bold text-3xl mr-1">{{ targetArea ? formatNumber(targetArea) : 'n/a' }}</span>
-                                                <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-end">
-                                            <div>Committed area</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-row lg:flex-col gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#dd6b66]">
-                                    <div class="flex-0">
-                                        <svg
-                                            class="h-10 w-10 text-gray-400 mix-blend-multiply"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                        >
-                                            <title>sprout</title>
-                                            <path d="M2,22V20C2,20 7,18 12,18C17,18 22,20 22,20V22H2M11.3,9.1C10.1,5.2 4,6.1 4,6.1C4,6.1 4.2,13.9 9.9,12.7C9.5,9.8 8,9 8,9C10.8,9 11,12.4 11,12.4V17C11.3,17 11.7,17 12,17C12.3,17 12.7,17 13,17V12.8C13,12.8 13,8.9 16,7.9C16,7.9 14,10.9 14,12.9C21,13.6 21,4 21,4C21,4 12.1,3 11.3,9.1Z" />
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col flex-grow">
-                                        <div class="flex-0 flex flex-grow">
-                                            <div>
-                                                <span class="font-bold text-3xl mr-1">{{ areaUnderRestoration ? formatNumber(areaUnderRestoration) : 'n/a' }}</span>
-                                                <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-end">
-                                            <div>Area under restoration</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
                             <CommittedAreaChart
                                 :areaUnderRestoration="areaUnderRestoration"
                                 :targetArea="targetArea"
@@ -417,7 +320,7 @@ const areaUnderRestoration = computed(() => {
                             />
                             <div
                                 v-if="project.reportingLine === 'GEF'"
-                                class="gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#dd6b66]"
+                                class="gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#007F5F] text-white"
                             >
                                 <div class="font-bold">GEF Core Indicators</div>
                                 <div
@@ -550,13 +453,9 @@ const areaUnderRestoration = computed(() => {
                             </ResultPanel>
 
                             <EcosystemsPanel :areas="projectAreas" />
-
                             <ActivitiesPanel :areas="projectAreas" />
-
                             <SdgPanel :sdgs="project.contributionToSdg" />
-
                             <IndicatorsPanel :areas="projectAreas" />
-
                             <AreasCharts
                                 :areas="projectAreas"
                                 @zoomToArea="zoomToArea"

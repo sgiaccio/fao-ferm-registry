@@ -22,8 +22,8 @@ const props = defineProps<{
     title?: string
     yData?: YData[]
     xData: any
-    tooltipFormatter?: any
     loading?: boolean
+    unit?: string
 }>();
 
 echarts.use([
@@ -147,15 +147,19 @@ async function showChart() {
             },
         },
         tooltip: {
-            trigger: 'item',
-            formatter: props.tooltipFormatter,
+            trigger: 'axis',
+            confine: true,
+            appendTo: document.querySelector('body'),
             textStyle: {
+                width: 100,
+                overflow: 'truncate',
                 fontSize: 12
-            }
+            },
+            valueFormatter: (v: number) => v.toLocaleString('en-US', { maximumFractionDigits: 2 }) + (props.unit ? ` ${props.unit}` : ''),
         },
         grid: {
-            left: '3%',
-            right: '4%',
+            left: '10%',
+            right: '10%',
             bottom: '6%',
             top: '15%',
             containLabel: true
@@ -206,9 +210,8 @@ onUnmounted(() => {
 });
 
 // watch both chartDiv and area and then show the chart
-watch([chartDiv, () => props.yData], ([chartDiv, _data], [_oldChartDiv, _oldData]) => {
-    if (!chartDiv) return;
-    showChart();
+watch([chartDiv, () => props.yData], ([chartDiv, _data]) => {
+    if (chartDiv) showChart();
 });
 </script>
 

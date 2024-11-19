@@ -12,30 +12,19 @@ const userCollection = collection(db, 'users')
 
 export interface RegistrationData {
     name: string,
-    // affiliation: {
-    //     ecosystem: boolean,
-    //     flagship: boolean,
-    //     partner: boolean,
-    //     otherAffiliationText: string,
-    // }
     purpose: string,
-    // group: { id: string, name: string } | null,
-    // otherGroupText: string,
-    // otherGroupText: string
 }
 
 interface UserPrefs {
     bpConsentAccepted?: boolean,
-    registrationData?: RegistrationData
+    registrationData?: RegistrationData,
+    previewModalSeen?: boolean,
 }
 
 export const useUserPrefsStore = defineStore('userPreferences', () => {
-    // const bpDisclaimerAccepted = ref(false);
-    const userPrefs = ref<UserPrefs>({});
-
-    function resetUserPrefsState() {
-        userPrefs.value = {};
-    }
+    const userPrefs = ref<UserPrefs>({
+        previewModalSeen: localStorage.getItem('previewModalSeen') === 'true',
+    });
 
     async function fetchUserPrefs() {
         const authStore = useAuthStore();
@@ -49,9 +38,8 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
         try {
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                userPrefs.value = docSnap.data();
-            } else {
-                userPrefs.value = {}
+                // userPrefs.value = docSnap.data();
+                userPrefs.value = { ...userPrefs.value, ...docSnap.data() };
             }
         } catch (error) {
             // Document does not exist - it will be created when the user completes the registration form
@@ -90,5 +78,17 @@ export const useUserPrefsStore = defineStore('userPreferences', () => {
         }
     }
 
-    return { userPrefs, fetchUserPrefs, acceptBpConsent, register, getRegistrationData, resetUserPrefsState };
+    function setPreviewModalSeen() {
+        userPrefs.value.previewModalSeen = true;
+        localStorage.setItem('previewModalSeen', 'true');
+    }
+
+    return {
+        userPrefs,
+        fetchUserPrefs,
+        acceptBpConsent,
+        register,
+        getRegistrationData,
+        setPreviewModalSeen
+    };
 });

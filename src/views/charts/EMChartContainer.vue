@@ -1,4 +1,3 @@
-<!-- LineChartContainer.vue -->
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
@@ -13,12 +12,12 @@ const props = withDefaults(defineProps<{
     area: any
     statisticType: string
     processData: (stats: any) => { xData: any[]; yData: any[] }
-    tooltipFormatter: (param: any) => string
     title: string
     isActive: boolean
     type?: string
     getLegendFromStats?: boolean
     rotateXAxisLabels?: number
+    unit?: string
 }>(), {
     type: 'line',
     getLegendFromStats: false,
@@ -36,7 +35,9 @@ function getLegend(stats: any) {
     const legendObj: { [key: string]: string } = {};
     stats.statisticResults.years.forEach((year: any) => {
         year.data.forEach((data: any) => {
-            legendObj[data.class_name] = '#' + data.class_palette;
+            if (!legendObj[data.class_name]) {
+                legendObj[data.class_name] = '#' + data.class_palette;
+            }
         });
     });
     return legendObj;
@@ -68,8 +69,6 @@ async function loadData(area: any) {
         loaded.value = true;
     } catch (e) {
         console.error('Error fetching data:', e);
-        error.value = true;
-        // Handle error appropriately (e.g., display a message to the user)
     }
 }
 
@@ -103,27 +102,27 @@ watch(() => props.area, (newArea) => {
             :title="title"
             :xData="xData"
             :yData="yData"
-            :tooltipFormatter="tooltipFormatter"
             :loading="loading"
             :legend="legend"
+            :unit="unit"
         />
         <StackedBarChartComponent
             v-else-if="type === 'stacked-bar'"
             :title="title"
             :xData="xData"
             :yData="yData"
-            :tooltipFormatter="tooltipFormatter"
             :loading="loading"
             :legend="legend"
             :rotateXAxisLabels="props.rotateXAxisLabels"
+            :unit="unit"
         />
         <BarChartComponent
             v-else-if="type === 'bar'"
             :title="title"
             :xData="xData"
             :yData="yData"
-            :tooltipFormatter="tooltipFormatter"
             :loading="loading"
+            :unit="unit"
         />
         <template v-else>
             <p>Unsupported chart type: {{ type }}</p>

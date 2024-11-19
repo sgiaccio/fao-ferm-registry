@@ -4,6 +4,7 @@ import {
     createEchartValuesFromEMStats,
     createEchartValuesFromEMStatsAverages,
     getEMStatsYears,
+    addMissingEMClasses
 } from '@/lib/util';
 
 
@@ -16,9 +17,11 @@ const referenceYearStart = 2011;
 const referenceYearEnd = 2020;
 
 function processData(stats: any) {
+    const years = addMissingEMClasses(stats, referenceYearStart)
+
     // Split the years into two groups: referenceYearStart to referenceYearEnd and 
-    const referencePeriod = stats.statisticResults.years.filter((year: any) => year.year >= referenceYearStart && year.year <= referenceYearEnd);
-    const yearsOnwards = stats.statisticResults.years.filter((year: any) => year.year > referenceYearEnd);
+    const referencePeriod = years.filter((year: any) => year.year >= referenceYearStart && year.year <= referenceYearEnd);
+    const yearsOnwards = years.filter((year: any) => year.year > referenceYearEnd);
 
     // Calculate averages for the reference period
     const referenceAvg = createEchartValuesFromEMStatsAverages(referencePeriod);
@@ -29,7 +32,7 @@ function processData(stats: any) {
     // Prepare x-axis data, including the reference period label
     const xData = [
         // '{line1|Reference period}\n{line2|(2011-2020)}',
-        `Avg ${referenceYearStart}–${referenceYearEnd}`,
+        `Reference\n${referenceYearStart}-${referenceYearEnd}`,
         ...getEMStatsYears(yearsOnwards),
     ];
 
@@ -42,34 +45,17 @@ function processData(stats: any) {
 
     return { xData, yData };
 }
-
-const unit = 'ha';
-
-function tooltipFormatter(param: any) {
-    const fullName = param.seriesName;
-    return `
-    <div style="max-width: 200px; white-space: normal; line-height: 1.5;">
-      <div style="font-weight: bold;">${fullName}</div>
-      <div>${param.dataIndex === 0 ? 'Reference period' : 'Year: ' + param.name}</div>
-      <div>Value: ${param.value.toLocaleString('en-US', {
-        maximumFractionDigits: 2,
-    })} ${unit}</div>
-    </div>
-  `;
-};
-
-const statisticType = 'CCILC';
-const title = 'CCI Land Cover Change';
 </script>
 
 <template>
     <EMChartContainer
+        type="line"
         :area="area"
-        :statisticType="statisticType"
+        statisticType="CCILC"
         :processData="processData"
-        :tooltipFormatter="tooltipFormatter"
-        :title="title"
+        title="CCI Land Cover Change"
         :isActive="isActive"
         :getLegendFromStats="true"
+        unit="ha"
     />
 </template>

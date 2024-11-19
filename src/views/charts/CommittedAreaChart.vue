@@ -1,10 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
-import * as echarts from 'echarts';
+import * as echarts from 'echarts/core';
+import { GaugeChart } from 'echarts/charts';
+import { TooltipComponent, TitleComponent, GridComponent } from 'echarts/components';
+import { SVGRenderer } from 'echarts/renderers';
+
 
 import { formatNumber } from '@/lib/util';
 
+
+echarts.use([
+    GaugeChart,
+    TooltipComponent,
+    TitleComponent,
+    GridComponent,
+    SVGRenderer
+]);
 
 const props = withDefaults(defineProps<{
     areaUnderRestoration: number
@@ -23,20 +35,15 @@ onMounted(() => {
 });
 
 function initChart() {
-    const myChart = echarts.init(chartRef.value);
+    const myChart = echarts.init(chartRef.value, null, { renderer: 'svg' });
 
     const option = {
         tooltip: {
             show: true, // Enable tooltips
-            formatter: function (params) {
-                // Access the value from the hovered data
-                const fullValue = params.data.value;
-                return `${params.seriesName}: ${fullValue} ${props.units}`;
-            }
+            formatter: (params: any) => `${params.seriesName}: ${params.data.value} ${props.units}`
         },
         series: [
             {
-                name: 'Committed Area', // Corresponds to the legend item
                 type: 'gauge',
                 center: ['50%', '65%'],
                 radius: '95%',
@@ -46,11 +53,11 @@ function initChart() {
                 max: Math.max(props.targetArea, props.areaUnderRestoration),
                 splitNumber: 1,
                 itemStyle: {
-                    color: '#007F5F'
+                    color: '#F77F00'
                 },
                 progress: {
                     show: true,
-                    width: 30
+                    width: 40
                 },
                 pointer: {
                     show: false
@@ -107,12 +114,11 @@ function initChart() {
 
                 data: [
                     {
-                        value: props.targetArea,
+                        value: Math.round(props.targetArea),
                     }
                 ]
             },
             {
-                name: 'Area Under Restoration', // Corresponds to the legend item
                 type: 'gauge',
                 center: ['50%', '65%'],
                 radius: '95%',
@@ -122,14 +128,21 @@ function initChart() {
                 max: Math.max(props.targetArea, props.areaUnderRestoration),
                 zlevel: 1,
                 itemStyle: {
-                    color: '#F77F00'
+                    color: '#007F5F'
                 },
                 progress: {
                     show: true,
-                    width: 15
+                    width: 16
                 },
                 pointer: {
-                    show: false
+                    icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
+                    length: '8%',
+                    width: 14,
+                    offsetCenter: [0, '-62%'],
+                    itemStyle: {
+                        color: '#007F5F'
+                        // color: 'rgba(0, 0, 0, 0.5)'
+                    }
                 },
                 axisLine: {
                     show: false

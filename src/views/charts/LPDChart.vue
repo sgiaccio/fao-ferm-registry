@@ -24,35 +24,17 @@ function processData(stats: any) {
 
     return { xData, yData };
 }
-
-const unit = 'ha';
-
-function tooltipFormatter(param: any) {
-    const fullName = param.seriesName;
-    return `
-    <div style="max-width: 200px; white-space: normal; line-height: 1.5;">
-      <div style="font-weight: bold;">${fullName}</div>
-      <div>Year: ${param.name}</div>
-      <div>Value: ${param.value.toLocaleString('en-US', {
-        maximumFractionDigits: 2,
-    })} ${unit}</div>
-    </div>
-  `;
-};
-
-const statisticType = 'landProductivity';
-const title = 'Land Productivity Dynamics - MODIS';
 </script>
 
 <template>
     <EMChartContainer
         :area="area"
-        :statisticType="statisticType"
+        statisticType="landProductivity"
         :processData="processData"
-        :tooltipFormatter="tooltipFormatter"
-        :title="title"
+        title="Land Productivity Dynamics - MODIS"
         :isActive="isActive"
         type="stacked-bar"
         :getLegendFromStats="true"
+        unit="ha"
     />
 </template>
