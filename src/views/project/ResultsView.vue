@@ -1,27 +1,38 @@
-<script
-    setup
-    lang="ts"
->
-// import * as L from 'leaflet';
-// import 'leaflet/dist/leaflet.css';
-// import 'leaflet-bing-layer';
+<script setup lang="ts">
+import { ref, onMounted, onBeforeMount, onUnmounted, computed } from 'vue';
 
-import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router'
 
-import { useProjectStore } from '../../stores/project';
+import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
+
+import { getPublicProjectThumbnail } from '@/firebase/functions';
+import { getGaulLevel0 } from '@/firebase/firestore';
+
+import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
 
-import { getRecursiveMenuLabel } from '@/lib/util';
+import ResultPanel from '../search/project/ResultPanel.vue';
+import ActivitiesPanel from '../search/project/ActivitiesPanel.vue';
+import SdgPanel from '../search/project/SdgPanel.vue';
+import AreasCharts from '../search/project/AreasCharts.vue';
+import AlertModal from '@/views/AlertModal.vue';
+import IndicatorsPanel from '../search/project/IndicatorsPanel.vue';
+import MapPanel from '../search/project/MapPanel.vue';
+import EcosystemsPanel from '../search/project/EcosystemsPanel.vue';
+import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
 
-import TabTemplate from '../TabTemplate.vue';
+import CommittedAreaChart from '@/views/charts/CommittedAreaChart.vue';
 
-import { roundToPrecisionAsString } from '@/lib/util';
+import { useUserPrefsStore } from '@/stores/userPreferences';
 
-// import SnailChart from '@/components/charts/SnailChart.vue';
+import {
+    getRecursiveMenuItem,
+    getLastTargetArea,
+    getPolygonsArea,
+    areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil,
+    formatNumber
+} from '@/lib/util';
 
-import { getProjectAreas, getProjectAdminAreas } from '@/firebase/functions';
-
-import { getLastTargetArea } from '@/lib/util';
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -29,617 +40,484 @@ withDefaults(defineProps<{
     edit: true
 });
 
-const store = useProjectStore();
-const menus = useMenusStore().menus;
+const userPrefsStore = useUserPrefsStore();
 
-const areaByGefIndicator = store.areaByGefIndicator();
-// const areaForGefIndicator3 = areaByGefIndicator.reduce((total, [indicator, area]) => {
-//     if (indicator.startsWith('GEF3')) return total + area;
-//     return total;
-// }, 0);
+const route = useRoute();
+const { menus } = useMenusStore();
+const projectStore = useProjectStore();
 
-// const chartLabels = areaByGefIndicator.map(([label, _]) => getRecursiveMenuLabel(label, menus.gefIndicators));
+const countries = ref<{ iso2: string, label: string }[] | null>(null);
 
-let chartData: { value: number, name: string }[] = [];
-if (store.project.reportingLine === 'GEF') {
-    chartData = areaByGefIndicator.map(([label, value]) => {
-        return {
-            value,
-            name: getRecursiveMenuLabel(label, menus.gefIndicators) || label
-        };
-    });
-} else {
-    chartData = [
-        {
-            value: store.project.project.areaUnderRestoration || 0,
-            name: 'Area under restoration'
-        },
-        {
-            value: store.project.project.targetArea - (store.project.project.areaUnderRestoration || 0),
-            name: 'Not achieved'
+const project = ref<any>(null);
+const projectAreas = ref<any[]>([]);
+
+const areaByGefIndicatorGroup = ref<any[]>([]);
+
+const indicatorGroupNames = [
+    { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use' },
+    { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use' },
+    { value: 3, label: '3. Area of land and ecosystems under restoration' },
+    { value: 4, label: '4. Area of landscapes under improved practices' },
+    { value: 5, label: '5. Area of marine habitat under improved practices to benefit biodiversity' },
+    { value: '2LDCF', label: '2 (LDCF). Area of land managed for climate resilience' }
+];
+
+onBeforeMount(async () => {
+    project.value = projectStore.project;
+    projectAreas.value = projectStore.projectAreas;
+
+    countries.value = await getGaulLevel0();
+
+    if (project.value.reportingLine === 'GEF') {
+        areaByGefIndicatorGroup.value = areaByGefIndicatorGroupUtil(projectAreas.value);
+    }
+});
+
+onUnmounted(() => {
+    // Revoke all object URLs
+    uploadedFiles.value.forEach(file => {
+        if (file.imageUrl) {
+            URL.revokeObjectURL(file.imageUrl);
         }
-    ];
-}
-
-
-// const chartData = areaByGefIndicator.map(([label, value]) => {
-//     return {
-//         value,
-//         name: label
-//     };
-// })
-
-const totalArea = chartData.reduce((total, { value }) => total + value, 0);
-if (totalArea < getLastTargetArea(store.project)) {
-    chartData.push({
-        value: getLastTargetArea(store.project) - totalArea,
-        name: 'Not achieved'
     });
+
+    if (thumbnail.value) {
+        URL.revokeObjectURL(thumbnail.value);
+    }
+});
+
+const uploadedFiles = ref<{ name: string, path: string, imageUrl?: string }[]>([]);
+
+async function getThumbnail() {
+    try {
+        const blob = await getPublicProjectThumbnail(route.params.id as string);
+        return URL.createObjectURL(blob);
+    } catch (error) {
+        console.error('Error displaying the thumbnail:', error);
+    }
 }
 
-// import 'maplibre-gl/dist/maplibre-gl.css';
-// import { Map } from 'maplibre-gl';
+const thumbnail = ref<string | null>(null);
 
-import * as echarts from 'echarts/core';
+const showDisclaimer = ref(!userPrefsStore.userPrefs.previewModalSeen);
 
-// Import bar charts, all suffixed with Chart
-import { BarChart } from 'echarts/charts';
-import { PieChart } from 'echarts/charts';
-
-// Import the tooltip, title, rectangular coordinate system, dataset and transform components
-import {
-    // TitleComponent,
-    TooltipComponent,
-    GridComponent,
-    // DatasetComponent,
-    // TransformComponent,
-    LegendComponent
-} from 'echarts/components';
-
-// Features like Universal Transition and Label Layout
-// import { LabelLayout, UniversalTransition } from 'echarts/features';
-
-// Import the Canvas renderer
-// Note that including the CanvasRenderer or SVGRenderer is a required step
-import { SVGRenderer } from 'echarts/renderers';
-
-// import type { GeoJSONObject } from 'ol/format/GeoJSON';
-
-echarts.use([
-    PieChart,
-    BarChart,
-    // TitleComponent,
-    TooltipComponent,
-    GridComponent,
-    // DatasetComponent,
-    // TransformComponent,
-    // LabelLayout,
-    // UniversalTransition,
-    SVGRenderer,
-    LegendComponent
-]);
-
+function hideDisclaimer() {
+    showDisclaimer.value = false;
+    userPrefsStore.setPreviewModalSeen();
+}
 
 onMounted(async () => {
-    initMap();
-    initChart();
-    if (store.project.reportingLine === 'GEF') {
-        initCICharts();
+    const imageUrl = await getThumbnail();
+    if (!imageUrl) {
+        console.error('Failed to load thumbnail:', imageUrl);
+    } else {
+        thumbnail.value = imageUrl;
     }
 });
 
-const numberFormatter = new Intl.NumberFormat('en-US', {
-    style: 'decimal',
-    maximumFractionDigits: 0
+const countriesObj = computed(() => {
+    if (!countries.value || !project?.value?.project?.countries) return '';
+    const projectCountries = (project?.value?.project?.countries || []).map((iso2: string) => {
+        return countries.value!.find(c => c.iso2 === iso2)
+    });
+    return projectCountries.map(c => ({ name: c?.label, iso2: c?.iso2 })).sort((a, b) => a.name.localeCompare(b.name));
 });
 
-const chartDiv = ref(null);
-async function initChart() {
-    if (!chartDiv.value) return;
 
-    const myChart = echarts.init(chartDiv.value);
-    const option = {
-        tooltip: {
-            trigger: 'item',
-            // format the number with no decimals
-            formatter: function (params: any) {
-                const value = params.value;
-                return `${getRecursiveMenuLabel(params.name, menus.gefIndicators) || params.name}:<br>${numberFormatter.format(value)} ${store.project.project.areaUnits || ''}`;
-            },
-            confine: 'true',
-            textStyle: {
-                overflow: 'breakAll',
-                width: 40,
-            },
-            extraCssText: 'max-width: 200px; white-space: normal;',
-            // formatter: '{a} <br/>{b}: {c} ({d}%)'
-        },
-        legend: {
-            // type: 'plain',
-            // orient: 'vertical',
-            // itemWidth: 20,
-            textStyle: {
-                itemWidth: 20,
-                rich: {
-                    fw600: {
-                        fontWeight: 600,
-                    },
-                },
-            },
-            formatter: (name: string) => {
-                if (store.project.reportingLine === 'GEF')
-                    name === 'Not achieved' ? 'Not achieved' : name.slice(3)
-                else {
-                    return name;
-                }
-            }
-            // formatter: function (name: string) {
-            //     const maxLength = 60; // Maximum length of legend text
-            //     const truncatedName = name.length > maxLength ? name.substring(0, maxLength - 3) + '...' : name;
-            //     const value = 1000;
-            //     return `${truncatedName}:\n{fw600|${value}}`;
-            // },
-            // top: '5%',
-            // left: '40%',
-            // bottom: 0,
-        },
-        // legend: {
-        // Try 'horizontal'
-        // right: 10,
-        // top: 'center'
-        // },
-        series: [
-            {
-                name: 'Area',
-                type: 'pie',
-                radius: ['40%', '70%'],
-                avoidLabelOverlap: false,
-                itemStyle: {
-                    borderRadius: 6,
-                    borderColor: '#fff',
-                    borderWidth: 0
-                },
-                label: {
-                    show: false,
-                    position: 'center'
-                },
-                emphasis: {
-                    label: {
-                        show: true,
-                        fontSize: 40,
-                        fontWeight: 'bold',
-                        formatter: (params: any) => {
-                            return numberFormatter.format(params.value) + ' ' + (store.project.project.areaUnits || '');
-                        }
-                    },
-                },
-                labelLine: {
-                    show: false
-                },
-                data: chartData,
-                // center: ['50%', '50%']
-            }
-        ]
-    };
+const timeframe = computed(() => {
+    const p = project.value.project;
 
-    option && myChart.setOption(option);
+    if (!p.startingYear && !p.endingYear) return 'No timeframe specified';
+    if (p.startingYear && p.endingYear) return `${p.startingYear} – ${p.endingYear}`;
+    if (p.startingYear) return `from ${p.startingYear}`;
+    if (p.endingYear) return `until ${p.endingYear}`;
+});
 
-    window.addEventListener('resize', () => {
-        myChart.resize();
-    });
-}
-
-const ciChartDiv = ref(null);
-const showCIChart = ref(true);
-function initCICharts() {
-    if (!ciChartDiv.value) return;
-
-    // return if not GEF
-    if (store.project.reportingLine !== 'GEF') return;
-
-    const achievedAreaByCoreIndicatorGroup = store.areaByGefIndicatorGroup();
-    function findAchievedAreaByCoreIndicator(label: string) {
-        return achievedAreaByCoreIndicatorGroup.find(([l, _]) => label === l)?.[1] || 0;
-    }
-
-    const achievedData = [
-        findAchievedAreaByCoreIndicator('1'),
-        findAchievedAreaByCoreIndicator('2'),
-        findAchievedAreaByCoreIndicator('3'),
-        findAchievedAreaByCoreIndicator('4'),
-        findAchievedAreaByCoreIndicator('5'),
-        findAchievedAreaByCoreIndicator('2LDCF')
-    ];
-    const committedData = [
-        store.project.project.targetAreaCoreIndicator1 || 0,
-        store.project.project.targetAreaCoreIndicator2 || 0,
-        store.project.project.targetAreaCoreIndicator3 || 0,
-        store.project.project.targetAreaCoreIndicator4 || 0,
-        store.project.project.targetAreaCoreIndicator5 || 0,
-        store.project.project.targetAreaCoreIndicator2LDCF || 0,
-    ];
-    const yAxisData = [
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '2LDCF'
-    ];
-
-    // delete the items from the three arrays above when achievedData is 0 and committedData is 0
-    for (let i = 0; i < achievedData.length; i++) {
-        if (achievedData[i] === 0 && committedData[i] === 0) {
-            achievedData.splice(i, 1);
-            committedData.splice(i, 1);
-            yAxisData.splice(i, 1);
-            i--;
-        }
-    }
-
-    if (achievedData.length === 0) {
-        showCIChart.value = false;
-        return;
-    };
-
-    var myChart = echarts.init(ciChartDiv.value);
-
-    const option = {
-        // title: {
-        //     text: 'Area achieved by GEF Core Indicators',
-        // },
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-                type: 'shadow'
-            },
-            valueFormatter: (value: number) => numberFormatter.format(value)
-        },
-        legend: {
-            // bottom: 0,
-        },
-        grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-        },
-        xAxis: {
-            type: 'value',
-            boundaryGap: [0, 0.01],
-        },
-        yAxis: {
-            type: 'category',
-            data: yAxisData,
-        },
-        series: [
-            {
-                name: 'Committed',
-                type: 'bar',
-                data: committedData
-            },
-            {
-                name: 'Achieved',
-                type: 'bar',
-                data: achievedData
-            }
-        ],
-        itemStyle: {
-            borderRadius: 3,
-        },
-
-    };
-
-    myChart.setOption(option);
-
-    window.addEventListener('resize', () => {
-        myChart.resize();
-    });
-}
-
-async function initMap() {
-    const { Map } = await google.maps.importLibrary('maps');
-    const map = new Map(document.getElementById('map') as HTMLElement, {
-        center: { lat: 0, lng: 40 },
-        zoom: 1,
-        disableDefaultUI: true,
-        // satellite map
-        mapTypeId: 'hybrid'
-    });
-
-    //load the json data
-    const geojson = await getProjectAreas(store.id!);
-    const adminGeojson = await getProjectAdminAreas(store.id!);
-    // if area is not a valid GeoJSON object, return
-    if (!geojson && !adminGeojson) {
-        return;
-    }
-
-    if (geojson)
-        map.data.addGeoJson(geojson);
-    if (adminGeojson)
-        map.data.addGeoJson(adminGeojson);
-    
-    map.data.setStyle({
-        fillColor: '#ff0000',
-        fillOpacity: 0,
-        strokeColor: '#EEA63A',
-        strokeWeight: 2,
-        icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            fillColor: '#fff',
-            fillOpacity: 0.67,
-            strokeColor: '#EEA63A',
-            strokeWeight: 2,
-            scale: 4,
-        },
-    });
-
-    // const jsonLayer = new google.maps.Data({ map });
-    // jsonLayer.addGeoJson(geojson);
-
-    // zoom to the layer
-    const bounds = new google.maps.LatLngBounds();
-    map.data.forEach((feature) => {
-        feature.getGeometry().forEachLatLng((latLng) => {
-            bounds.extend(latLng);
-        });
-    });
-    // zoom slowly to the layer
-    map.fitBounds(bounds);
-
-    // jsonLayer.setStyle({
-    //     fillColor: '#ff0000',
-    //     fillOpacity: 0,
-    //     color: '#ff7800',
-    //     strokeWeight: 2
+function zoomToArea(uuid: string) {
+    return;
+    // // Look for the feature with the given uuid
+    // let foundFeature = null;
+    // map.data.forEach(feature => {
+    //     if (feature.getProperty('uuid') === uuid) {
+    //         foundFeature = feature;
+    //     }
     // });
 
-    // // map.data.setMap(map)
-
-    // // Add marks from the points array
+    // // zoom to the feature
+    // if (foundFeature) {
+    //     zoomAndHighlightFeature(foundFeature);
+    // } else {
+    //     // zoom to the whole layer
+    //     const layerBounds = new google.maps.LatLngBounds();
+    //     map.data.forEach(feature => {
+    //         feature.getGeometry().forEachLatLng(latlng => {
+    //             layerBounds.extend(latlng);
+    //         });
+    //     });
+    //     map.fitBounds(layerBounds);
+    //     map.setCenter(layerBounds.getCenter());
+    // }
 }
 
+const showFullDescription = ref(false);
 
-// async function initMap() {
-//     const map = L.map('map').setView([0, 0], 2);
+const selectedArea = ref(null);
+function areaClicked(area: any) {
+    // if there's only one area, don't do anything because the information would be the same
+    if (projectAreas.value.length === 1) return;
 
-//     L.tileLayer.bing(import.meta.env.VITE_BING_KEY).addTo(map)
-//     const areaFetchPromise = getProjectAreas(store.id!);
+    selectedArea.value = area;
+}
 
-//     var myStyle = {
-//         "color": "#FFCC00",
-//         "weight": 2,
-//         "opacity": 0.9,
-//         "fillOpacity": 0
-//     };
+function deselectArea() {
+    selectedArea.value = null;
+}
 
+const targetArea = computed(() => {
+    if (project.value.reportingLine === 'GEF') {
+        return getLastTargetArea(project.value);
+    } else {
+        return project.value.project.targetArea;
+    }
+});
 
-//     const area = await areaFetchPromise as GeoJSONObject;
-//     // if area is not a valid GeoJSON object, return
-//     if (!area) {
-//         return;
-//     }
-
-//     const jsonLayer = L.geoJSON(area, {
-//         pointToLayer: function (_feature, latlng) {
-//             return L.circleMarker(latlng, {
-//                 radius: 1,
-//                 fillColor: "#ff0000",
-//                 color: "#ff7800",
-//                 weight: 1,
-//                 opacity: 1,
-//                 fillOpacity: 0.8
-//             });
-//         },
-//         style: myStyle
-//     });
-
-//     map.flyToBounds(jsonLayer.getBounds(), {
-//         padding: [10, 10],
-//     });
-
-//     map.once('zoomend', function () {
-//         jsonLayer.addTo(map);
-//     });
-
-// MapLibre
-
-// const map = new Map({
-//     container: 'map', // container id
-//     style: {
-//         'version': 8,
-//         'sources': {
-//             'raster-tiles': {
-//                 'type': 'raster',
-//                 'tiles': [
-//                     // NOTE: Layers from Stadia Maps do not require an API key for localhost development or most production
-//                     // web deployments. See https://docs.stadiamaps.com/authentication/ for details.
-//                     'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg'
-//                 ],
-//                 'tileSize': 256,
-//                 'attribution':
-//                     'Map tiles by <a target="_blank" href="http://stamen.com">Stamen Design</a>; Hosting by <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a>. Data &copy; <a href="https://www.openstreetmap.org/about" target="_blank">OpenStreetMap</a> contributors'
-//             }
-//         },
-//         'layers': [
-//             {
-//                 'id': 'simple-tiles',
-//                 'type': 'raster',
-//                 'source': 'raster-tiles',
-//                 'minzoom': 0,
-//                 'maxzoom': 22
-//             }
-//         ]
-//     },
-//     center: [-74.5, 40], // starting position
-//     zoom: 2 // starting zoom
-// });
-// }
-
-// async function fetchProjectPolygonsArea() {
-//     return fetch(
-//         `https://europe-west3-fao-ferm.cloudfunctions.net/get_project_areas_json?project_id=${store.id}`, {
-//         method: 'GET',
-//         headers: {
-//             'Authorization': `Bearer ${auth.user.accessToken}`
-//         }
-//     }).then(response => response.json()).then(area => {
-//         return area;
-//     });
-// }
-
-// onUnmounted(() => {
-//     map.remove();
-// });
+const areaUnderRestoration = computed(() => {
+    if (project.value.reportingLine === 'GEF') {
+        return getPolygonsArea(projectAreas.value);
+    } else {
+        return project.value.project.areaUnderRestoration;
+    }
+});
 </script>
 
-
 <template>
-    <TabTemplate title="Results">
-        <template #description>
-            In this section you can see a summary of the results of your restoration initiative, such as:
-            <ul class="list-disc list-inside">
-                <li>The progress in the extent of the restoration area</li>
-                <li>The proportion of area of each ecosystem under restoration</li>
-                <li>The progress of the indicators</li>
-            </ul>
-        </template>
-        <template #default>
+    <AlertModal
+        title="Description"
+        :onClose="() => showFullDescription = false"
+        :open="showFullDescription"
+        buttonText="Close"
+    >
+        <p class="whitespace-pre-wrap text-sm text-gray-800 text-left font-serif_">{{ project?.project.description }}</p>
+    </AlertModal>
+
+    <AlertModal
+        :onClose="hideDisclaimer"
+        :open="showDisclaimer"
+        buttonText="Close"
+    >
+        <div class="text-left text-sm space-y-3">
+            <p>
+                The preview tab provides a comprehensive summary of the initiative's key features, including basic information about the initiative, the biomes and ecosystems involved, the areas committed to and currently under restoration, the restoration activities undertaken, progress on key indicators, and a selection of spatial datasets useful for monitoring restoration progress, all described in more detail in the <a
+                    href="/docs/ferm_user_guide_draft.pdf"
+                    target="_blank"
+                    class="underline text-blue-700"
+                >FERM guidance</a>.
+            </p>
+            <p>
+                Users can scroll down to review the initiative's details and explore interactive charts activated by clicking on individual areas highlighted by the yellow circles.
+            </p>
+            <p>
+                This section also offers a preview of the content that will be visible in the search engine once the initiative is published.
+            </p>
+        </div>
+    </AlertModal>
+
+    <div class="h-[calc(100vh-5rem)] md:h-[calc(100vh-164px)] bg-slate-100">
+        <div class="flex flex-col md:flex-row h-full">
             <div
-                id="map"
-                class="rounded shadow-md border border-gray-100 mt-4 w-full"
-                style="height: 400px"
-            ></div>
-            <!-- Non GEF charts -->
-            <div
-                v-if="store.project.reportingLine !== 'GEF'"
-                class="flex flex-col gap-6 mt-6"
+                id="projectInfo"
+                class="h-full w-full md:w-[400px] xl:w-[500px] pr-3 text-gray-800 overflow-auto"
             >
                 <div
-                    v-if="store.project.project.targetArea && store.project.project.areaUnderRestoration"
-                    class="shadow-md rounded px-4 py-3 text-base border"
+                    v-if="project"
+                    class="relative"
                 >
-                    <div
-                        id="chart"
-                        ref="chartDiv"
-                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
-                    ></div>
-                    <!-- <SnailChart
-                        :values="[store.project.project.areaUnderRestoration]"
-                        :labels="['Area under restoration']"
-                        :unit="store.project.project.areaUnits"
-                        :targetValue="store.project.project.targetArea"
-                        not-achieved-label="Area committed not under restoration"
-                    /> -->
-                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has achieved {{ roundToPrecisionAsString(store.project.project.areaUnderRestoration / store.project.project.targetArea * 100) }}% of your total committed land ({{ store.project.project.targetArea }} {{ store.project.project.areaUnits || '' }}).</p>
-                </div>
-                <div
-                    v-else
-                    class="pt-6 font-bold text-xl"
-                >
-                    Committed area to restore or Total area under restoration not selected in the Area & Ecosystems tab.
+                    <transition name="appear_from_left">
+                        <div
+                            v-if="selectedArea"
+                            class="absolute w-full space-y-4 bg-slate-100 z-50 py-6 pl-4 "
+                        >
+                            <div class="text-gray-800 text-sm flex w-full items-center">
+                                <div class="flex-grow">
+                                    <h1 class="text-2xl font-akrobat font-semibold">{{ selectedArea.siteName || 'Area' }}</h1>
+                                </div>
+                                <button @click="deselectArea">
+                                    <div class="rounded-full bg-gray-300 hover:bg-gray-400 p-1">
+                                        <ArrowLeftIcon class="h-6 w-6" />
+                                    </div>
+                                </button>
+                            </div>
+
+                            <EcosystemsPanel :areas="[{ dummy: selectedArea }]" />
+
+                            <ActivitiesPanel :areas="[{ dummy: selectedArea }]" />
+
+                            <IndicatorsPanel :areas="[{ dummy: selectedArea }]" />
+
+                            <AreasCharts
+                                :areas="[{ dummy: selectedArea }]"
+                                @zoomToArea="zoomToArea"
+                            />
+
+                            <ChartsSwiper :area="selectedArea" />
+                        </div>
+                    </transition>
+                    <transition name="disappear_to_left">
+                        <div
+                            v-if="!selectedArea"
+                            class="space-y-4 py-6 pl-4"
+                        >
+                            <div class="text-gray-800 text-sm">
+                                <div class="flex flex-row w-full">
+                                    <div class="flex-1">
+                                        <h1 class="text-2xl font-akrobat font-semibold">{{ project.project.title }}</h1>
+                                    </div>
+                                    <!-- add GEF logo if GEF project -->
+                                    <div
+                                        v-if="project.reportingLine === 'GEF'"
+                                        class="mt-2"
+                                    >
+                                        <img
+                                            src="/interop_logos/gef.svg"
+                                            alt="GEF logo"
+                                            class="h-12 w-auto"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="mt-1 flex flex-wrap gap-x-3 gap-y-2">
+                                    <div
+                                        v-for="c in countriesObj"
+                                        :key="c.iso2"
+                                        class="flex items-center"
+                                    >
+                                        <img
+                                            :src="`/flags/iso2/${c.iso2.toLowerCase()}.svg`"
+                                            :alt="`${c.name} flag`"
+                                            class="h-6 w-6 flex-shrink-0 rounded-full"
+                                        />
+                                        <span class="ml-2">{{ c.name }}</span>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div
+                                v-if="thumbnail"
+                                class="shadow rounded-lg overflow-hidden aspect-[162/100]"
+                            >
+                                <img
+                                    v-if="project.project.thumbnailUrl"
+                                    :src="thumbnail"
+                                    alt="Project thumbnail"
+                                    class="object-cover aspect-[162/100]"
+                                />
+                            </div>
+                            <CommittedAreaChart
+                                :areaUnderRestoration="areaUnderRestoration"
+                                :targetArea="targetArea"
+                                :units="project.project.areaUnits"
+                            />
+                            <div
+                                v-if="project.reportingLine === 'GEF'"
+                                class="gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#007F5F] text-white"
+                            >
+                                <div class="font-bold">GEF Core Indicators</div>
+                                <div
+                                    v-for="group in areaByGefIndicatorGroup"
+                                    :key="group[0]"
+                                    class="flex mt-2"
+                                >
+                                    <div class="flex flex-row gap-4">
+                                        <div class="flex-grow">
+                                            {{ indicatorGroupNames.find(i => '' + i.value === '' + group[0])?.label }}
+                                        </div>
+                                        <div>
+                                            <span class="font-bold text-xl mr-1">{{ group[1] ? formatNumber(group[1]) : 'n/a' }}</span>
+                                            <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <ResultPanel>
+                                <div class="border-gray-100">
+                                    <dl class="divide-y divide-gray-100">
+                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">Description</dt>
+                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                                <template v-if="project.project.description">
+                                                    <template v-if="project.project.description.length > 250">
+                                                        <p>{{ project.project.description.substring(0, 250) }}...</p>
+                                                        <button
+                                                            @click="showFullDescription = !showFullDescription"
+                                                            class="text-blue-700 underline"
+                                                        >Show more</button>
+                                                    </template>
+
+                                                    <template v-else>
+                                                        <p>{{ project.project.description }}</p>
+                                                    </template>
+                                                </template>
+                                                <template v-else>
+                                                    <p class="italic text-gray-500">n/a</p>
+                                                </template>
+                                            </dd>
+                                        </div>
+                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">Timeframe</dt>
+                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ timeframe }}</dd>
+                                        </div>
+                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
+                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                                <template v-if="project.reportingLine !== 'GEF'">
+                                                    <template v-if="project.project.restorationStatus">
+                                                        {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
+                                                    </template>
+                                                    <span
+                                                        v-else
+                                                        class="italic text-gray-500"
+                                                    >n/a</span>
+                                                </template>
+                                                <template v-else>
+                                                    <template v-if="project.project.targetAreaEvaluationPhase">
+                                                        Post-completion
+                                                    </template>
+                                                    <template v-else-if="project.project.targetAreaReviewPhase">
+                                                        In progress
+                                                    </template>
+                                                    <template v-else-if="project.project.targetAreaDesignPhase">
+                                                        In preparation
+                                                    </template>
+                                                    <span
+                                                        v-else
+                                                        class="italic text-gray-500"
+                                                    >n/a</span>
+                                                </template>
+                                            </dd>
+                                        </div>
+                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">Restoration types</dt>
+                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                                <template v-if="project.project.restorationTypes?.length > 0">
+                                                    {{ project.project.restorationTypes.map(type => getRecursiveMenuItem(menus.restorationTypes, type)?.label).join(', ') }}
+                                                </template>
+                                                <span
+                                                    v-else
+                                                    class="italic text-gray-500"
+                                                >n/a</span>
+                                            </dd>
+                                        </div>
+                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">Tenure statuses</dt>
+                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                                <template v-if="project.project.tenureStatuses?.length > 0">
+                                                    {{ project.project.tenureStatuses.map(status => getRecursiveMenuItem(menus.tenureStatuses, status)?.label).join(', ') }}
+                                                </template>
+                                                <span
+                                                    v-else
+                                                    class="italic text-gray-500"
+                                                >n/a</span>
+                                            </dd>
+                                        </div>
+                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">Website</dt>
+                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 hover:text-gray-900">
+                                                <a
+                                                    v-if="project.project.website"
+                                                    :href="project.project.website.startsWith('http') ? project.project.website : 'http://' + project.project.website"
+                                                    target="_blank"
+                                                    class="underline"
+                                                >{{ project.project.website }}</a>
+                                                <span
+                                                    v-else
+                                                    class="italic text-gray-500"
+                                                >n/a</span>
+                                            </dd>
+                                        </div>
+                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">Keywords</dt>
+                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                                <template v-if="project.project.keywords?.length > 0">
+                                                    {{ project.project.keywords.join(', ') }}
+                                                </template>
+                                                <span
+                                                    v-else
+                                                    class="italic text-gray-500"
+                                                >n/a</span>
+                                            </dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                            </ResultPanel>
+
+                            <EcosystemsPanel :areas="projectAreas" />
+                            <ActivitiesPanel :areas="projectAreas" />
+                            <SdgPanel :sdgs="project.contributionToSdg" />
+                            <IndicatorsPanel :areas="projectAreas" />
+                            <AreasCharts
+                                :areas="projectAreas"
+                                @zoomToArea="zoomToArea"
+                            />
+
+                            <ChartsSwiper
+                                v-if="projectAreas.length === 1 && Object.values(projectAreas[0])[0].uuid"
+                                :area="Object.values(projectAreas[0])[0]"
+                            />
+                        </div>
+                    </transition>
                 </div>
             </div>
-
-            <!-- GEF charts -->
-            <div
-                v-else-if="chartData.length > 0 && getLastTargetArea(store.project)"
-                class="flex flex-col gap-6 mt-6"
-            >
-
-                <template v-if="store.project.project.areaAchievedMatch === 1">
-                    <div
-                        v-if="chartData.length > 0 && getLastTargetArea(store.project)"
-                        id="chart"
-                        ref="chartDiv"
-                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
-                    />
-                    <div
-                        ref="ciChartDiv"
-                        v-if="showCIChart"
-                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
-                    />
-
-                    <!-- <SnailChart
-                        v-if="chartValues.length > 0 && getLastTargetArea()"
-                        :values="chartValues"
-                        :labels="chartLabels h-64 w-full"
-                        :targetValue="getLastTargetArea()"
-                    /> -->
-                    <p class="mt-4 text-center font-bold text-gray-800">Congratulations! Your project has {{ Math.trunc(store.polygonsArea() / getLastTargetArea(store.project) * 100) }}% of committed land under restoration.</p>
-                </template>
-                <!-- <div
-                    v-else
-                    class="shadow-md rounded px-4 py-3 text-base border"
-                >
-                    <!- - <SnailChart
-                        :values="[]"
-                        :labels="[] h-64 w-full"
-                    /> - ->
-                    <div
-                        id="chart"
-                        ref="chartDiv"
-                        class="shadow-md rounded px-4 py-3 text-base border h-64 w-full"
-                    ></div>
-                </div> -->
-
-                <div class="shadow-lg rounded border divide-y">
-                    <div class="px-4 py-5 sm:px-6 bg-ferm-green-light/70 rounded-t">
-                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Area of land committed in last project phase</h3>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-green-light/20">
-                        <div class="col-span-2">Target area in last project phase</div>
-                        <div class="col-span-1">{{ roundToPrecisionAsString(getLastTargetArea(store.project), 2) }} Ha</div>
-                    </div>
-                </div>
-
-                <div class="shadow-lg rounded border divide-y">
-                    <div class="px-4 py-5 sm:px-6 bg-ferm-mustard-light/70 rounded-t">
-                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved during project implementation</h3>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-mustard-light/20">
-                        <!-- <div class="col-span-2">Total area of land achieved (tabular format)</div>
-                        <div class="col-span-1">{{ roundToPrecisionAsString(store.project.project.areaAchieved, 2) }} Ha</div> -->
-                        <div class="col-span-2">Total area of land achieved (spatially explicit format)</div>
-                        <div class="col-span-1">{{ roundToPrecisionAsString(store.polygonsArea(), 2) }} Ha</div>
-                    </div>
-                </div>
-
-                <div class="shadow-lg rounded border divide-y">
-                    <div class="px-4 py-5 sm:px-6 bg-ferm-blue-light/70 rounded-t">
-                        <h3 class="text-lg font-semibold leading-6 text-gray-900">Total area of land achieved per GEF CORE Indicator 1&#8209;5</h3>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 px-4 py-5 sm:px-6 bg-ferm-blue-light/20">
-                        <template v-for="[indicator, area] in areaByGefIndicator">
-                            <div class="col-span-2">{{ getRecursiveMenuLabel(indicator, menus.gefIndicators) }}</div>
-                            <div class="col-span-1">{{ roundToPrecisionAsString(area, 2) }} Ha</div>
-                        </template>
-                    </div>
-                </div>
-
-
-                <!-- <div class="shadow rounded px-4 py-3 border bg-slate-50">
-                    <div class="grid grid-cols-6 gap-4">
-                        <div class="col-span-2"><!- -Total area of land achieved- -></div>
-                        <div class="col-span-4 font-bold text-lg">Total area of land achieved per GEF CORE Indicator 1&#8209;5</div>
-                        <template v-for="[indicator, area] in areaByGefIndicator">
-                            <div class="col-span-2 font-bold">{{ getRecursiveMenuLabel(indicator, menus.gefIndicators) }}</div>
-                            <div class="col-span-2">{{ formatNumber(area, true) }}</div>
-                            <div class="col-span-2">Ha</div>
-                        </template>
-                    </div>
-                </div> -->
+            <div class="flex-grow bg-slate-300 relative">
+                <MapPanel
+                    :projectId="route.params.id"
+                    :public="false"
+                    @area-clicked="areaClicked"
+                    class="rounded-none"
+                />
             </div>
-            <div
-                v-else
-                class="flex flex-col gap-6 pt-6 font-bold text-xl"
-            >
-                Not enough data to show results
-            </div>
-        </template>
-    </TabTemplate>
+        </div>
+    </div>
 </template>
+
+<style scoped>
+#projectInfo {
+    scrollbar-color: #bbb transparent;
+    /* scrollbar-width: thin; */
+}
+
+.gm-style iframe+div {
+    border: none !important;
+}
+
+.appear_from_left-enter-active,
+.appear_from_left-leave-active {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.appear_from_left-enter-from,
+.appear_from_left-leave-to {
+    transform: translateX(100%);
+}
+
+.appear_from_left-enter-to,
+.appear_from_left-leave-from {
+    transform: translateX(0);
+}
+
+.disappear_to_left-enter-active,
+.disappear_to_left-leave-active {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.disappear_to_left-enter-from,
+.disappear_to_left-leave-to {
+    transform: translateX(-100%);
+}
+
+.disappear_to_left-enter-to,
+.disappear_to_left-leave-from {
+    transform: translateX(0);
+}
+</style>

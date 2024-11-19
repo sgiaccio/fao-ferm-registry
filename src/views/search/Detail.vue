@@ -40,6 +40,11 @@ if ((props.source === 'FERM' || props.source ==='GEF') && props.url.includes('/i
     const projectId = props.url.split('/').pop();
     _url = `/search/initiatives/${projectId}`;
 }
+
+function changeSource(event, source) {
+    const img = event.target;
+    img.src = `/interop_logos/${source.toLowerCase()}.png`;
+}
 </script>
 
 <template>
@@ -145,8 +150,9 @@ if ((props.source === 'FERM' || props.source ==='GEF') && props.url.includes('/i
                     <img
                         v-if="source"
                         :src="`/interop_logos/${source.toLowerCase()}.svg`"
+                        @error="changeSource($event, source)"
                         alt="source"
-                        class="max-w-32 max-h-8 w-full"
+                        class="max-w-32 max-h-8 w-full object-contain"
                     />
                 </a>
             </div>

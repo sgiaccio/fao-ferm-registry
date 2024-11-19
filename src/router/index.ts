@@ -38,7 +38,7 @@ const projectTabs = [{
     name: 'projectMonitoring',
     component: () => import('../views/project/MonitoringView.vue')
 }, {
-    path: 'results',
+    path: 'preview',
     name: 'projectResults',
     component: () => import('../views/project/ResultsView.vue')
 }];

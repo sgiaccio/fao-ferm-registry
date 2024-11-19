@@ -73,7 +73,12 @@ async function fetchPolygonFromDatabase(client, uuid) {
         throw new Error("Invalid UUID");
     }
 
-    const query = "SELECT ST_AsGeoJSON(geom) AS geojson FROM project_areas WHERE area_uuid = $1";
+    // dissolve all the polygons into one
+    // const query = "SELECT ST_AsGeoJSON(ST_Union(geom::geometry)) AS geojson FROM project_areas WHERE area_uuid = $1";
+
+    // This query gives results that are consistent with using Earthmap directly (on the Characteristics tab).
+    // I believe that the previous dissolving query whould be used. Will do some tests with overlapping polygons on Earthmap.
+    const query = "SELECT ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson FROM project_areas WHERE area_uuid = $1";
 
     try {
         const result = await client.query(query, [uuid]);

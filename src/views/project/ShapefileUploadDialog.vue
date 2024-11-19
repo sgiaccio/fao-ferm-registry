@@ -17,7 +17,6 @@ import FileUploadFormGroup from '@/components/inputs/base/FileUploadFormGroup.vu
 
 const authStore = useAuthStore();
 const projectStore = useProjectStore();
-// const customAlert = useCustomAlert();
 
 const props = withDefaults(defineProps<{
     open?: boolean

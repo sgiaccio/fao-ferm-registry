@@ -5,7 +5,7 @@ export type ShowAlertFunction = (title: string, message: string, type: string, o
 
 export function useCustomAlert(): ShowAlertFunction {
     const showAlert = inject<ShowAlertFunction>('customAlert');
-    return (title: string, message: string, type: string, options) => {
+    return (title: string, message: string, type: string | null, options) => {
         if (showAlert) {
             showAlert(title, message, type, options);
         }

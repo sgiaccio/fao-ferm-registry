@@ -19,8 +19,8 @@ import LoadingView from '@/views/LoadingView.vue';
 
 const customAlert = ref();
 
-provide('customAlert', function (t: string, m: string, ty: string, options: any) {
-    customAlert.value.show(t, m, ty, options);
+provide('customAlert', function (title: string, message: string, type: string | null, options: any) {
+    customAlert.value.show(title, message, type, options);
 });
 
 // watch(user, async () => {

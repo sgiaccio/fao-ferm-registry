@@ -127,6 +127,11 @@ async function loadMore() {
         isLoading.value = false;
     }
 }
+
+function changeSource(event, source) {
+    const img = event.target;
+    img.src = `/interop_logos/${source.toLowerCase()}.png`;
+}
 </script>
 
 <template>
@@ -224,6 +229,7 @@ async function loadMore() {
                 v-if="result.source && result.preview_image"
                 class="h-7 absolute top-1.5 right-1.5 rounded-sm bg-white/90 p-1 shadow-md shadow-black/10 backdrop-blur-sm"
                 :src="`/interop_logos/${result.source.toLowerCase()}.svg`"
+                @error="changeSource($event, result.source)"
                 :alt="result.source"
             />
         </div>

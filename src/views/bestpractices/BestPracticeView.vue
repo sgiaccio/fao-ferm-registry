@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router';
 
 import router from '../../router';
 
-import { useUserPrefsStore } from '../../stores/userPreferences';
+import { useUserPrefsStore } from '@/stores/userPreferences';
 
 import Guidelines from './Guidelines.vue';
 

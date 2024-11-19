@@ -93,6 +93,18 @@ export function getRecursiveMenuLabel(value: string | number, menu: RecursiveMen
 //     return n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: maximumFractionDigits });
 // }
 
+export function formatNumber(n: number) {
+    // Use the toLocaleString method to add suffixes to the number
+    return n.toLocaleString('en-US', {
+        // add suffixes for thousands, millions, and billions
+        // the maximum number of decimal places to use
+        maximumFractionDigits: 0,
+        // specify the abbreviations to use for the suffixes
+        notation: 'compact',
+        compactDisplay: 'short'
+    });
+}
+
 export function roundToPrecisionAsString(number: number, precision: number) {
     let result = number.toFixed(precision);
 
@@ -339,4 +351,122 @@ export function getEcosystemColor(ecosystem: string) {
 
 export function getRealmLabel(realm: string) {
     return realmColors.find(r => r.value === realm)?.label || '';
+}
+
+export function getEMStatsYears(stats: any) {
+    return stats.map((year: any) => year.year);
+}
+
+// Processing function for pushing area_ha values
+function pushAreaHa(values: any[], data: any) {
+    values.push(data.area_ha ?? 0);
+}
+
+// Processing function for calculating averages using a closure
+function accumulateAverage(totalYears: number) {
+    return function (values: any[], data: any) {
+        const addendum = (data.area_ha ?? 0) / totalYears;
+        if (values.length === 0) {
+            values.push(addendum);
+        } else {
+            values[0] += addendum;
+        }
+    };
+}
+
+// export function createEchartValuesFromEMStats(stats: any) {
+//     return stats.reduce((acc: any, year: any) => {
+//         for (const data of year.data) {
+//             if (!acc.find((a: any) => a.class_name === data.class_name)) {
+//                 acc.push({
+//                     class_name: data.class_name,
+//                     values: [data.area_ha ?? 0],
+//                 });
+//             } else {
+//                 acc.find((a: any) => a.class_name === data.class_name).values.push(data.area_ha ?? 0);
+//             }
+//         }
+//         return acc;
+//     }, []);
+// }
+
+function createValuesFromStats(stats: any[], processFn: (values: any[], data: any) => void, initialValue: any = []) {
+    return stats.reduce((acc: any[], year: any) => {
+        for (const data of year.data) {
+            const className = data.class_name;
+            let item = acc.find((a: any) => a.class_name === className);
+            if (!item) {
+                item = {
+                    class_name: className,
+                    values: [],
+                };
+                acc.push(item);
+            }
+            processFn(item.values, data);
+        }
+        return acc;
+    }, initialValue);
+}
+
+// Using the function to create Echart values
+export function createEchartValuesFromEMStats(stats: any[], initialValue: any = []) {
+    return createValuesFromStats(stats, pushAreaHa, initialValue);
+}
+
+// // Using the function to calculate averages
+// const totalYears = years2011to2020.length;
+// const averages2011to2020 = createValuesFromStats(
+//     years2011to2020,
+//     accumulateAverage(totalYears)
+// );
+
+export function createEchartValuesFromEMStatsAverages(stats: any[]) {
+    const totalYears = stats.length;
+    return createValuesFromStats(stats, accumulateAverage(totalYears));
+}
+
+export function addMissingEMClasses(stats: any, startYear: number) {
+    const years = stats.statisticResults.years;
+    const firstYearInData = Math.min(...years.map((year: any) => year.year));
+    const firstYear = Math.max(startYear, firstYearInData);
+    const lastYear = Math.max(...years.map((year: any) => year.year));
+    const allYears = [];
+    for (let i = firstYear; i <= lastYear; i++) {
+        allYears.push(i);
+    }
+
+    const allClasses = years.reduce((acc: any, year: any) => {
+        year.data.forEach((data: any) => {
+            if (!acc.includes(data.class_name)) {
+                acc.push(data.class_name);
+            }
+        });
+        return acc;
+    }, []);
+
+    allYears.forEach((year: any) => {
+        const yearData = years.find((y: any) => y.year === year);
+        if (!yearData) {
+            years.push({
+                year,
+                data: allClasses.map((c: any) => ({
+                    class_name: c,
+                    value: 0,
+                })),
+            });
+        } else {
+            const classes = yearData.data.map((d: any) => d.class_name);
+            const missingClasses = allClasses.filter((c: any) => !classes.includes(c));
+            missingClasses.forEach((c: any) => {
+                yearData.data.push({
+                    class_name: c,
+                    value: 0,
+                });
+            });
+        }
+    });
+
+    // sort years
+    years.sort((a: any, b: any) => a.year - b.year);
+    return years;
 }

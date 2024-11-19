@@ -8,9 +8,12 @@ import { getProjectAreas, getProjectAdminAreas } from '@/firebase/functions';
 import SpinningThing from '@/components/SpinningThing.vue';
 
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     projectId: string;
-}>();
+    public: boolean;
+}>(), {
+    public: true,
+})
 
 const emit = defineEmits(['areaClicked']);
 
@@ -27,9 +30,35 @@ const geoJsonLoadError = ref(false);
 
 let map: google.maps.Map | null = null;
 
-const pinSvgString = '<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="#EEA63A" stroke="white" stroke-width="3" /></svg>';
-// same as above but without fill and with slightly transparent stroke
-const pinActiveSvgString = '<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="3" /></svg>';
+let advancedMarkerElement: any = null;
+
+async function importAdvancedMarkerElement() {
+    if (!advancedMarkerElement) {
+        advancedMarkerElement = (await google.maps.importLibrary("marker") as google.maps.MarkerLibrary).AdvancedMarkerElement;
+    }
+    return advancedMarkerElement;
+}
+
+const areaCentroidSvgString = `
+<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="10" cy="10" r="8" fill="#EEA63A" stroke="white" stroke-width="3" />
+</svg>
+`;
+// const areaCentroidActiveSvgString = `
+// <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+//     <circle cx="10" cy="10" r="8" fill="#FFD700" stroke="white" stroke-width="3" />
+// </svg>
+// `;
+const areaCentroidDimmedSvgString = `
+<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="3" />
+</svg>
+`;
+const pointSvgString = `
+<svg width="15" height="15" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="10" cy="10" r="8" fill="rgba(238, 85, 85, 0.7)" stroke="white" stroke-width="3" />
+</svg>
+`;
 const parser = new DOMParser();
 
 async function initMap() {
@@ -39,7 +68,7 @@ async function initMap() {
     geoJsonLoadError.value = false;
 
     const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
-    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
+    const AdvancedMarkerElement = await importAdvancedMarkerElement();
 
     const bounds = {
         north: 85,
@@ -63,8 +92,8 @@ async function initMap() {
 
     // Load the json data
     const [geojson, adminGeoJson] = await Promise.all([
-        getProjectAreas(props.projectId, true),
-        getProjectAdminAreas(props.projectId, true),
+        getProjectAreas(props.projectId, props.public),
+        getProjectAdminAreas(props.projectId, props.true),
     ]).catch((error) => {
         console.error('Failed to load geojson:', error);
         geoJsonLoadError.value = true;
@@ -80,16 +109,16 @@ async function initMap() {
     });
 
     // Add mouseover and mouseout events
-    map.data.addListener('mouseover', function (event) {
-        map.data.overrideStyle(event.feature, {
-            fillOpacity: 0.3,
-            strokeWeight: 3,
-        });
-    });
+    // map.data.addListener('mouseover', function (event) {
+    //     map.data.overrideStyle(event.feature, {
+    //         fillOpacity: 0.3,
+    //         strokeWeight: 3,
+    //     });
+    // });
 
-    map.data.addListener('mouseout', function (event) {
-        map.data.revertStyle(event.feature);
-    });
+    // map.data.addListener('mouseout', function (event) {
+    //     map.data.revertStyle(event.feature);
+    // });
 
     // zoom to the layer
     if (geojson.features.length > 0 || adminGeoJson.features.length > 0) {
@@ -112,7 +141,8 @@ async function initMap() {
         const xs = [];
         const ys = [];
 
-        if (geometry.getType() === 'MultiPoint') {
+        const geometryType = geometry.getType();
+        if (geometryType === 'MultiPoint') {
             geometry.getArray().forEach(point => {
                 xs.push(point.lng());
                 ys.push(point.lat());
@@ -121,8 +151,7 @@ async function initMap() {
             const y = ys.reduce((a, b) => a + b) / ys.length;
             return new google.maps.LatLng(y, x);
         }
-
-        if (geometry.getType() === 'LineString') {
+        else if (geometryType === 'LineString') {
             geometry.getArray().forEach(latLng => {
                 xs.push(latLng.lng());
                 ys.push(latLng.lat());
@@ -131,8 +160,7 @@ async function initMap() {
             const y = ys.reduce((a, b) => a + b) / ys.length;
             return new google.maps.LatLng(y, x);
         }
-
-        if (geometry.getType() === 'MultiLineString') {
+        else if (geometryType === 'MultiLineString') {
             geometry.getArray().forEach(line => {
                 line.getArray().forEach(latLng => {
                     xs.push(latLng.lng());
@@ -143,7 +171,7 @@ async function initMap() {
             const y = ys.reduce((a, b) => a + b) / ys.length;
             return new google.maps.LatLng(y, x);
         }
-        if (geometry.getType() === 'Polygon') {
+        else if (geometryType === 'Polygon') {
             geometry.getArray().forEach(path => {
                 path.getArray().forEach(latLng => {
                     bounds.extend(latLng);
@@ -151,7 +179,7 @@ async function initMap() {
             });
             return bounds.getCenter();
         }
-        if (geometry.getType() === 'MultiPolygon') {
+        else if (geometryType === 'MultiPolygon') {
             geometry.getArray().forEach(polygon => {
                 polygon.getArray().forEach(path => {
                     path.getArray().forEach(latLng => {
@@ -186,20 +214,20 @@ async function initMap() {
         }
     });
 
-    const pinSvg = parser.parseFromString(pinSvgString, 'image/svg+xml').documentElement;
+    const pinSvg = parser.parseFromString(areaCentroidSvgString, 'image/svg+xml').documentElement;
     // Center the SVG using CSS
     pinSvg.style.position = 'absolute';
     pinSvg.style.top = '50%';
     pinSvg.style.left = '50%';
     pinSvg.style.transform = 'translate(-50%, -50%)';
 
-    const pinActiveSvg = parser.parseFromString(pinActiveSvgString, 'image/svg+xml').documentElement;
+    const pinDimmedSvg = parser.parseFromString(areaCentroidDimmedSvgString, 'image/svg+xml').documentElement;
     // Center the SVG using CSS
-    pinActiveSvg.style.position = 'absolute';
-    pinActiveSvg.style.top = '50%';
-    pinActiveSvg.style.left = '50%';
-    pinActiveSvg.style.transform = 'translate(-50%, -50%)';
-    
+    pinDimmedSvg.style.position = 'absolute';
+    pinDimmedSvg.style.top = '50%';
+    pinDimmedSvg.style.left = '50%';
+    pinDimmedSvg.style.transform = 'translate(-50%, -50%)';
+
     // Create markers based on centroids
     const markers = centroidsAndFeatures.map(({ centroid, feature }) => {
         const marker = new AdvancedMarkerElement({
@@ -212,12 +240,43 @@ async function initMap() {
             zoomAndHighlightFeature(feature);
             emit('areaClicked', feature.getProperty('areaObject'));
 
-            // reset all markers to default style
+            // reset all other markers to dimmed style
             markers.forEach(marker => {
-                marker.content = pinSvg.cloneNode(true);
+                // Create a wrapper element
+                const markerContent = document.createElement('div');
+
+                // Create and append both pin versions
+                const dimmedPin = pinDimmedSvg.cloneNode(true);
+                const highlightedPin = pinSvg.cloneNode(true);
+
+                // Initially hide the highlighted version
+                highlightedPin.style.display = 'none';
+
+                // Append both versions to the wrapper
+                markerContent.appendChild(dimmedPin);
+                markerContent.appendChild(highlightedPin);
+
+                // Define the handlers
+                function onMouseEnter() {
+                    dimmedPin.style.display = 'none';
+                    highlightedPin.style.display = 'block';
+                }
+
+                function onMouseLeave() {
+                    dimmedPin.style.display = 'block';
+                    highlightedPin.style.display = 'none';
+                }
+
+                // Add the event listeners to the wrapper
+                markerContent.addEventListener('mouseenter', onMouseEnter);
+                markerContent.addEventListener('mouseleave', onMouseLeave);
+
+                // Set the marker content to the wrapper
+                marker.content = markerContent;
             });
-            marker.content = pinActiveSvg;
+            marker.content = pinSvg;
         });
+
         return marker;
     });
 
@@ -226,6 +285,13 @@ async function initMap() {
         map.data.setStyle({
             visible: false,
         });
+        clearMultipoitMarkers();
+
+        // set all markers to default style
+        markers.forEach(marker => {
+            marker.content = pinSvg.cloneNode(true);
+        });
+
         emit('areaClicked', null);
     });
 
@@ -261,22 +327,50 @@ function zoomToFeature(feature) {
     map.setCenter(bounds.getCenter());
 }
 
-function highlightFeature(feature) {
-    // Set a style for the highlighted feature
-    map.data.setStyle(f => {
-        if (f === feature) {
-            return {
-                fillColor: '#EEA63A',
-                fillOpacity: 0,
-                strokeColor: '#FFBF5B',
-                strokeWeight: 3,
-            };
-        } else {
-            return {
-                visible: false,
-            };
-        }
+let seletedPointCluster: any = null;
+
+function clearMultipoitMarkers() {
+    if (seletedPointCluster) {
+        seletedPointCluster.clearMarkers();
+        seletedPointCluster = null;
+    }
+}
+
+async function highlightFeature(feature: any) {
+    // clear any existing highlighted feature
+    clearMultipoitMarkers();
+    map.data.setStyle({
+        visible: false,
     });
+
+    const geometryType = feature.getGeometry().getType();
+    if (geometryType === 'MultiPoint') {
+        // loop through the points and highlight them - use advanced marker element
+        const AdvancedMarkerElement = await importAdvancedMarkerElement();
+        const markers = feature.getGeometry().getArray().map((latLng: google.maps.LatLng) => {
+            return new AdvancedMarkerElement({
+                position: latLng,
+                content: parser.parseFromString(pointSvgString, 'image/svg+xml').documentElement,
+            });
+        });
+        seletedPointCluster = new MarkerClusterer({ markers, map });
+    } else if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
+        map.data.setStyle((f: any) => {
+            // Set a style for the highlighted feature
+            if (f === feature) {
+                return {
+                    fillColor: '#EEA63A',
+                    fillOpacity: 0,
+                    strokeColor: '#FFBF5B',
+                    strokeWeight: 3,
+                };
+            } else {
+                return {
+                    visible: false,
+                };
+            }
+        });
+    }
 }
 </script>
 
@@ -284,7 +378,8 @@ function highlightFeature(feature) {
     <div
         id="map"
         ref="mapDiv"
-        class="rounded-md focus:ring-0"
+        class="focus:ring-0"
+        v-bind="$attrs"
     />
     <div
         v-if="!geoJsonLoaded || geoJsonLoadError"

@@ -89,7 +89,7 @@ export async function rejectProject(projectId: string, reason: string) {
     return result.data;
 }
 
-export async function getPolygonZonalStats(polygonId: string, stats: string, options: any) {
+export async function getPolygonZonalStats(polygonId: string, stats: string, options: any = {}) {
     const functions = getFunctions();
     const getPolygonZonalStats = httpsCallable(functions, 'getPolygonZonalStats');
     const result = await getPolygonZonalStats({ polygonId, stats, options });
