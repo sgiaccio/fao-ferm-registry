@@ -207,3 +207,10 @@ export async function gefQc() {
     const result = await qcGef();
     return result.data;
 }
+
+export async function getDanglingProjectAreas() {
+    const functions = getFunctions();
+    const getDanglingPolygons = httpsCallable(functions, 'getDanglingProjectAreas');
+    const result = await getDanglingPolygons();
+    return result.data;
+}   

@@ -342,23 +342,70 @@ function isValidUuid(uuid) {
 //     });
 */
 
+
+// exports.getDanglingProjectAreas = functions
+// // .runWith({ secrets: [dbUser, dbHost, dbDatabase, dbPassword, earthMapApiKey] })
+// .https.onCall(async (data, context) => {
+//     // check if the user is an administator
+//     if (!isSuperAdmin(context)) {
+//         throw new functions.https.HttpsError('permission-denied', 'Only administrators can get dangling areas.');
+//     }
+
+//     const client = await getDatabaseClient({
+//         user: dbUser.value(),
+//         host: dbHost.value(),
+//         database: dbDatabase.value(),
+//         password: dbPassword.value()
+//     });
+
+//     try {
+//         // get all the area uuids from the areas collection in firestore
+//         const areasSnapshot = await db.collection("areas").get();
+//         const areaUuids = areasSnapshot.docs
+//             .flatMap(doc => {
+//                 // Get the 'areas' array from the document's data, or default to an empty array.
+//                 // const areasArray = 
+//                 const areas = doc.data().areas;
+//                 return getUploadedAreasUuids(areas); // Filter out any undefined or invalid UUIDs.
+//             });
+
+//         // Delete all project_areas records that are not in the areaUuids array
+//         const query = `
+//             SELECT DISTINCT area_uuid FROM project_areas
+//             WHERE area_uuid != ALL($1::uuid[])
+//             AND created_at < NOW() - INTERVAL '14 days';`;
+//         const result = await client.query(query, [areaUuids]);
+
+//         return result.rows;
+//     }
+//     catch (error) {
+//         functions.logger.error("Error getting dangling areas from postgres:", error);
+//         throw new functions.https.HttpsError("internal", "Error getting dangling areas from postgres: " + error.message);
+//     }
+//     finally {
+//         client.release();
+//     }
+// });
+
+/*
 // This function was meant to be run once to set the project.countries field in the registry collection
 // DO NOT DEPLOY THIS FUNCTION
 // exports.setProjectAreasSecret = functions.runWith({ timeoutSeconds: 540 }).https.onRequest(async (req, res) => {
 //     return;
+/*
 //     if (false) {
 //         return;
 //         functions.logger.info("getting list of countries");
 //         const areasSnapshot = await areasCollection.get();
 //         const allAreas = areasSnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
-
+/*
 //         const client = await getDatabaseClient({
 //             user: dbUser.value(),
 //             host: dbHost.value(),
 //             database: dbDatabase.value(),
 //             password: dbPassword.value()
 //         });
-
+/*
 //         let i = 0;
 //         for (const { id, data } of allAreas) {
 //             // if (i++ > 10) continue;
@@ -370,7 +417,7 @@ function isValidUuid(uuid) {
 //             const uuids = data.areas.map(a => Object.values(a)).map(v => v[0].uuid).filter(uuid => uuid).filter(isValidUuid)
 //             console.log('uuids', uuids)
 //             const adminIso2Codes = data.areas.map(a => Object.values(a)).map(v => +v[0].admin0).filter(a0 => a0).map(gaul2iso).filter(iso => iso);
-
+/*
 //             let uploadedIso2Codes = [];
 //             try {
 //                 if (uuids.length) {
@@ -383,12 +430,12 @@ function isValidUuid(uuid) {
 //             } catch (error) {
 //                 console.error('Error getting intersecting countries:', error);
 //             }
-
+/*
 //             const allIso2Codes = [...new Set([...adminIso2Codes, ...uploadedIso2Codes])];
 //             console.log('uploadedIso2Codes', uploadedIso2Codes);
 //             console.log('adminIso2Codes', adminIso2Codes);
 //             console.log('allIso2Codes', allIso2Codes);
-
+/*
 //             // save in registry document
 //             try {
 //                 const docUpdate = {};
@@ -397,18 +444,18 @@ function isValidUuid(uuid) {
 //             } catch (error) {
 //                 console.error('Error updating registry document:', error);
 //             }
-
+/*
 //             // const polygonsData = await fetchPolygonsFromDatabase(client, uuids);
-
+/*
 //             // if (!polygonsData) {
 //             //     return
 //             // }
-
+/*
 //             // const intersectingCountries = await getIntersectingCountriesFromGee(polygonsData);
-
+/*
 //             // console.log('intersectingCountries', intersectingCountries);
 //         }
-
+/*
 //         client.release();
 //         return res.send({ test: 'test' });
 //     }
@@ -417,7 +464,7 @@ function isValidUuid(uuid) {
 //     }
 //     return;
 // });
-
+*/
 
 
 // exports.setProjectAreas_____d3fe = functions
@@ -683,7 +730,6 @@ exports.getProjectAreas = functions.https.onCall(async (data, context) => {
 
     const areaUuids = getUploadedAreasUuids(areaDoc.data().areas);
 
-    // execute this query but also on areauuids: "SELECT ST_AsGeoJSON(ST_Collect(ST_CollectionExtract(geom::geometry))) FROM project_areas WHERE project_id = %s"
     const client = await getDatabaseClient({
         user: dbUser.value(),
         host: dbHost.value(),
@@ -869,10 +915,15 @@ async function getAreasByProjectId(public, projectId) {
 }
 
 exports.getSavedProjectAreasGeoJson = functions.https.onCall(async (data, context) => {
+    const time = Date.now();
+
     const public = data.public || false;
     const projectId = public ? data.projectId : (await authorize(context, data)).projectId;
     const areas = await getAreasByProjectId(public, projectId);
     const areasWithUuids = getAreasWithUuids(areas);
+
+    const time2 = Date.now();
+    console.log('Time to get areas:', time2 - time);
 
     if (!areasWithUuids.length) {
         // return an empty GeoJSON object
@@ -882,10 +933,7 @@ exports.getSavedProjectAreasGeoJson = functions.https.onCall(async (data, contex
         };
     }
 
-    // const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
-    // const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
-
-    // now perform the database query
+    // perform the database query
     let geoJson;
     if (public) {
         const publicProject = await publicProjectsCollection.doc(projectId).get();
@@ -899,6 +947,11 @@ exports.getSavedProjectAreasGeoJson = functions.https.onCall(async (data, contex
     else {
         geoJson = await getAggregatedPolygons(projectId, areasWithUuids);
     }
+
+    const time3 = Date.now();
+    console.log('Time to get polygons:', time3 - time2);
+    console.log('Total time:', time3 - time);
+
     return geoJson;
 });
 
@@ -952,7 +1005,6 @@ async function getVersionedAggregatedPolygons(projectId, areas, version) {
         const areaNames = areas.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
         const areaJsons = areas.map(a => JSON.stringify(Object.values(a)[0]));
 
-        // const areaValues = areaUuids.map((_uuid, i) => `($${i + 3}::uuid, $${i + 3 + areaUuids.length}::text)`).join(", ");
         const areaValues = areaUuids.map((_uuid, i) =>
             `($${i + 3}::uuid, $${i + 3 + areaUuids.length}::text, $${i + 3 + areaUuids.length * 2}::jsonb)`).join(", ");
 
@@ -1114,7 +1166,7 @@ async function getAggregatedPolygons(projectId, areas) {
         FROM
             geoms;
         `;
-        const values = [projectId, ...areaUuids, ...areaNames, ...areaJsons, areaUuids];
+        const values = [ projectId, ...areaUuids, ...areaNames, ...areaJsons, areaUuids ];
         const result = await client.query(query, values);
 
         if (!result?.rows?.length) {

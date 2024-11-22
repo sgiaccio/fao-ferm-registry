@@ -1131,3 +1131,4 @@ exports.makeCoverPhoto = storage.makeCoverPhoto;
  * **********************************************/
 const qc = require("./qc");
 exports.qcGef = qc.qcGef;
+exports.getDanglingProjectAreas = areas.getDanglingProjectAreas;

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 // import TabTemplate from '../TabTemplate.vue';
-import { gefQc } from '@/firebase/functions';
+import { gefQc, getDanglingProjectAreas } from '@/firebase/functions';
 
 
 const gefQcButtonEnabled = ref(true);
@@ -30,6 +30,17 @@ async function downloadGefQc() {
 
     gefQcButtonEnabled.value = true;
 }
+
+async function _getDanglingProjectAreas() {
+    const areas: any = await getDanglingProjectAreas();
+
+    const blob = new Blob([areas.map(row => row.area_uuid).join('\n')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dangling-areas.csv';
+    a.click();
+}
 </script>
 
 <template>
@@ -44,6 +55,13 @@ async function downloadGefQc() {
                             @click="downloadGefQc"
                             :class="['bg-blue-500 text-white font-bold py-2 px-4 rounded', { 'opacity-50 cursor-not-allowed': !gefQcButtonEnabled }, { 'hover:bg-blue-700': gefQcButtonEnabled }]"
                         >Download GEF QC</button>
+
+                        <button
+                            :disabled="!gefQcButtonEnabled"
+                            @click="_getDanglingProjectAreas"
+                            :class="['bg-blue-500 text-white font-bold py-2 px-4 rounded', { 'opacity-50 cursor-not-allowed': !gefQcButtonEnabled }, { 'hover:bg-blue-700': gefQcButtonEnabled }]"
+                        >Get list of dangling polygons UUIDs</button>
+
                     </div>
                 </div>
             </div>
