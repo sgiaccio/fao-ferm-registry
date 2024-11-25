@@ -1,12 +1,10 @@
 const functions = require("firebase-functions");
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
 
 const { getStorage } = require('firebase-admin/storage');
 
 const { Pool } = require("pg");
 const axios = require("axios");
 
-// const { areasCollection, registryCollection } = require("./util");
 const { db, areasCollection } = require("./util");
 
 const { defineString } = require("firebase-functions/params");
@@ -654,63 +652,68 @@ exports.getIntersectingCountries = functions.runWith({ timeoutSeconds: 120 }).ht
 });
 
 // This function returns a GeometryCollection of all the areas in a project
-exports.getProjectAreas = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
-    }
+exports.getProjectAreas = functions
+    .region('europe-west3')
+    .https
+    .onCall(async (data, context) => {
+        if (!context.auth) {
+            throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+        }
 
-    const projectId = data.projectId;
+        const projectId = data.projectId;
 
-    // get the project document from Firestore
-    const projectSnapshot = await registryCollection.doc(projectId).get();
-    // check that the project exists
-    if (!projectSnapshot.exists) {
-        throw new functions.https.HttpsError("not-found", "Project not found");
-    }
-    // get the project document data
-    const projectData = projectSnapshot.data();
+        // get the project document from Firestore
+        const projectSnapshot = await registryCollection.doc(projectId).get();
+        // check that the project exists
+        if (!projectSnapshot.exists) {
+            throw new functions.https.HttpsError("not-found", "Project not found");
+        }
+        // get the project document data
+        const projectData = projectSnapshot.data();
 
-    if (!isSuperAdmin(context) && !isGroupAdmin(context, projectData) && !isGroupEditor(context, projectData) && !isCollaborator(context, projectData)) {
-        throw new functions.https.HttpsError("permission-denied", "User must be a superadmin, a group admin, a group editor or a collaborator to get areas.");
-    }
+        if (!isSuperAdmin(context) && !isGroupAdmin(context, projectData) && !isGroupEditor(context, projectData) && !isCollaborator(context, projectData)) {
+            throw new functions.https.HttpsError("permission-denied", "User must be a superadmin, a group admin, a group editor or a collaborator to get areas.");
+        }
 
-    // Fetch the area with the ID matching projectId
-    const areaDoc = await areasCollection.doc(projectId).get();
+        // Fetch the area with the ID matching projectId
+        const areaDoc = await areasCollection.doc(projectId).get();
 
-    if (!areaDoc.exists) {
-        throw new functions.https.HttpsError('not-found', 'No areas found for document', projectId);
-    }
+        if (!areaDoc.exists) {
+            throw new functions.https.HttpsError('not-found', 'No areas found for document', projectId);
+        }
 
-    const areaUuids = getUploadedAreasUuids(areaDoc.data().areas);
+        const areaUuids = getUploadedAreasUuids(areaDoc.data().areas);
 
-    // execute this query but also on areauuids: "SELECT ST_AsGeoJSON(ST_Collect(ST_CollectionExtract(geom::geometry))) FROM project_areas WHERE project_id = %s"
-    const client = await getDatabaseClient({
-        user: dbUser.value(),
-        host: dbHost.value(),
-        database: dbDatabase.value(),
-        password: dbPassword.value()
+        const client = await getDatabaseClient({
+            user: dbUser.value(),
+            host: dbHost.value(),
+            database: dbDatabase.value(),
+            password: dbPassword.value()
+        });
+
+        try {
+            const query = "SELECT ST_AsGeoJSON(ST_Collect(ST_CollectionExtract(geom::geometry))) as geojson FROM project_areas WHERE project_id = $1 AND area_uuid = ANY($2::uuid[])";
+            const result = await client.query(query, [projectId, areaUuids]);
+
+            if (!result?.rows?.length) {
+                throw new functions.https.HttpsError('not-found', 'No polygons found for the given project.');
+            }
+
+            const time4 = Date.now();
+            console.log('Time to get areas from database:', time4 - time3);
+
+            return JSON.parse(result.rows[0].geojson)
+        } catch (error) {
+            if (error instanceof functions.https.HttpsError) {
+                throw error; // Re-throw if it's already an HttpsError
+            }
+            functions.logger.error("Error:", error);
+            throw new functions.https.HttpsError("internal", error.message);
+        } finally {
+            client.release();
+        }
+
     });
-
-    try {
-        const query = "SELECT ST_AsGeoJSON(ST_Collect(ST_CollectionExtract(geom::geometry))) as geojson FROM project_areas WHERE project_id = $1 AND area_uuid = ANY($2::uuid[])";
-        const result = await client.query(query, [projectId, areaUuids]);
-
-        if (!result?.rows?.length) {
-            throw new functions.https.HttpsError('not-found', 'No polygons found for the given project.');
-        }
-
-        return JSON.parse(result.rows[0].geojson)
-    } catch (error) {
-        if (error instanceof functions.https.HttpsError) {
-            throw error; // Re-throw if it's already an HttpsError
-        }
-        functions.logger.error("Error:", error);
-        throw new functions.https.HttpsError("internal", error.message);
-    } finally {
-        client.release();
-    }
-
-});
 
 
 const earthMapBucket = getStorage().bucket('fao-ferm-earthmap-export');
@@ -719,29 +722,79 @@ const earthMapBucket = getStorage().bucket('fao-ferm-earthmap-export');
  * Returns a GeoJSON FeatureCollection of all the areas in a project. The areas are passed as an array of UUIDs, because
  * the Firestore document might be in an unsaved state (the user might have uploaded some areas but not saved the document).
  */
-exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context) => {
-    await authorize(context, data);
+exports.getAllProjectAreasGeoJson = functions
+    .region('europe-west3')
+    .https.onCall(async (data, context) => {
+        const projectId = (await authorize(context, data)).projectId
 
-    // get all the areas document with id = projectId
-    const areaDocRef = areasCollection.doc(projectId);
-    const areaDocSnap = await areaDocRef.get();
+        // get all the areas document with id = projectId
+        const areaDocRef = areasCollection.doc(projectId);
+        const areaDocSnap = await areaDocRef.get();
 
-    const uuids = data.uuids;
-    if (!uuids || !uuids.length || !uuids.every(isValidUuid)) {
-        throw new functions.https.HttpsError("invalid-argument", "Invalid UUIDs: ", uuids.join(", "));
-    }
-
-    if (areaDocSnap.exists) {
-        const data = areaDocSnap.data();
-        if (!data.areas) {
-            throw new functions.https.HttpsError("not-found", "No areas found for the given project.");
+        const uuids = data.uuids;
+        if (!uuids || !uuids.length || !uuids.every(isValidUuid)) {
+            throw new functions.https.HttpsError("invalid-argument", "Invalid UUIDs: ", uuids.join(", "));
         }
 
-        const areasWithUuids = data.areas
-            .filter(a => Object.values(a)[0].uuid && isValidUuid(Object.values(a)[0].uuid))
-            .filter(a => uuids.includes(Object.values(a)[0].uuid));
+        if (areaDocSnap.exists) {
+            const data = areaDocSnap.data();
+            if (!data.areas) {
+                throw new functions.https.HttpsError("not-found", "No areas found for the given project.");
+            }
 
-        if (!areasWithUuids.length) {
+            const areasWithUuids = data.areas
+                .filter(a => Object.values(a)[0].uuid && isValidUuid(Object.values(a)[0].uuid))
+                .filter(a => uuids.includes(Object.values(a)[0].uuid));
+
+            if (!areasWithUuids.length) {
+                // return an empty GeoJSON object
+                return {
+                    type: 'FeatureCollection',
+                    features: []
+                };
+            }
+
+            // const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
+            // const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
+
+            // delete the areasUuids and areaNames that are not in the uuids array
+            // const filteredAreaUuids = areaUuids.filter(uuid => uuids.includes(uuid));
+            // const filteredAreaNames = areaNames.filter((_, i) => uuids.includes(areaUuids[i]));
+
+            // now perform the database query
+            const geoJson = await getAggregatedPolygons(projectId, areasWithUuids);
+
+            // if the size of the geoJson as a string is greater than 2kb, save it into a bucket and return the url, otherwise return the geoJson directly
+            const geoJsonString = JSON.stringify(geoJson);
+            if (geoJsonString.length > 2000) {
+                // save the geoJson to a bucket
+                // create a random filename for export
+                const randomString = Math.random().toString(36).substring(2);
+                const filename = `${projectId}-${randomString}-${Date.now()}.geojson`;
+
+                const file = earthMapBucket.file(filename);
+                await file.save(geoJsonString, { contentType: 'application/json' });
+
+                return { url: file.publicUrl() };
+            }
+
+            return { geoJson };
+        } else {
+            console.error("No such document");
+            return new functions.https.HttpsError("not-found", "No such document");
+        }
+    });
+
+exports.getSavedProjectAdminAreasGeoJson = functions
+    .region('europe-west3')
+    .https
+    .onCall(async (data, context) => {
+        const public = data.public || false;
+        const projectId = public ? data.projectId : (await authorize(context, data)).projectId;
+        const areas = await getAreasByProjectId(public, projectId);
+        const areasWithoutUuids = getAreasWithoutUuids(areas);
+
+        if (!areasWithoutUuids.length) {
             // return an empty GeoJSON object
             return {
                 type: 'FeatureCollection',
@@ -749,98 +802,53 @@ exports.getAllProjectAreasGeoJson = functions.https.onCall(async (data, context)
             };
         }
 
-        // const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
-        // const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
-
-        // delete the areasUuids and areaNames that are not in the uuids array
-        // const filteredAreaUuids = areaUuids.filter(uuid => uuids.includes(uuid));
-        // const filteredAreaNames = areaNames.filter((_, i) => uuids.includes(areaUuids[i]));
-
-        // now perform the database query
-        const geoJson = await getAggregatedPolygons(projectId, areasWithUuids);
-
-        // if the size of the geoJson as a string is greater than 2kb, save it into a bucket and return the url, otherwise return the geoJson directly
-        const geoJsonString = JSON.stringify(geoJson);
-        if (geoJsonString.length > 2000) {
-            // save the geoJson to a bucket
-            // create a random filename for export
-            const randomString = Math.random().toString(36).substring(2);
-            const filename = `${projectId}-${randomString}-${Date.now()}.geojson`;
-
-            const file = earthMapBucket.file(filename);
-            await file.save(geoJsonString, { contentType: 'application/json' });
-
-            return { url: file.publicUrl() };
-        }
-
-        return { geoJson };
-    } else {
-        console.error("No such document");
-        return new functions.https.HttpsError("not-found", "No such document");
-    }
-});
-
-exports.getSavedProjectAdminAreasGeoJson = functions.https.onCall(async (data, context) => {
-    const public = data.public || false;
-    const projectId = public ? data.projectId : (await authorize(context, data)).projectId;
-    const areas = await getAreasByProjectId(public, projectId);
-    const areasWithoutUuids = getAreasWithoutUuids(areas);
-
-    if (!areasWithoutUuids.length) {
-        // return an empty GeoJSON object
-        return {
-            type: 'FeatureCollection',
-            features: []
-        };
-    }
-
-    const client = await getDatabaseClient({
-        user: dbUser.value(),
-        host: dbHost.value(),
-        database: dbDatabase.value(),
-        password: dbPassword.value()
-    });
-    const queries = areasWithoutUuids.map(a => {
-        const areaData = Object.values(a)[0];
-        let query;
-        if (areaData.admin2) {
-            query = 'SELECT ST_AsGeoJSON(geom) as geojson, adm2_name as name FROM g2015_2014_2 WHERE adm2_code = $1';
-        } else if (areaData.admin1) {
-            query = 'SELECT ST_AsGeoJSON(geom) as geojson, adm1_name as name FROM g2015_2014_1 WHERE adm1_code = $1';
-        } else if (areaData.admin0) {
-            query = 'SELECT ST_AsGeoJSON(geom_simple) as geojson, adm0_name as name FROM gaul_0 WHERE adm0_code = $1';
-        } else {
-            return Promise.resolve({
-                type: 'FeatureCollection',
-                features: []
-            });
-        }
-        return client.query(query, [areaData.admin2 || areaData.admin1 || areaData.admin0]).then(
-            res => ({
-                geometry: JSON.parse(res.rows[0].geojson),
-                areaName: res.rows[0].name,
-                // attach the area object to the result
-                areaObject: areaData
-            })
-        );
-    });
-
-    const results = await Promise.all(queries);
-
-    const geoJson = {
-        type: 'FeatureCollection',
-        features: results.map((r, i) => ({
-            type: 'Feature',
-            geometry: r.geometry,
-            properties: {
-                name: areasWithoutUuids[i].siteName || r.areaName,
-                areaObject: r.areaObject
+        const client = await getDatabaseClient({
+            user: dbUser.value(),
+            host: dbHost.value(),
+            database: dbDatabase.value(),
+            password: dbPassword.value()
+        });
+        const queries = areasWithoutUuids.map(a => {
+            const areaData = Object.values(a)[0];
+            let query;
+            if (areaData.admin2) {
+                query = 'SELECT ST_AsGeoJSON(geom) as geojson, adm2_name as name FROM g2015_2014_2 WHERE adm2_code = $1';
+            } else if (areaData.admin1) {
+                query = 'SELECT ST_AsGeoJSON(geom) as geojson, adm1_name as name FROM g2015_2014_1 WHERE adm1_code = $1';
+            } else if (areaData.admin0) {
+                query = 'SELECT ST_AsGeoJSON(geom_simple) as geojson, adm0_name as name FROM gaul_0 WHERE adm0_code = $1';
+            } else {
+                return Promise.resolve({
+                    type: 'FeatureCollection',
+                    features: []
+                });
             }
-        }))
-    };
+            return client.query(query, [areaData.admin2 || areaData.admin1 || areaData.admin0]).then(
+                res => ({
+                    geometry: JSON.parse(res.rows[0].geojson),
+                    areaName: res.rows[0].name,
+                    // attach the area object to the result
+                    areaObject: areaData
+                })
+            );
+        });
 
-    return geoJson;
-});
+        const results = await Promise.all(queries);
+
+        const geoJson = {
+            type: 'FeatureCollection',
+            features: results.map((r, i) => ({
+                type: 'Feature',
+                geometry: r.geometry,
+                properties: {
+                    name: areasWithoutUuids[i].siteName || r.areaName,
+                    areaObject: r.areaObject
+                }
+            }))
+        };
+
+        return geoJson;
+    });
 
 const publicProjectsCollection = db.collection('publicProjects');
 
@@ -868,39 +876,42 @@ async function getAreasByProjectId(public, projectId) {
     return areas;
 }
 
-exports.getSavedProjectAreasGeoJson = functions.https.onCall(async (data, context) => {
-    const public = data.public || false;
-    const projectId = public ? data.projectId : (await authorize(context, data)).projectId;
-    const areas = await getAreasByProjectId(public, projectId);
-    const areasWithUuids = getAreasWithUuids(areas);
+exports.getSavedProjectAreasGeoJson = functions
+    .region('europe-west3')
+    .https
+    .onCall(async (data, context) => {
+        const public = data.public || false;
+        const projectId = public ? data.projectId : (await authorize(context, data)).projectId;
+        const areas = await getAreasByProjectId(public, projectId);
+        const areasWithUuids = getAreasWithUuids(areas);
 
-    if (!areasWithUuids.length) {
-        // return an empty GeoJSON object
-        return {
-            type: 'FeatureCollection',
-            features: []
-        };
-    }
-
-    // const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
-    // const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
-
-    // now perform the database query
-    let geoJson;
-    if (public) {
-        const publicProject = await publicProjectsCollection.doc(projectId).get();
-        if (!publicProject.exists) {
-            throw new functions.https.HttpsError("not-found", "Public project not found");
+        if (!areasWithUuids.length) {
+            // return an empty GeoJSON object
+            return {
+                type: 'FeatureCollection',
+                features: []
+            };
         }
-        const publicProjectData = publicProject.data();
-        const version = publicProjectData.publishedVersion;
-        geoJson = await getVersionedAggregatedPolygons(projectId, areasWithUuids, version);
-    }
-    else {
-        geoJson = await getAggregatedPolygons(projectId, areasWithUuids);
-    }
-    return geoJson;
-});
+
+        // const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
+        // const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
+
+        // now perform the database query
+        let geoJson;
+        if (public) {
+            const publicProject = await publicProjectsCollection.doc(projectId).get();
+            if (!publicProject.exists) {
+                throw new functions.https.HttpsError("not-found", "Public project not found");
+            }
+            const publicProjectData = publicProject.data();
+            const version = publicProjectData.publishedVersion;
+            geoJson = await getVersionedAggregatedPolygons(projectId, areasWithUuids, version);
+        }
+        else {
+            geoJson = await getAggregatedPolygons(projectId, areasWithUuids);
+        }
+        return geoJson;
+    });
 
 // this function periodically (every hour) deletes all the areas in the `areas/` directory of the storage bucket that were created more than 1 hour ago
 exports.deleteOldAreasGeoJson = functions.pubsub.schedule('every 1 hours').onRun(async () => {
@@ -1050,9 +1061,6 @@ async function getAggregatedPolygons(projectId, areas) {
         const areaNames = areas.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
 
         const areaJsons = areas.map(a => JSON.stringify(Object.values(a)[0]));
-
-        // const areaValues = areaUuids.map((_uuid, i) =>
-        //     `($${i + 2}::uuid, $${i + 2 + areaUuids.length}::text)`).join(", ");
 
         const areaValues = areaUuids.map((_uuid, i) =>
             `($${i + 2}::uuid, $${i + 2 + areaUuids.length}::text, $${i + 2 + areaUuids.length * 2}::jsonb)`).join(", ");

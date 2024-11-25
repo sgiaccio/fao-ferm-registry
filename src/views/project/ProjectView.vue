@@ -185,7 +185,7 @@ const containerClass = computed(() => {
                                 alt=""
                             />
                             <span class="sr-only">Your profile</span>
-                            <span aria-hidden="true">Tom Cook</span>
+                            <span aria-hidden="true">Name here</span>
                         </a>
                     </li> -->
                 </ul>
