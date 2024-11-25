@@ -471,7 +471,7 @@ const areaUnderRestoration = computed(() => {
             </div>
             <div class="flex-grow bg-slate-300 relative">
                 <MapPanel
-                    :projectId="route.params.id"
+                    :projectId="route.params.id as string"
                     :public="false"
                     @area-clicked="areaClicked"
                     class="rounded-none"

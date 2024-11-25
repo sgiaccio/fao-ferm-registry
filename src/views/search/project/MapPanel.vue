@@ -39,26 +39,18 @@ async function importAdvancedMarkerElement() {
     return advancedMarkerElement;
 }
 
-const areaCentroidSvgString = `
-<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="10" cy="10" r="8" fill="#EEA63A" stroke="white" stroke-width="3" />
-</svg>
-`;
-// const areaCentroidActiveSvgString = `
-// <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-//     <circle cx="10" cy="10" r="8" fill="#FFD700" stroke="white" stroke-width="3" />
-// </svg>
-// `;
-const areaCentroidDimmedSvgString = `
-<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="3" />
-</svg>
-`;
-const pointSvgString = `
-<svg width="15" height="15" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="10" cy="10" r="8" fill="rgba(238, 85, 85, 0.7)" stroke="white" stroke-width="3" />
-</svg>
-`;
+function getAreaCentroidSvgString(size: number, stroke: string, fill: string) {
+    return `
+    <svg width="${size}" height="${size}" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10" cy="10" r="8" fill="${fill}" stroke="${stroke}" stroke-width="3" />
+    </svg>
+    `;
+}
+
+const areaCentroidSvgString = getAreaCentroidSvgString(20, 'white', '#EEA63A');
+const areaCentroidDimmedSvgString = getAreaCentroidSvgString(20, 'rgba(255,255,255,0.8)', 'none');
+const pointSvgString = getAreaCentroidSvgString(15, 'white', 'rgba(238, 85, 85, 0.7)');
+
 const parser = new DOMParser();
 
 async function initMap() {
@@ -93,7 +85,7 @@ async function initMap() {
     // Load the json data
     const [geojson, adminGeoJson] = await Promise.all([
         getProjectAreas(props.projectId, props.public),
-        getProjectAdminAreas(props.projectId, props.true),
+        getProjectAdminAreas(props.projectId, props.public),
     ]).catch((error) => {
         console.error('Failed to load geojson:', error);
         geoJsonLoadError.value = true;
@@ -107,18 +99,6 @@ async function initMap() {
     map.data.setStyle({
         visible: false,
     });
-
-    // Add mouseover and mouseout events
-    // map.data.addListener('mouseover', function (event) {
-    //     map.data.overrideStyle(event.feature, {
-    //         fillOpacity: 0.3,
-    //         strokeWeight: 3,
-    //     });
-    // });
-
-    // map.data.addListener('mouseout', function (event) {
-    //     map.data.revertStyle(event.feature);
-    // });
 
     // zoom to the layer
     if (geojson.features.length > 0 || adminGeoJson.features.length > 0) {
