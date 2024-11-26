@@ -192,7 +192,7 @@ const containerClass = computed(() => {
             </nav>
         </div>
     </div>
-    <div class="mt-16 sm:ml-16 lg:ml-60 px-4 sm:px-6 lg:px-8 h-[calc(100vh-4rem)] overflow-y-auto">
+    <div class="mt-16 sm:ml-16 lg:ml-60 px-4 sm:px-6 lg:px-8 _h-[calc(100vh-4rem)] _overflow-y-auto">
         <div :class="containerClass">
             <router-view
                 :previous="gotoPreviousTab"
