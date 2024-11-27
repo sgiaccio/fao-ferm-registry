@@ -29,6 +29,7 @@ import AlertModal from '@/views/AlertModal.vue';
 import IndicatorsPanel from './IndicatorsPanel.vue';
 import MapPanel from './MapPanel.vue';
 import EcosystemsPanel from './EcosystemsPanel.vue';
+import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
 
 // import required modules
 // import { Navigation } from 'swiper/modules';
@@ -557,6 +558,9 @@ const areaUnderRestoration = computed(() => {
                                 :areas="[{ dummy: selectedArea }]"
                                 @zoomToArea="zoomToArea"
                             />
+
+
+                            <ChartsSwiper :area="selectedArea" />
                         </div>
                     </transition>
                     <transition name="disappear_to_left">

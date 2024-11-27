@@ -37,11 +37,13 @@ const projectTabs = [{
     path: 'monitoring',
     name: 'projectMonitoring',
     component: () => import('../views/project/MonitoringView.vue')
-}, {
-    path: 'preview',
-    name: 'projectResults',
-    component: () => import('../views/project/ResultsView.vue')
-}];
+},
+// {
+//     path: 'preview',
+//     name: 'projectResults',
+//     component: () => import('../views/project/ResultsView.vue')
+// }
+];
 
 // Good Practices tabs are used both for editing and viewing projects, so define them once here
 const bestPracticeTabs = [{
@@ -72,11 +74,16 @@ const bestPracticeTabs = [{
 }];
 
 const router = createRouter({
-    scrollBehavior(_to, _from, _savedPosition) {
+    scrollBehavior(to, from, _savedPosition) {
         // always scroll to top
-        return {
-            top: 0,
-            behavior: 'smooth'
+        // return {
+        //     top: 0,
+        //     behavior: 'smooth'
+        // }
+        // scroll on top if the query doesn't contain modal=preview
+        console.log(from.query.modal, to.query.modal)
+        if (!from.query.modal && !to.query.modal) {
+            return { top: 0, behavior: 'smooth' }
         }
     },
     history: createWebHistory(import.meta.env.BASE_URL),

@@ -69,8 +69,9 @@ async function initMap() {
         east: 180,
     };
     map = new Map(mapDiv.value as HTMLElement, {
-        center: { lat: 0, lng: 40 },
         zoom: 1,
+        center: { lat: 0, lng: 40 },
+        gestureHandling: "greedy",
         restriction: {
             latLngBounds: bounds,
             strictBounds: true,

@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
 
 import router from '@/router';
-
+import { defineAsyncComponent } from 'vue';
 import {
     InformationCircleIcon,
     GlobeAltIcon,
@@ -13,6 +13,8 @@ import {
     ChartBarIcon,
     ListBulletIcon,
 } from '@heroicons/vue/24/outline'
+
+import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 import {
     InformationCircleIcon as InformationCircleIconSolid,
@@ -24,8 +26,12 @@ import {
     ListBulletIcon as ListBulletIconSolid,
 } from '@heroicons/vue/24/solid'
 
+import { XMarkIcon } from '@heroicons/vue/16/solid';
+
 import { useProjectStore } from '@/stores/project';
 
+// import ResultsView from './ResultsView.vue';
+const ResultsView = defineAsyncComponent(() => import('./ResultsView.vue'));
 
 const navigation = [{
     name: 'Planning & Assessment',
@@ -68,12 +74,14 @@ const navigation = [{
         path: 'monitoring',
         icon: EyeIcon,
         solidIcon: EyeIconSolid
-    }, {
-        name: 'Public Page Preview',
-        path: 'preview',
-        icon: ComputerDesktopIcon,
-        solidIcon: ComputerDesktopIconSolid
-    }]
+    }
+        //     , {
+        //     name: 'Public Page Preview',
+        //     path: 'preview',
+        //     icon: ComputerDesktopIcon,
+        //     solidIcon: ComputerDesktopIconSolid
+        // }
+    ]
 }];
 
 const store = useProjectStore();
@@ -103,8 +111,28 @@ function gotoPreviousTab() {
 }
 
 const containerClass = computed(() => {
-  return route.name === 'projectResults' ? 'pt-8 max-w-full mx-auto' : 'pt-8 max-w-6xl mx-auto';
+    return route.name === 'projectResults' ? 'pt-8 max-w-full mx-auto' : 'pt-8 max-w-6xl mx-auto';
 });
+
+function openPreviewModal() {
+    router.push({
+        query: {
+            ...route.query,
+            modal: 'preview'
+        }
+    });
+}
+
+const isPreviewOpen = computed(() => route.query.modal === 'preview');
+
+function closeModal() {
+    router.push({
+        query: {
+            ...route.query,
+            modal: undefined
+        }
+    });
+}
 </script>
 
 
@@ -136,11 +164,23 @@ const containerClass = computed(() => {
                         </div>
                     </div>
                 </div>
+                <!-- add public page preview link -->
+                <div class="flex gap-x-3 rounded-md text-sm leading-6 font-semibold justify-center">
+                    <div
+                        @click="openPreviewModal"
+                        class="group flex gap-x-3 rounded-md text-sm leading-6 font-semibold cursor-pointer hover:text-indigo-600 hover:bg-gray-50"
+                    >
+                        <ComputerDesktopIconSolid
+                            class="h-6 w-6 shrink-0"
+                            aria-hidden="true"
+                        />
+                    </div>
+                </div>
             </nav>
             <nav class="hidden lg:flex flex-1 flex-col pt-6">
                 <ul
                     role="list"
-                    class="flex flex-1 flex-col gap-y-7"
+                    class="flex flex-1 flex-col gap-y-6"
                 >
                     <li>
                         <ul
@@ -173,6 +213,19 @@ const containerClass = computed(() => {
                             </li>
                         </ul>
                     </li>
+                    <!-- add public page preview link -->
+                    <li class="border-t border-gray-200 pt-6">
+                        <div
+                            class="group flex gap-x-3 rounded-md text-sm leading-6 font-semibold cursor-pointer hover:text-indigo-600 hover:bg-gray-50"
+                            @click="openPreviewModal"
+                        >
+                            <ComputerDesktopIcon
+                                class="h-6 w-6 shrink-0"
+                                aria-hidden="true"
+                            />
+                            Public Page Preview
+                        </div>
+                    </li>
                     <!--
                     <li class="-mx-6 mt-auto">
                         <a
@@ -202,4 +255,78 @@ const containerClass = computed(() => {
             />
         </div>
     </div>
+
+
+    <!-- <div
+        v-if="isPreviewOpen"
+        class="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-70 z-40"
+        @click.stop="closePreview"
+    />
+    <div :class="{ 'fixed top-0 left-0 w-screen h-screen z-50 p-12 shadow-lg rounded-md overflow-hidden': isPreviewOpen }">
+        <div
+            class="relative h-full w-full"
+            v-if="isPreviewOpen"
+        >
+        <ResultsView />
+        <div
+                class="absolute -top-4 -right-4 rounded-full bg-white hover:bg-gray-300 cursor-pointer"
+                @click.stop="closePreview"
+            >
+                <XMarkIcon
+                    @click.stop="closePreview"
+                    class="h-4 w-4 text-gray-500 m-2"
+                />
+            </div>
+        </div>
+    </div> -->
+
+
+    <TransitionRoot
+        as="template"
+        :show="isPreviewOpen"
+    >
+        <Dialog
+            as="div"
+            class="relative z-50"
+            @close="closeModal"
+        >
+            <TransitionChild
+                as="template"
+                enter="ease-out duration-300"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="ease-in duration-200"
+                leave-from="opacity-100"
+                leave-to="opacity-0"
+            >
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity w-screen" />
+            </TransitionChild>
+
+            <div class="fixed inset-0 z-10 overflow-y-auto">
+                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <TransitionChild
+                        as="template"
+                        enter="ease-out duration-300"
+                        enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        enter-to="opacity-100 translate-y-0 sm:scale-100"
+                        leave="ease-in duration-200"
+                        leave-from="opacity-100 translate-y-0 sm:scale-100"
+                        leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    >
+                        <DialogPanel class="relative transform text-left shadow-xl transition-all w-full m-6 h-[calc(100vh-3rem)]">
+                            <button
+                                @click="closeModal"
+                                class="absolute -top-4 -right-4 w-8 h-8 bg-white rounded-full shadow hover:bg-gray-100 focus:outline-none flex items-center justify-center z-10"
+                                aria-label="Close modal"
+                            >
+                                <XMarkIcon class="h-6 w-6 text-gray-500" />
+                            </button>
+
+                            <ResultsView />
+                        </DialogPanel>
+                    </TransitionChild>
+                </div>
+            </div>
+        </Dialog>
+    </TransitionRoot>
 </template>

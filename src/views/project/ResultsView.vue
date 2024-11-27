@@ -222,7 +222,7 @@ const areaUnderRestoration = computed(() => {
         </div>
     </AlertModal>
 
-    <div class="h-[calc(100vh-5rem)] md:h-[calc(100vh-164px)] bg-slate-100">
+    <div class="h-full bg-slate-100 rounded-lg overflow-hidden">
         <div class="flex flex-col md:flex-row h-full">
             <div
                 id="projectInfo"
