@@ -991,6 +991,8 @@ async function getVersionedAggregatedPolygons(projectId, areas, version) {
                 -- and the last ST_CollectionExtract merges the geometry into a single geometry again
                 -- looks ugly but it works, at least with the use cases we tested
                 ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson,
+                ST_PointOnSurface(ST_Collect(ST_CollectionExtract(geom::geometry))) AS pointOnSurface,
+
                 pa.area_uuid,
                 an.name AS name,
                 an.areaJson AS areaJson
@@ -1019,12 +1021,13 @@ async function getVersionedAggregatedPolygons(projectId, areas, version) {
                         'type', 'Feature',
                         'geometry', geojson::json,
                         'properties', json_build_object(
-                            'uuid',
-                            area_uuid,
-                            'name',
-                            name,
-                            'areaObject',
-                            areaJson::json
+                            'uuid', area_uuid,
+                            'name', name,
+                            'areaObject', areaJson::json,
+                            'pointOnSurface', ARRAY[
+                                ST_Y(pointOnSurface), -- Latitude
+                                ST_X(pointOnSurface)  -- Longitude
+                            ]
                         )
                     )
                 )
@@ -1081,6 +1084,7 @@ async function getAggregatedPolygons(projectId, areas) {
                 -- and the last ST_CollectionExtract merges the geometry into a single geometry again
                 -- looks ugly but it works, at least with the use cases we tested
                 ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson,
+                ST_PointOnSurface(ST_Collect(ST_CollectionExtract(geom::geometry))) AS pointOnSurface,
                 pa.area_uuid,
                 an.name AS name,
                 an.json AS json
@@ -1108,13 +1112,15 @@ async function getAggregatedPolygons(projectId, areas) {
                     json_build_object(
                         'type', 'Feature',
                         'geometry', geojson::json,
+                        
                         'properties', json_build_object(
-                            'uuid',
-                            area_uuid,
-                            'name',
-                            name,
-                            'areaObject',
-                            json
+                            'uuid', area_uuid,
+                            'name', name,
+                            'areaObject', json,
+                            'pointOnSurface', ARRAY[
+                                ST_Y(pointOnSurface), -- Latitude
+                                ST_X(pointOnSurface)  -- Longitude
+                            ]
                         )
                     )
                 )
