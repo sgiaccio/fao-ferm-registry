@@ -108,7 +108,7 @@ function enlargeEarthMap() {
             >
                 <div class="flex flex-col items-center">
                     <SpinningThing />
-                    <div class="mt-4 font-bold text-gray-600">Loading Earth Map...</div>
+                    <div class="mt-4 font-bold text-gray-600">Loading Polygons</div>
                 </div>
             </div>
         </div>

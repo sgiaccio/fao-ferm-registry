@@ -68,6 +68,7 @@ async function loadData(area: any) {
         loading.value = false;
         loaded.value = true;
     } catch (e) {
+        error.value = true;
         console.error('Error fetching data:', e);
     }
 }

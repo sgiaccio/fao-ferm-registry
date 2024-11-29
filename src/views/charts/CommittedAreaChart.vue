@@ -44,6 +44,7 @@ function initChart() {
         },
         series: [
             {
+                name: 'Committed Area',
                 type: 'gauge',
                 center: ['50%', '65%'],
                 radius: '95%',
@@ -91,8 +92,8 @@ function initChart() {
                     formatter: function (value: number) {
                         const formattedValue = formatNumber(value);
                         return [
+                            '{label|Committed}',
                             `{value|${formattedValue} ${props.units}}`,
-                            '{label|Committed}'
                         ].join('\n');
                     },
                     rich: {
@@ -100,13 +101,13 @@ function initChart() {
                             fontSize: 28,
                             fontWeight: 'bolder',
                             color: 'inherit',
-                            lineHeight: 36
+                            lineHeight: 28
                         },
                         label: {
-                            fontSize: 18,
-                            color: '#666',
+                            fontSize: 16,
+                            color: '#888',
                             fontWeight: 'bold',
-                            lineHeight: 18
+                            lineHeight: 16
                         }
                     },
                     color: 'inherit'
@@ -119,6 +120,7 @@ function initChart() {
                 ]
             },
             {
+                name: 'Area Under Restoration',
                 type: 'gauge',
                 center: ['50%', '65%'],
                 radius: '95%',
@@ -161,13 +163,13 @@ function initChart() {
                     width: '60%',
                     lineHeight: 40,
                     borderRadius: 8,
-                    offsetCenter: [0, '10%'],
+                    offsetCenter: [0, '5%'],
                     fontWeight: 'bolder',
                     formatter: function (value: number) {
                         const formattedValue = formatNumber(value);
                         return [
-                            `{value|${formattedValue} ${props.units}}`,
-                            '{label|Under Restoration}'
+                            '{label|Under Restoration}',
+                            `{value|${formattedValue} ${props.units}}`
                         ].join('\n');
                     },
                     rich: {
@@ -175,13 +177,13 @@ function initChart() {
                             fontSize: 28,
                             fontWeight: 'bolder',
                             color: 'inherit',
-                            lineHeight: 36
+                            lineHeight: 28
                         },
                         label: {
-                            fontSize: 18,
-                            color: '#666',
+                            fontSize: 16,
+                            color: '#888',
                             fontWeight: 'bold',
-                            lineHeight: 18
+                            lineHeight: 16
                         }
                     },
                     color: 'inherit'
