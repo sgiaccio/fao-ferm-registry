@@ -30,6 +30,7 @@ import IndicatorsPanel from './IndicatorsPanel.vue';
 import MapPanel from './MapPanel.vue';
 import EcosystemsPanel from './EcosystemsPanel.vue';
 import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
+import GoodPracticesPanel from './GoodPracticesPanel.vue';
 
 const mapPanel = ref<any>(null);
 
@@ -896,6 +897,7 @@ const areaUnderRestoration = computed(() => {
                                 :areas="project.areas"
                                 @zoomToArea="zoomToArea"
                             />
+                            <GoodPracticesPanel :projectId="route.params.id" />
                         </div>
                     </transition>
                 </div>

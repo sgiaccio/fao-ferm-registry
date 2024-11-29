@@ -81,7 +81,6 @@ const router = createRouter({
         //     behavior: 'smooth'
         // }
         // scroll on top if the query doesn't contain modal=preview
-        console.log(from.query.modal, to.query.modal)
         if (!from.query.modal && !to.query.modal) {
             return { top: 0, behavior: 'smooth' }
         }

@@ -11,7 +11,7 @@ import { GridComponent } from 'echarts/components';
 import { BarChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 
-import { MapPinIcon } from '@heroicons/vue/24/outline'
+// import { MapPinIcon } from '@heroicons/vue/24/outline'
 
 
 const modules = [ Navigation ];
@@ -148,11 +148,11 @@ watch([areasWithMonitoring, chartDivRefs], () => {
                             :class="['text-base font-semibold leading-7 text-gray-900 flex-grow', area.areaData.uuid ? 'cursor-pointer' : '']"
                             @click="area.areaData.uuid && emit('zoomToArea', area.areaData.uuid)"
                         >{{ area.areaData.siteName || 'Area without name' }}</h3>
-                        <MapPinIcon
+                        <!-- <MapPinIcon
                             v-if="area.areaData.uuid"
                             class="w-6 h-6 text-gray-500 hover:text-gray-700 cursor-pointer"
                             @click="area.areaData.uuid && emit('zoomToArea', area.areaData.uuid)"
-                        />
+                        /> -->
                     </div>
                     <dl class="divide-y divide-gray-100">
                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
