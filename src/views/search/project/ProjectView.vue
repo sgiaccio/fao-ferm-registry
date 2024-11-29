@@ -29,6 +29,10 @@ import AlertModal from '@/views/AlertModal.vue';
 import IndicatorsPanel from './IndicatorsPanel.vue';
 import MapPanel from './MapPanel.vue';
 import EcosystemsPanel from './EcosystemsPanel.vue';
+import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
+import GoodPracticesPanel from './GoodPracticesPanel.vue';
+
+const mapPanel = ref<any>(null);
 
 // import required modules
 // import { Navigation } from 'swiper/modules';
@@ -454,8 +458,8 @@ function areaClicked(area: any) {
 
 function deselectArea() {
     selectedArea.value = null;
+    mapPanel.value?.resetMap();
 }
-
 
 
 const targetArea = computed(() => {
@@ -557,6 +561,9 @@ const areaUnderRestoration = computed(() => {
                                 :areas="[{ dummy: selectedArea }]"
                                 @zoomToArea="zoomToArea"
                             />
+
+
+                            <ChartsSwiper :area="selectedArea" />
                         </div>
                     </transition>
                     <transition name="disappear_to_left">
@@ -796,9 +803,7 @@ const areaUnderRestoration = computed(() => {
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
-                                            <dd
-                                                class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
-                                            >
+                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.reportingLine !== 'GEF'">
                                                     <template v-if="project.project.restorationStatus">
                                                         {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
@@ -892,12 +897,14 @@ const areaUnderRestoration = computed(() => {
                                 :areas="project.areas"
                                 @zoomToArea="zoomToArea"
                             />
+                            <GoodPracticesPanel :projectId="route.params.id" />
                         </div>
                     </transition>
                 </div>
             </div>
             <div class="flex-grow p-4 bg-slate-300 relative">
                 <MapPanel
+                    ref="mapPanel"
                     class="rounded-md"
                     :projectId="route.params.id"
                     @area-clicked="areaClicked"

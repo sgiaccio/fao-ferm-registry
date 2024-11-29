@@ -53,6 +53,9 @@ const projectAreas = ref<any[]>([]);
 
 const areaByGefIndicatorGroup = ref<any[]>([]);
 
+const mapPanel = ref<any>(null);
+
+
 const indicatorGroupNames = [
     { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use' },
     { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use' },
@@ -105,6 +108,7 @@ function hideDisclaimer() {
     showDisclaimer.value = false;
     userPrefsStore.setPreviewModalSeen();
 }
+
 
 onMounted(async () => {
     const imageUrl = await getThumbnail();
@@ -171,6 +175,7 @@ function areaClicked(area: any) {
 
 function deselectArea() {
     selectedArea.value = null;
+    mapPanel.value?.resetMap();
 }
 
 const targetArea = computed(() => {
@@ -188,6 +193,7 @@ const areaUnderRestoration = computed(() => {
         return project.value.project.areaUnderRestoration;
     }
 });
+
 </script>
 
 <template>
@@ -222,7 +228,7 @@ const areaUnderRestoration = computed(() => {
         </div>
     </AlertModal>
 
-    <div class="h-[calc(100vh-5rem)] md:h-[calc(100vh-164px)] bg-slate-100">
+    <div class="h-full bg-slate-100 rounded-lg overflow-hidden">
         <div class="flex flex-col md:flex-row h-full">
             <div
                 id="projectInfo"
@@ -471,7 +477,8 @@ const areaUnderRestoration = computed(() => {
             </div>
             <div class="flex-grow bg-slate-300 relative">
                 <MapPanel
-                    :projectId="route.params.id"
+                    ref="mapPanel"
+                    :projectId="route.params.id as string"
                     :public="false"
                     @area-clicked="areaClicked"
                     class="rounded-none"

@@ -985,7 +985,6 @@ exports.getPublicProject = functions.https.onCall(async ({ projectId }, _context
 
     publicProject.areas = publicAreas.docs.map(doc => doc.data());
 
-    console.log(publicProject);
     return publicProject;
 });
 

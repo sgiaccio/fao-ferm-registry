@@ -1,4 +1,6 @@
+import { getApp } from "firebase/app";
 import { httpsCallable, getFunctions } from "firebase/functions";
+
 import { functions } from ".";
 
 
@@ -137,14 +139,14 @@ export async function saveProjectCollaborators(projectId: string, collaboratorsU
 }
 
 export async function getProjectAreas(projectId: string, getPublic = false) {
-    const functions = getFunctions();
+    const functions = getFunctions(getApp(), 'europe-west3');
     const getProjectAreas = httpsCallable(functions, 'getSavedProjectAreasGeoJson');
     const result = await getProjectAreas({ projectId, public: getPublic});
     return result.data;
 }
 
 export async function getProjectAdminAreas(projectId: string, getPublic = false) {
-    const functions = getFunctions();
+    const functions = getFunctions(getApp(), 'europe-west3');
     const getAdminProjectAreas = httpsCallable(functions, 'getSavedProjectAdminAreasGeoJson');
     const result = await getAdminProjectAreas({ projectId, public: getPublic });
     return result.data;
@@ -165,7 +167,7 @@ export async function makeCoverPhoto(projectId: string, filePath: string) {
 }
 
 export async function getAllProjectAreasGeoJson(projectId: string, uuids: string[]) {
-    const functions = getFunctions();
+    const functions = getFunctions(getApp(), 'europe-west3');
     const getAllProjectAreasGeoJson = httpsCallable(functions, 'getAllProjectAreasGeoJson');
     const result = await getAllProjectAreasGeoJson({ projectId, uuids });
     return result.data;
