@@ -3,23 +3,10 @@ import { ref, onMounted, onBeforeMount, onUnmounted, computed, watch } from 'vue
 
 import { useRoute } from 'vue-router'
 
-// import { listProjectFiles, getFileAsBlob } from '@/firebase/storage';
 import { getPublicProject, getPublicProjectThumbnail } from '@/firebase/functions';
 import { getGaulLevel0 } from '@/firebase/firestore';
 
-// import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
-// import { useAuthStore } from '@/stores/auth';
-
-// import { getRecursiveMenuLabel } from '@/lib/util';
-// import { roundToPrecisionAsString } from '@/lib/util';
-// import SnailChart from '@/components/charts/SnailChart.vue';
-// const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
-// const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
-
-// import { Swiper, SwiperSlide } from 'swiper/vue';
-// import 'swiper/css';
-// import 'swiper/css/navigation';
 
 import ResultPanel from './ResultPanel.vue';
 import ActivitiesPanel from './ActivitiesPanel.vue';
@@ -32,11 +19,6 @@ import EcosystemsPanel from './EcosystemsPanel.vue';
 import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
 import GoodPracticesPanel from './GoodPracticesPanel.vue';
 
-const mapPanel = ref<any>(null);
-
-// import required modules
-// import { Navigation } from 'swiper/modules';
-
 import {
     getRecursiveMenuItem,
     getLastTargetArea,
@@ -45,14 +27,13 @@ import {
 } from '@/lib/util';
 
 
+const mapPanel = ref<any>(null);
+
 withDefaults(defineProps<{
     edit?: boolean
 }>(), {
     edit: true
 });
-
-
-// const modules = [Navigation]; // Swiper modules
 
 const route = useRoute();
 const { menus } = useMenusStore();
@@ -107,42 +88,6 @@ async function getThumbnail() {
         console.error('Error displaying the thumbnail:', error);
     }
 }
-
-// async function getUploadedFiles() {
-//     try {
-//         const accessToken = await authStore.getIdToken();
-//         uploadedFiles.value = await listProjectFiles(route.params.id, "images", accessToken);
-
-//         // Load each file in parallel
-//         uploadedFiles.value.forEach(async (file: { name: string, path: string }, index: number) => {
-//             try {
-//                 const blob = await getFileAsBlob(route.params.id, file.path, accessToken);
-//                 const imageUrl = URL.createObjectURL(blob);
-
-//                 // Place the file at the correct index
-//                 uploadedFiles.value[index] = { ...file, imageUrl };
-//                 // Trigger a reactive update
-//                 uploadedFiles.value = [...uploadedFiles.value];
-//             } catch (error) {
-//                 console.error(`Failed to load file ${file.path}:`, error);
-//             }
-//         });
-//     } catch (error) {
-//         console.error(error);
-//         alert('Failed to load files: ' + error);
-//     }
-// }
-
-// GEF
-// function getLastTargetArea() {
-//     const registration = store.project?.project;
-//     const targetAreaDesignPhase = registration.targetAreaDesignPhase;
-//     const targetAreaReviewPhase = registration.targetAreaReviewPhase;
-//     const targetAreaEvaluationPhase = registration.targetAreaEvaluationPhase;
-
-//     return targetAreaEvaluationPhase || targetAreaReviewPhase || targetAreaDesignPhase;
-// }
-// const areaByGefIndicator = store.areaByGefIndicator();
 
 let chartData: { value: number, name: string }[] = [];
 const chartDiv = ref(null);
@@ -804,30 +749,14 @@ const areaUnderRestoration = computed(() => {
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                                <template v-if="project.reportingLine !== 'GEF'">
-                                                    <template v-if="project.project.restorationStatus">
-                                                        {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
-                                                    </template>
-                                                    <span
-                                                        v-else
-                                                        class="italic text-gray-500"
-                                                    >n/a</span>
+                                                <template v-if="project.project.restorationStatus">
+                                                    {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
                                                 </template>
-                                                <template v-else>
-                                                    <template v-if="project.project.targetAreaEvaluationPhase">
-                                                        Post-completion
-                                                    </template>
-                                                    <template v-else-if="project.project.targetAreaReviewPhase">
-                                                        In progress
-                                                    </template>
-                                                    <template v-else-if="project.project.targetAreaDesignPhase">
-                                                        In preparation
-                                                    </template>
-                                                    <span
-                                                        v-else
-                                                        class="italic text-gray-500"
-                                                    >n/a</span>
-                                                </template>
+                                                <span
+                                                    v-else
+                                                    class="italic text-gray-500"
+                                                >n/a</span>
+
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

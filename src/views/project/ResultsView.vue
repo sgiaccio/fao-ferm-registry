@@ -27,7 +27,6 @@ import { useUserPrefsStore } from '@/stores/userPreferences';
 
 import {
     getRecursiveMenuItem,
-    getLastTargetArea,
     getPolygonsArea,
     areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil,
     formatNumber
@@ -178,14 +177,6 @@ function deselectArea() {
     mapPanel.value?.resetMap();
 }
 
-const targetArea = computed(() => {
-    if (project.value.reportingLine === 'GEF') {
-        return getLastTargetArea(project.value);
-    } else {
-        return project.value.project.targetArea;
-    }
-});
-
 const areaUnderRestoration = computed(() => {
     if (project.value.reportingLine === 'GEF') {
         return getPolygonsArea(projectAreas.value);
@@ -194,6 +185,24 @@ const areaUnderRestoration = computed(() => {
     }
 });
 
+function areaForGefIndicatorGroup(indicatorGroup: number) {
+    return areaByGefIndicatorGroup.value.find(i => +i[0] === indicatorGroup)?.[1];
+}
+
+function nCIOtherThan3() {
+    const allIndicators = [
+        project.value.project.targetAreaCoreIndicator1,
+        project.value.project.targetAreaCoreIndicator2,
+        project.value.project.targetAreaCoreIndicator2LDCF,
+        project.value.project.targetAreaCoreIndicator4,
+        project.value.project.targetAreaCoreIndicator5
+    ];
+    return allIndicators.filter(i => i).length;
+}
+
+function otherChartSize() {
+    return nCIOtherThan3() > 1 ? 'small' : undefined;
+}
 </script>
 
 <template>
@@ -320,11 +329,68 @@ const areaUnderRestoration = computed(() => {
                                 />
                             </div>
                             <CommittedAreaChart
+                                v-if="project.reportingLine !== 'GEF'"
                                 :areaUnderRestoration="areaUnderRestoration"
-                                :targetArea="targetArea"
+                                :targetArea="project.project.targetArea"
                                 :units="project.project.areaUnits"
                             />
-                            <div
+                            <div v-else>
+                                <CommittedAreaChart
+                                    v-if="project.project.targetAreaCoreIndicator3"
+                                    title="Area of land and ecosystems under restoration"
+                                    :targetArea="project.project.targetAreaCoreIndicator3"
+                                    :areaUnderRestoration="areaForGefIndicatorGroup(3) ?? 0"
+                                    :units="project.project.areaUnits"
+                                />
+                                <div :class="['mt-2', nCIOtherThan3() > 1 ? 'grid grid-cols-2 gap-2' : '']">
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator4"
+                                        title="Area of landscapes under improved practices"
+                                        :targetArea="project.project.targetAreaCoreIndicator4"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup(4) ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator5"
+                                        title="Area of marine habitat under improved practices to benefit biodiversity"
+                                        :targetArea="project.project.targetAreaCoreIndicator5"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup(2) ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator1"
+                                        title="Terrestrial protected areas created or under improved management for conservation and sustainable use"
+                                        :targetArea="project.project.targetAreaCoreIndicator1"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup(1) ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator2"
+                                        title="Marine protected areas created or under improved management for conservation and sustainable use"
+                                        :targetArea="project.project.targetAreaCoreIndicator2"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup(2) ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator2LDCF"
+                                        title="Area of land managed for climate resilience"
+                                        :targetArea="project.project.targetAreaCoreIndicator2LDCF"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup('2LDCF') ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                </div>
+                            </div>
+                            <!-- <div
                                 v-if="project.reportingLine === 'GEF'"
                                 class="gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#007F5F] text-white"
                             >
@@ -344,7 +410,7 @@ const areaUnderRestoration = computed(() => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <ResultPanel>
                                 <div class="border-gray-100">
@@ -377,30 +443,13 @@ const areaUnderRestoration = computed(() => {
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                                <template v-if="project.reportingLine !== 'GEF'">
-                                                    <template v-if="project.project.restorationStatus">
-                                                        {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
-                                                    </template>
-                                                    <span
-                                                        v-else
-                                                        class="italic text-gray-500"
-                                                    >n/a</span>
+                                                <template v-if="project.project.restorationStatus">
+                                                    {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
                                                 </template>
-                                                <template v-else>
-                                                    <template v-if="project.project.targetAreaEvaluationPhase">
-                                                        Post-completion
-                                                    </template>
-                                                    <template v-else-if="project.project.targetAreaReviewPhase">
-                                                        In progress
-                                                    </template>
-                                                    <template v-else-if="project.project.targetAreaDesignPhase">
-                                                        In preparation
-                                                    </template>
-                                                    <span
-                                                        v-else
-                                                        class="italic text-gray-500"
-                                                    >n/a</span>
-                                                </template>
+                                                <span
+                                                    v-else
+                                                    class="italic text-gray-500"
+                                                >n/a</span>
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
