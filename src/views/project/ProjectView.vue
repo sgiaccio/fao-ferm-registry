@@ -321,7 +321,6 @@ function closeModal() {
                             >
                                 <XMarkIcon class="h-6 w-6 text-gray-500" />
                             </button>
-
                             <ResultsView />
                         </DialogPanel>
                     </TransitionChild>

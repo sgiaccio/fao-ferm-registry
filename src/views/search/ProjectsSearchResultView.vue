@@ -15,12 +15,17 @@ import { debounce, resilientFetch } from '@/lib/util'
 import Thumbnail from './Thumbnail.vue'
 import Detail from './Detail.vue'
 
+import { XMarkIcon } from '@heroicons/vue/24/outline'
+
 
 const props = defineProps<{
     searchText: string
     searchTerms: any
     countries: []
 }>();
+
+const secondResultsAsiaPopup = ref(false);
+const secondResultsAsiaPopupShown = ref(false);
 
 onMounted(() => {
     loadMore();
@@ -43,11 +48,11 @@ function handleScroll() {
 const showAsList = ref(false);
 
 const currentResult = ref(null);
-const isSetailsModalOpen = ref(false);
+const isDetailsModalOpen = ref(false);
 
 function showDetail(result) {
     currentResult.value = result;
-    isSetailsModalOpen.value = true;
+    isDetailsModalOpen.value = true;
 }
 
 const debouncedSearchText = ref('');
@@ -77,7 +82,6 @@ watch([debouncedSearchTerms, debouncedSearchText, debouncedCountries], () => {
 
     loadMore();
 }, { deep: true });
-
 
 function buildQuery() {
     const queryStart = 'WITH data AS ( SELECT * FROM fao-ferm2-review.initiatives.vw_cse ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data '
@@ -132,6 +136,28 @@ function changeSource(event, source) {
     const img = event.target;
     img.src = `/interop_logos/${source.toLowerCase()}.png`;
 }
+
+const firstResultAsiaPopup = ref(true);
+const resultAsiaPopupShown = ref(false);
+//wath the searchTerms and if it contains source='RESULT Asia-Pacific', show a popup
+watch(() => props.searchTerms, (val) => {
+    if (val.source && val.source.includes('RESULT Asia-Pacific')
+        && !resultAsiaPopupShown.value
+        && !firstResultAsiaPopup.value
+        && !secondResultsAsiaPopupShown.value) {
+        secondResultsAsiaPopup.value = true
+        secondResultsAsiaPopupShown.value = true
+    }
+}, { deep: true, immediate: true });
+
+function firstDialogClose() {
+    // show the second dialog
+    if (props.searchTerms.source?.includes('RESULT Asia-Pacific') && !resultAsiaPopupShown.value && !secondResultsAsiaPopupShown.value) {
+        secondResultsAsiaPopup.value = true;
+        secondResultsAsiaPopupShown.value = true;
+    }
+    firstResultAsiaPopup.value = false;
+}
 </script>
 
 <template>
@@ -160,10 +186,10 @@ function changeSource(event, source) {
 
     <TransitionRoot
         as="template"
-        :show="isSetailsModalOpen"
+        :show="isDetailsModalOpen"
     >
         <Dialog
-            @close="isSetailsModalOpen = false"
+            @close="isDetailsModalOpen = false"
             class="relative z-50"
         >
             <TransitionChild
@@ -188,7 +214,7 @@ function changeSource(event, source) {
                     leave-from="opacity-100 translate-y-0 sm:scale-100"
                     leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
-                
+
                     <DialogPanel class="w-full max-w-4xl rounded-md bg-white overflow-hidden min-h-64 shadow-md flex flex-col">
                         <Detail
                             :title="currentResult.title"
@@ -279,6 +305,238 @@ function changeSource(event, source) {
             />
         </svg>
     </div>
+
+
+
+
+
+
+    <TransitionRoot
+        as="template"
+        :show="secondResultsAsiaPopup"
+    >
+        <Dialog
+            class="relative z-50"
+            @close="() => secondResultsAsiaPopup = false"
+        >
+            <TransitionChild
+                as="template"
+                enter="ease-out duration-300"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="ease-in duration-200"
+                leave-from="opacity-100"
+                leave-to="opacity-0"
+            >
+                <div class="fixed inset-0 bg-gray-500/75 transition-opacity" />
+            </TransitionChild>
+
+            <div class="fixed inset-0 z-50 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <TransitionChild
+                        as="template"
+                        enter="ease-out duration-300"
+                        enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        enter-to="opacity-100 translate-y-0 sm:scale-100"
+                        leave="ease-in duration-200"
+                        leave-from="opacity-100 translate-y-0 sm:scale-100"
+                        leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    >
+                        <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                            <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+                                <button
+                                    type="button"
+                                    class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    @click="secondResultsAsiaPopup = false"
+                                >
+                                    <span class="sr-only">Close</span>
+                                    <XMarkIcon
+                                        class="size-6"
+                                        aria-hidden="true"
+                                    />
+                                </button>
+                            </div>
+                            <div class="_sm:flex _sm:items-start">
+                                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                    <!-- <DialogTitle
+                                        as="h3"
+                                        class="text-base font-semibold text-gray-900"
+                                    >Deactivate account</DialogTitle> -->
+                                    <div class="mt-2">
+                                        <img src="/resultasiaheader.png">
+
+                                        <h1 class="text-6xl mt-6 font-semibold text-green-500 uppercase">RESULT Asia-Pacific</h1>
+
+                                        <!-- <p class="text-sm text-gray-500">Are you sure you want to deactivate your account? All of your data will be permanently removed from our servers forever. This action cannot be undone.</p> -->
+                                        <p class="mt-3 text-base font-bold text-green-600">
+                                            In this section you can find 15 Ecosystem Restoration projects ideas in Asia-Pacific prepared for funding in the context of the RESULT Asia-Pacific framework.
+                                        </p>
+                                        <p class="mt-3 text-base text-gray-700">
+                                            RESULT Asia-Pacific represents collective action by countries and partners to restore and sustainably manage a consolidated 100 million hectares of the region’s degraded landscapes; transforming them into productive, ecologically functional and resilient landscapes by 2030.
+                                        </p>
+                                        <p class="mt-3 text-base text-gray-700">
+                                            It enables the countries in the region to lead the achievement of their ambitious restoration targets with scaled-up interventions on priority landscapes, enhanced financing, sustained high-quality outcomes, and optimal benefits flowing to smallholders and local communities.
+                                        </p>
+                                        <p class="mt-3 text-base text-gray-700">
+                                            This Regional Programmatic Framework was designed in line with the Asia-Pacific Regional Strategy and Action Plan on Forest and Landscape Restoration (FLR) and the UN Decade on Ecosystem Restoration.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                <button
+                                    type="button"
+                                    class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                    @click="showResultsAsiaInitialPopup = false"
+                                >Deactivate</button>
+                                <button
+                                    type="button"
+                                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                    @click="showResultsAsiaInitialPopup = false"
+                                >Cancel</button>
+                            </div> -->
+                        </DialogPanel>
+                    </TransitionChild>
+                </div>
+            </div>
+        </Dialog>
+    </TransitionRoot>
+
+    <!-- <TransitionRoot
+        as="template"
+        :show="showResultsAsiaInitialPopup"
+    >
+        <Dialog
+            as="div"
+            class="relative z-50"
+            @close="() => showResultsAsiaInitialPopup = false"
+        >
+            <TransitionChild
+                as="template"
+                enter="ease-out duration-300"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="ease-in duration-200"
+                leave-from="opacity-100"
+                leave-to="opacity-0"
+            >
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity w-screen" />
+            </TransitionChild>
+
+            <div class="fixed inset-0 z-10 overflow-y-auto">
+                <div class="flex min-h-full items-end justify-center text-center sm:items-center max-w-4xl mx-auto p-4">
+                    <TransitionChild
+                        as="template"
+                        enter="ease-out duration-300"
+                        enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        enter-to="opacity-100 translate-y-0 sm:scale-100"
+                        leave="ease-in duration-200"
+                        leave-from="opacity-100 translate-y-0 sm:scale-100"
+                        leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    >
+                        <DialogPanel class="relative transform text-left shadow-xl transition-all w-full m-12 h-[calc(100vh-6rem)]">
+                            <button
+                                @click="() => showResultsAsiaInitialPopup = false"
+                                class="absolute -top-4 -right-4 w-8 h-8 bg-white rounded-full shadow hover:bg-gray-100 focus:outline-none flex items-center justify-center z-10"
+                                aria-label="Close modal"
+                            >
+                                <XMarkIcon class="h-6 w-6 text-gray-500" />
+                            </button>
+                            <div class="h-full bg-slate-100 rounded-lg overflow-hidden">
+                                <p>
+                                    RESULT Asia-Pacific represents collective action by countries and partners to restore and sustainably manage a consolidated 100 million hectares of the region’s degraded landscapes; transforming them into productive, ecologically functional and resilient landscapes by 2030.
+                                </p>
+                                <p>
+                                    It enables the countries in the region to lead the achievement of their ambitious restoration targets with scaled-up interventions on priority landscapes, enhanced financing, sustained high-quality outcomes, and optimal benefits flowing to smallholders and local communities.
+                                </p>
+                                <p>
+                                    This Regional Programmatic Framework was designed in line with the Asia-Pacific Regional Strategy and Action Plan on Forest and Landscape Restoration (FLR) and the UN Decade on Ecosystem Restoration.
+                                </p>
+
+                            </div>
+                        </DialogPanel>
+                    </TransitionChild>
+                </div>
+            </div>
+        </Dialog>
+    </TransitionRoot> -->
+
+    <TransitionRoot
+        as="template"
+        :show="firstResultAsiaPopup"
+    >
+        <Dialog
+            class="relative z-50"
+            @close="firstDialogClose"
+        >
+            <TransitionChild
+                as="template"
+                enter="ease-out duration-300"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="ease-in duration-200"
+                leave-from="opacity-100"
+                leave-to="opacity-0"
+            >
+                <div class="fixed inset-0 bg-gray-500/75 transition-opacity" />
+            </TransitionChild>
+
+            <div class="fixed inset-0 z-50 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <TransitionChild
+                        as="template"
+                        enter="ease-out duration-300"
+                        enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        enter-to="opacity-100 translate-y-0 sm:scale-100"
+                        leave="ease-in duration-200"
+                        leave-from="opacity-100 translate-y-0 sm:scale-100"
+                        leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    >
+                        <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                            <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+                                <button
+                                    type="button"
+                                    class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    @click="firstDialogClose"
+                                >
+                                    <span class="sr-only">Close</span>
+                                    <XMarkIcon
+                                        class="size-6"
+                                        aria-hidden="true"
+                                    />
+                                </button>
+                            </div>
+                            <div class="_sm:flex _sm:items-start">
+                                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                    <!-- <DialogTitle
+                                        as="h3"
+                                        class="text-base font-semibold text-gray-900"
+                                    >Deactivate account</DialogTitle> -->
+                                    <div class="mt-2">
+                                        <img src="/resultasiaheader.png">
+
+                                        <h1 class="text-3xl mt-6 font-semibold text-green-500 uppercase">RESULT Asia-Pacific partner initiatives are available in FERM</h1>
+
+                                        <!-- <p class="text-sm text-gray-500">Are you sure you want to deactivate your account? All of your data will be permanently removed from our servers forever. This action cannot be undone.</p> -->
+                                        <p class="mt-3 text-base font-bold text-green-600">
+                                            By making the the RESULT Asia-Pacific initiatives available in the FERM, investments in ecosystem restoration are enabled by connecting donors with viable, bankable projects.
+                                        </p>
+                                        <p class="mt-3 text-base text-gray-700">
+                                            We are pleased to announce that 15 Ecosystem Restoration project ideas in the Asia-Pacific region, developed under the RESULT Asia-Pacific framework, are now available on FERM.
+                                        </p>
+                                        <p class="mt-3 text-base text-gray-700">
+                                            You can explore these projects by clicking on the RESULT Asia-Pacific filter in the FERM search engine under sources. Start discovering opportunities for #generationrestoration!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </DialogPanel>
+                    </TransitionChild>
+                </div>
+            </div>
+        </Dialog>
+    </TransitionRoot>
+
 </template>
 
 <style scoped>
