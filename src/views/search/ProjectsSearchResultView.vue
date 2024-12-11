@@ -366,10 +366,8 @@ function firstDialogClose() {
                                         <img src="/resultasiaheader.png">
 
                                         <h1 class="text-6xl mt-6 font-semibold text-green-500 uppercase">RESULT Asia-Pacific</h1>
-
-                                        <!-- <p class="text-sm text-gray-500">Are you sure you want to deactivate your account? All of your data will be permanently removed from our servers forever. This action cannot be undone.</p> -->
                                         <p class="mt-3 text-base font-bold text-green-600">
-                                            In this section you can find 15 Ecosystem Restoration projects ideas in Asia-Pacific prepared for funding in the context of the RESULT Asia-Pacific framework.
+                                            In this section you can find Ecosystem Restoration projects ideas in Asia-Pacific prepared for funding in the context of the RESULT Asia-Pacific framework.
                                         </p>
                                         <p class="mt-3 text-base text-gray-700">
                                             RESULT Asia-Pacific represents collective action by countries and partners to restore and sustainably manage a consolidated 100 million hectares of the region’s degraded landscapes; transforming them into productive, ecologically functional and resilient landscapes by 2030.
@@ -522,7 +520,7 @@ function firstDialogClose() {
                                             By making the the RESULT Asia-Pacific initiatives available in the FERM, investments in ecosystem restoration are enabled by connecting donors with viable, bankable projects.
                                         </p>
                                         <p class="mt-3 text-base text-gray-700">
-                                            We are pleased to announce that 15 Ecosystem Restoration project ideas in the Asia-Pacific region, developed under the RESULT Asia-Pacific framework, are now available on FERM.
+                                            We are pleased to announce Ecosystem Restoration project ideas in the Asia-Pacific region, developed under the RESULT Asia-Pacific framework, are now available on FERM.
                                         </p>
                                         <p class="mt-3 text-base text-gray-700">
                                             You can explore these projects by clicking on the RESULT Asia-Pacific filter in the FERM search engine under sources. Start discovering opportunities for #generationrestoration!

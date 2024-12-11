@@ -107,7 +107,7 @@ const paAndTraditionalTerritoriesComponent = {
     //     { key: 'country', f: (_: any, i: number) => store.project.project.countries[i] },
     // ],
     // has to be calculated props to be dynamic
-    calculatedProps: [{key: 'units', f: (_: any, i: number) => store.project.project.areaUnits}]
+    calculatedProps: [{ key: 'units', f: (_: any, i: number) => store.project.project.areaUnits }]
 };
 
 const showUploadInfoModal = ref(false);
