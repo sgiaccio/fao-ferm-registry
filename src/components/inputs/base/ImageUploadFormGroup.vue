@@ -49,7 +49,7 @@ async function getUploadedFiles() {
         });
     } catch (error) {
         console.error(error);
-        alert('Failed to load files: ' + error);
+        toast.error('Failed to load files: ' + error);
     }
 }
 

@@ -1,0 +1,4033 @@
+const menus = {
+    "objectives": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Reforest degraded lands",
+                "fr": "Reboiser les terres dégradées",
+                "es": "Reforestar tierras degradadas"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Improve soil health",
+                "fr": "Améliorer la santé des sols",
+                "es": "Mejorar la salud del suelo"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Increase food and products production",
+                "fr": "Augmenter la production alimentaire et de produits",
+                "es": "Aumentar la producción de alimentos y productos"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Improve biodiversity",
+                "fr": "Améliorer la biodiversité",
+                "es": "Mejorar la biodiversidad"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Contribute to climate change adaptation and mitigation",
+                "fr": "Contribuer à l'adaptation et à l'atténuation du changement climatique",
+                "es": "Contribuir a la adaptación y mitigación del cambio climático"
+            }
+        },
+        {
+            "value": 6,
+            "label": {
+                "en": "Improve water availability and quality",
+                "fr": "Améliorer la disponibilité et la qualité de l'eau",
+                "es": "Mejorar la disponibilidad y calidad del agua"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "Improve livelihoods",
+                "fr": "Améliorer les moyens de subsistance",
+                "es": "Mejorar los medios de subsistencia"
+            }
+        },
+        {
+            "value": 8,
+            "label": {
+                "en": "Improve access to energy",
+                "fr": "Améliorer l'accès à l'énergie",
+                "es": "Mejorar el acceso a la energía"
+            }
+        },
+        {
+            "value": 9,
+            "label": {
+                "en": "Ensure/protect rights and culture",
+                "fr": "Assurer/protéger les droits et la culture",
+                "es": "Garantizar/proteger los derechos y la cultura"
+            }
+        },
+        {
+            "value": 10,
+            "label": {
+                "en": "Ensure sustainability of restoration practices",
+                "fr": "Assurer la durabilité des pratiques de restauration",
+                "es": "Garantizar la sostenibilidad de las prácticas de restauración"
+            }
+        },
+        {
+            "value": 11,
+            "label": {
+                "en": "Enhance ecosystem resilience",
+                "fr": "Renforcer la résilience des écosystèmes",
+                "es": "Mejorar la resiliencia de los ecosistemas"
+            }
+        },
+        {
+            "value": 0,
+            "label": {
+                "en": "Other",
+                "fr": "Autre",
+                "es": "Otro"
+            }
+        }
+    ],
+    "ecosystems": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Farmlands",
+                "fr": "Terres agricoles",
+                "es": "Tierras de cultivo"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Forests",
+                "fr": "Forêts",
+                "es": "Bosques"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Freshwaters",
+                "fr": "Eaux douces",
+                "es": "Aguas dulces"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Grasslands, Shrublands and Savannahs",
+                "fr": "Prairies, brousses et savanes",
+                "es": "Pastizales, matorrales y sabanas"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Mountains",
+                "fr": "Montagnes",
+                "es": "Montañas"
+            }
+        },
+        {
+            "value": 6,
+            "label": {
+                "en": "Oceans and coasts",
+                "fr": "Océans et côtes",
+                "es": "Océanos y costas"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "Peatlands",
+                "fr": "Tourbières",
+                "es": "Turberas"
+            }
+        },
+        {
+            "value": 8,
+            "label": {
+                "en": "Urban areas",
+                "fr": "Zones urbaines",
+                "es": "Áreas urbanas"
+            }
+        }
+    ],
+    "agencyTypes": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Government",
+                "fr": "Gouvernement",
+                "es": "Gobierno"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "NGO",
+                "fr": "ONG",
+                "es": "ONG"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Public Private Partnership",
+                "fr": "Partenariat public-privé",
+                "es": "Asociación público-privada"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Multilateral",
+                "fr": "Multilatéral",
+                "es": "Multilateral"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Foundation",
+                "fr": "Fondation",
+                "es": "Fundación"
+            }
+        },
+        {
+            "value": 6,
+            "label": {
+                "en": "Private sector",
+                "fr": "Secteur privé",
+                "es": "Sector privado"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "Academic & research",
+                "fr": "Académique et recherche",
+                "es": "Académico e investigación"
+            }
+        },
+        {
+            "value": 0,
+            "label": {
+                "en": "Other",
+                "fr": "Autre",
+                "es": "Otro"
+            }
+        }
+    ],
+    "agencyRoles": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Leading",
+                "fr": "Chef de file",
+                "es": "Liderando"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Supporting",
+                "fr": "Soutien",
+                "es": "Apoyando"
+            }
+        }
+    ],
+    "drivers": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Grazing land management (e.g. Change in extent of grazing lands; Rotation regimes)",
+                "fr": "Gestion des terres de pâturage (par ex. changement de l'étendue des pâturages; régimes de rotation)",
+                "es": "Gestión de tierras de pastoreo (p. ej., cambio en la extensión de las tierras de pastoreo; regímenes de rotación)"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Croplands management (e.g. Change in extent of croplands including drainage of wetlands; Agricultural inputs)",
+                "fr": "Gestion des terres cultivées (par ex. changement dans l'étendue des terres cultivées y compris le drainage des zones humides; intrants agricoles)",
+                "es": "Gestión de tierras de cultivo (p. ej., cambio en la extensión de las tierras cultivadas, incluido el drenaje de humedales; insumos agrícolas)"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Forests and tree plantation management (e.g. Change in extent of managed and planted forest; Harvesting intensity)",
+                "fr": "Gestion des forêts et des plantations d'arbres (par ex. changement dans l'étendue des forêts gérées et plantées; intensité de la récolte)",
+                "es": "Gestión de bosques y plantaciones de árboles (p. ej., cambio en la extensión de bosques gestionados y plantados; intensidad de la cosecha)"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Non-timber natural resource extraction (e.g. Fuelwood harvesting; Hunting)",
+                "fr": "Extraction de ressources naturelles non ligneuses (par ex. récolte de bois de chauffage; chasse)",
+                "es": "Extracción de recursos naturales no madereros (p. ej., recolección de leña; caza)"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Fire regimes changes (e.g. Changes in frequency, intensity, season and timing of fire, including fire suppression)",
+                "fr": "Changements dans les régimes d'incendie (par ex. changements dans la fréquence, l'intensité, la saison et le moment des feux, y compris la suppression des incendies)",
+                "es": "Cambios en los regímenes de fuego (p. ej., cambios en la frecuencia, intensidad, época y momento del fuego, incluida la supresión de incendios)"
+            }
+        },
+        {
+            "value": 6,
+            "label": {
+                "en": "Introduction of invasive species",
+                "fr": "Introduction d'espèces envahissantes",
+                "es": "Introducción de especies invasoras"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "Extractive industry development (e.g. Extraction and refining techniques; Pollutant discharge and spoil disposal)",
+                "fr": "Développement de l'industrie extractive (par ex. techniques d'extraction et de raffinage; rejet de polluants et élimination des déchets)",
+                "es": "Desarrollo de la industria extractiva (p. ej., técnicas de extracción y refinación; vertido de contaminantes y eliminación de desechos)"
+            }
+        },
+        {
+            "value": 8,
+            "label": {
+                "en": "Infrastructure and industrial development and urbanization (e.g. Dams and hydroelectric power plants; Roads and railways)",
+                "fr": "Développement des infrastructures, de l'industrie et urbanisation (par ex. barrages et centrales hydroélectriques; routes et chemins de fer)",
+                "es": "Desarrollo de infraestructura e industrial y urbanización (p. ej., presas y centrales hidroeléctricas; carreteras y ferrocarriles)"
+            }
+        },
+        {
+            "value": 9,
+            "label": {
+                "en": "Climate change",
+                "fr": "Changement climatique",
+                "es": "Cambio climático"
+            }
+        },
+        {
+            "value": 10,
+            "label": {
+                "en": "Illegal activities (e.g. Land grabbing; Human rights violations)",
+                "fr": "Activités illégales (par ex. accaparement des terres; violations des droits de l'homme)",
+                "es": "Actividades ilegales (p. ej., acaparamiento de tierras; violaciones de derechos humanos)"
+            }
+        },
+        {
+            "value": 11,
+            "label": {
+                "en": "Demographic (e.g. Population growth rate; Migration and population mobility)",
+                "fr": "Démographique (par ex. taux de croissance de la population; migration et mobilité de la population)",
+                "es": "Demográfico (p. ej., tasa de crecimiento de la población; migración y movilidad poblacional)"
+            }
+        },
+        {
+            "value": 12,
+            "label": {
+                "en": "Economic (e.g. Demand and consumption; Poverty)",
+                "fr": "Économique (par ex. demande et consommation; pauvreté)",
+                "es": "Económico (p. ej., demanda y consumo; pobreza)"
+            }
+        },
+        {
+            "value": 13,
+            "label": {
+                "en": "Science, knowledge and technology (e.g. Lack of education and integration of local and traditional knowledge; Lack of investment in research and development)",
+                "fr": "Science, connaissances et technologie (par ex. manque d'éducation et d'intégration des connaissances locales et traditionnelles; manque d'investissement dans la recherche et le développement)",
+                "es": "Ciencia, conocimiento y tecnología (p. ej., falta de educación e integración del conocimiento local y tradicional; falta de inversión en investigación y desarrollo)"
+            }
+        },
+        {
+            "value": 14,
+            "label": {
+                "en": "Institutions and governance (e.g. Regulatory and incentive based public policy; Property rights)",
+                "fr": "Institutions et gouvernance (par ex. politiques publiques réglementaires et incitatives; droits de propriété)",
+                "es": "Instituciones y gobernanza (p. ej., política pública regulatoria y basada en incentivos; derechos de propiedad)"
+            }
+        },
+        {
+            "value": 15,
+            "label": {
+                "en": "Cultural (e.g. Consumer behaviour; Diet)",
+                "fr": "Culturel (par ex. comportement des consommateurs; régime alimentaire)",
+                "es": "Cultural (p. ej., comportamiento del consumidor; dieta)"
+            }
+        },
+        {
+            "value": 0,
+            "label": {
+                "en": "Other",
+                "fr": "Autre",
+                "es": "Otro"
+            }
+        }
+    ],
+    "engagement": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Community leaders",
+                "fr": "Leaders communautaires",
+                "es": "Líderes comunitarios"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Indigenous groups",
+                "fr": "Groupes autochtones",
+                "es": "Grupos indígenas"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Women's organizations",
+                "fr": "Organisations de femmes",
+                "es": "Organizaciones de mujeres"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Youth organizations ",
+                "fr": "Organisations de jeunes",
+                "es": "Organizaciones juveniles"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Land-users (e.g., farmer, pastoralist) and small-scale producers/fishers",
+                "fr": "Utilisateurs de terres (ex. agriculteurs, éleveurs) et petits producteurs/pêcheurs",
+                "es": "Usuarios de la tierra (p. ej., agricultores, pastores) y productores/pescadores a pequeña escala"
+            }
+        },
+        {
+            "value": 6,
+            "label": {
+                "en": "Local/subnational NGOs and CBOs",
+                "fr": "ONG et OCB locales/sous-nationales",
+                "es": "ONG y OCB locales/subnacionales"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "Cooperatives, SMEs and private sector",
+                "fr": "Coopératives, PME et secteur privé",
+                "es": "Cooperativas, PyMEs y sector privado"
+            }
+        },
+        {
+            "value": 8,
+            "label": {
+                "en": "Policymakers",
+                "fr": "Décideurs politiques",
+                "es": "Formuladores de políticas"
+            }
+        },
+        {
+            "value": 9,
+            "label": {
+                "en": "Environment sector (conservation, watershed management, forestry)",
+                "fr": "Secteur de l'environnement (conservation, gestion des bassins, foresterie)",
+                "es": "Sector medioambiental (conservación, gestión de cuencas, silvicultura)"
+            }
+        },
+        {
+            "value": 10,
+            "label": {
+                "en": "Agricultural sector, including extension services",
+                "fr": "Secteur agricole, y compris les services de vulgarisation",
+                "es": "Sector agrícola, incluidos servicios de extensión"
+            }
+        },
+        {
+            "value": 11,
+            "label": {
+                "en": "Marine/fisheries sector",
+                "fr": "Secteur marin/pêche",
+                "es": "Sector marino/pesquero"
+            }
+        },
+        {
+            "value": 12,
+            "label": {
+                "en": "Mining and energy sector",
+                "fr": "Secteur minier et énergétique",
+                "es": "Sector minero y energético"
+            }
+        },
+        {
+            "value": 13,
+            "label": {
+                "en": "Local/subnational government",
+                "fr": "Gouvernement local/sous-national",
+                "es": "Gobierno local/subnacional"
+            }
+        },
+        {
+            "value": 14,
+            "label": {
+                "en": "International development partners, regional organization, network and initiatives",
+                "fr": "Partenaires du développement international, organisation régionale, réseaux et initiatives",
+                "es": "Socios de desarrollo internacional, organización regional, redes e iniciativas"
+            }
+        },
+        {
+            "value": 15,
+            "label": {
+                "en": "Research/academia",
+                "fr": "Recherche/monde académique",
+                "es": "Investigación/academia"
+            }
+        },
+        {
+            "value": 16,
+            "label": {
+                "en": "Education",
+                "fr": "Éducation",
+                "es": "Educación"
+            }
+        },
+        {
+            "value": 17,
+            "label": {
+                "en": "Finance sector",
+                "fr": "Secteur financier",
+                "es": "Sector financiero"
+            }
+        },
+        {
+            "value": 0,
+            "label": {
+                "en": "Other",
+                "fr": "Autre",
+                "es": "Otro"
+            }
+        }
+    ],
+    "knowledgeTypes": [
+        {
+            "value": 1,
+            "dangerousHtmlLabel": {
+                "en": "Indigenous Peoples' traditional knowledge: Cumulative body of knowledge (for example know-how), practices and manifestations maintained and developed by Indigenous Peoples with long histories of interaction with their natural environment. Indigenous Peoples’ knowledge is adapted to the local culture and transmitted orally from generation to generation. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704</a>",
+                "fr": "Connaissances traditionnelles des peuples autochtones : Ensemble cumulatif de connaissances (par exemple, savoir-faire), de pratiques et de manifestations conservées et développées par les peuples autochtones ayant de longues histoires d'interaction avec leur environnement naturel. Les connaissances des peuples autochtones sont adaptées à la culture locale et transmises oralement de génération en génération. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704</a>",
+                "es": "Conocimientos tradicionales de los Pueblos Indígenas: Conjunto acumulativo de conocimientos (por ejemplo, saber-hacer), prácticas y manifestaciones mantenidas y desarrolladas por los Pueblos Indígenas con largas historias de interacción con su entorno natural. El conocimiento de los Pueblos Indígenas se adapta a la cultura local y se transmite oralmente de generación en generación. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704</a>"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Scientific knowledge: quantitative and based on experimentation and systematic accumulation of facts (Berkes, 1993).",
+                "fr": "Connaissances scientifiques : quantitatives et fondées sur l'expérimentation et l'accumulation systématique de faits (Berkes, 1993).",
+                "es": "Conocimiento científico: cuantitativo y basado en la experimentación y la acumulación sistemática de hechos (Berkes, 1993)."
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Practical knowledge: knowledge from ecosystem restoration practitioners gained through their experiences implementing initiatives.",
+                "fr": "Connaissances pratiques : connaissances acquises par les praticiens de la restauration des écosystèmes à travers leurs expériences de mise en œuvre d'initiatives.",
+                "es": "Conocimiento práctico: conocimiento proveniente de los practicantes de la restauración de ecosistemas, obtenido a través de sus experiencias en la implementación de iniciativas."
+            }
+        },
+        {
+            "value": 4,
+            "dangerousHtmlLabel": {
+                "en": "Local knowledge: Local knowledge is the knowledge that people in a given community have developed over time and continue to develop. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>",
+                "fr": "Connaissances locales : Les connaissances locales sont celles que les personnes d'une communauté donnée ont développées au fil du temps et continuent de développer. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>",
+                "es": "Conocimientos locales: Los conocimientos locales son aquellos que las personas de una comunidad determinada han desarrollado a lo largo del tiempo y continúan desarrollando. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>"
+            }
+        },
+        {
+            "value": 0,
+            "label": {
+                "en": "Others",
+                "fr": "Autres",
+                "es": "Otros"
+            }
+        }
+    ],
+    "scale": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Local level (community, farm level)",
+                "fr": "Niveau local (communauté, exploitation)",
+                "es": "Nivel local (comunidad, finca)"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Landscape level",
+                "fr": "Niveau paysage",
+                "es": "Nivel de paisaje"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Regional",
+                "fr": "Régional",
+                "es": "Regional"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "National",
+                "fr": "National",
+                "es": "Nacional"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Global",
+                "fr": "Global",
+                "es": "Global"
+            }
+        }
+    ],
+    "replicability": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Yes, the practice has been tested and replicated in multiple contexts and scales and therefore, can be easily transferred and/or adapted to other initiatives with similar goals.",
+                "fr": "Oui, la pratique a été testée et reproduite dans plusieurs contextes et à diverses échelles, et peut donc être facilement transférée et/ou adaptée à d'autres initiatives aux objectifs similaires.",
+                "es": "Sí, la práctica ha sido probada y replicada en múltiples contextos y escalas y por lo tanto puede transferirse y/o adaptarse fácilmente a otras iniciativas con objetivos similares."
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "No, the practice has been tested only in the same context and scale, but it is currently being proven for replicability and adaptability to various contexts.",
+                "fr": "Non, la pratique n'a été testée que dans le même contexte et à la même échelle, mais on est en train de prouver sa capacité à être reproduite et adaptée à divers contextes.",
+                "es": "No, la práctica solo se ha probado en el mismo contexto y escala, pero actualmente se está demostrando su replicabilidad y adaptabilidad a diversos contextos."
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "No, the practice has been tested only in the same context and scale, it needs to be proven for replicability and adaptability to various contexts.",
+                "fr": "Non, la pratique n'a été testée que dans le même contexte et à la même échelle, et doit encore prouver sa capacité à être reproduite et adaptée à divers contextes.",
+                "es": "No, la práctica solo se ha probado en el mismo contexto y escala, necesita ser probada en cuanto a su replicabilidad y adaptabilidad a diversos contextos."
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "No, the practice has not been tested so it cannot be transferred and/or adapted to other initiatives.",
+                "fr": "Non, la pratique n'a pas été testée, elle ne peut donc pas être transférée et/ou adaptée à d'autres initiatives.",
+                "es": "No, la práctica no ha sido probada, por lo que no puede transferirse y/o adaptarse a otras iniciativas."
+            }
+        }
+    ],
+    "keyFactors": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Awareness of social, economic and/or environmental benefits",
+                "fr": "Sensibilisation aux avantages sociaux, économiques et/ou environnementaux",
+                "es": "Conciencia de los beneficios sociales, económicos y/o ambientales"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Ecological conditions are suitable",
+                "fr": "Les conditions écologiques sont adaptées",
+                "es": "Las condiciones ecológicas son adecuadas"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Value chains for products from restored area exist",
+                "fr": "Des chaînes de valeur pour les produits issus des zones restaurées existent",
+                "es": "Existen cadenas de valor para los productos del área restaurada"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Land and natural resource tenure is secure",
+                "fr": "La tenure foncière et des ressources naturelles est sécurisée",
+                "es": "La tenencia de la tierra y los recursos naturales está asegurada"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Policies and restrictions are aligned",
+                "fr": "Les politiques et restrictions sont alignées",
+                "es": "Las políticas y restricciones están alineadas"
+            }
+        },
+        {
+            "value": 6,
+            "label": {
+                "en": "Local people benefit from, and make decisions about restoration",
+                "fr": "Les populations locales bénéficient de la restauration et participent à la prise de décisions",
+                "es": "La población local se beneficia de la restauración y participa en la toma de decisiones"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "Roles and responsibilities are clear",
+                "fr": "Les rôles et responsabilités sont clairs",
+                "es": "Los roles y responsabilidades están claros"
+            }
+        },
+        {
+            "value": 8,
+            "label": {
+                "en": "Sustained political/social commitment exists",
+                "fr": "Un engagement politique/social soutenu existe",
+                "es": "Existe un compromiso político/social sostenido"
+            }
+        },
+        {
+            "value": 9,
+            "label": {
+                "en": "Restoration guidelines per ecosystem are accessible",
+                "fr": "Les directives de restauration par écosystème sont accessibles",
+                "es": "Las directrices de restauración por ecosistema son accesibles"
+            }
+        },
+        {
+            "value": 10,
+            "label": {
+                "en": "Design has a well-developed technical basis",
+                "fr": "La conception repose sur une base technique bien développée",
+                "es": "El diseño tiene una base técnica bien desarrollada"
+            }
+        },
+        {
+            "value": 11,
+            "label": {
+                "en": "Incentives and funds are accessible",
+                "fr": "Les incitations et fonds sont accessibles",
+                "es": "Los incentivos y fondos son accesibles"
+            }
+        },
+        {
+            "value": 12,
+            "label": {
+                "en": "Effective monitoring is in place",
+                "fr": "Un suivi efficace est en place",
+                "es": "Existe un monitoreo eficaz"
+            }
+        },
+        {
+            "value": 13,
+            "label": {
+                "en": "Capacity development is provided to implementers",
+                "fr": "Le développement des capacités est fourni aux acteurs de mise en œuvre",
+                "es": "Se proporciona desarrollo de capacidades a los implementadores"
+            }
+        },
+        {
+            "value": 14,
+            "label": {
+                "en": "Actions are coordinated among stakeholders, institutions and sectors",
+                "fr": "Les actions sont coordonnées entre les parties prenantes, les institutions et les secteurs",
+                "es": "Las acciones están coordinadas entre las partes interesadas, instituciones y sectores"
+            }
+        }
+    ],
+    "outcomes": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Protected sacred land or cultural site",
+                "fr": "Terre sacrée ou site culturel protégé",
+                "es": "Tierra sagrada o sitio cultural protegido"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Improved recreational opportunities",
+                "fr": "Amélioration des opportunités récréatives",
+                "es": "Oportunidades recreativas mejoradas"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Ensured land and natural resource tenure",
+                "fr": "Tenure foncière et des ressources naturelles assurée",
+                "es": "Tenencia de la tierra y recursos naturales asegurada"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Improved conflict mitigation",
+                "fr": "Amélioration de l'atténuation des conflits",
+                "es": "Mejora en la mitigación de conflictos"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Increased food and water security/self sufficiency",
+                "fr": "Augmentation de la sécurité alimentaire et hydrique/autosuffisance",
+                "es": "Aumento de la seguridad alimentaria e hídrica/autosuficiencia"
+            }
+        },
+        {
+            "value": 6,
+            "label": {
+                "en": "Increased farm income",
+                "fr": "Augmentation des revenus agricoles",
+                "es": "Aumento de los ingresos agrícolas"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "Increased diversity of income sources",
+                "fr": "Augmentation de la diversité des sources de revenus",
+                "es": "Aumento de la diversidad de fuentes de ingresos"
+            }
+        },
+        {
+            "value": 8,
+            "label": {
+                "en": "Increased equity: benefiting women & minorities",
+                "fr": "Équité accrue : bénéficier aux femmes et minorités",
+                "es": "Mayor equidad: en beneficio de mujeres y minorías"
+            }
+        },
+        {
+            "value": 9,
+            "label": {
+                "en": "Increased access to markets and/or financial services",
+                "fr": "Amélioration de l'accès aux marchés et/ou aux services financiers",
+                "es": "Mayor acceso a mercados y/o servicios financieros"
+            }
+        },
+        {
+            "value": 10,
+            "label": {
+                "en": "Increased biomass and carbon sequestration",
+                "fr": "Augmentation de la biomasse et de la séquestration du carbone",
+                "es": "Aumento de la biomasa y la captura de carbono"
+            }
+        },
+        {
+            "value": 12,
+            "label": {
+                "en": "Increased water quantity and/or quality",
+                "fr": "Augmentation de la quantité et/ou de la qualité de l'eau",
+                "es": "Aumento de la cantidad y/o calidad del agua"
+            }
+        },
+        {
+            "value": 13,
+            "label": {
+                "en": "Increased soil health",
+                "fr": "Amélioration de la santé des sols",
+                "es": "Mejora de la salud del suelo"
+            }
+        },
+        {
+            "value": 14,
+            "label": {
+                "en": "Increased protected area coverage",
+                "fr": "Augmentation de la couverture des aires protégées",
+                "es": "Aumento de la cobertura de áreas protegidas"
+            }
+        },
+        {
+            "value": 15,
+            "label": {
+                "en": "Increased plant and/or animal diversity",
+                "fr": "Augmentation de la diversité végétale et/ou animale",
+                "es": "Aumento de la diversidad de plantas y/o animales"
+            }
+        },
+        {
+            "value": 16,
+            "label": {
+                "en": "Reduced invasive alien species",
+                "fr": "Réduction des espèces exotiques envahissantes",
+                "es": "Reducción de especies exóticas invasoras"
+            }
+        },
+        {
+            "value": 17,
+            "label": {
+                "en": "Reduced fire risk",
+                "fr": "Réduction du risque d'incendie",
+                "es": "Reducción del riesgo de incendio"
+            }
+        },
+        {
+            "value": 18,
+            "label": {
+                "en": "Reduced flood impacts",
+                "fr": "Réduction des impacts des inondations",
+                "es": "Reducción de los impactos de las inundaciones"
+            }
+        },
+        {
+            "value": 19,
+            "label": {
+                "en": "Reduced drought impacts",
+                "fr": "Réduction des impacts de la sécheresse",
+                "es": "Reducción de los impactos de la sequía"
+            }
+        },
+        {
+            "value": 0,
+            "label": {
+                "en": "Other",
+                "fr": "Autre",
+                "es": "Otro"
+            }
+        }
+    ],
+    "activities": [
+        {
+            "label": {
+                "en": "Biophysical",
+                "fr": "Biophysique",
+                "es": "Biofísico"
+            },
+            "items": [
+                {
+                    "value": 1000,
+                    "label": {
+                        "en": "Restoration of vegetation cover",
+                        "fr": "Restauration du couvert végétal",
+                        "es": "Restauración de la cobertura vegetal"
+                    },
+                    "items": [
+                        {
+                            "value": 1,
+                            "label": {
+                                "en": "Restrictions on forest conversion",
+                                "fr": "Restrictions sur la conversion des forêts",
+                                "es": "Restricciones a la conversión de bosques"
+                            }
+                        },
+                        {
+                            "value": 2,
+                            "label": {
+                                "en": "Promotion of sustainable forest management practices",
+                                "fr": "Promotion de pratiques durables de gestion forestière",
+                                "es": "Promoción de prácticas sostenibles de gestión forestal"
+                            }
+                        },
+                        {
+                            "value": 3,
+                            "label": {
+                                "en": "Fire management",
+                                "fr": "Gestion du feu",
+                                "es": "Gestión del fuego"
+                            }
+                        },
+                        {
+                            "value": 4,
+                            "label": {
+                                "en": "Assisted natural regeneration",
+                                "fr": "Régénération naturelle assistée",
+                                "es": "Regeneración natural asistida"
+                            }
+                        },
+                        {
+                            "value": 5,
+                            "label": {
+                                "en": "Enrichment planting",
+                                "fr": "Plantation d'enrichissement",
+                                "es": "Plantación de enriquecimiento"
+                            }
+                        },
+                        {
+                            "value": 6,
+                            "label": {
+                                "en": "Tree planting",
+                                "fr": "Plantation d'arbres",
+                                "es": "Plantación de árboles"
+                            }
+                        },
+                        {
+                            "value": 7,
+                            "label": {
+                                "en": "Grass planting",
+                                "fr": "Plantation d'herbe",
+                                "es": "Plantación de pastos"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "value": 1001,
+                    "label": {
+                        "en": "Control of invasive species",
+                        "fr": "Contrôle des espèces envahissantes",
+                        "es": "Control de especies invasoras"
+                    },
+                    "items": [
+                        {
+                            "value": 8,
+                            "label": {
+                                "en": "Quarantine measures",
+                                "fr": "Mesures de quarantaine",
+                                "es": "Medidas de cuarentena"
+                            }
+                        },
+                        {
+                            "value": 9,
+                            "label": {
+                                "en": "Species control measures (physical/chemical/biological)",
+                                "fr": "Mesures de contrôle des espèces (physiques/chimiques/biologiques)",
+                                "es": "Medidas de control de especies (físicas/químicas/biológicas)"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "value": 1002,
+                    "label": {
+                        "en": "Rehabilitation and depollution",
+                        "fr": "Réhabilitation et dépollution",
+                        "es": "Rehabilitación y descontaminación"
+                    },
+                    "items": [
+                        {
+                            "value": 10,
+                            "label": {
+                                "en": "On-site management of mining wastes (soils and water)",
+                                "fr": "Gestion sur site des déchets miniers (sols et eau)",
+                                "es": "Gestión in situ de residuos mineros (suelos y agua)"
+                            }
+                        },
+                        {
+                            "value": 11,
+                            "label": {
+                                "en": "Reclamation of mine site topography",
+                                "fr": "Restauration de la topographie des sites miniers",
+                                "es": "Recuperación de la topografía del sitio minero"
+                            }
+                        },
+                        {
+                            "value": 12,
+                            "label": {
+                                "en": "Conservation and early replacement of topsoil",
+                                "fr": "Conservation et remplacement précoce de la couche arable",
+                                "es": "Conservación y reemplazo temprano de la capa superior del suelo"
+                            }
+                        },
+                        {
+                            "value": 13,
+                            "label": {
+                                "en": "Control of point and non-point pollution sources",
+                                "fr": "Contrôle des sources de pollution ponctuelles et diffuses",
+                                "es": "Control de fuentes de contaminación puntuales y difusas"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "value": 1003,
+                    "label": {
+                        "en": "Soil and water management",
+                        "fr": "Gestion des sols et de l'eau",
+                        "es": "Gestión del suelo y el agua"
+                    },
+                    "items": [
+                        {
+                            "value": 14,
+                            "label": {
+                                "en": "Reduced tillage",
+                                "fr": "Réduction du travail du sol",
+                                "es": "Labranza reducida"
+                            }
+                        },
+                        {
+                            "value": 15,
+                            "label": {
+                                "en": "Improved fertilizer and agrochemical use efficiency",
+                                "fr": "Efficacité accrue de l'utilisation des engrais et produits agrochimiques",
+                                "es": "Mayor eficiencia en el uso de fertilizantes y agroquímicos"
+                            }
+                        },
+                        {
+                            "value": 16,
+                            "label": {
+                                "en": "Improved irrigation and water use efficiency",
+                                "fr": "Amélioration de l'irrigation et de l'efficacité de l'utilisation de l'eau",
+                                "es": "Mejora del riego y la eficiencia del uso del agua"
+                            }
+                        },
+                        {
+                            "value": 17,
+                            "label": {
+                                "en": "Rainwater and runoff harvesting (e.g. terracing, stone cords, zaï, half-moons)",
+                                "fr": "Collecte des eaux de pluie et de ruissellement (ex. terrasses, cordons pierreux, zaï, demi-lunes)",
+                                "es": "Captación de agua de lluvia y escorrentía (p. ej., terrazas, cordones de piedra, zaï, medias lunas)"
+                            }
+                        },
+                        {
+                            "value": 18,
+                            "label": {
+                                "en": "Fog collection",
+                                "fr": "Collecte de la brume",
+                                "es": "Recolección de niebla"
+                            }
+                        },
+                        {
+                            "value": 19,
+                            "label": {
+                                "en": "Desalination wastewater treatment",
+                                "fr": "Traitement des eaux usées de dessalement",
+                                "es": "Tratamiento de aguas residuales de desalinización"
+                            }
+                        },
+                        {
+                            "value": 20,
+                            "label": {
+                                "en": "Wetland construction or rehabilitation",
+                                "fr": "Construction ou réhabilitation de zones humides",
+                                "es": "Construcción o rehabilitación de humedales"
+                            }
+                        },
+                        {
+                            "value": 21,
+                            "label": {
+                                "en": "Amelioration of contaminated soils and sealed soils",
+                                "fr": "Amélioration des sols contaminés et imperméabilisés",
+                                "es": "Mejora de suelos contaminados y sellados"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "value": 1004,
+                    "label": {
+                        "en": "Agricultural/forestry/fishery/aquacultural management",
+                        "fr": "Gestion agricole/forestière/halieutique/aquacole",
+                        "es": "Gestión agrícola/forestal/pesquera/acuícola"
+                    },
+                    "items": [
+                        {
+                            "value": 22,
+                            "label": {
+                                "en": "Conservation agriculture",
+                                "fr": "Agriculture de conservation",
+                                "es": "Agricultura de conservación"
+                            }
+                        },
+                        {
+                            "value": 23,
+                            "label": {
+                                "en": "Integrated crop, livestock and forestry systems",
+                                "fr": "Systèmes intégrés cultures-élevage-foresterie",
+                                "es": "Sistemas integrados de cultivos, ganadería y silvicultura"
+                            }
+                        },
+                        {
+                            "value": 24,
+                            "label": {
+                                "en": "Agroforestry",
+                                "fr": "Agroforesterie",
+                                "es": "Agroforestería"
+                            }
+                        },
+                        {
+                            "value": 25,
+                            "label": {
+                                "en": "Grazing pressure management (physical/social fencing)",
+                                "fr": "Gestion de la pression de pâturage (clôtures physiques/sociales)",
+                                "es": "Gestión de la presión del pastoreo (cercados físicos/sociales)"
+                            }
+                        },
+                        {
+                            "value": 26,
+                            "label": {
+                                "en": "Pasture and forage crop improvement",
+                                "fr": "Amélioration des pâturages et des cultures fourragères",
+                                "es": "Mejora de pastizales y cultivos forrajeros"
+                            }
+                        },
+                        {
+                            "value": 27,
+                            "label": {
+                                "en": "Silvopastoral management",
+                                "fr": "Gestion sylvopastorale",
+                                "es": "Manejo silvopastoril"
+                            }
+                        },
+                        {
+                            "value": 28,
+                            "label": {
+                                "en": "Weed and pest management",
+                                "fr": "Gestion des mauvaises herbes et des ravageurs",
+                                "es": "Gestión de malezas y plagas"
+                            }
+                        },
+                        {
+                            "value": 29,
+                            "label": {
+                                "en": "Increase diversity and vegetative cover in production systems",
+                                "fr": "Augmenter la diversité et la couverture végétale dans les systèmes de production",
+                                "es": "Aumentar la diversidad y la cobertura vegetal en los sistemas de producción"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Enabling",
+                "fr": "Mise en œuvre favorable",
+                "es": "Facilitador"
+            },
+            "items": [
+                {
+                    "value": 1005,
+                    "label": {
+                        "en": "Legal and rights-based instruments",
+                        "fr": "Instruments juridiques et fondés sur les droits",
+                        "es": "Instrumentos legales y basados en derechos"
+                    },
+                    "items": [
+                        {
+                            "value": 30,
+                            "label": {
+                                "en": "Land-use planning (national, regional, local)",
+                                "fr": "Aménagement du territoire (national, régional, local)",
+                                "es": "Ordenamiento territorial (nacional, regional, local)"
+                            }
+                        },
+                        {
+                            "value": 31,
+                            "label": {
+                                "en": "Social and environmental impact assessments",
+                                "fr": "Évaluations d'impact social et environnemental",
+                                "es": "Evaluaciones de impacto social y ambiental"
+                            }
+                        },
+                        {
+                            "value": 32,
+                            "label": {
+                                "en": "Incentives for sustainable land-use practices",
+                                "fr": "Incitations aux pratiques d'utilisation durable des terres",
+                                "es": "Incentivos para prácticas sostenibles de uso de la tierra"
+                            }
+                        },
+                        {
+                            "value": 33,
+                            "label": {
+                                "en": "Establishment of protected areas",
+                                "fr": "Création d'aires protégées",
+                                "es": "Establecimiento de áreas protegidas"
+                            }
+                        },
+                        {
+                            "value": 34,
+                            "label": {
+                                "en": "Private and community-based conservation",
+                                "fr": "Conservation privée et communautaire",
+                                "es": "Conservación privada y comunitaria"
+                            }
+                        },
+                        {
+                            "value": 35,
+                            "label": {
+                                "en": "Improvements to land tenure security",
+                                "fr": "Améliorations de la sécurité foncière",
+                                "es": "Mejoras en la seguridad de la tenencia de la tierra"
+                            }
+                        },
+                        {
+                            "value": 36,
+                            "label": {
+                                "en": "Clarification of natural resource-use rights",
+                                "fr": "Clarification des droits d'utilisation des ressources naturelles",
+                                "es": "Clarificación de los derechos de uso de recursos naturales"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "value": 1006,
+                    "label": {
+                        "en": "Social and cultural instruments",
+                        "fr": "Instruments sociaux et culturels",
+                        "es": "Instrumentos sociales y culturales"
+                    },
+                    "items": [
+                        {
+                            "value": 37,
+                            "label": {
+                                "en": "Promotion of indigenous and local knowledge-based traditional use",
+                                "fr": "Promotion de l'utilisation traditionnelle fondée sur les connaissances autochtones et locales",
+                                "es": "Promoción del uso tradicional basado en el conocimiento indígena y local"
+                            }
+                        },
+                        {
+                            "value": 38,
+                            "label": {
+                                "en": "Participatory natural resource management and governance",
+                                "fr": "Gestion et gouvernance participatives des ressources naturelles",
+                                "es": "Gestión y gobernanza participativa de los recursos naturales"
+                            }
+                        },
+                        {
+                            "value": 39,
+                            "label": {
+                                "en": "Eco-certification",
+                                "fr": "Éco-certification",
+                                "es": "Eco-certificación"
+                            }
+                        },
+                        {
+                            "value": 40,
+                            "label": {
+                                "en": "Promotion of corporate social responsibility",
+                                "fr": "Promotion de la responsabilité sociale des entreprises",
+                                "es": "Promoción de la responsabilidad social corporativa"
+                            }
+                        },
+                        {
+                            "value": 41,
+                            "label": {
+                                "en": "Community consultations",
+                                "fr": "Consultations communautaires",
+                                "es": "Consultas comunitarias"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "value": 1007,
+                    "label": {
+                        "en": "Capacity-building, skills and knowledge development",
+                        "fr": "Renforcement des capacités, développement des compétences et des connaissances",
+                        "es": "Fortalecimiento de capacidades, habilidades y desarrollo del conocimiento"
+                    },
+                    "items": [
+                        {
+                            "value": 42,
+                            "label": {
+                                "en": "On-site trainings",
+                                "fr": "Formations sur site",
+                                "es": "Capacitaciones en el lugar"
+                            }
+                        },
+                        {
+                            "value": 43,
+                            "label": {
+                                "en": "Online trainings",
+                                "fr": "Formations en ligne",
+                                "es": "Capacitaciones en línea"
+                            }
+                        },
+                        {
+                            "value": 44,
+                            "label": {
+                                "en": "Development of guidance and course materials",
+                                "fr": "Élaboration de directives et de supports de cours",
+                                "es": "Desarrollo de guías y materiales de cursos"
+                            }
+                        },
+                        {
+                            "value": 45,
+                            "label": {
+                                "en": "Training of trainers",
+                                "fr": "Formation de formateurs",
+                                "es": "Capacitación de formadores"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "value": 1008,
+                    "label": {
+                        "en": "Integrated landscape planning",
+                        "fr": "Planification intégrée du paysage",
+                        "es": "Planificación integrada del paisaje"
+                    },
+                    "items": [
+                        {
+                            "value": 46,
+                            "label": {
+                                "en": "Land/water degradation assessment and mapping",
+                                "fr": "Évaluation et cartographie de la dégradation des terres/eaux",
+                                "es": "Evaluación y mapeo de la degradación de suelos/aguas"
+                            }
+                        },
+                        {
+                            "value": 47,
+                            "label": {
+                                "en": "Integrated planning and management",
+                                "fr": "Planification et gestion intégrées",
+                                "es": "Planificación y gestión integradas"
+                            }
+                        },
+                        {
+                            "value": 48,
+                            "label": {
+                                "en": "Zoning",
+                                "fr": "Zonage",
+                                "es": "Zonificación"
+                            }
+                        },
+                        {
+                            "value": 49,
+                            "label": {
+                                "en": "Assessment of climate change vulnerability and adaptation needs",
+                                "fr": "Évaluation de la vulnérabilité au changement climatique et des besoins d'adaptation",
+                                "es": "Evaluación de la vulnerabilidad al cambio climático y las necesidades de adaptación"
+                            }
+                        },
+                        {
+                            "value": 50,
+                            "label": {
+                                "en": "Assessment of natural areas with high carbon stores (e.g., peatlands, old-growth forests, mangroves)",
+                                "fr": "Évaluation des zones naturelles à fortes réserves de carbone (ex. tourbières, forêts anciennes, mangroves)",
+                                "es": "Evaluación de áreas naturales con grandes reservas de carbono (p. ej., turberas, bosques maduros, manglares)"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "indicators": [
+        {
+            "label": {
+                "en": "Goal 1. End poverty in all its forms everywhere",
+                "fr": "Objectif 1. Éliminer la pauvreté sous toutes ses formes partout",
+                "es": "Objetivo 1. Poner fin a la pobreza en todas sus formas en todo el mundo"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 1.1: By 2030, eradicate extreme poverty for all people everywhere, currently measured as people living on less than $1.25 a day",
+                        "fr": "Cible 1.1 : D'ici à 2030, éradiquer l'extrême pauvreté pour tous, actuellement mesurée par le nombre de personnes vivant avec moins de 1,25 dollar par jour",
+                        "es": "Meta 1.1: Para 2030, erradicar la pobreza extrema en todas partes, medida actualmente como las personas que viven con menos de 1,25 dólares diarios"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_1.1.1",
+                            "label": {
+                                "en": "SDG_I_1.1.1: Proportion of the population living below the international poverty line by sex age employment status and geographic location urban rural [%]",
+                                "fr": "SDG_I_1.1.1 : Proportion de la population vivant en dessous du seuil de pauvreté international par sexe, âge, statut d'emploi et emplacement géographique (urbain/rural) [%]",
+                                "es": "SDG_I_1.1.1: Proporción de la población que vive por debajo de la línea internacional de pobreza según sexo, edad, situación laboral y ubicación geográfica (urbana/rural) [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 1.2: By 2030, reduce at least by half the proportion of men, women and children of all ages living in poverty in all its dimensions according to national definitions",
+                        "fr": "Cible 1.2 : D'ici à 2030, réduire de moitié au moins la proportion d'hommes, de femmes et d'enfants de tous âges vivant dans la pauvreté dans toutes ses dimensions selon les définitions nationales",
+                        "es": "Meta 1.2: Para 2030, reducir al menos a la mitad la proporción de hombres, mujeres y niños de todas las edades que viven en la pobreza en todas sus dimensiones según las definiciones nacionales"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_1.2.1",
+                            "label": {
+                                "en": "SDG_I_1.2.1: Proportion of population living below the national poverty line by sex and age [%]",
+                                "fr": "SDG_I_1.2.1 : Proportion de la population vivant au-dessous du seuil de pauvreté national par sexe et âge [%]",
+                                "es": "SDG_I_1.2.1: Proporción de la población que vive por debajo de la línea nacional de pobreza según sexo y edad [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_1.2.2",
+                            "label": {
+                                "en": "SDG_I_1.2.2: Proportion of men women and children of all ages living in poverty in all its dimensions according to national definitions [%]",
+                                "fr": "SDG_I_1.2.2 : Proportion d'hommes, de femmes et d'enfants de tous âges vivant dans la pauvreté sous toutes ses dimensions selon les définitions nationales [%]",
+                                "es": "SDG_I_1.2.2: Proporción de hombres, mujeres y niños de todas las edades que viven en la pobreza en todas sus dimensiones según las definiciones nacionales [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 1.4: By 2030, ensure that all men and women, in particular the poor and the vulnerable, have equal rights to economic resources, as well as access to basic services, ownership and control over land and other forms of property, inheritance, natural resources, appropriate new technology and financial services, including microfinance",
+                        "fr": "Cible 1.4 : D'ici à 2030, garantir que tous les hommes et toutes les femmes, en particulier les pauvres et les vulnérables, jouissent des mêmes droits économiques ainsi que de l'accès aux services de base, à la propriété foncière, aux autres formes de propriété, à l'héritage, aux ressources naturelles, aux nouvelles technologies appropriées et aux services financiers, y compris la microfinance",
+                        "es": "Meta 1.4: Para 2030, garantizar que todos los hombres y mujeres, en particular los pobres y vulnerables, tengan los mismos derechos a los recursos económicos, así como acceso a servicios básicos, propiedad y control de la tierra y otras formas de propiedad, herencia, recursos naturales, tecnología adecuada y servicios financieros, incluida la microfinanza"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_1.4.1",
+                            "label": {
+                                "en": "SDG_I_1.4.1: Proportion of population living in households with access to basic services [%]",
+                                "fr": "SDG_I_1.4.1 : Proportion de la population vivant dans des ménages ayant accès aux services de base [%]",
+                                "es": "SDG_I_1.4.1: Proporción de la población que vive en hogares con acceso a servicios básicos [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_1.4.2",
+                            "label": {
+                                "en": "SDG_I_1.4.2: Proportion of total adult population with secure tenure rights to land a with legally recognized documentation and b who perceive their rights to land as secure by sex and type of tenure [%]",
+                                "fr": "SDG_I_1.4.2 : Proportion de la population adulte totale bénéficiant de droits fonciers sécurisés, a) avec une documentation légalement reconnue, et b) percevant leurs droits fonciers comme sûrs, par sexe et type de tenure [%]",
+                                "es": "SDG_I_1.4.2: Proporción de la población adulta total con derechos de tenencia de la tierra seguros, a) con documentación legalmente reconocida, y b) que percibe sus derechos a la tierra como seguros, por sexo y tipo de tenencia [%]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 2. End hunger, achieve food security and improved nutrition and promote sustainable agriculture",
+                "fr": "Objectif 2. Éliminer la faim, assurer la sécurité alimentaire, améliorer la nutrition et promouvoir une agriculture durable",
+                "es": "Objetivo 2. Poner fin al hambre, lograr la seguridad alimentaria y la mejora de la nutrición y promover la agricultura sostenible"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 2.1: By 2030, end hunger and ensure access by all people, in particular the poor and people in vulnerable situations, including infants, to safe, nutritious and sufficient food all year round",
+                        "fr": "Cible 2.1 : D'ici 2030, éliminer la faim et assurer l'accès de tous, en particulier des pauvres et des personnes vulnérables, y compris les nourrissons, à une alimentation sûre, nutritive et suffisante toute l'année",
+                        "es": "Meta 2.1: Para 2030, poner fin al hambre y asegurar el acceso de todas las personas, en particular los pobres y las personas en situaciones vulnerables, incluidos los lactantes, a alimentos inocuos, nutritivos y suficientes durante todo el año"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_2.1.1",
+                            "label": {
+                                "en": "SDG_I_2.1.1: Prevalence of undernourishment [%,nb]",
+                                "fr": "SDG_I_2.1.1 : Prévalence de la sous-alimentation [%,nb]",
+                                "es": "SDG_I_2.1.1: Prevalencia de la subalimentación [%,nb]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.1.2",
+                            "label": {
+                                "en": "SDG_I_2.1.2: Prevalence of moderate or severe food insecurity in the population based on the Food Insecurity Experience Scale FIES [%,nb]",
+                                "fr": "SDG_I_2.1.2 : Prévalence de l'insécurité alimentaire modérée ou grave dans la population selon l'Échelle d'Expérience de l'Insécurité Alimentaire (FIES) [%,nb]",
+                                "es": "SDG_I_2.1.2: Prevalencia de inseguridad alimentaria moderada o grave en la población según la Escala de Experiencia de Inseguridad Alimentaria (FIES) [%,nb]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 2.2: By 2030, end all forms of malnutrition, including achieving, by 2025, the internationally agreed targets on stunting and wasting in children under 5 years of age, and address the nutritional needs of adolescent girls, pregnant and lactating women and older persons",
+                        "fr": "Cible 2.2 : D'ici 2030, mettre fin à toutes les formes de malnutrition, notamment en atteignant, d'ici 2025, les cibles internationales convenues sur le retard de croissance et l'émaciation chez les enfants de moins de 5 ans, et en répondant aux besoins nutritionnels des adolescentes, des femmes enceintes et allaitantes et des personnes âgées",
+                        "es": "Meta 2.2: Para 2030, poner fin a todas las formas de malnutrición, incluyendo el logro, para 2025, de las metas internacionalmente acordadas sobre el retraso del crecimiento y la emaciación en los niños menores de 5 años, y abordar las necesidades nutricionales de las adolescentes, las mujeres embarazadas y lactantes y las personas de edad"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_2.2.1",
+                            "label": {
+                                "en": "SDG_I_2.2.1: Prevalence of stunting height for age <-2 standard deviation from the median of the World Health Organization WHO Child Growth Standards among children under 5 years of age [nb,%]",
+                                "fr": "SDG_I_2.2.1 : Prévalence du retard de croissance (taille pour l'âge < -2 écart-type par rapport à la médiane des Normes de Croissance de l'Enfant de l'OMS) chez les enfants de moins de 5 ans [nb,%]",
+                                "es": "SDG_I_2.2.1: Prevalencia del retraso del crecimiento (altura para la edad <-2 desviación estándar de la mediana de las Normas de Crecimiento Infantil de la OMS) en niños menores de 5 años [nb,%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 2.3: By 2030, double the agricultural productivity and incomes of small-scale food producers, ...",
+                        "fr": "Cible 2.3 : D'ici 2030, doubler la productivité agricole et les revenus des petits producteurs alimentaires, ...",
+                        "es": "Meta 2.3: Para 2030, duplicar la productividad agrícola y los ingresos de los pequeños productores de alimentos, ..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_2.3.1",
+                            "label": {
+                                "en": "SDG_I_2.3.1: Volume of production per labour unit by classes of farming pastoral forestry enterprise size [USD]",
+                                "fr": "SDG_I_2.3.1 : Volume de production par unité de travail par classes de taille d'exploitation agricole, pastorale, forestière [USD]",
+                                "es": "SDG_I_2.3.1: Volumen de producción por unidad de trabajo por clases de tamaño de empresa agrícola, pastoral, forestal [USD]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.3.2",
+                            "label": {
+                                "en": "SDG_I_2.3.2: Average income of small-scale food producers by sex and indigenous status [USD]",
+                                "fr": "SDG_I_2.3.2 : Revenu moyen des petits producteurs alimentaires par sexe et statut autochtone [USD]",
+                                "es": "SDG_I_2.3.2: Ingreso promedio de los pequeños productores de alimentos por sexo y condición indígena [USD]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 2.4: By 2030, ensure sustainable food production systems and implement resilient agricultural practices ...",
+                        "fr": "Cible 2.4 : D'ici 2030, assurer la durabilité des systèmes de production alimentaire et mettre en œuvre des pratiques agricoles résilientes ...",
+                        "es": "Meta 2.4: Para 2030, asegurar sistemas de producción de alimentos sostenibles e implementar prácticas agrícolas resilientes ..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_2.4.1",
+                            "label": {
+                                "en": "SDG_I_2.4.1: Proportion of agricultural area under productive and sustainable agriculture [%]",
+                                "fr": "SDG_I_2.4.1 : Proportion de la superficie agricole soumise à une agriculture productive et durable [%]",
+                                "es": "SDG_I_2.4.1: Proporción de la superficie agrícola bajo agricultura productiva y sostenible [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-1",
+                            "label": {
+                                "en": "SDG_I_2.4.1-1: Farm output value per hectare [ha]",
+                                "fr": "SDG_I_2.4.1-1 : Valeur de la production agricole par hectare [ha]",
+                                "es": "SDG_I_2.4.1-1: Valor de la producción agrícola por hectárea [ha]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-2",
+                            "label": {
+                                "en": "SDG_I_2.4.1-2: Net farm income [USD]",
+                                "fr": "SDG_I_2.4.1-2 : Revenu agricole net [USD]",
+                                "es": "SDG_I_2.4.1-2: Ingreso neto agrícola [USD]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-3",
+                            "label": {
+                                "en": "SDG_I_2.4.1-3: Risk mitigation mechanisms [unknown]",
+                                "fr": "SDG_I_2.4.1-3 : Mécanismes d'atténuation des risques [inconnu]",
+                                "es": "SDG_I_2.4.1-3: Mecanismos de mitigación de riesgos [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-4",
+                            "label": {
+                                "en": "SDG_I_2.4.1-4: Prevalence of soil degradation [unknown]",
+                                "fr": "SDG_I_2.4.1-4 : Prévalence de la dégradation des sols [inconnu]",
+                                "es": "SDG_I_2.4.1-4: Prevalencia de la degradación del suelo [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-5",
+                            "label": {
+                                "en": "SDG_I_2.4.1-5: Variation in water availability [unknown]",
+                                "fr": "SDG_I_2.4.1-5 : Variation de la disponibilité de l'eau [inconnu]",
+                                "es": "SDG_I_2.4.1-5: Variación en la disponibilidad de agua [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-6",
+                            "label": {
+                                "en": "SDG_I_2.4.1-6: Management of fertilizers [unknown]",
+                                "fr": "SDG_I_2.4.1-6 : Gestion des engrais [inconnu]",
+                                "es": "SDG_I_2.4.1-6: Gestión de fertilizantes [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-7",
+                            "label": {
+                                "en": "SDG_I_2.4.1-7: Management of pesticides [unknown]",
+                                "fr": "SDG_I_2.4.1-7 : Gestion des pesticides [inconnu]",
+                                "es": "SDG_I_2.4.1-7: Gestión de pesticidas [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-8",
+                            "label": {
+                                "en": "SDG_I_2.4.1-8: Use of agro-biodiversity-supportive practices [unknown]",
+                                "fr": "SDG_I_2.4.1-8 : Utilisation de pratiques favorables à l'agrobiodiversité [inconnu]",
+                                "es": "SDG_I_2.4.1-8: Uso de prácticas que favorecen la agrobiodiversidad [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-9",
+                            "label": {
+                                "en": "SDG_I_2.4.1-9: Wage rate in agriculture [unknown]",
+                                "fr": "SDG_I_2.4.1-9 : Taux de salaire en agriculture [inconnu]",
+                                "es": "SDG_I_2.4.1-9: Tasa salarial en la agricultura [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-10",
+                            "label": {
+                                "en": "SDG_I_2.4.1-10: Food Insecurity Experience Scale FIES [unknown]",
+                                "fr": "SDG_I_2.4.1-10 : Échelle d'Expérience de l'Insécurité Alimentaire (FIES) [inconnu]",
+                                "es": "SDG_I_2.4.1-10: Escala de Experiencia de Inseguridad Alimentaria (FIES) [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-11",
+                            "label": {
+                                "en": "SDG_I_2.4.1-11: Secure tenure rights to land [unknown]",
+                                "fr": "SDG_I_2.4.1-11 : Droits fonciers sécurisés [inconnu]",
+                                "es": "SDG_I_2.4.1-11: Derechos de tenencia de la tierra seguros [desconocido]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 2.5: By 2020, maintain the genetic diversity of seeds, cultivated plants and farmed and domesticated animals and their related wild species...",
+                        "fr": "Cible 2.5 : D'ici 2020, maintenir la diversité génétique des semences, des plantes cultivées et des animaux élevés et domestiqués ainsi que des espèces sauvages apparentées...",
+                        "es": "Meta 2.5: Para 2020, mantener la diversidad genética de las semillas, las plantas cultivadas y los animales criados y domesticados y sus especies silvestres afines..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_2.5.1",
+                            "label": {
+                                "en": "SDG_I_2.5.1: Number of plant and animal genetic resources for food and agriculture secured in either medium- or long-term conservation facilities [nb]",
+                                "fr": "SDG_I_2.5.1 : Nombre de ressources génétiques végétales et animales pour l'alimentation et l'agriculture conservées dans des installations de conservation à moyen ou long terme [nb]",
+                                "es": "SDG_I_2.5.1: Número de recursos genéticos de plantas y animales para la alimentación y la agricultura asegurados en instalaciones de conservación a mediano o largo plazo [nb]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 2.a: Increase investment, including through enhanced international cooperation, in rural infrastructure...",
+                        "fr": "Cible 2.a : Accroître les investissements, notamment grâce à une coopération internationale renforcée, dans les infrastructures rurales...",
+                        "es": "Meta 2.a: Aumentar la inversión, incluso a través de una mayor cooperación internacional, en la infraestructura rural..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_2.a.2",
+                            "label": {
+                                "en": "SDG_I_2.a.2: Total official flows official development assistance plus other official flows to the agriculture sector [millions USD (2018)]",
+                                "fr": "SDG_I_2.a.2 : Flux officiels totaux (aide publique au développement + autres flux officiels) vers le secteur agricole [millions USD (2018)]",
+                                "es": "SDG_I_2.a.2: Flujos oficiales totales (asistencia oficial para el desarrollo más otros flujos oficiales) hacia el sector agrícola [millones USD (2018)]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 3. Ensure healthy lives and promote well-being for all at all ages",
+                "fr": "Objectif 3. Permettre à tous de vivre en bonne santé et promouvoir le bien-être de tous à tout âge",
+                "es": "Objetivo 3. Garantizar una vida sana y promover el bienestar para todos en todas las edades"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 3.2: By 2030, end preventable deaths of newborns and children under 5 years of age...",
+                        "fr": "Cible 3.2 : D'ici 2030, mettre fin aux décès évitables de nouveau-nés et d'enfants de moins de 5 ans...",
+                        "es": "Meta 3.2: Para 2030, poner fin a las muertes evitables de recién nacidos y niños menores de 5 años..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_3.2.1",
+                            "label": {
+                                "en": "SDG_I_3.2.1: Under‑5 mortality rate [%]",
+                                "fr": "SDG_I_3.2.1 : Taux de mortalité des enfants de moins de 5 ans [%]",
+                                "es": "SDG_I_3.2.1: Tasa de mortalidad de menores de 5 años [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 3.3: By 2030, end the epidemics of AIDS, tuberculosis, malaria and neglected tropical diseases...",
+                        "fr": "Cible 3.3 : D'ici 2030, mettre fin aux épidémies de sida, de tuberculose, de paludisme et de maladies tropicales négligées...",
+                        "es": "Meta 3.3: Para 2030, poner fin a las epidemias de sida, tuberculosis, paludismo y enfermedades tropicales desatendidas..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_3.3.3",
+                            "label": {
+                                "en": "SDG_I_3.3.3: Malaria incidence per 1000 population [%]",
+                                "fr": "SDG_I_3.3.3 : Incidence du paludisme pour 1000 habitants [%]",
+                                "es": "SDG_I_3.3.3: Incidencia de la malaria por cada 1000 habitantes [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_3.3.5",
+                            "label": {
+                                "en": "SDG_I_3.3.5: Number of people requiring interventions against neglected tropical diseases [nb]",
+                                "fr": "SDG_I_3.3.5 : Nombre de personnes nécessitant des interventions contre les maladies tropicales négligées [nb]",
+                                "es": "SDG_I_3.3.5: Número de personas que requieren intervenciones contra las enfermedades tropicales desatendidas [nb]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 3.9: By 2030, substantially reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination",
+                        "fr": "Cible 3.9 : D'ici 2030, réduire sensiblement le nombre de décès et de maladies dus à des produits chimiques dangereux, à la pollution et à la contamination de l'air, de l'eau et du sol",
+                        "es": "Meta 3.9: Para 2030, reducir sustancialmente el número de muertes y enfermedades ocasionadas por productos químicos peligrosos y la contaminación del aire, el agua y el suelo"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_3.9.1",
+                            "label": {
+                                "en": "SDG_I_3.9.1: Mortality rate attributed to household and ambient air pollution [nb]",
+                                "fr": "SDG_I_3.9.1 : Taux de mortalité attribué à la pollution de l'air domestique et ambiant [nb]",
+                                "es": "SDG_I_3.9.1: Tasa de mortalidad atribuida a la contaminación del aire doméstico y ambiental [nb]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_3.9.2",
+                            "label": {
+                                "en": "SDG_I_3.9.2: Mortality rate attributed to unsafe water unsafe sanitation and lack of hygiene exposure to unsafe Water Sanitation and Hygiene for All WASH services [nb]",
+                                "fr": "SDG_I_3.9.2 : Taux de mortalité attribué à l'eau insalubre, à l'assainissement inadéquat et au manque d'hygiène, exposition à des services d'Eau, Assainissement et Hygiène (WASH) non sécurisés [nb]",
+                                "es": "SDG_I_3.9.2: Tasa de mortalidad atribuida al agua insegura, saneamiento deficiente y falta de higiene, exposición a servicios de Agua, Saneamiento e Higiene (WASH) no seguros [nb]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 4. Ensure inclusive and equitable quality education and promote lifelong learning opportunities for all",
+                "fr": "Objectif 4. Assurer une éducation inclusive et équitable de qualité et promouvoir des opportunités d'apprentissage tout au long de la vie pour tous",
+                "es": "Objetivo 4. Garantizar una educación inclusiva, equitativa y de calidad y promover oportunidades de aprendizaje permanente para todos"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 4.1: By 2030, ensure that all girls and boys complete free, equitable and quality primary and secondary education...",
+                        "fr": "Cible 4.1 : D'ici 2030, veiller à ce que toutes les filles et tous les garçons suivent un enseignement primaire et secondaire gratuit, équitable et de qualité...",
+                        "es": "Meta 4.1: Para 2030, asegurar que todas las niñas y niños completen la enseñanza primaria y secundaria gratuita, equitativa y de calidad..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_4.1.1",
+                            "label": {
+                                "en": "SDG_I_4.1.1: Proportion of children and young people a in grades 2 3 b at the end of primary and c at the end of lower secondary achieving at least a minimum proficiency level in i reading and ii mathematics by sex [%]",
+                                "fr": "SDG_I_4.1.1 : Proportion d'enfants et de jeunes a) en 2e/3e année, b) à la fin de l'enseignement primaire et c) à la fin du premier cycle du secondaire atteignant au moins un niveau de compétence minimal en i) lecture et ii) mathématiques, par sexe [%]",
+                                "es": "SDG_I_4.1.1: Proporción de niños y jóvenes a) en los grados 2/3, b) al final de la primaria y c) al final de la educación secundaria inferior que alcanzan al menos un nivel mínimo de competencia en i) lectura y ii) matemáticas, por sexo [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 4.4: By 2030, substantially increase the number of youth and adults who have relevant skills...",
+                        "fr": "Cible 4.4 : D'ici 2030, augmenter considérablement le nombre de jeunes et d'adultes possédant les compétences nécessaires...",
+                        "es": "Meta 4.4: Para 2030, aumentar considerablemente el número de jóvenes y adultos que tienen las competencias relevantes..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_4.4.1",
+                            "label": {
+                                "en": "SDG_I_4.4.1: Proportion of youth and adults with information and communications technology ICT skills by type of skill [%]",
+                                "fr": "SDG_I_4.4.1 : Proportion de jeunes et d'adultes possédant des compétences en technologies de l'information et de la communication (TIC) par type de compétence [%]",
+                                "es": "SDG_I_4.4.1: Proporción de jóvenes y adultos con competencias en tecnologías de la información y la comunicación (TIC) por tipo de competencia [%]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 5. Achieve gender equality and empower all women and girls",
+                "fr": "Objectif 5. Parvenir à l'égalité des sexes et autonomiser toutes les femmes et les filles",
+                "es": "Objetivo 5. Lograr la igualdad de género y empoderar a todas las mujeres y las niñas"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 5.1: End all forms of discrimination against all women and girls everywhere",
+                        "fr": "Cible 5.1 : Mettre fin à toutes les formes de discrimination à l'égard de toutes les femmes et filles partout",
+                        "es": "Meta 5.1: Poner fin a todas las formas de discriminación contra todas las mujeres y niñas en todas partes"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_5.1.1",
+                            "label": {
+                                "en": "SDG_I_5.1.1: Whether or not legal frameworks are in place to promote enforce and monitor equality and non‑discrimination on the basis of sex []",
+                                "fr": "SDG_I_5.1.1 : Existence ou non de cadres juridiques pour promouvoir, faire respecter et surveiller l'égalité et la non-discrimination fondée sur le sexe []",
+                                "es": "SDG_I_5.1.1: Existencia o no de marcos jurídicos para promover, hacer cumplir y supervisar la igualdad y la no discriminación por razón de sexo []"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 5.2: Eliminate all forms of violence against all women and girls...",
+                        "fr": "Cible 5.2 : Éliminer toutes les formes de violence à l'égard de toutes les femmes et filles...",
+                        "es": "Meta 5.2: Eliminar todas las formas de violencia contra todas las mujeres y las niñas..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_5.2.1",
+                            "label": {
+                                "en": "SDG_I_5.2.1: Proportion of ever-partnered women and girls aged 15 years and older subjected to physical sexual or psychological violence by a current or former intimate partner ...",
+                                "fr": "SDG_I_5.2.1 : Proportion de femmes et filles âgées de 15 ans et plus ayant eu un partenaire, soumises à des violences physiques, sexuelles ou psychologiques de la part d'un partenaire intime actuel ou ancien ...",
+                                "es": "SDG_I_5.2.1: Proporción de mujeres y niñas de 15 años o más que alguna vez tuvieron pareja y que han sufrido violencia física, sexual o psicológica por parte de una pareja íntima actual o anterior ..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 5.6: Ensure universal access to sexual and reproductive health and reproductive rights...",
+                        "fr": "Cible 5.6 : Assurer l'accès universel aux soins de santé sexuelle et reproductive et aux droits reproductifs...",
+                        "es": "Meta 5.6: Garantizar el acceso universal a la salud sexual y reproductiva y los derechos reproductivos..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_5.6.1",
+                            "label": {
+                                "en": "SDG_I_5.6.1: Proportion of women aged 15–49 years who make their own informed decisions regarding sexual relations contraceptive use and reproductive health care []",
+                                "fr": "SDG_I_5.6.1 : Proportion de femmes âgées de 15 à 49 ans qui prennent leurs propres décisions éclairées concernant les relations sexuelles, l'utilisation de contraceptifs et les soins de santé reproductive []",
+                                "es": "SDG_I_5.6.1: Proporción de mujeres de 15 a 49 años que toman sus propias decisiones informadas sobre las relaciones sexuales, el uso de anticonceptivos y la atención de la salud reproductiva []"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 5.a: Undertake reforms to give women equal rights to economic resources...",
+                        "fr": "Cible 5.a : Entreprendre des réformes pour donner aux femmes des droits égaux aux ressources économiques...",
+                        "es": "Meta 5.a: Emprender reformas para otorgar a las mujeres los mismos derechos a los recursos económicos..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_5.a.1",
+                            "label": {
+                                "en": "SDG_I_5.a.1: a Proportion of total agricultural population with ownership or secure rights over agricultural land by sex and b share of women among owners or rights-bearers of agricultural land by type of tenure [%]",
+                                "fr": "SDG_I_5.a.1 : a) Proportion de la population agricole totale ayant la propriété ou des droits sécurisés sur la terre agricole par sexe et b) part des femmes parmi les propriétaires ou titulaires de droits sur la terre agricole par type de tenure [%]",
+                                "es": "SDG_I_5.a.1: a) Proporción de la población agrícola total con propiedad o derechos seguros sobre la tierra agrícola por sexo y b) porcentaje de mujeres entre los propietarios o titulares de derechos sobre la tierra agrícola según el tipo de tenencia [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_5.a.2",
+                            "label": {
+                                "en": "SDG_I_5.a.2: Proportion of countries where the legal framework including customary law guarantees women’s equal rights to land ownership and or control [nb]",
+                                "fr": "SDG_I_5.a.2 : Proportion de pays où le cadre juridique, y compris la coutume, garantit aux femmes des droits égaux à la propriété et/ou au contrôle de la terre [nb]",
+                                "es": "SDG_I_5.a.2: Proporción de países donde el marco jurídico, incluida la ley consuetudinaria, garantiza la igualdad de derechos de las mujeres a la propiedad y/o control de la tierra [nb]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 6. Ensure availability and sustainable management of water and sanitation for all",
+                "fr": "Objectif 6. Garantir l'accès de tous à l'eau et à l'assainissement et assurer une gestion durable de ces ressources",
+                "es": "Objetivo 6. Garantizar la disponibilidad y la gestión sostenible del agua y el saneamiento para todos"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 6.1: By 2030, achieve universal and equitable access to safe and affordable drinking water for all",
+                        "fr": "Cible 6.1 : D'ici 2030, assurer l'accès universel et équitable à l'eau potable, sûre et abordable pour tous",
+                        "es": "Meta 6.1: Para 2030, lograr el acceso universal y equitativo a agua potable segura y asequible para todos"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_6.1.1",
+                            "label": {
+                                "en": "SDG_I_6.1.1: Proportion of population using safely managed drinking water services [%]",
+                                "fr": "SDG_I_6.1.1 : Proportion de la population utilisant des services d'eau potable gérés en toute sécurité [%]",
+                                "es": "SDG_I_6.1.1: Proporción de la población que utiliza servicios de agua potable gestionados de forma segura [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 6.2: By 2030, achieve access to adequate and equitable sanitation and hygiene for all ...",
+                        "fr": "Cible 6.2 : D'ici 2030, assurer l'accès de tous à des services d'assainissement et d'hygiène adéquats et équitables...",
+                        "es": "Meta 6.2: Para 2030, lograr el acceso a servicios de saneamiento e higiene adecuados y equitativos para todos..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_6.2.1",
+                            "label": {
+                                "en": "SDG_I_6.2.1: Spatial extent of water-related ecosystems [ha]",
+                                "fr": "SDG_I_6.2.1 : Étendue spatiale des écosystèmes liés à l'eau [ha]",
+                                "es": "SDG_I_6.2.1: Extensión espacial de los ecosistemas relacionados con el agua [ha]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 6.3: By 2030, improve water quality by reducing pollution, eliminating dumping...",
+                        "fr": "Cible 6.3 : D'ici 2030, améliorer la qualité de l'eau en réduisant la pollution, en éliminant les déversements...",
+                        "es": "Meta 6.3: Para 2030, mejorar la calidad del agua reduciendo la contaminación, eliminando los vertidos..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_6.3.2",
+                            "label": {
+                                "en": "SDG_I_6.3.2: Quantity of water discharge in rivers and estuaries [%]",
+                                "fr": "SDG_I_6.3.2 : Quantité de rejet d'eau dans les rivières et les estuaires [%]",
+                                "es": "SDG_I_6.3.2: Cantidad de vertido de agua en ríos y estuarios [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 6.4: By 2030, substantially increase water-use efficiency across all sectors...",
+                        "fr": "Cible 6.4 : D'ici 2030, augmenter considérablement l'efficacité de l'utilisation de l'eau dans tous les secteurs...",
+                        "es": "Meta 6.4: Para 2030, aumentar sustancialmente la eficiencia en el uso del agua en todos los sectores..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_6.4.2",
+                            "label": {
+                                "en": "SDG_I_6.4.2: Proportion of population using a safely managed sanitation services and b a hand-washing facility with soap and water [%]",
+                                "fr": "SDG_I_6.4.2 : Proportion de la population utilisant a) des services d'assainissement gérés en toute sécurité et b) un dispositif de lavage des mains avec du savon et de l'eau [%]",
+                                "es": "SDG_I_6.4.2: Proporción de la población que utiliza a) servicios de saneamiento gestionados de forma segura y b) una instalación para lavarse las manos con agua y jabón [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 6.5: By 2030, implement integrated water resources management at all levels...",
+                        "fr": "Cible 6.5 : D'ici 2030, mettre en œuvre une gestion intégrée des ressources en eau à tous les niveaux...",
+                        "es": "Meta 6.5: Para 2030, aplicar la gestión integrada de los recursos hídricos a todos los niveles..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_6.5.1",
+                            "label": {
+                                "en": "SDG_I_6.5.1: Proportion of domestic and industrial wastewater flows safely treated [nb,%]",
+                                "fr": "SDG_I_6.5.1 : Proportion des flux d'eaux usées domestiques et industrielles traitées en toute sécurité [nb,%]",
+                                "es": "SDG_I_6.5.1: Proporción de flujos de aguas residuales domésticas e industriales tratadas de forma segura [nb,%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 6.6: By 2020, protect and restore water-related ecosystems, including mountains...",
+                        "fr": "Cible 6.6 : D'ici 2020, protéger et restaurer les écosystèmes liés à l'eau, y compris les montagnes...",
+                        "es": "Meta 6.6: Para 2020, proteger y restaurar los ecosistemas relacionados con el agua, incluidas las montañas..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_6.6.1",
+                            "label": {
+                                "en": "SDG_I_6.6.1: Change in water-use efficiency over time [Mm3/yr, km2,%]",
+                                "fr": "SDG_I_6.6.1 : Changement de l'efficacité de l'utilisation de l'eau au fil du temps [Mm3/an, km2, %]",
+                                "es": "SDG_I_6.6.1: Cambio en la eficiencia del uso del agua a lo largo del tiempo [Mm3/año, km2, %]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_6.6.1-1",
+                            "label": {
+                                "en": "SDG_I_6.6.1-1: Level of water stress: freshwater withdrawal as a proportion of available freshwater resources [%]",
+                                "fr": "SDG_I_6.6.1-1 : Niveau de stress hydrique : prélèvement d'eau douce en proportion des ressources en eau douce disponibles [%]",
+                                "es": "SDG_I_6.6.1-1: Nivel de estrés hídrico: extracción de agua dulce en proporción a los recursos de agua dulce disponibles [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_6.6.1-2",
+                            "label": {
+                                "en": "SDG_I_6.6.1-2: Degree of integrated water resources management [unknown]",
+                                "fr": "SDG_I_6.6.1-2 : Degré de gestion intégrée des ressources en eau [inconnu]",
+                                "es": "SDG_I_6.6.1-2: Grado de gestión integrada de recursos hídricos [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_6.6.1-3",
+                            "label": {
+                                "en": "SDG_I_6.6.1-3: Proportion of transboundary basin area with an operational arrangement for water cooperation [%]",
+                                "fr": "SDG_I_6.6.1-3 : Proportion de la zone de bassin transfrontalier disposant d'un arrangement opérationnel pour la coopération sur l'eau [%]",
+                                "es": "SDG_I_6.6.1-3: Proporción del área de la cuenca transfronteriza con un acuerdo operativo de cooperación sobre el agua [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_6.6.1-5",
+                            "label": {
+                                "en": "SDG_I_6.6.1-5: Change in the extent of water-related ecosystems over time [%; ha]",
+                                "fr": "SDG_I_6.6.1-5 : Changement dans l'étendue des écosystèmes liés à l'eau au fil du temps [%; ha]",
+                                "es": "SDG_I_6.6.1-5: Cambio en la extensión de los ecosistemas relacionados con el agua a lo largo del tiempo [%; ha]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 6.a: By 2030, expand international cooperation and capacity-building support to developing countries in water- and sanitation-related activities...",
+                        "fr": "Cible 6.a : D'ici 2030, renforcer la coopération internationale et le soutien au développement des capacités en faveur des pays en développement dans les activités relatives à l'eau et à l'assainissement...",
+                        "es": "Meta 6.a: Para 2030, ampliar la cooperación internacional y el apoyo al desarrollo de capacidades a los países en desarrollo en las actividades relacionadas con el agua y el saneamiento..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_6.a.1",
+                            "label": {
+                                "en": "SDG_I_6.a.1: Amount of water- and sanitation-related official development assistance that is part of a government-coordinated spending plan [millions USD (2018)]",
+                                "fr": "SDG_I_6.a.1 : Montant de l'aide publique au développement liée à l'eau et à l'assainissement qui fait partie d'un plan de dépenses coordonné par le gouvernement [millions USD (2018)]",
+                                "es": "SDG_I_6.a.1: Cantidad de asistencia oficial para el desarrollo relacionada con el agua y el saneamiento que forma parte de un plan de gastos coordinado por el gobierno [millones USD (2018)]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 6.b: Support and strengthen the participation of local communities in improving water and sanitation management",
+                        "fr": "Cible 6.b : Soutenir et renforcer la participation des communautés locales à l'amélioration de la gestion de l'eau et de l'assainissement",
+                        "es": "Meta 6.b: Apoyar y fortalecer la participación de las comunidades locales en la mejora de la gestión del agua y el saneamiento"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_6.b.1",
+                            "label": {
+                                "en": "SDG_I_6.b.1: Proportion of local administrative units with established and operational policies and procedures for participation of local communities in water and sanitation management [%; nb]",
+                                "fr": "SDG_I_6.b.1 : Proportion d'unités administratives locales disposant de politiques et de procédures établies et opérationnelles pour la participation des communautés locales à la gestion de l'eau et de l'assainissement [%; nb]",
+                                "es": "SDG_I_6.b.1: Proporción de unidades administrativas locales con políticas y procedimientos establecidos y operativos para la participación de las comunidades locales en la gestión del agua y el saneamiento [%; nb]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 7. Ensure access to affordable, reliable, sustainable and modern energy for all",
+                "fr": "Objectif 7. Garantir l'accès de tous à une énergie abordable, fiable, durable et moderne",
+                "es": "Objetivo 7. Garantizar el acceso a una energía asequible, confiable, sostenible y moderna para todos"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 7.1: By 2030, ensure universal access to affordable, reliable and modern energy services",
+                        "fr": "Cible 7.1 : D'ici 2030, assurer l'accès universel à des services énergétiques abordables, fiables et modernes",
+                        "es": "Meta 7.1: Para 2030, garantizar el acceso universal a servicios de energía asequibles, confiables y modernos"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_7.1.1",
+                            "label": {
+                                "en": "SDG_I_7.1.1: Proportion of population with access to electricity [%]",
+                                "fr": "SDG_I_7.1.1 : Proportion de la population ayant accès à l'électricité [%]",
+                                "es": "SDG_I_7.1.1: Proporción de la población con acceso a la electricidad [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_7.1.2",
+                            "label": {
+                                "en": "SDG_I_7.1.2: Proportion of population with primary reliance on clean fuels and technology [%]",
+                                "fr": "SDG_I_7.1.2 : Proportion de la population qui dépend principalement de combustibles et de technologies propres [%]",
+                                "es": "SDG_I_7.1.2: Proporción de la población que depende principalmente de combustibles y tecnologías limpias [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 7.2: By 2030, increase substantially the share of renewable energy in the global energy mix",
+                        "fr": "Cible 7.2 : D'ici 2030, accroître sensiblement la part des énergies renouvelables dans le bouquet énergétique mondial",
+                        "es": "Meta 7.2: Para 2030, aumentar sustancialmente la proporción de energía renovable en la combinación energética mundial"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_7.2.1",
+                            "label": {
+                                "en": "SDG_I_7.2.1: Renewable energy share in the total final energy consumption [%]",
+                                "fr": "SDG_I_7.2.1 : Part des énergies renouvelables dans la consommation finale totale d'énergie [%]",
+                                "es": "SDG_I_7.2.1: Proporción de energía renovable en el consumo final total de energía [%]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 8. Promote sustained, inclusive and sustainable economic growth, full and productive employment and decent work for all",
+                "fr": "Objectif 8. Promouvoir une croissance économique soutenue, inclusive et durable, le plein emploi productif et un travail décent pour tous",
+                "es": "Objetivo 8. Promover el crecimiento económico sostenido, inclusivo y sostenible, el empleo pleno y productivo y el trabajo decente para todos"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 8.1: Sustain per capita economic growth in accordance with national circumstances ...",
+                        "fr": "Cible 8.1 : Maintenir la croissance économique par habitant conformément aux circonstances nationales ...",
+                        "es": "Meta 8.1: Mantener el crecimiento económico per cápita de conformidad con las circunstancias nacionales ..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_8.1.1",
+                            "label": {
+                                "en": "SDG_I_8.1.1: Annual growth rate of real GDP per capita [%]",
+                                "fr": "SDG_I_8.1.1 : Taux de croissance annuel du PIB réel par habitant [%]",
+                                "es": "SDG_I_8.1.1: Tasa de crecimiento anual del PIB real per cápita [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 8.3: Promote development-oriented policies that support productive activities ...",
+                        "fr": "Cible 8.3 : Promouvoir des politiques axées sur le développement qui soutiennent les activités productives ...",
+                        "es": "Meta 8.3: Promover políticas orientadas al desarrollo que apoyen las actividades productivas ..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_8.3.1",
+                            "label": {
+                                "en": "SDG_I_8.3.1: Proportion of informal employment in total employment by sector and sex [%]",
+                                "fr": "SDG_I_8.3.1 : Proportion d'emplois informels dans l'emploi total, par secteur et par sexe [%]",
+                                "es": "SDG_I_8.3.1: Proporción del empleo informal en el empleo total, por sector y sexo [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 8.5: By 2030, achieve full and productive employment and decent work for all women and men...",
+                        "fr": "Cible 8.5 : D'ici 2030, parvenir au plein emploi productif et à un travail décent pour tous les hommes et toutes les femmes...",
+                        "es": "Meta 8.5: Para 2030, lograr el empleo pleno y productivo y un trabajo decente para todas las mujeres y hombres..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_8.5.2",
+                            "label": {
+                                "en": "SDG_I_8.5.2: Unemployment rate by sex age and persons with disabilities [%]",
+                                "fr": "SDG_I_8.5.2 : Taux de chômage par sexe, âge et personnes handicapées [%]",
+                                "es": "SDG_I_8.5.2: Tasa de desempleo por sexo, edad y personas con discapacidad [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 8.7: Take immediate and effective measures to eradicate forced labour, end modern slavery and human trafficking...",
+                        "fr": "Cible 8.7 : Prendre des mesures immédiates et efficaces pour éradiquer le travail forcé, mettre fin à l'esclavage moderne et à la traite des êtres humains...",
+                        "es": "Meta 8.7: Adoptar medidas inmediatas y eficaces para erradicar el trabajo forzoso, poner fin a la esclavitud moderna y la trata de personas..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_8.7.1",
+                            "label": {
+                                "en": "SDG_I_8.7.1: Proportion and number of children aged 5–17 years engaged in child labour by sex and age [%]",
+                                "fr": "SDG_I_8.7.1 : Proportion et nombre d'enfants âgés de 5 à 17 ans engagés dans le travail des enfants par sexe et âge [%]",
+                                "es": "SDG_I_8.7.1: Proporción y número de niños de 5 a 17 años que trabajan, por sexo y edad [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 8.8: Protect labour rights and promote safe and secure working environments for all workers...",
+                        "fr": "Cible 8.8 : Protéger les droits des travailleurs et promouvoir des environnements de travail sûrs et sécurisés pour tous les travailleurs...",
+                        "es": "Meta 8.8: Proteger los derechos laborales y promover entornos de trabajo seguros y protegidos para todos los trabajadores..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_8.8.2",
+                            "label": {
+                                "en": "SDG_I_8.8.2: Level of national compliance with labour rights freedom of association and collective bargaining ...",
+                                "fr": "SDG_I_8.8.2 : Niveau de conformité nationale avec les droits du travail, la liberté d'association et la négociation collective ...",
+                                "es": "SDG_I_8.8.2: Nivel de cumplimiento nacional de los derechos laborales, la libertad de asociación y la negociación colectiva ..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 8.10: Strengthen the capacity of domestic financial institutions to encourage and expand access to banking...",
+                        "fr": "Cible 8.10 : Renforcer la capacité des institutions financières nationales à encourager et élargir l'accès aux services bancaires...",
+                        "es": "Meta 8.10: Fortalecer la capacidad de las instituciones financieras nacionales para fomentar y ampliar el acceso a la banca..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_8.10.2",
+                            "label": {
+                                "en": "SDG_I_8.10.2: Proportion of adults 15 years and older with an account at a bank or other financial institution or with a mobile-money-service provider [%]",
+                                "fr": "SDG_I_8.10.2 : Proportion d'adultes de 15 ans et plus ayant un compte dans une banque ou autre institution financière ou auprès d'un fournisseur de services d'argent mobile [%]",
+                                "es": "SDG_I_8.10.2: Proporción de adultos de 15 años o más con una cuenta en un banco u otra institución financiera o con un proveedor de servicios de dinero móvil [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 8.b: By 2020, develop and operationalize a global strategy for youth employment...",
+                        "fr": "Cible 8.b : D'ici 2020, élaborer et mettre en œuvre une stratégie mondiale pour l'emploi des jeunes...",
+                        "es": "Meta 8.b: Para 2020, elaborar y poner en marcha una estrategia mundial para el empleo juvenil..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_8.b.1",
+                            "label": {
+                                "en": "SDG_I_8.b.1: Existence of a developed and operationalized national strategy for youth employment...",
+                                "fr": "SDG_I_8.b.1 : Existence d'une stratégie nationale élaborée et opérationnalisée pour l'emploi des jeunes...",
+                                "es": "SDG_I_8.b.1: Existencia de una estrategia nacional desarrollada y operativa para el empleo juvenil..."
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 9. Build resilient infrastructure, promote inclusive and sustainable industrialization and foster innovation",
+                "fr": "Objectif 9. Bâtir une infrastructure résiliente, promouvoir une industrialisation inclusive et durable et encourager l'innovation",
+                "es": "Objetivo 9. Construir infraestructuras resilientes, promover la industrialización inclusiva y sostenible y fomentar la innovación"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 9.1: Develop quality, reliable, sustainable and resilient infrastructure ...",
+                        "fr": "Cible 9.1 : Développer une infrastructure de qualité, fiable, durable et résiliente ...",
+                        "es": "Meta 9.1: Desarrollar una infraestructura de calidad, confiable, sostenible y resiliente..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_9.1.1",
+                            "label": {
+                                "en": "SDG_I_9.1.1: Proportion of the rural population who live within 2 km of an all-season road [%]",
+                                "fr": "SDG_I_9.1.1 : Proportion de la population rurale vivant à moins de 2 km d'une route praticable toute l'année [%]",
+                                "es": "SDG_I_9.1.1: Proporción de la población rural que vive a menos de 2 km de una carretera apta todo el año [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_9.1.2",
+                            "label": {
+                                "en": "SDG_I_9.1.2: Passenger and freight volumes by mode of transport [(twenty-foot equivalent units; metric tonnes; t/km; passenger km]",
+                                "fr": "SDG_I_9.1.2 : Volumes de passagers et de marchandises par mode de transport [(équivalent vingt pieds; tonnes métriques; t/km; passagers-km]",
+                                "es": "SDG_I_9.1.2: Volúmenes de pasajeros y carga por modo de transporte [(unidades equivalentes a veinte pies; toneladas métricas; t/km; pasajeros-km]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 9.c: Significantly increase access to information and communications technology and strive to provide universal and affordable access to the Internet ...",
+                        "fr": "Cible 9.c : Accroître considérablement l'accès aux technologies de l'information et de la communication et s'efforcer d'offrir un accès universel et abordable à Internet ...",
+                        "es": "Meta 9.c: Aumentar significativamente el acceso a la tecnología de la información y las comunicaciones y esforzarse por proporcionar acceso universal y asequible a Internet ..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_9.c.1",
+                            "label": {
+                                "en": "SDG_I_9.c.1: Proportion of population covered by a mobile network by technology [%]",
+                                "fr": "SDG_I_9.c.1 : Proportion de la population couverte par un réseau mobile, par technologie [%]",
+                                "es": "SDG_I_9.c.1: Proporción de la población cubierta por una red móvil por tecnología [%]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 10. Reduce inequality within and among countries",
+                "fr": "Objectif 10. Réduire les inégalités dans les pays et d'un pays à l'autre",
+                "es": "Objetivo 10. Reducir la desigualdad en y entre los países"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 10.2: By 2030, empower and promote the social, economic and political inclusion of all...",
+                        "fr": "Cible 10.2 : D'ici 2030, autonomiser et promouvoir l'inclusion sociale, économique et politique de tous...",
+                        "es": "Meta 10.2: Para 2030, empoderar y promover la inclusión social, económica y política de todos..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_10.2.1",
+                            "label": {
+                                "en": "SDG_I_10.2.1: Proportion of people living below 50 per cent of median income by sex age and persons with disabilities [%]",
+                                "fr": "SDG_I_10.2.1 : Proportion de personnes vivant en dessous de 50 % du revenu médian par sexe, âge et personnes handicapées [%]",
+                                "es": "SDG_I_10.2.1: Proporción de personas que viven por debajo del 50% de la mediana de ingresos por sexo, edad y personas con discapacidad [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 10.3: Ensure equal opportunity and reduce inequalities of outcome...",
+                        "fr": "Cible 10.3 : Assurer l'égalité des chances et réduire les inégalités de résultat...",
+                        "es": "Meta 10.3: Garantizar la igualdad de oportunidades y reducir las desigualdades de resultados..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_10.3.1",
+                            "label": {
+                                "en": "SDG_I_10.3.1: Proportion of population reporting having personally felt discriminated against...",
+                                "fr": "SDG_I_10.3.1 : Proportion de la population déclarant s'être sentie personnellement discriminée...",
+                                "es": "SDG_I_10.3.1: Proporción de la población que declara haberse sentido personalmente discriminada..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 10.b: Encourage official development assistance and financial flows...",
+                        "fr": "Cible 10.b : Encourager l'aide publique au développement et les flux financiers...",
+                        "es": "Meta 10.b: Fomentar la asistencia oficial para el desarrollo y los flujos financieros..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_10.b.1",
+                            "label": {
+                                "en": "SDG_I_10.b.1: Total resource flows for development by recipient and donor countries ...",
+                                "fr": "SDG_I_10.b.1 : Flux totaux de ressources pour le développement par pays bénéficiaires et donateurs ...",
+                                "es": "SDG_I_10.b.1: Flujos totales de recursos para el desarrollo por países receptores y donantes ..."
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 11. Make cities and human settlements inclusive, safe, resilient and sustainable",
+                "fr": "Objectif 11. Faire en sorte que les villes et les établissements humains soient inclusifs, sûrs, résilients et durables",
+                "es": "Objetivo 11. Lograr que las ciudades y los asentamientos humanos sean inclusivos, seguros, resilientes y sostenibles"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 11.1: By 2030, ensure access for all to adequate, safe and affordable housing and basic services and upgrade slums",
+                        "fr": "Cible 11.1 : D'ici 2030, garantir l'accès de tous à un logement sûr, adéquat et abordable et aux services de base, et améliorer les quartiers informels",
+                        "es": "Meta 11.1: Para 2030, asegurar el acceso de todos a viviendas y servicios básicos adecuados, seguros y asequibles, y mejorar los barrios marginales"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_11.1.1",
+                            "label": {
+                                "en": "SDG_I_11.1.1: Proportion of urban population living in slums informal settlements or inadequate housing [%]",
+                                "fr": "SDG_I_11.1.1 : Proportion de la population urbaine vivant dans des bidonvilles, des établissements informels ou des logements inadéquats [%]",
+                                "es": "SDG_I_11.1.1: Proporción de la población urbana que vive en tugurios, asentamientos informales o viviendas inadecuadas [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 11.3: By 2030, enhance inclusive and sustainable urbanization ...",
+                        "fr": "Cible 11.3 : D'ici 2030, améliorer l'urbanisation inclusive et durable ...",
+                        "es": "Meta 11.3: Para 2030, mejorar la urbanización inclusiva y sostenible ..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_11.3.1",
+                            "label": {
+                                "en": "SDG_I_11.3.1: Ratio of land consumption rate to population growth rate [nb]",
+                                "fr": "SDG_I_11.3.1 : Rapport entre le taux de consommation des terres et le taux de croissance démographique [nb]",
+                                "es": "SDG_I_11.3.1: Relación entre la tasa de consumo de tierra y la tasa de crecimiento de la población [nb]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 11.4: Strengthen efforts to protect and safeguard the world's cultural and natural heritage",
+                        "fr": "Cible 11.4 : Renforcer les efforts visant à protéger et à sauvegarder le patrimoine culturel et naturel mondial",
+                        "es": "Meta 11.4: Redoblar los esfuerzos para proteger y salvaguardar el patrimonio cultural y natural del mundo"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_11.4.1",
+                            "label": {
+                                "en": "SDG_I_11.4.1: Total per capita expenditure on the preservation protection and conservation of all cultural and natural heritage by source of funding ...",
+                                "fr": "SDG_I_11.4.1 : Dépense totale par habitant consacrée à la préservation, la protection et la conservation de tout le patrimoine culturel et naturel, par source de financement ...",
+                                "es": "SDG_I_11.4.1: Gasto total per cápita en la preservación, protección y conservación de todo el patrimonio cultural y natural, por fuente de financiamiento ..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 11.6: By 2030, reduce the adverse per capita environmental impact of cities...",
+                        "fr": "Cible 11.6 : D'ici 2030, réduire l'impact environnemental négatif par habitant des villes...",
+                        "es": "Meta 11.6: Para 2030, reducir el impacto ambiental adverso per cápita de las ciudades..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_11.6.1",
+                            "label": {
+                                "en": "SDG_I_11.6.1: Proportion of municipal solid waste collected and managed in controlled facilities ...",
+                                "fr": "SDG_I_11.6.1 : Proportion des déchets solides municipaux collectés et gérés dans des installations contrôlées ...",
+                                "es": "SDG_I_11.6.1: Proporción de los desechos sólidos municipales recolectados y gestionados en instalaciones controladas ..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 11.a: Support positive economic, social and environmental links between urban, peri-urban and rural areas by strengthening national and regional development planning",
+                        "fr": "Cible 11.a : Soutenir les liens économiques, sociaux et environnementaux positifs entre les zones urbaines, périurbaines et rurales en renforçant la planification du développement national et régional",
+                        "es": "Meta 11.a: Apoyar los vínculos económicos, sociales y ambientales positivos entre las zonas urbanas, periurbanas y rurales mediante el fortalecimiento de la planificación del desarrollo nacional y regional"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_11.a.1",
+                            "label": {
+                                "en": "SDG_I_11.a.1: Number of countries that have national urban policies or regional development plans ...",
+                                "fr": "SDG_I_11.a.1 : Nombre de pays ayant des politiques urbaines nationales ou des plans de développement régional ...",
+                                "es": "SDG_I_11.a.1: Número de países que tienen políticas urbanas nacionales o planes de desarrollo regional ..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 11.b: By 2020, substantially increase the number of cities and human settlements adopting and implementing integrated policies...",
+                        "fr": "Cible 11.b : D'ici 2020, augmenter sensiblement le nombre de villes et d'établissements humains adoptant et appliquant des politiques intégrées...",
+                        "es": "Meta 11.b: Para 2020, aumentar considerablemente el número de ciudades y asentamientos humanos que adoptan e implementan políticas integradas..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_11.b.1",
+                            "label": {
+                                "en": "SDG_I_11.b.1: Number of countries that adopt and implement national disaster risk reduction strategies ...",
+                                "fr": "SDG_I_11.b.1 : Nombre de pays qui adoptent et appliquent des stratégies nationales de réduction des risques de catastrophes ...",
+                                "es": "SDG_I_11.b.1: Número de países que adoptan e implementan estrategias nacionales de reducción del riesgo de desastres ..."
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 12. Ensure sustainable consumption and production patterns",
+                "fr": "Objectif 12. Établir des modes de consommation et de production durables",
+                "es": "Objetivo 12. Garantizar modalidades de consumo y producción sostenibles"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 12.b: Develop and implement tools to monitor sustainable development impacts for sustainable tourism...",
+                        "fr": "Cible 12.b : Élaborer et appliquer des outils pour surveiller les effets du développement durable sur le tourisme durable...",
+                        "es": "Meta 12.b: Desarrollar e implementar herramientas para supervisar los efectos del desarrollo sostenible en el turismo sostenible..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_12.b.1",
+                            "label": {
+                                "en": "SDG_I_12.b.1: Implementation of standard accounting tools to monitor the economic and environmental aspects of tourism sustainability [SEEA tables]",
+                                "fr": "SDG_I_12.b.1 : Mise en œuvre d'outils comptables standard pour surveiller les aspects économiques et environnementaux de la durabilité du tourisme [tableaux SEEA]",
+                                "es": "SDG_I_12.b.1: Aplicación de herramientas contables estándar para supervisar los aspectos económicos y ambientales de la sostenibilidad del turismo [tablas SEEA]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 13. Take urgent action to combat climate change and its impacts",
+                "fr": "Objectif 13. Prendre d'urgence des mesures pour lutter contre les changements climatiques et leurs répercussions",
+                "es": "Objetivo 13. Adoptar medidas urgentes para combatir el cambio climático y sus efectos"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 13.1: Strengthen resilience and adaptive capacity to climate-related hazards and natural disasters in all countries",
+                        "fr": "Cible 13.1 : Renforcer la résilience et les capacités d'adaptation aux aléas climatiques et aux catastrophes naturelles dans tous les pays",
+                        "es": "Meta 13.1: Fortalecer la resiliencia y la capacidad de adaptación a los peligros relacionados con el clima y los desastres naturales en todos los países"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_13.1.2",
+                            "label": {
+                                "en": "SDG_I_13.1.2: Number of countries that adopt and implement national disaster risk reduction strategies ...",
+                                "fr": "SDG_I_13.1.2 : Nombre de pays qui adoptent et mettent en œuvre des stratégies nationales de réduction des risques de catastrophes ...",
+                                "es": "SDG_I_13.1.2: Número de países que adoptan e implementan estrategias nacionales de reducción del riesgo de desastres ..."
+                            }
+                        },
+                        {
+                            "value": "SDG_I_13.1.3",
+                            "label": {
+                                "en": "SDG_I_13.1.3: Proportion of local governments that adopt and implement local disaster risk reduction strategies ...",
+                                "fr": "SDG_I_13.1.3 : Proportion de gouvernements locaux qui adoptent et appliquent des stratégies locales de réduction des risques de catastrophes ...",
+                                "es": "SDG_I_13.1.3: Proporción de gobiernos locales que adoptan e implementan estrategias locales de reducción del riesgo de desastres ..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 13.2: Integrate climate change measures into national policies, strategies and planning",
+                        "fr": "Cible 13.2 : Intégrer les mesures relatives aux changements climatiques dans les politiques, stratégies et plans nationaux",
+                        "es": "Meta 13.2: Integrar las medidas relativas al cambio climático en las políticas, estrategias y planes nacionales"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_13.2.1",
+                            "label": {
+                                "en": "SDG_I_13.2.1: Number of countries with nationally determined contributions long-term strategies national adaptation plans ...",
+                                "fr": "SDG_I_13.2.1 : Nombre de pays ayant des contributions déterminées au niveau national, des stratégies à long terme, des plans nationaux d'adaptation ...",
+                                "es": "SDG_I_13.2.1: Número de países con contribuciones determinadas a nivel nacional, estrategias a largo plazo, planes nacionales de adaptación ..."
+                            }
+                        },
+                        {
+                            "value": "SDG_I_13.2.2",
+                            "label": {
+                                "en": "SDG_I_13.2.2: Total greenhouse gas emissions per year [unknown]",
+                                "fr": "SDG_I_13.2.2 : Émissions totales de gaz à effet de serre par an [inconnu]",
+                                "es": "SDG_I_13.2.2: Emisiones totales de gases de efecto invernadero por año [desconocido]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 14. Conserve and sustainably use the oceans, seas and marine resources for sustainable development",
+                "fr": "Objectif 14. Conserver et exploiter de manière durable les océans, les mers et les ressources marines aux fins du développement durable",
+                "es": "Objetivo 14. Conservar y utilizar en forma sostenible los océanos, los mares y los recursos marinos para el desarrollo sostenible"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 14.1: By 2025, prevent and significantly reduce marine pollution of all kinds...",
+                        "fr": "Cible 14.1 : D'ici 2025, prévenir et réduire sensiblement la pollution marine de tous types...",
+                        "es": "Meta 14.1: Para 2025, prevenir y reducir significativamente la contaminación marina de todo tipo..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_14.1.1",
+                            "label": {
+                                "en": "SDG_I_14.1.1: a Index of coastal eutrophication and b plastic debris density [unknown]",
+                                "fr": "SDG_I_14.1.1 : a) Indice d'eutrophisation côtière et b) densité de débris plastiques [inconnu]",
+                                "es": "SDG_I_14.1.1: a) Índice de eutrofización costera y b) densidad de desechos plásticos [desconocido]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 14.2: By 2020, sustainably manage and protect marine and coastal ecosystems...",
+                        "fr": "Cible 14.2 : D'ici 2020, gérer durablement et protéger les écosystèmes marins et côtiers...",
+                        "es": "Meta 14.2: Para 2020, gestionar y proteger de forma sostenible los ecosistemas marinos y costeros..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_14.2.1",
+                            "label": {
+                                "en": "SDG_I_14.2.1: Number of countries using ecosystem-based approaches to managing marine areas [unknown]",
+                                "fr": "SDG_I_14.2.1 : Nombre de pays utilisant des approches écosystémiques pour la gestion des zones marines [inconnu]",
+                                "es": "SDG_I_14.2.1: Número de países que utilizan enfoques basados en ecosistemas para la gestión de áreas marinas [desconocido]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 14.4: By 2020, effectively regulate harvesting and end overfishing, illegal, unreported and unregulated fishing...",
+                        "fr": "Cible 14.4 : D'ici 2020, réglementer efficacement la pêche et mettre fin à la surpêche, à la pêche illicite, non déclarée et non réglementée...",
+                        "es": "Meta 14.4: Para 2020, regular eficazmente la pesca y poner fin a la sobrepesca, la pesca ilegal, no declarada y no reglamentada..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_14.4.1",
+                            "label": {
+                                "en": "SDG_I_14.4.1: Proportion of fish stocks within biologically sustainable levels [%]",
+                                "fr": "SDG_I_14.4.1 : Proportion de stocks de poissons à des niveaux biologiquement durables [%]",
+                                "es": "SDG_I_14.4.1: Proporción de poblaciones de peces en niveles biológicamente sostenibles [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 14.5: By 2020, conserve at least 10 per cent of coastal and marine areas...",
+                        "fr": "Cible 14.5 : D'ici 2020, conserver au moins 10 % des zones côtières et marines...",
+                        "es": "Meta 14.5: Para 2020, conservar al menos el 10% de las zonas costeras y marinas..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_14.5.1",
+                            "label": {
+                                "en": "SDG_I_14.5.1: Coverage of protected areas in relation to marine areas [km2, %]",
+                                "fr": "SDG_I_14.5.1 : Couverture des aires protégées par rapport aux zones marines [km2, %]",
+                                "es": "SDG_I_14.5.1: Cobertura de áreas protegidas en relación con las áreas marinas [km2, %]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 14.b: Provide access for small-scale artisanal fishers to marine resources and markets",
+                        "fr": "Cible 14.b : Offrir aux pêcheurs artisanaux de petite échelle l'accès aux ressources marines et aux marchés",
+                        "es": "Meta 14.b: Facilitar el acceso de los pescadores artesanales de pequeña escala a los recursos marinos y los mercados"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_14.b.1",
+                            "label": {
+                                "en": "SDG_I_14.b.1: Degree of application of a legal regulatory policy institutional framework which recognizes and protects access rights for small-scale fisheries [nb]",
+                                "fr": "SDG_I_14.b.1 : Degré d'application d'un cadre juridique, politique et institutionnel reconnaissant et protégeant les droits d'accès des pêches artisanales de petite échelle [nb]",
+                                "es": "SDG_I_14.b.1: Grado de aplicación de un marco jurídico, normativo y político que reconoce y protege los derechos de acceso de las pesquerías artesanales de pequeña escala [nb]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 15. Protect, restore and promote sustainable use of terrestrial ecosystems...",
+                "fr": "Objectif 15. Préserver et restaurer les écosystèmes terrestres et promouvoir leur utilisation durable...",
+                "es": "Objetivo 15. Proteger, restablecer y promover el uso sostenible de los ecosistemas terrestres..."
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 15.1: By 2020, ensure the conservation, restoration and sustainable use of terrestrial and inland freshwater ecosystems...",
+                        "fr": "Cible 15.1 : D'ici 2020, assurer la conservation, la restauration et l'utilisation durable des écosystèmes terrestres et d'eau douce intérieure...",
+                        "es": "Meta 15.1: Para 2020, asegurar la conservación, restauración y uso sostenible de los ecosistemas terrestres y de agua dulce continentales..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_15.1.1",
+                            "label": {
+                                "en": "SDG_I_15.1.1: Forest area as a proportion of total land area [kha, %]",
+                                "fr": "SDG_I_15.1.1 : Superficie forestière en proportion de la superficie totale des terres [kha, %]",
+                                "es": "SDG_I_15.1.1: Superficie forestal en proporción de la superficie total de la tierra [kha, %]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_15.1.2",
+                            "label": {
+                                "en": "SDG_I_15.1.2: Proportion of important sites for terrestrial and freshwater biodiversity that are covered by protected areas by ecosystem type [%]",
+                                "fr": "SDG_I_15.1.2 : Proportion de sites importants pour la biodiversité terrestre et d'eau douce couverts par des aires protégées, par type d'écosystème [%]",
+                                "es": "SDG_I_15.1.2: Proporción de sitios importantes para la biodiversidad terrestre y de agua dulce que están cubiertos por áreas protegidas, por tipo de ecosistema [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 15.2: By 2020, promote the implementation of sustainable management of all types of forests...",
+                        "fr": "Cible 15.2 : D'ici 2020, promouvoir la gestion durable de tous les types de forêts...",
+                        "es": "Meta 15.2: Para 2020, promover la aplicación de la gestión sostenible de todos los tipos de bosques..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_15.2.1",
+                            "label": {
+                                "en": "SDG_I_15.2.1: Progress towards sustainable forest management [t/ha kha, %]",
+                                "fr": "SDG_I_15.2.1 : Progrès vers une gestion forestière durable [t/ha, kha, %]",
+                                "es": "SDG_I_15.2.1: Progresos hacia la gestión forestal sostenible [t/ha, kha, %]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-1",
+                            "label": {
+                                "en": "SDG_I_15.2.1-1: Forest area annual net change rate [ha]",
+                                "fr": "SDG_I_15.2.1-1 : Taux de changement net annuel de la superficie forestière [ha]",
+                                "es": "SDG_I_15.2.1-1: Tasa de cambio neto anual del área forestal [ha]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-2",
+                            "label": {
+                                "en": "SDG_I_15.2.1-2: Above-ground biomass stock in forest [t/ha]",
+                                "fr": "SDG_I_15.2.1-2 : Stock de biomasse aérienne en forêt [t/ha]",
+                                "es": "SDG_I_15.2.1-2: Biomasa aérea en el bosque [t/ha]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-3",
+                            "label": {
+                                "en": "SDG_I_15.2.1-3: Proportion of forest area located within legally established protected areas [%]",
+                                "fr": "SDG_I_15.2.1-3 : Proportion de la superficie forestière située dans des aires protégées légalement établies [%]",
+                                "es": "SDG_I_15.2.1-3: Proporción de la superficie forestal ubicada en áreas protegidas establecidas legalmente [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-4",
+                            "label": {
+                                "en": "SDG_I_15.2.1-4: Proportion of forest area under a long-term forest management plan [%]",
+                                "fr": "SDG_I_15.2.1-4 : Proportion de la superficie forestière soumise à un plan de gestion forestière à long terme [%]",
+                                "es": "SDG_I_15.2.1-4: Proporción de la superficie forestal bajo un plan de gestión forestal a largo plazo [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-5",
+                            "label": {
+                                "en": "SDG_I_15.2.1-5: Forest area under an independently verified forest management certification scheme [ha]",
+                                "fr": "SDG_I_15.2.1-5 : Superficie forestière sous un schéma de certification de gestion forestière vérifié de manière indépendante [ha]",
+                                "es": "SDG_I_15.2.1-5: Superficie forestal bajo un esquema de certificación de gestión forestal verificado de forma independiente [ha]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 15.3: By 2030, combat desertification, restore degraded land and soil...",
+                        "fr": "Cible 15.3 : D'ici 2030, lutter contre la désertification, restaurer les terres et les sols dégradés...",
+                        "es": "Meta 15.3: Para 2030, luchar contra la desertificación, restaurar las tierras y suelos degradados..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_15.3.1",
+                            "label": {
+                                "en": "SDG_I_15.3.1: Proportion of land that is degraded over total land area [%]",
+                                "fr": "SDG_I_15.3.1 : Proportion de terres dégradées par rapport à la superficie terrestre totale [%]",
+                                "es": "SDG_I_15.3.1: Proporción de la tierra degradada sobre la superficie total de la tierra [%]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_15.3.1-1",
+                            "label": {
+                                "en": "SDG_I_15.3.1-1: Trends in Land Cover [unknown]",
+                                "fr": "SDG_I_15.3.1-1 : Tendances en matière d'occupation des sols [inconnu]",
+                                "es": "SDG_I_15.3.1-1: Tendencias en la cobertura de la tierra [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_15.3.1-2",
+                            "label": {
+                                "en": "SDG_I_15.3.1-2: Trends in Land Productivity [unknown]",
+                                "fr": "SDG_I_15.3.1-2 : Tendances en matière de productivité des sols [inconnu]",
+                                "es": "SDG_I_15.3.1-2: Tendencias en la productividad de la tierra [desconocido]"
+                            }
+                        },
+                        {
+                            "value": "SDG_I_15.3.1-3",
+                            "label": {
+                                "en": "SDG_I_15.3.1-3: Trends in Carbon Stocks [nb, t/ha, Mg/ha]",
+                                "fr": "SDG_I_15.3.1-3 : Tendances des stocks de carbone [nb, t/ha, Mg/ha]",
+                                "es": "SDG_I_15.3.1-3: Tendencias en las reservas de carbono [nb, t/ha, Mg/ha]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 15.4: By 2030, ensure the conservation of mountain ecosystems...",
+                        "fr": "Cible 15.4 : D'ici 2030, assurer la conservation des écosystèmes de montagne...",
+                        "es": "Meta 15.4: Para 2030, asegurar la conservación de los ecosistemas montañosos..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_15.4.2",
+                            "label": {
+                                "en": "SDG_I_15.4.2: Mountain Green Cover Index [nb, km2]",
+                                "fr": "SDG_I_15.4.2 : Indice de couverture verte des montagnes [nb, km2]",
+                                "es": "SDG_I_15.4.2: Índice de cobertura verde de la montaña [nb, km2]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 15.5: Take urgent and significant action to reduce the degradation of natural habitats...",
+                        "fr": "Cible 15.5 : Prendre d'urgence des mesures significatives pour réduire la dégradation des habitats naturels...",
+                        "es": "Meta 15.5: Adoptar medidas urgentes y significativas para reducir la degradación de los hábitats naturales..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_15.5.1",
+                            "label": {
+                                "en": "SDG_I_15.5.1: Red List Index [nb]",
+                                "fr": "SDG_I_15.5.1 : Indice de la Liste rouge [nb]",
+                                "es": "SDG_I_15.5.1: Índice de la Lista Roja [nb]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 15.7: Take urgent action to end poaching and trafficking of protected species ...",
+                        "fr": "Cible 15.7 : Prendre d'urgence des mesures pour mettre fin au braconnage et au trafic d'espèces protégées ...",
+                        "es": "Meta 15.7: Adoptar medidas urgentes para poner fin a la caza furtiva y el tráfico de especies protegidas ..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_15.7.1",
+                            "label": {
+                                "en": "SDG_I_15.7.1: Proportion of traded wildlife that was poached or illicitly trafficked [%]",
+                                "fr": "SDG_I_15.7.1 : Proportion de la faune commercialisée issue du braconnage ou du trafic illicite [%]",
+                                "es": "SDG_I_15.7.1: Proporción de la vida silvestre comercializada que fue objeto de caza furtiva o tráfico ilícito [%]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 16. Promote peaceful and inclusive societies for sustainable development...",
+                "fr": "Objectif 16. Promouvoir l'avènement de sociétés pacifiques et inclusives aux fins du développement durable...",
+                "es": "Objetivo 16. Promover sociedades pacíficas e inclusivas para el desarrollo sostenible..."
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 16.2: End abuse, exploitation, trafficking and all forms of violence against and torture of children",
+                        "fr": "Cible 16.2 : Mettre fin aux abus, à l'exploitation, à la traite et à toutes les formes de violence et de torture envers les enfants",
+                        "es": "Meta 16.2: Poner fin al abuso, la explotación, la trata y todas las formas de violencia y tortura contra los niños"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_16.2.2",
+                            "label": {
+                                "en": "SDG_I_16.2.2: Number of victims of human trafficking per 100000 population by sex age and form of exploitation []",
+                                "fr": "SDG_I_16.2.2 : Nombre de victimes de la traite des êtres humains pour 100 000 habitants, par sexe, âge et forme d'exploitation []",
+                                "es": "SDG_I_16.2.2: Número de víctimas de la trata de personas por cada 100000 habitantes, por sexo, edad y forma de explotación []"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 16.5: Substantially reduce corruption and bribery in all their forms",
+                        "fr": "Cible 16.5 : Réduire nettement la corruption et la pratique des pots-de-vin sous toutes leurs formes",
+                        "es": "Meta 16.5: Reducir sustancialmente la corrupción y el soborno en todas sus formas"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_16.5.1",
+                            "label": {
+                                "en": "SDG_I_16.5.1: Proportion of persons who had at least one contact with a public official and who paid a bribe...",
+                                "fr": "SDG_I_16.5.1 : Proportion de personnes ayant eu au moins un contact avec un fonctionnaire public et qui ont payé un pot-de-vin ...",
+                                "es": "SDG_I_16.5.1: Proporción de personas que tuvieron al menos un contacto con un funcionario público y que pagaron un soborno ..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 16.6: Develop effective, accountable and transparent institutions at all levels",
+                        "fr": "Cible 16.6 : Mettre en place à tous les niveaux des institutions efficaces, responsables et transparentes",
+                        "es": "Meta 16.6: Crear a todos los niveles instituciones eficaces, responsables y transparentes"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_16.6.1",
+                            "label": {
+                                "en": "SDG_I_16.6.1: Primary government expenditures as a proportion of original approved budget by sector...",
+                                "fr": "SDG_I_16.6.1 : Dépenses gouvernementales primaires en proportion du budget initial approuvé, par secteur...",
+                                "es": "SDG_I_16.6.1: Gastos primarios del gobierno en proporción con el presupuesto inicial aprobado, por sector..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 16.7: Ensure responsive, inclusive, participatory and representative decision-making at all levels",
+                        "fr": "Cible 16.7 : Faire en sorte que la prise de décisions à tous les niveaux soit réactive, inclusive, participative et représentative",
+                        "es": "Meta 16.7: Garantizar la adopción de decisiones receptivas, inclusivas, participativas y representativas en todos los niveles"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_16.7.2",
+                            "label": {
+                                "en": "SDG_I_16.7.2: Proportion of population who believe decision-making is inclusive and responsive...",
+                                "fr": "SDG_I_16.7.2 : Proportion de la population estimant que la prise de décisions est inclusive et réactive...",
+                                "es": "SDG_I_16.7.2: Proporción de la población que considera que la toma de decisiones es inclusiva y receptiva..."
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 16.10: Ensure public access to information and protect fundamental freedoms...",
+                        "fr": "Cible 16.10 : Garantir l'accès du public à l'information et protéger les libertés fondamentales...",
+                        "es": "Meta 16.10: Garantizar el acceso público a la información y proteger las libertades fundamentales..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_16.10.2",
+                            "label": {
+                                "en": "SDG_I_16.10.2: Number of countries that adopt and implement constitutional statutory and or policy guarantees for public access to information [nb]",
+                                "fr": "SDG_I_16.10.2 : Nombre de pays qui adoptent et mettent en œuvre des garanties constitutionnelles, législatives ou politiques d'accès du public à l'information [nb]",
+                                "es": "SDG_I_16.10.2: Número de países que adoptan y aplican garantías constitucionales, legales o políticas para el acceso público a la información [nb]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "Goal 17. Strengthen the means of implementation and revitalize the Global Partnership for Sustainable Development",
+                "fr": "Objectif 17. Renforcer les moyens de mettre en œuvre le Partenariat mondial pour le développement durable et le revitaliser",
+                "es": "Objetivo 17. Fortalecer los medios de implementación y revitalizar la Alianza Mundial para el Desarrollo Sostenible"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Target 17.11: Significantly increase the exports of developing countries...",
+                        "fr": "Cible 17.11 : Augmenter sensiblement les exportations des pays en développement...",
+                        "es": "Meta 17.11: Aumentar considerablemente las exportaciones de los países en desarrollo..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_17.11.1",
+                            "label": {
+                                "en": "SDG_I_17.11.1: Developing countries’ and least developed countries’ share of global exports [%]",
+                                "fr": "SDG_I_17.11.1 : Part des pays en développement et des pays les moins avancés dans les exportations mondiales [%]",
+                                "es": "SDG_I_17.11.1: Porcentaje de los países en desarrollo y los países menos adelantados en las exportaciones mundiales [%]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 17.14: Enhance policy coherence for sustainable development",
+                        "fr": "Cible 17.14 : Améliorer la cohérence des politiques en faveur du développement durable",
+                        "es": "Meta 17.14: Mejorar la coherencia de las políticas para el desarrollo sostenible"
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_17.14.1",
+                            "label": {
+                                "en": "SDG_I_17.14.1: Number of countries with mechanisms in place to enhance policy coherence of sustainable development [millions USD (2017)]",
+                                "fr": "SDG_I_17.14.1 : Nombre de pays disposant de mécanismes visant à améliorer la cohérence des politiques de développement durable [millions USD (2017)]",
+                                "es": "SDG_I_17.14.1: Número de países con mecanismos establecidos para mejorar la coherencia de las políticas de desarrollo sostenible [millones USD (2017)]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "label": {
+                        "en": "Target 17.19: By 2030, build on existing initiatives to develop measurements of progress on sustainable development...",
+                        "fr": "Cible 17.19 : D'ici 2030, s'appuyer sur les initiatives existantes pour élaborer des mesures des progrès accomplis en matière de développement durable...",
+                        "es": "Meta 17.19: Para 2030, basarse en las iniciativas existentes para elaborar mediciones del progreso en el desarrollo sostenible..."
+                    },
+                    "items": [
+                        {
+                            "value": "SDG_I_17.19.2",
+                            "label": {
+                                "en": "SDG_I_17.19.2: Proportion of countries that a have conducted at least one population and housing census in the last 10 years and b have achieved 100 per cent birth registration and 80 per cent death registration [%]",
+                                "fr": "SDG_I_17.19.2 : Proportion de pays qui a) ont effectué au moins un recensement de la population et des logements au cours des 10 dernières années et b) ont atteint un taux d'enregistrement des naissances de 100 % et d'enregistrement des décès de 80 % [%]",
+                                "es": "SDG_I_17.19.2: Proporción de países que a) han realizado al menos un censo de población y vivienda en los últimos 10 años y b) han logrado un 100% de registro de nacimientos y un 80% de registro de defunciones [%]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "achieved": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Yes",
+                "fr": "Oui",
+                "es": "Sí"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Partially",
+                "fr": "Partiellement",
+                "es": "Parcialmente"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "No",
+                "fr": "Non",
+                "es": "No"
+            }
+        }
+    ],
+    "iucnEcosystems": [
+        {
+            "label": {
+                "en": "T - Terrestrial realm",
+                "fr": "T - Domaine terrestre",
+                "es": "T - Reino terrestre"
+            },
+            "items": [
+                {
+                    "value": "T1",
+                    "label": {
+                        "en": "T1 - Tropical-subtropical forests biome",
+                        "fr": "T1 - Biome des forêts tropicales-subtropicales",
+                        "es": "T1 - Bioma de bosques tropicales-subtropicales"
+                    }
+                },
+                {
+                    "value": "T2",
+                    "label": {
+                        "en": "T2 - Temperate-boreal forests and woodlands biome",
+                        "fr": "T2 - Biome des forêts et boisés tempérés-boréaux",
+                        "es": "T2 - Bioma de bosques y matorrales templado-boreales"
+                    }
+                },
+                {
+                    "value": "T3",
+                    "label": {
+                        "en": "T3 - Shrublands and shrubby woodlands biome",
+                        "fr": "T3 - Biome des broussailles et boisés arbustifs",
+                        "es": "T3 - Bioma de matorrales y bosques arbustivos"
+                    }
+                },
+                {
+                    "value": "T4",
+                    "label": {
+                        "en": "T4 - Savannas and grasslands biome",
+                        "fr": "T4 - Biome des savanes et prairies",
+                        "es": "T4 - Bioma de sabanas y pastizales"
+                    }
+                },
+                {
+                    "value": "T5",
+                    "label": {
+                        "en": "T5 - Deserts and semi-deserts biome",
+                        "fr": "T5 - Biome des déserts et semi-déserts",
+                        "es": "T5 - Bioma de desiertos y semidesiertos"
+                    }
+                },
+                {
+                    "value": "T6",
+                    "label": {
+                        "en": "T6 - Polar/alpine (cryogenic) biome",
+                        "fr": "T6 - Biome polaire/alpin (cryogénique)",
+                        "es": "T6 - Bioma polar/alpino (criogénico)"
+                    }
+                },
+                {
+                    "value": "T7",
+                    "label": {
+                        "en": "T7 - Intensive land-use biome",
+                        "fr": "T7 - Biome d'utilisation intensive des terres",
+                        "es": "T7 - Bioma de uso intensivo de la tierra"
+                    }
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "M - Marine realm",
+                "fr": "M - Domaine marin",
+                "es": "M - Reino marino"
+            },
+            "items": [
+                {
+                    "value": "M1",
+                    "label": {
+                        "en": "M1 - Marine shelf biome",
+                        "fr": "M1 - Biome du plateau continental marin",
+                        "es": "M1 - Bioma de la plataforma marina"
+                    }
+                },
+                {
+                    "value": "M2",
+                    "label": {
+                        "en": "M2 - Pelagic ocean waters biome",
+                        "fr": "M2 - Biome des eaux océaniques pélagiques",
+                        "es": "M2 - Bioma de aguas oceánicas pelágicas"
+                    }
+                },
+                {
+                    "value": "M3",
+                    "label": {
+                        "en": "M3 - Deep sea floors biome",
+                        "fr": "M3 - Biome des fonds marins profonds",
+                        "es": "M3 - Bioma de fondos marinos profundos"
+                    }
+                },
+                {
+                    "value": "M4",
+                    "label": {
+                        "en": "M4 - Anthropogenic marine biome",
+                        "fr": "M4 - Biome marin anthropique",
+                        "es": "M4 - Bioma marino antropogénico"
+                    }
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "F - Freshwater realm",
+                "fr": "F - Domaine d'eau douce",
+                "es": "F - Reino de agua dulce"
+            },
+            "items": [
+                {
+                    "value": "F1",
+                    "label": {
+                        "en": "F1 - Rivers and streams biome",
+                        "fr": "F1 - Biome des rivières et cours d'eau",
+                        "es": "F1 - Bioma de ríos y arroyos"
+                    }
+                },
+                {
+                    "value": "F2",
+                    "label": {
+                        "en": "F2 - Lakes biome",
+                        "fr": "F2 - Biome des lacs",
+                        "es": "F2 - Bioma de lagos"
+                    }
+                },
+                {
+                    "value": "F3",
+                    "label": {
+                        "en": "F3 - Artificial wetlands biome",
+                        "fr": "F3 - Biome des zones humides artificielles",
+                        "es": "F3 - Bioma de humedales artificiales"
+                    }
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "S - Subterranean realm",
+                "fr": "S - Domaine souterrain",
+                "es": "S - Reino subterráneo"
+            },
+            "items": [
+                {
+                    "value": "S1",
+                    "label": {
+                        "en": "S1 - Subterranean lithic biome",
+                        "fr": "S1 - Biome lithique souterrain",
+                        "es": "S1 - Bioma litico subterráneo"
+                    }
+                },
+                {
+                    "value": "S2",
+                    "label": {
+                        "en": "S2 - Anthropogenic subterranean voids biome",
+                        "fr": "S2 - Biome des vides souterrains anthropiques",
+                        "es": "S2 - Bioma de vacíos subterráneos antropogénicos"
+                    }
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "MT - Marine-Terrestrial realm",
+                "fr": "MT - Domaine marin-terrestre",
+                "es": "MT - Reino marino-terrestre"
+            },
+            "items": [
+                {
+                    "value": "MT1",
+                    "label": {
+                        "en": "MT1 - Shorelines biome",
+                        "fr": "MT1 - Biome des littoraux",
+                        "es": "MT1 - Bioma de costas"
+                    }
+                },
+                {
+                    "value": "MT2",
+                    "label": {
+                        "en": "MT2 - Supralittoral coastal biome",
+                        "fr": "MT2 - Biome côtier supralittoral",
+                        "es": "MT2 - Bioma costero supralitoral"
+                    }
+                },
+                {
+                    "value": "MT3",
+                    "label": {
+                        "en": "MT3 - Anthropogenic shorelines biome",
+                        "fr": "MT3 - Biome des littoraux anthropiques",
+                        "es": "MT3 - Bioma de litorales antropogénicos"
+                    }
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "SF - Subterranean-Freshwater realm",
+                "fr": "SF - Domaine souterrain-eau douce",
+                "es": "SF - Reino subterráneo-agua dulce"
+            },
+            "items": [
+                {
+                    "value": "SF1",
+                    "label": {
+                        "en": "SF1 - Subterranean freshwaters biome",
+                        "fr": "SF1 - Biome des eaux douces souterraines",
+                        "es": "SF1 - Bioma de aguas dulces subterráneas"
+                    }
+                },
+                {
+                    "value": "SF2",
+                    "label": {
+                        "en": "SF2 - Anthropogenic subterranean freshwaters biome",
+                        "fr": "SF2 - Biome des eaux douces souterraines anthropiques",
+                        "es": "SF2 - Bioma de aguas dulces subterráneas antropogénicas"
+                    }
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "FM - Freshwater-Marine realm",
+                "fr": "FM - Domaine eau douce-marin",
+                "es": "FM - Reino agua dulce-marino"
+            },
+            "items": [
+                {
+                    "value": "FM1",
+                    "label": {
+                        "en": "FM1 - Semi-confined transitional waters biome",
+                        "fr": "FM1 - Biome des eaux transitionnelles semi-confinées",
+                        "es": "FM1 - Bioma de aguas transicionales semiconfinadas"
+                    }
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "MFT - Marine-Freshwater-Terrestrial realm",
+                "fr": "MFT - Domaine marin-eau douce-terrestre",
+                "es": "MFT - Reino marino-agua dulce-terrestre"
+            },
+            "items": [
+                {
+                    "value": "MFT1",
+                    "label": {
+                        "en": "MFT1 - Brackish tidal biome",
+                        "fr": "MFT1 - Biome des eaux saumâtres tidales",
+                        "es": "MFT1 - Bioma de aguas salobres mareales"
+                    }
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "SM - Subterranean-Marine realm",
+                "fr": "SM - Domaine souterrain-marin",
+                "es": "SM - Reino subterráneo-marino"
+            },
+            "items": [
+                {
+                    "value": "SM1",
+                    "label": {
+                        "en": "SM1 - Subterranean tidal biome",
+                        "fr": "SM1 - Biome souterrain tidal",
+                        "es": "SM1 - Bioma subterráneo mareal"
+                    }
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "TF - Terrestrial-Freshwater realm",
+                "fr": "TF - Domaine terrestre-eau douce",
+                "es": "TF - Reino terrestre-agua dulce"
+            },
+            "items": [
+                {
+                    "value": "TF1",
+                    "label": {
+                        "en": "TF1 - Palustrine wetlands biome",
+                        "fr": "TF1 - Biome des zones humides palustres",
+                        "es": "TF1 - Bioma de humedales palustres"
+                    }
+                }
+            ]
+        }
+    ],
+    "restorationTypes": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Ecological restoration",
+                "fr": "Restauration écologique",
+                "es": "Restauración ecológica"
+            },
+            "info": {
+                "en": "<p>Ecological restoration is a type of ecosystem restoration. According to CBD (2016)...</p><p>The Society for Ecological Restoration (SER) defines ecological restoration as...</p><p>References: <a href=\"https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf\" target=\"_blank\">https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf</a></p>",
+                "fr": "<p>La restauration écologique est un type de restauration d'écosystèmes. Selon la CBD (2016)...</p><p>La Society for Ecological Restoration (SER) définit la restauration écologique comme...</p><p>Références : <a href=\"https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf\" target=\"_blank\">https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf</a></p>",
+                "es": "<p>La restauración ecológica es un tipo de restauración de ecosistemas. Según el CDB (2016)...</p><p>La Society for Ecological Restoration (SER) define la restauración ecológica como...</p><p>Referencias: <a href=\"https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf\" target=\"_blank\">https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf</a></p>"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Rehabilitation",
+                "fr": "Réhabilitation",
+                "es": "Rehabilitación"
+            },
+            "info": {
+                "en": "<p>The Society for Ecological Restoration (SER) defines rehabilitation as: \"Management actions...\"</p><p>References:<br>Gann, G.D., McDonald, T., et al. (2019)...</p>",
+                "fr": "<p>La Society for Ecological Restoration (SER) définit la réhabilitation comme : \"Des actions de gestion...\"</p><p>Références :<br>Gann, G.D., McDonald, T., et al. (2019)...</p>",
+                "es": "<p>La Society for Ecological Restoration (SER) define la rehabilitación como: \"Acciones de gestión...\"</p><p>Referencias:<br>Gann, G.D., McDonald, T., et al. (2019)...</p>"
+            }
+        }
+    ],
+    "tenureStatuses": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Communal",
+                "fr": "Communal",
+                "es": "Comunal"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Government",
+                "fr": "Gouvernemental",
+                "es": "Gubernamental"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Indigenous and Traditional Territories (ITTs)",
+                "fr": "Territoires autochtones et traditionnels (TAT)",
+                "es": "Territorios Indígenas y Tradicionales (TIT)"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Jointly owned",
+                "fr": "Copropriété",
+                "es": "Propiedad conjunta"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Private",
+                "fr": "Privé",
+                "es": "Privado"
+            }
+        },
+        {
+            "value": 6,
+            "label": {
+                "en": "Other",
+                "fr": "Autre",
+                "es": "Otro"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "Don't know",
+                "fr": "Ne sait pas",
+                "es": "No sabe"
+            }
+        }
+    ],
+    "gefIndicators": [
+        {
+            "label": {
+                "en": "1. Terrestrial protected areas created or under improved management for conservation and sustainable use (hectares)",
+                "fr": "1. Aires protégées terrestres créées ou sous gestion améliorée pour la conservation et l'utilisation durable (hectares)",
+                "es": "1. Áreas protegidas terrestres creadas o bajo gestión mejorada para la conservación y el uso sostenible (hectáreas)"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Component Sub-Indicators",
+                        "fr": "Sous-indicateurs de composant",
+                        "es": "Subindicadores de componente"
+                    },
+                    "items": [
+                        {
+                            "value": "GEF1.1",
+                            "label": {
+                                "en": "1.1 Terrestrial protected areas newly created",
+                                "fr": "1.1 Aires protégées terrestres nouvellement créées",
+                                "es": "1.1 Áreas protegidas terrestres recientemente creadas"
+                            }
+                        },
+                        {
+                            "value": "GEF1.2",
+                            "label": {
+                                "en": "1.2 Terrestrial protected areas under improved management effectiveness",
+                                "fr": "1.2 Aires protégées terrestres sous une efficacité de gestion améliorée",
+                                "es": "1.2 Áreas protegidas terrestres bajo una efectividad de gestión mejorada"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "2. Marine protected areas created or under improved management for conservation and sustainable use (hectares)",
+                "fr": "2. Aires marines protégées créées ou sous gestion améliorée pour la conservation et l'utilisation durable (hectares)",
+                "es": "2. Áreas marinas protegidas creadas o bajo gestión mejorada para la conservación y el uso sostenible (hectáreas)"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Component Sub-Indicators",
+                        "fr": "Sous-indicateurs de composant",
+                        "es": "Subindicadores de componente"
+                    },
+                    "items": [
+                        {
+                            "value": "GEF2.1",
+                            "label": {
+                                "en": "2.1 Marine protected areas newly created",
+                                "fr": "2.1 Aires marines protégées nouvellement créées",
+                                "es": "2.1 Áreas marinas protegidas recientemente creadas"
+                            }
+                        },
+                        {
+                            "value": "GEF2.2",
+                            "label": {
+                                "en": "2.2 Marine protected areas under improved management effectiveness",
+                                "fr": "2.2 Aires marines protégées sous une efficacité de gestion améliorée",
+                                "es": "2.2 Áreas marinas protegidas bajo una efectividad de gestión mejorada"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "3. Area of land and ecosystems under restoration (hectares)",
+                "fr": "3. Superficie de terres et d'écosystèmes restaurés (hectares)",
+                "es": "3. Superficie de tierras y ecosistemas bajo restauración (hectáreas)"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Component Sub-Indicators",
+                        "fr": "Sous-indicateurs de composant",
+                        "es": "Subindicadores de componente"
+                    },
+                    "items": [
+                        {
+                            "value": "GEF3.1",
+                            "label": {
+                                "en": "3.1 Area of degraded agricultural lands under restoration",
+                                "fr": "3.1 Superficie de terres agricoles dégradées en restauration",
+                                "es": "3.1 Superficie de tierras agrícolas degradadas en restauración"
+                            }
+                        },
+                        {
+                            "value": "GEF3.2",
+                            "label": {
+                                "en": "3.2 Area of forest and forest land under restoration",
+                                "fr": "3.2 Superficie de forêts et terres forestières en restauration",
+                                "es": "3.2 Superficie de bosques y tierras forestales en restauración"
+                            }
+                        },
+                        {
+                            "value": "GEF3.3",
+                            "label": {
+                                "en": "3.3 Area of natural grass and woodlands under restoration",
+                                "fr": "3.3 Superficie de prairies naturelles et de boisés en restauration",
+                                "es": "3.3 Superficie de pastizales naturales y bosques en restauración"
+                            }
+                        },
+                        {
+                            "value": "GEF3.4",
+                            "label": {
+                                "en": "3.4 Area of wetlands (including estuaries and mangroves) under restoration",
+                                "fr": "3.4 Superficie de zones humides (y compris estuaires et mangroves) en restauration",
+                                "es": "3.4 Superficie de humedales (incluidos estuarios y manglares) en restauración"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "4. Area of landscapes under improved practices (hectares; excluding protected areas)",
+                "fr": "4. Superficie de paysages bénéficiant de pratiques améliorées (hectares; hors aires protégées)",
+                "es": "4. Superficie de paisajes bajo prácticas mejoradas (hectáreas; excluyendo áreas protegidas)"
+            },
+            "items": [
+                {
+                    "label": {
+                        "en": "Component Sub-Indicators",
+                        "fr": "Sous-indicateurs de composant",
+                        "es": "Subindicadores de componente"
+                    },
+                    "items": [
+                        {
+                            "value": "GEF4.1",
+                            "label": {
+                                "en": "4.1 Area of landscapes under improved management to benefit biodiversity (qualitative assessment, non-certified)",
+                                "fr": "4.1 Superficie de paysages sous gestion améliorée au profit de la biodiversité (évaluation qualitative, non certifiée)",
+                                "es": "4.1 Superficie de paisajes bajo gestión mejorada en beneficio de la biodiversidad (evaluación cualitativa, no certificada)"
+                            }
+                        },
+                        {
+                            "value": "GEF4.2",
+                            "label": {
+                                "en": "4.2 Area of landscapes that meet national or international third-party certification and that incorporates biodiversity considerations",
+                                "fr": "4.2 Superficie de paysages répondant à une certification tierce nationale ou internationale et intégrant des considérations de biodiversité",
+                                "es": "4.2 Superficie de paisajes que cumplen con la certificación nacional o internacional de terceros e incorporan consideraciones de biodiversidad"
+                            }
+                        },
+                        {
+                            "value": "GEF4.3",
+                            "label": {
+                                "en": "4.3 Area of landscapes under sustainable land management in production systems",
+                                "fr": "4.3 Superficie de paysages sous gestion durable des terres dans les systèmes de production",
+                                "es": "4.3 Superficie de paisajes bajo gestión sostenible de la tierra en sistemas de producción"
+                            }
+                        },
+                        {
+                            "value": "GEF4.4",
+                            "label": {
+                                "en": "4.4 Area of High Conservation Value forest loss avoided",
+                                "fr": "4.4 Superficie de forêts à haute valeur de conservation dont la perte a été évitée",
+                                "es": "4.4 Superficie de bosque de alto valor de conservación cuya pérdida se ha evitado"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": {
+                "en": "5. Area of marine habitat under improved practices to benefit biodiversity (hectares; excluding protected areas)",
+                "fr": "5. Superficie d'habitats marins bénéficiant de pratiques améliorées pour la biodiversité (hectares; hors aires protégées)",
+                "es": "5. Superficie de hábitats marinos bajo prácticas mejoradas para beneficiar la biodiversidad (hectáreas; excluyendo áreas protegidas)"
+            },
+            "value": "GEF5"
+        },
+        {
+            "label": {
+                "en": "2 (LDCF). Area of land managed for climate resilience (hectares)",
+                "fr": "2 (FEM-FVC). Superficie de terres gérées pour la résilience climatique (hectares)",
+                "es": "2 (FEM-FVC). Superficie de tierras gestionadas para la resiliencia climática (hectáreas)"
+            },
+            "value": "GEF2LDCF"
+        }
+    ],
+    "gefCycles": [
+        {
+            "value": 6,
+            "label": {
+                "en": "GEF 6",
+                "fr": "GEF 6",
+                "es": "GEF 6"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "GEF 7",
+                "fr": "GEF 7",
+                "es": "GEF 7"
+            }
+        },
+        {
+            "value": 8,
+            "label": {
+                "en": "GEF 8",
+                "fr": "GEF 8",
+                "es": "GEF 8"
+            }
+        }
+    ],
+    "gefFocalAreas": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Land degradation",
+                "fr": "Dégradation des terres",
+                "es": "Degradación de la tierra"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Biodiversity",
+                "fr": "Biodiversité",
+                "es": "Biodiversidad"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Climate change",
+                "fr": "Changement climatique",
+                "es": "Cambio climático"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Chemicals & waste",
+                "fr": "Produits chimiques & déchets",
+                "es": "Productos químicos & desechos"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "International waters",
+                "fr": "Eaux internationales",
+                "es": "Aguas internacionales"
+            }
+        }
+    ],
+    "gefInvestmentTypes": [
+        {
+            "value": "project",
+            "label": {
+                "en": "Project",
+                "fr": "Projet",
+                "es": "Proyecto"
+            }
+        },
+        {
+            "value": "program",
+            "label": {
+                "en": "Program",
+                "fr": "Programme",
+                "es": "Programa"
+            }
+        }
+    ],
+    "gef6Programs": [
+        {
+            "value": "6.1",
+            "label": {
+                "en": "The Restoration Initiative",
+                "fr": "L'Initiative de restauration",
+                "es": "La Iniciativa de Restauración"
+            }
+        }
+    ],
+    "gef7Programs": [
+        {
+            "value": "7.1",
+            "label": {
+                "en": "Food Systems, Land Use and Restoration",
+                "fr": "Systèmes alimentaires, utilisation des terres et restauration",
+                "es": "Sistemas alimentarios, uso de la tierra y restauración"
+            }
+        },
+        {
+            "value": "7.2",
+            "label": {
+                "en": "Drylands Sustainable Landscapes",
+                "fr": "Paysages durables des zones arides",
+                "es": "Paisajes sostenibles en tierras áridas"
+            }
+        },
+        {
+            "value": "7.3",
+            "label": {
+                "en": "Amazon Sustainable Landscapes Program",
+                "fr": "Programme Paysages durables en Amazonie",
+                "es": "Programa Paisajes Sostenibles de la Amazonía"
+            }
+        }
+    ],
+    "gef8Programs": [
+        {
+            "value": 8.1,
+            "label": {
+                "en": "Amazon, Congo, and Critical Forest Biomes",
+                "fr": "Amazone, Congo et biomes forestiers critiques",
+                "es": "Amazonía, Congo y biomas forestales críticos"
+            }
+        },
+        {
+            "value": 8.2,
+            "label": {
+                "en": "Blue and Green Islands",
+                "fr": "Îles bleues et vertes",
+                "es": "Islas azules y verdes"
+            }
+        },
+        {
+            "value": 8.3,
+            "label": {
+                "en": "Ecosystem Restoration",
+                "fr": "Restauration des écosystèmes",
+                "es": "Restauración de ecosistemas"
+            }
+        },
+        {
+            "value": 8.4,
+            "label": {
+                "en": "Food Systems",
+                "fr": "Systèmes alimentaires",
+                "es": "Sistemas alimentarios"
+            }
+        }
+    ],
+    "boolean": [
+        {
+            "label": {
+                "en": "No",
+                "fr": "Non",
+                "es": "No"
+            },
+            "value": 0
+        },
+        {
+            "label": {
+                "en": "Yes",
+                "fr": "Oui",
+                "es": "Sí"
+            },
+            "value": 1
+        }
+    ],
+    "restorationStatuses": [
+        {
+            "value": 1,
+            "label": {
+                "en": "In preparation",
+                "fr": "En préparation",
+                "es": "En preparación"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "In progress",
+                "fr": "En cours",
+                "es": "En progreso"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Post-completion monitoring",
+                "fr": "Suivi post-achèvement",
+                "es": "Monitoreo posterior a la finalización"
+            }
+        }
+    ],
+    "units": [
+        {
+            "value": "ha",
+            "label": {
+                "en": "Hectares",
+                "fr": "Hectares",
+                "es": "Hectáreas"
+            }
+        },
+        {
+            "value": "km2",
+            "label": {
+                "en": "Square km",
+                "fr": "Kilomètres carrés",
+                "es": "Kilómetros cuadrados"
+            }
+        },
+        {
+            "value": "km",
+            "label": {
+                "en": "Linear km",
+                "fr": "Kilomètres linéaires",
+                "es": "Kilómetros lineales"
+            }
+        }
+    ],
+    "gefImplementingAgencies": [
+        {
+            "value": 1,
+            "label": {
+                "en": "African Development Bank",
+                "fr": "Banque africaine de développement",
+                "es": "Banco Africano de Desarrollo"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Asian Development Bank",
+                "fr": "Banque asiatique de développement",
+                "es": "Banco Asiático de Desarrollo"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Brazilian Biodiversity Fund",
+                "fr": "Fonds brésilien pour la biodiversité",
+                "es": "Fondo Brasileño para la Biodiversidad"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Conservation International",
+                "fr": "Conservation International",
+                "es": "Conservation International"
+            }
+        },
+        {
+            "value": 5,
+            "label": {
+                "en": "Development Bank of Latin America",
+                "fr": "Banque de développement de l'Amérique latine",
+                "es": "Banco de Desarrollo de América Latina"
+            }
+        },
+        {
+            "value": 6,
+            "label": {
+                "en": "Development Bank of Southern Africa",
+                "fr": "Banque de développement d'Afrique australe",
+                "es": "Banco de Desarrollo de África Austral"
+            }
+        },
+        {
+            "value": 7,
+            "label": {
+                "en": "European Bank for Reconstruction and Development",
+                "fr": "Banque européenne pour la reconstruction et le développement",
+                "es": "Banco Europeo de Reconstrucción y Desarrollo"
+            }
+        },
+        {
+            "value": 8,
+            "label": {
+                "en": "Food and Agriculture Organization",
+                "fr": "Organisation des Nations Unies pour l'alimentation et l'agriculture (FAO)",
+                "es": "Organización de las Naciones Unidas para la Alimentación y la Agricultura (FAO)"
+            }
+        },
+        {
+            "value": 9,
+            "label": {
+                "en": "Foreign Economic Cooperation Office",
+                "fr": "Bureau de coopération économique étrangère",
+                "es": "Oficina de Cooperación Económica Exterior"
+            }
+        },
+        {
+            "value": 10,
+            "label": {
+                "en": "GEF Secretariat",
+                "fr": "Secrétariat du FEM",
+                "es": "Secretaría del FMAM"
+            }
+        },
+        {
+            "value": 11,
+            "label": {
+                "en": "Inter-American Development Bank",
+                "fr": "Banque interaméricaine de développement",
+                "es": "Banco Interamericano de Desarrollo"
+            }
+        },
+        {
+            "value": 12,
+            "label": {
+                "en": "International Finance Corporation",
+                "fr": "Société financière internationale",
+                "es": "Corporación Financiera Internacional"
+            }
+        },
+        {
+            "value": 13,
+            "label": {
+                "en": "International Fund for Agricultural Development",
+                "fr": "Fonds international de développement agricole",
+                "es": "Fondo Internacional de Desarrollo Agrícola"
+            }
+        },
+        {
+            "value": 14,
+            "label": {
+                "en": "International Union for Conservation of Nature",
+                "fr": "Union internationale pour la conservation de la nature",
+                "es": "Unión Internacional para la Conservación de la Naturaleza"
+            }
+        },
+        {
+            "value": 15,
+            "label": {
+                "en": "Ministry of Environmental Protection of China",
+                "fr": "Ministère de la protection de l'environnement de Chine",
+                "es": "Ministerio de Protección Ambiental de China"
+            }
+        },
+        {
+            "value": 16,
+            "label": {
+                "en": "The World Bank",
+                "fr": "La Banque mondiale",
+                "es": "El Banco Mundial"
+            }
+        },
+        {
+            "value": 17,
+            "label": {
+                "en": "United Nations Development Programme",
+                "fr": "Programme des Nations Unies pour le développement",
+                "es": "Programa de las Naciones Unidas para el Desarrollo"
+            }
+        },
+        {
+            "value": 18,
+            "label": {
+                "en": "United Nations Environment Programme",
+                "fr": "Programme des Nations Unies pour l'environnement",
+                "es": "Programa de las Naciones Unidas para el Medio Ambiente"
+            }
+        },
+        {
+            "value": 19,
+            "label": {
+                "en": "United Nations Industrial Development Organization",
+                "fr": "Organisation des Nations Unies pour le développement industriel",
+                "es": "Organización de las Naciones Unidas para el Desarrollo Industrial"
+            }
+        },
+        {
+            "value": 20,
+            "label": {
+                "en": "West African Development Bank",
+                "fr": "Banque ouest-africaine de développement",
+                "es": "Banco de Desarrollo de África Occidental"
+            }
+        },
+        {
+            "value": 21,
+            "label": {
+                "en": "World Wildlife Fund - US Chapter",
+                "fr": "World Wildlife Fund - Chapitre américain",
+                "es": "Fondo Mundial para la Naturaleza - Capítulo de EE. UU."
+            }
+        }
+    ],
+    "projectObjectives": [
+        {
+            "value": 1,
+            "label": {
+                "en": "Enhance biodiversity",
+                "fr": "Améliorer la biodiversité",
+                "es": "Mejorar la biodiversidad"
+            }
+        },
+        {
+            "value": 2,
+            "label": {
+                "en": "Enhance ecosystem functions and services",
+                "fr": "Améliorer les fonctions et services écosystémiques",
+                "es": "Mejorar las funciones y servicios del ecosistema"
+            }
+        },
+        {
+            "value": 3,
+            "label": {
+                "en": "Improve ecological integrity",
+                "fr": "Améliorer l'intégrité écologique",
+                "es": "Mejorar la integridad ecológica"
+            }
+        },
+        {
+            "value": 4,
+            "label": {
+                "en": "Improve connectivity",
+                "fr": "Améliorer la connectivité",
+                "es": "Mejorar la conectividad"
+            }
+        }
+    ]
+}

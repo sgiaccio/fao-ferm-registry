@@ -30,7 +30,7 @@ async function getUploadedFiles() {
         uploadedFiles.value = await listProjectFiles(props.projectId, props.folder, accessToken);
     } catch (error) {
         console.error(error);
-        alert('Failed to load files: ' + error);
+        toast.error('Failed to load files: ' + error);
     }
 }
 

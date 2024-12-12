@@ -27,6 +27,7 @@ import ImageUploadFormGroup from '@/components/inputs/base/ImageUploadFormGroup.
 import InfoButton from '@/components/InfoButton.vue';
 import TextInput from '@/components/inputs/base/TextInput.vue';
 
+
 withDefaults(
     defineProps<{
         edit?: boolean;
@@ -211,42 +212,26 @@ watch(
     <TabTemplate title="General">
         <template #description>
             <p v-if="store.project.reportingLine === 'GEF'">
-                In this tab, you can provide basic information about your
-                initiative. The title and a summary of the aims and expected
-                results of the initiative can be provided in the description
-                section. Further information can be provided such as when the
-                initiative is expected to start and end, web links or
-                documentation that you find relevant, responsible organisms and
-                the contact person who can provide further technical details of
-                the initiative.
+                {{ $t('projectRegistration.gef.description') }}
             </p>
             <p v-else>
-                In this tab, you can provide basic information about your
-                restoration initiative. The title and a summary of the aims and
-                expected results of the initiative can be provided in the
-                description section. Further information can be provided such as
-                when the initiative is expected to start and end, the
-                restoration status, web links or documentation that you find
-                relevant, responsible organisms and the contact person who can
-                provide further technical details of the restoration initiative.
+                {{ $t('projectRegistration.description') }}
             </p>
         </template>
         <div class="divide-y divide-slate-100 border-2 border-slate-200 rounded-md shadow-sm mt-4 mb-6 overflow-hidden">
-            <!-- show the thumbnail if available -->
-            <!-- <img v-if="store.project.project.thumbnailUrl" :src="store.project.project.thumbnailUrl" alt="thumbnail" class="w-full h-48 object-cover object-center" /> -->
             <TextFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.title"
-                label="Title"
-                description="Title of the initiative as stated in the official initiative document"
+                :label="$t('projectRegistration.fields.title.label')"
+                :description="$t('projectRegistration.fields.title.description')"
             />
             <RecursiveMenuFormGroup
                 v-if="store.project.reportingLine === 'GEF'"
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.gefImplementingAgencies"
-                label="GEF implementing agencies"
+                :label="$t('projectRegistration.fields.gef.implementingAgencies.label')"
                 :searchable="false"
                 :showSelection="false"
                 :options="menus.gefImplementingAgencies"
@@ -258,11 +243,11 @@ watch(
                     class="px-4 odd:bg-white even:bg-slate-50"
                     :edit="edit"
                     v-model="store.project.project.gefFaoSymbol"
-                    label="GEF Project Symbol"
+                    :label="$t('projectRegistration.fields.gef.faoSymbol.label')"
                 />
                 <FormGroup
                     class="px-4 odd:bg-white even:bg-slate-50"
-                    label="GEF investment type"
+                    :label="$t('projectRegistration.fields.gef.investmentType.label')"
                 >
                     <SmallCardsFormGroup
                         v-model="store.project.project.gefInvestmentType"
@@ -270,22 +255,10 @@ watch(
                         :edit="edit"
                     />
                 </FormGroup>
-                <!-- <FormGroup label="GEF investment type">
-                <RecursiveRadio v-model="store.project.project.gefInvestmentType"
-                                :options="menus.gefInvestmentTypes"
-                                :showSelection="false"
-                                :edit="edit"
-                                :searchable="false" />
-            </FormGroup> -->
                 <FormGroup
                     class="px-4 odd:bg-white even:bg-slate-50"
-                    label="GEF cycle"
+                    :label="$t('projectRegistration.fields.gef.gefCycle.label')"
                 >
-                    <!-- <RecursiveRadio v-model="store.project.project.gefCycle"
-                                :options="menus.gefCycles"
-                                :showSelection="false"
-                                :edit="edit"
-                                :searchable="false" /> -->
                     <SmallCardsFormGroup
                         v-model="store.project.project.gefCycle"
                         :options="menus.gefCycles"
@@ -297,13 +270,13 @@ watch(
                     v-if="store.project.project.gefInvestmentType === 'project'"
                     :edit="edit"
                     v-model="store.project.project.gefFocalAreas"
-                    label="GEF standalone projects (focal areas)"
+                    :label="$t('projectRegistration.fields.gef.focalAreas.label')"
                     :options="menus.gefFocalAreas"
                 />
                 <RecursiveRadioFormGroup
                     class="px-4 odd:bg-white even:bg-slate-50"
                     v-if="store.project.project.gefInvestmentType === 'program'"
-                    label="GEF programmes"
+                    :label="$t('projectRegistration.fields.gef.gefProgram.label')"
                     v-model="store.project.project.gefProgram"
                     :options="gefPrograms"
                     :showSelection="false"
@@ -316,28 +289,23 @@ watch(
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.description"
-                label="Description"
-                description="Short description of the initiative"
+                :label="$t('projectRegistration.fields.description.label')"
+                :description="$t('projectRegistration.fields.description.description')"
             >
                 <template v-slot:info>
                     <p v-if="store.project.reportingLine === 'GEF'">
-                        Provide a short context of the initiative in terms of
-                        actors and partners leading it, a short background, main
-                        management or restoration activities that will be
-                        implemented, expected results of the initiative.
+                        {{ $t('projectRegistration.fields.description.gef.info') }}
                     </p>
                     <p v-else>
-                        Provide a short context of the initiative in terms of
-                        actors and partners leading it, a short background, main
-                        restoration activities that will be implemented,
-                        expected results of the initiative.
+                        {{ $t('projectRegistration.fields.description.info') }}
                     </p>
                 </template>
             </TextareaFormGroup>
 
+            <!-- TODO translation -->
             <ImageUploadFormGroup
                 label="Initiative photos"
-                dangerousHtmlDescription="Please upload photos of the initiative.<br>Images that are bigger than 1MB will be resized.<br><b>You can then choose one as a cover photo by clicking on it.</b>"
+                :dangerousHtmlDescription="`<p>${$t('projectRegistration.fields.initiativePhotos.description.line1')}</p><p>${$t('projectRegistration.fields.initiativePhotos.description.line2')}</p><p><b>${$t('projectRegistration.fields.initiativePhotos.description.line3')}</b></p>`"
                 :projectId="store.id!"
                 folder="images"
                 :multiple="true"
@@ -350,36 +318,36 @@ watch(
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.website"
-                label="Website"
-                description="Website of the initiative"
+                :label="$t('projectRegistration.fields.website.label')"
+                :description="$t('projectRegistration.fields.website.description')"
                 placeholder="www.example.com"
             />
             <SelectFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.startingYear"
-                label="Starting year"
+                :label="$t('projectRegistration.fields.startingYear.label')"
                 :options="years"
             />
             <SelectFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.endingYear"
-                label="Ending year"
+                :label="$t('projectRegistration.fields.endingYear.label')"
                 :options="years"
             />
 
             <RecursiveRadioFormGroup
                 v-if="store.project.reportingLine !== 'GEF'"
                 class="px-4 odd:bg-white even:bg-slate-50"
-                label="Restoration status"
+                :label="$t('projectRegistration.fields.restorationStatus.label')"
                 v-model="store.project.project.restorationStatus"
                 :options="menus.restorationStatuses"
                 :showSelection="false"
                 :searchable="false"
                 :edit="edit"
             >
-                <template v-slot:info>
+                <!-- <template v-slot:info>
                     <p>
                         Provides an indication of whether the restoration area
                         can be counted towards a reporting period. Restoration
@@ -430,14 +398,57 @@ watch(
                         completed, therefore, post-completion assessments on the
                         restoration status shall be made periodically.
                     </p>
+                </template> -->
+                <template v-slot:info>
+                    <div>
+                        <!-- Introductory text -->
+                        <p>
+                            {{ $t('projectRegistration.fields.restorationStatus.info.intro') }}
+                        </p>
+
+                        <!-- References -->
+                        <p class="mt-2">
+                            {{ $t('projectRegistration.fields.restorationStatus.info.references.title') }}
+                            <br />
+                            <a
+                                :href="$t('projectRegistration.fields.restorationStatus.info.references.linkHref')"
+                                target="_blank"
+                                class="text-blue-700 underline"
+                            >
+                                {{ $t('projectRegistration.fields.restorationStatus.info.references.linkText') }}
+                            </a>
+                        </p>
+
+                        <!-- Dropdown -->
+                        <select
+                            v-model="selectedItemInRestorationStatusInfo"
+                            class="mt-6 mb-3 block w-full font-bold rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        >
+                            <option value="1">{{ $t('projectRegistration.fields.restorationStatus.options.preparation') }}</option>
+                            <option value="2">{{ $t('projectRegistration.fields.restorationStatus.options.progress') }}</option>
+                            <option value="3">{{ $t('projectRegistration.fields.restorationStatus.options.monitoring') }}</option>
+                        </select>
+
+                        <!-- Conditional descriptions -->
+                        <p v-if="selectedItemInRestorationStatusInfo === '1'">
+                            {{ $t('projectRegistration.fields.restorationStatus.descriptions.preparation') }}
+                        </p>
+                        <p v-if="selectedItemInRestorationStatusInfo === '2'">
+                            {{ $t('projectRegistration.fields.restorationStatus.descriptions.progress') }}
+                        </p>
+                        <p v-if="selectedItemInRestorationStatusInfo === '3'">
+                            {{ $t('projectRegistration.fields.restorationStatus.descriptions.monitoring') }}
+                        </p>
+                    </div>
+
                 </template>
             </RecursiveRadioFormGroup>
             <RecursiveMenuFormGroup
                 :edit="edit"
                 v-model="store.project.project.restorationTypes"
                 :label="store.project.reportingLine === 'GEF'
-                    ? 'Intervention/restoration types'
-                    : 'Restoration types'
+                    ? $t('projectRegistration.fields.restorationTypes.gef.label')
+                    : $t('projectRegistration.fields.restorationTypes.label')
                     "
                 :options="menus.restorationTypes"
                 :searchable="false"
@@ -445,20 +456,11 @@ watch(
                 class="px-4 odd:bg-white even:bg-slate-50"
             >
                 <template v-slot:info>
-                    The possible values are ecological restoration and
-                    rehabilitation. This can be determined by analyzing the
-                    current and target ecosystem (natural or transformed).
-                    Examples of transformed ecosystems are: farmlands, forest
-                    plantation, urban ecosystems. As a useful rule of thumb, if
-                    the target ecosystem is natural, the restoration will be
-                    ecological restoration. If the target ecosystem is
-                    transformed, the restoration will be rehabilitation.
-                    <!-- <span class="font-bold"
-                          v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3. </span> -->
+                    {{ $t('projectRegistration.fields.restorationTypes.info') }}
                 </template>
             </RecursiveMenuFormGroup>
 
-            <FormGroup
+            <!-- <FormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 label="Objectives"
                 :dangerousHtmlDescription="'Please select the primary aim(s) of the restoration initiative. Reference: <a class=&quot;text-blue-600&quot; target=&quot;_blank&quot; href=&quot;https://gbf-indicators.org/metadata/headline/2-2&quot;>https://gbf-indicators.org/metadata/headline/2-2</a>'"
@@ -496,10 +498,7 @@ watch(
                 </div>
 
                 <div
-                    v-if="
-                        store.project.project.objectives?.length ||
-                        store.project.project.otherObjectives
-                    "
+                    v-if="store.project.project.objectives?.length || store.project.project.otherObjectives"
                     class="mt-3"
                 >
                     <p class="font-semibold text-sm text-gray-500 mb-3">
@@ -535,33 +534,114 @@ watch(
                         rows="3"
                         :disabled="false"
                         class="block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm focus:ring-0"
-                        v-model="store.project.project
-                            .objectivesAdditionalInformation
-                            "
+                        v-model="store.project.project.objectivesAdditionalInformation"
                     ></textarea>
                     <div
-                        v-else-if="
-                            store.project.project
-                                .objectivesAdditionalInformation
-                        "
+                        v-else-if="store.project.project.objectivesAdditionalInformation"
                         class="whitespace-pre-wrap"
                     >
-                        {{
-                            store.project.project
-                                .objectivesAdditionalInformation
-                        }}
+                        {{ store.project.project.objectivesAdditionalInformation }}
                     </div>
                     <div
                         v-else
                         class="italic text-gray-400"
-                    >Not available</div>
+                    >{{ $t('notAvailable') }}</div>
+                </div>
+            </FormGroup> -->
+            <FormGroup
+                class="px-4 odd:bg-white even:bg-slate-50"
+                :label="$t('projectRegistration.fields.objectives.label')"
+            >
+                <!-- Description -->
+                <p>{{ $t('projectRegistration.fields.objectives.description') }}</p>
+                <p class="mt-2">
+                    {{ $t('projectRegistration.fields.objectives.reference') }}
+                    <a
+                        href="https://gbf-indicators.org/metadata/headline/2-2"
+                        target="_blank"
+                        class="text-blue-600 underline"
+                    >
+                        {{ $t('projectRegistration.fields.objectives.referenceLink') }}
+                    </a>
+                </p>
+
+                <!-- Recursive Menu -->
+                <RecursiveMenu
+                    :edit="edit"
+                    v-model="store.project.project.objectives"
+                    :options="menus.projectObjectives"
+                    :searchable="false"
+                    :showSelection="false"
+                />
+                <div class="flex items-center gap-x-3 w-full">
+                    <RecursiveMenu
+                        v-if="edit"
+                        :edit="edit"
+                        v-model="otherObjectives"
+                        :options="[{ value: 0, label: 'Other' }]"
+                        :searchable="false"
+                        :showSelection="false"
+                    />
+                    <span
+                        v-else
+                        class="text-sm font-bold text-gray-600"
+                    >
+                        {{ $t('projectRegistration.fields.objectives.otherObjectives') }}
+                    </span>
+                    <div class="flex-1">
+                        <TextInput
+                            ref="otherObjectivesTextInput"
+                            :enabled="!!otherObjectives.length"
+                            :edit="edit"
+                            v-model="store.project.project.otherObjectives"
+                            :placeholder="otherObjectives.length
+                                ? $t('projectRegistration.fields.objectives.placeholder')
+                                : ''"
+                        />
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div
+                    v-if="store.project.project.objectives?.length || store.project.project.otherObjectives"
+                    class="mt-3"
+                >
+                    <p class="font-semibold text-sm text-gray-500 mb-3">
+                        {{ $t('projectRegistration.fields.objectives.additionalInfo.intro') }}
+                        <InfoButton :title="$t('projectRegistration.fields.objectives.label')">
+                            <template #default>
+                                <p>{{ $t('projectRegistration.fields.objectives.additionalInfo.details') }}</p>
+                                <p class="mt-2">
+                                    <b>{{ $t('projectRegistration.fields.objectives.additionalInfo.example') }}</b>
+                                </p>
+                            </template>
+                        </InfoButton>
+                    </p>
+                    <textarea
+                        v-if="edit"
+                        rows="3"
+                        :disabled="false"
+                        class="block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm focus:ring-0"
+                        v-model="store.project.project.objectivesAdditionalInformation"
+                    ></textarea>
+                    <div
+                        v-else-if="store.project.project.objectivesAdditionalInformation"
+                        class="whitespace-pre-wrap"
+                    >
+                        {{ store.project.project.objectivesAdditionalInformation }}
+                    </div>
+                    <div
+                        v-else
+                        class="italic text-gray-400"
+                    >
+                        {{ $t('projectRegistration.fields.objectives.notAvailable') }}
+                    </div>
                 </div>
             </FormGroup>
-
             <RecursiveMenuFormGroup
                 :edit="edit"
                 v-model="store.project.project.tenureStatuses"
-                label="Tenure statuses"
+                :label="$t('projectRegistration.fields.tenureStatuses.label')"
                 :options="menus.tenureStatuses"
                 :searchable="false"
                 :showSelection="false"
@@ -577,8 +657,6 @@ watch(
                         (FAO, IUCN CEM & SER, 2021) as well as the Voluntary
                         Guidelines on the Responsible Governance of Tenure
                         (VGGT) (FAO, 2022).
-                        <!-- <span class="font-bold"
-                              v-if="store.project.reportingLine === 'GEF'">For GEF projects please only fill if some areas fall under GEF Core Indicator 3.</span> -->
                     </p>
                     <p class="pt-4">
                         References:
@@ -604,7 +682,7 @@ watch(
             <RecursiveMenuFormGroup
                 :edit="edit"
                 v-model="store.project.contributionToSdg"
-                label="Contribution to SDG goals"
+                :label="$t('projectRegistration.fields.contributionToSdg.label')"
                 :options="menus.contributionToSdg"
                 :searchable="false"
                 :showSelection="false"
@@ -612,10 +690,7 @@ watch(
             />
 
             <FileUploadFormGroup2
-                :label="store.project.reportingLine === 'GEF'
-                    ? 'Upload the GEF project document'
-                    : 'Upload one initiative document'
-                    "
+                :label="store.project.reportingLine === 'GEF' ? $t('projectRegistration.fields.uploadInitiativeDocument.gef.label') : $t('projectRegistration.fields.uploadInitiativeDocument.label')"
                 :projectId="store.id!"
                 folder="documents"
                 :multiple="false"
@@ -627,7 +702,7 @@ watch(
             <MultiInputFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
-                label="Points of contact"
+                :label="$t('projectRegistration.fields.pointsOfContact.label')"
                 :inputComponents="pointsOfContact"
                 v-model="store.project.project.pointsOfContact"
             />
@@ -635,13 +710,13 @@ watch(
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.keywords"
-                label="Keywords"
+                :label="$t('projectRegistration.fields.keywords.label')"
             />
             <MultiInputFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
-                label="Organizations"
-                description="Organizations that implement the project/initiative"
+                :label="$t('projectRegistration.fields.organizations.label')"
+                :description="$t('projectRegistration.fields.organizations.description')"
                 :inputComponents="organizations"
                 v-model="store.project.project.organizations"
             />
