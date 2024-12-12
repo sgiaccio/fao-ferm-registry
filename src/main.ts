@@ -1,20 +1,29 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
+import { createI18n } from 'vue-i18n'
+import messages from '@/locales';
+
 import App from './App.vue';
 import router from './router';
 
 import './index.css'
 
-import Vue3Toasity, { type ToastContainerOptions } from 'vue3-toastify';
+import Vue3Toasity, { type ToastContainerOptions, toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
-// import PrimeVue from 'primevue/config';
-// import Lara from '@/presets/lara';
+console.log(messages);
+const i18n = createI18n({
+    locale: 'en',
+    fallbackLocale: 'en',
+    messages
+});
 
 (async () => {
     const app = createApp(App);
     app.use(createPinia());
+
+    app.use(i18n);
 
     app.use(Vue3Toasity, {
         autoClose: 3000
@@ -32,11 +41,12 @@ import 'vue3-toastify/dist/index.css';
     //     await router.push(auth.returnUrl);
     // }
 
-
     app.config.errorHandler = (error, _vm, _info) => {
         // Handle the error globally
         if (process.env.NODE_ENV === 'development') {
-            alert('An unexpected error occurred, please check the console log.');
+            toast.error(i18n.global.t('error.unexpected'), {
+                // autoClose: false
+            });
         }
         console.error(error);
     };
