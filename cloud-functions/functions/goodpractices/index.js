@@ -1,17 +1,22 @@
-// gcloud functions deploy publishGoodPractice \
-//   --gen2 \
-//   --runtime=nodejs18 \
-//   --trigger-http \
-//   --no-allow-unauthenticated \
-//   --region=europe-west3
+// Deploy:
+// gcloud functions deploy publishGoodPractice --gen2 --runtime=nodejs18 --trigger-http --region=europe-west3 --no-allow-unauthenticated
 //
+// Add the following roles to the service account
 // gcloud run services add-iam-policy-binding publishgoodpractice \
 //   --member="serviceAccount:fermgprev@fao-ferm.iam.gserviceaccount.com" \
 //   --role="roles/run.invoker" \
 //   --region=europe-west3 \
 //   --project=fao-ferm \
-//   --platform=managed \
+//   --platform=managed
 //
+// gcloud functions deploy getPublishedGoodPractices --gen2 --runtime=nodejs18 --trigger-http --region=europe-west3 --no-allow-unauthenticated --timeout=5m
+//
+// gcloud run services add-iam-policy-binding getpublishedgoodpractices \
+//   --member="serviceAccount:fermgprev@fao-ferm.iam.gserviceaccount.com" \
+//   --role="roles/run.invoker" \
+//   --region=europe-west3 \
+//   --project=fao-ferm \
+//   --platform=managed
 //
 // gcloud functions deploy getSubmittedGoodPractices --gen2 --runtime=nodejs18 --trigger-http --region=europe-west3 --no-allow-unauthenticated --timeout=5m
 //
@@ -26,8 +31,10 @@
 // TEST:
 // gcloud functions deploy callPublishGoodPractice --gen2 --runtime=nodejs18 --trigger-http --region=europe-west3 --service-account=fermgprev@fao-ferm.iam.gserviceaccount.com --allow-unauthenticated
 // gcloud functions deploy callGetSubmittedGoodPractices --gen2 --runtime=nodejs18 --trigger-http --region=europe-west3 --service-account=fermgprev@fao-ferm.iam.gserviceaccount.com --allow-unauthenticated
+// gcloud functions deploy callGetPublishedGoodPractices --gen2 --runtime=nodejs18 --trigger-http --region=europe-west3 --service-account=fermgprev@fao-ferm.iam.gserviceaccount.com --allow-unauthenticated
 // curl 'https://europe-west3-fao-ferm.cloudfunctions.net/callPublishGoodPractice'
 // curl 'https://europe-west3-fao-ferm.cloudfunctions.net/callGetSubmittedGoodPractices'
+// curl 'https://europe-west3-fao-ferm.cloudfunctions.net/callGetPublishedGoodPractices'
 //
 //
 // URLS
@@ -86,31 +93,50 @@ exports.publishGoodPractice = async (req, res) => {
         res.send('Good practice published');
     } catch (error) {
         console.error('Error handling good practice publication:', error);
-        res.status(500).send('Internal server error');
+        res.status(500).send('Internal server error: ' + error);
     }
 };
 
-exports.getSubmittedGoodPractices = async (req, res) => {
-    try {
-        const registryRef = db.collection('registry');
-        const projectsSnapshot = await registryRef.get();
-        const goodPractices = [];
+async function getGoodPracticesByStatus(status) {
+    const registryRef = db.collection('registry');
+    const projectsSnapshot = await registryRef.get();
+    const goodPractices = [];
 
-        for (const projectDoc of projectsSnapshot.docs) {
-            const bestPracticesRef = projectDoc.ref.collection('bestPractices');
-            const submittedPracticesSnapshot = await bestPracticesRef.where('status', '==', 'submitted').get();
+    for (const projectDoc of projectsSnapshot.docs) {
+        const bestPracticesRef = projectDoc.ref.collection('bestPractices');
+        const submittedPracticesSnapshot = await bestPracticesRef.where('status', '==', status).get();
 
-            submittedPracticesSnapshot.forEach(practiceDoc => {
-                goodPractices.push(practiceDoc.data());
+        submittedPracticesSnapshot.forEach(practiceDoc => {
+            goodPractices.push({
+                id: practiceDoc.id,
+                projectId: projectDoc.id,
+                data: practiceDoc.data()
             });
-        }
+        });
+    }
 
+    return goodPractices;
+}
+
+exports.getSubmittedGoodPractices = async (_req, res) => {
+    try {
+        const goodPractices = await getGoodPracticesByStatus('submitted');
         res.send(goodPractices);
     } catch (error) {
         console.error('Error getting submitted good practices:', error);
-        res.status(500).send('Internal server error');
+        res.status(500).send('Internal server error: ' + error);
     }
 };
+
+exports.getPublishedGoodPractices = async (_req, res) => {
+    try {
+        const goodPractices = await getGoodPracticesByStatus('published');
+        res.send(goodPractices);
+    } catch (error) {
+        console.error('Error getting published good practices:', error);
+        res.status(500).send('Internal server error: ' + error);
+    }
+}
 
 // exports.callPublishGoodPractice = async (req, res) => {
 //     // Base URL without query parameters for the audience
@@ -147,6 +173,21 @@ exports.getSubmittedGoodPractices = async (req, res) => {
 //         res.send(response.data);
 //     } catch (error) {
 //         console.error('Error calling getSubmittedGoodPractices:', error);
+//         res.status(500).send('Internal server error');
+//     }
+// }
+
+// exports.callGetPublishedGoodPractices = async (req, res) => {
+//     const baseURL = 'https://europe-west3-fao-ferm.cloudfunctions.net/getPublishedGoodPractices';
+
+//     const auth = new GoogleAuth();
+//     const client = await auth.getIdTokenClient(baseURL);
+
+//     try {
+//         const response = await client.request({ url: baseURL });
+//         res.send(response.data);
+//     } catch (error) {
+//         console.error('Error calling getPublishedGoodPractices:', error);
 //         res.status(500).send('Internal server error');
 //     }
 // }
