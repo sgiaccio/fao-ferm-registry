@@ -36,7 +36,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 // transform the URL if the source is 'FERM' and it's a project, not a best practice
 const source = props.source.toLowerCase();
 let _url = props.url;
-if ((props.source === 'FERM' || props.source ==='GEF') && props.url.includes('/initiatives/')) {
+if ((props.source === 'FERM' || props.source ==='GEF' || props.source === 'RESULT Asia-Pacific') && props.url.includes('/initiatives/')) {
     const projectId = props.url.split('/').pop();
     _url = `/search/initiatives/${projectId}`;
 }

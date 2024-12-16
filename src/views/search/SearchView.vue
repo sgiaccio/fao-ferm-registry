@@ -24,6 +24,7 @@ import ProjectsSearchResultView from './ProjectsSearchResultView.vue'
 
 const props = withDefaults(defineProps<{
     type: 'initiatives' | 'goodPractices'
+    source?: string
 }>(), {
     type: 'initiatives'
 });
@@ -31,6 +32,8 @@ const props = withDefaults(defineProps<{
 const sidebarOpen = ref(false)
 const aboutOpen = ref(false)
 
+// get source from url query or from props
+const source = props.source || router.currentRoute.value.query.source as string;
 const whatToSearch = ref<'initiatives' | 'goodPractices'>();
 watch(() => props.type, type => {
     whatToSearch.value = type;
@@ -74,7 +77,7 @@ const queryInitiatives = [
     }, {
         name: 'Source',
         queryName: 'source',
-        queryValues: ['FERM', 'GEF', 'Nature Commitments', 'Restoration Resource Center', 'Brazilian Restoration and Reforestation Observatory']
+        queryValues: ['FERM', 'GEF', 'RESULT Asia-Pacific', 'Nature Commitments', 'Restoration Resource Center', 'Brazilian Restoration and Reforestation Observatory']
     }, {
         name: 'Restoration Type',
         queryName: 'restoration_types',
@@ -89,7 +92,17 @@ const queryInitiatives = [
 const searchTextGoodPractices = ref<string>('');
 const searchTextInitiatives = ref<string>('');
 const searchTermsGoodPractices = ref(Object.fromEntries(queryGoodPractices.map((q) => [q.queryName, []])));
-const searchTermsInitiatives = ref(Object.fromEntries(queryInitiatives.map((q) => [q.queryName, []])));
+// const searchTermsInitiatives_ = ref(Object.fromEntries(queryInitiatives.map((q) => [q.queryName, []])));
+// initialize search terms for initiatives with the source gotten
+const searchTermsInitiatives = ref(
+    Object.fromEntries(
+        queryInitiatives.map((q) => [
+            q.queryName,
+            (q.queryName === 'source') && source ? [ source ] : []
+        ])
+    )
+);
+
 const countriesBestPractices = ref([]);
 const countriesInitiatives = ref([]);
 const language = ref<'en' | 'es' | 'fr'>('en');
