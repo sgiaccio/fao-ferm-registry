@@ -236,14 +236,14 @@ function initChart() {
 </script>
 
 <template>
-    <div :class="['w-full shadow-md rounded-lg border border-gray-100 bg-white', props.size === 'small' ? 'text-sm' : 'text-base']">
+    <div :class="['w-full shadow-md rounded-lg border border-gray-100 bg-white', props.size === 'small' ? 'text-sm grid' : 'text-base']">
         <div
             v-if="props.title"
             class="w-full center text-center font-bold text-gray-600 pt-4"
         >{{ props.title }}</div>
         <div
             ref="chartRef"
-            :class="['w-full', props.size === 'small' ? 'h-52' : 'h-80']"
+            :class="['w-full', props.size === 'small' ? 'h-52 self-end' : 'h-80']"
         ></div>
     </div>
 </template>

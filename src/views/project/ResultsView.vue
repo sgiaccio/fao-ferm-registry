@@ -6,7 +6,6 @@ import { useRoute } from 'vue-router'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
 
 import { getPublicProjectThumbnail } from '@/firebase/functions';
-import { getGaulLevel0 } from '@/firebase/firestore';
 
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
@@ -20,7 +19,6 @@ import IndicatorsPanel from '../search/project/IndicatorsPanel.vue';
 import MapPanel from '../search/project/MapPanel.vue';
 import EcosystemsPanel from '../search/project/EcosystemsPanel.vue';
 import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
-
 import CommittedAreaChart from '@/views/charts/CommittedAreaChart.vue';
 
 import { useUserPrefsStore } from '@/stores/userPreferences';
@@ -29,8 +27,9 @@ import {
     getRecursiveMenuItem,
     getPolygonsArea,
     areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil,
-    formatNumber
 } from '@/lib/util';
+
+import iso2codes from '@/assets/iso2codes.json';
 
 
 withDefaults(defineProps<{
@@ -45,8 +44,6 @@ const route = useRoute();
 const { menus } = useMenusStore();
 const projectStore = useProjectStore();
 
-const countries = ref<{ iso2: string, label: string }[] | null>(null);
-
 const project = ref<any>(null);
 const projectAreas = ref<any[]>([]);
 
@@ -55,20 +52,18 @@ const areaByGefIndicatorGroup = ref<any[]>([]);
 const mapPanel = ref<any>(null);
 
 
-const indicatorGroupNames = [
-    { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use' },
-    { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use' },
-    { value: 3, label: '3. Area of land and ecosystems under restoration' },
-    { value: 4, label: '4. Area of landscapes under improved practices' },
-    { value: 5, label: '5. Area of marine habitat under improved practices to benefit biodiversity' },
-    { value: '2LDCF', label: '2 (LDCF). Area of land managed for climate resilience' }
-];
+// const indicatorGroupNames = [
+//     { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use' },
+//     { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use' },
+//     { value: 3, label: '3. Area of land and ecosystems under restoration' },
+//     { value: 4, label: '4. Area of landscapes under improved practices' },
+//     { value: 5, label: '5. Area of marine habitat under improved practices to benefit biodiversity' },
+//     { value: '2LDCF', label: '2 (LDCF). Area of land managed for climate resilience' }
+// ];
 
 onBeforeMount(async () => {
     project.value = projectStore.project;
     projectAreas.value = projectStore.projectAreas;
-
-    countries.value = await getGaulLevel0();
 
     if (project.value.reportingLine === 'GEF') {
         areaByGefIndicatorGroup.value = areaByGefIndicatorGroupUtil(projectAreas.value);
@@ -119,9 +114,9 @@ onMounted(async () => {
 });
 
 const countriesObj = computed(() => {
-    if (!countries.value || !project?.value?.project?.countries) return '';
+    if (!iso2codes || !project?.value?.project?.countries) return '';
     const projectCountries = (project?.value?.project?.countries || []).map((iso2: string) => {
-        return countries.value!.find(c => c.iso2 === iso2)
+        return iso2codes!.find(c => c.iso2 === iso2)
     });
     return projectCountries.map(c => ({ name: c?.label, iso2: c?.iso2 })).sort((a, b) => a.name.localeCompare(b.name));
 });
@@ -343,6 +338,7 @@ function otherChartSize() {
                                     :units="project.project.areaUnits"
                                 />
                                 <div :class="['mt-2', nCIOtherThan3() > 1 ? 'grid grid-cols-2 gap-2' : '']">
+                                    {{ areaForGefIndicatorGroup(4) }}
                                     <CommittedAreaChart
                                         v-if="project.project.targetAreaCoreIndicator4"
                                         title="Area of landscapes under improved practices"

@@ -73,7 +73,7 @@ function changeSource(event, source) {
                     <h3 class="text-md font-medium line-clamp-2">{{ title }}</h3>
                     <p
                         v-if="shortDescription"
-                        class="text-sm text-gray-700 line-clamp-3 w-auto mt-3"
+                        class="text-sm text-gray-700 line-clamp-2 w-auto mt-3"
                     ><span class="font-semibold">Description: </span>{{ shortDescription }}</p>
                     <p
                         v-if="lastUpdated"

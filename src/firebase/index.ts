@@ -28,12 +28,12 @@ if (!getApps().length) {
     functions = getFunctions(app);
     storage = getStorage(app);
 
-    // if (process.env.NODE_ENV === 'development') {
-    //     connectFirestoreEmulator(db, 'localhost', 8080);
-    //     connectAuthEmulator(auth, 'http://localhost:9099');
-    //     connectFunctionsEmulator(functions, 'localhost', 5001);
-    //     connectStorageEmulator(storage, 'localhost', 9199);
-    // }
+    if (process.env.NODE_ENV === 'development') {
+        connectFirestoreEmulator(db, 'localhost', 8080);
+        connectAuthEmulator(auth, 'http://localhost:9099');
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+        connectStorageEmulator(storage, 'localhost', 9199);
+    }
 }
 
 export { auth, db, functions, storage };
