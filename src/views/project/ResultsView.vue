@@ -325,8 +325,8 @@ function otherChartSize() {
                             </div>
                             <CommittedAreaChart
                                 v-if="project.reportingLine !== 'GEF'"
-                                :areaUnderRestoration="areaUnderRestoration"
-                                :targetArea="project.project.targetArea"
+                                :areaUnderRestoration="areaUnderRestoration || 0"
+                                :targetArea="project.project.targetArea || 0"
                                 :units="project.project.areaUnits"
                             />
                             <div v-else>
