@@ -3,23 +3,9 @@ import { ref, onMounted, onBeforeMount, onUnmounted, computed, watch } from 'vue
 
 import { useRoute } from 'vue-router'
 
-// import { listProjectFiles, getFileAsBlob } from '@/firebase/storage';
 import { getPublicProject, getPublicProjectThumbnail } from '@/firebase/functions';
-import { getGaulLevel0 } from '@/firebase/firestore';
 
-// import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
-// import { useAuthStore } from '@/stores/auth';
-
-// import { getRecursiveMenuLabel } from '@/lib/util';
-// import { roundToPrecisionAsString } from '@/lib/util';
-// import SnailChart from '@/components/charts/SnailChart.vue';
-// const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
-// const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
-
-// import { Swiper, SwiperSlide } from 'swiper/vue';
-// import 'swiper/css';
-// import 'swiper/css/navigation';
 
 import ResultPanel from './ResultPanel.vue';
 import ActivitiesPanel from './ActivitiesPanel.vue';
@@ -31,11 +17,7 @@ import MapPanel from './MapPanel.vue';
 import EcosystemsPanel from './EcosystemsPanel.vue';
 import ChartsSwiper from '@/views/charts/ChartsSwiper.vue';
 import GoodPracticesPanel from './GoodPracticesPanel.vue';
-
-const mapPanel = ref<any>(null);
-
-// import required modules
-// import { Navigation } from 'swiper/modules';
+import CommittedAreaChart from '@/views/charts/CommittedAreaChart.vue';
 
 import {
     getRecursiveMenuItem,
@@ -44,6 +26,10 @@ import {
     areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil
 } from '@/lib/util';
 
+import iso2codes from '@/assets/iso2codes.json';
+
+
+const mapPanel = ref<any>(null);
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -51,33 +37,29 @@ withDefaults(defineProps<{
     edit: true
 });
 
-
-// const modules = [Navigation]; // Swiper modules
-
 const route = useRoute();
 const { menus } = useMenusStore();
-const countries = ref<{ iso2: string, label: string }[] | null>(null);
 
 const project = ref<any>(null);
 
 const areaByGefIndicatorGroup = ref<any[]>([]);
 
-const indicatorGroupNames = [
-    { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use' },
-    { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use' },
-    { value: 3, label: '3. Area of land and ecosystems under restoration' },
-    { value: 4, label: '4. Area of landscapes under improved practices' },
-    { value: 5, label: '5. Area of marine habitat under improved practices to benefit biodiversity' },
-    { value: '2LDCF', label: '2 (LDCF). Area of land managed for climate resilience' }
-];
+// const indicatorGroupNames = [
+//     { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use' },
+//     { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use' },
+//     { value: 3, label: '3. Area of land and ecosystems under restoration' },
+//     { value: 4, label: '4. Area of landscapes under improved practices' },
+//     { value: 5, label: '5. Area of marine habitat under improved practices to benefit biodiversity' },
+//     { value: '2LDCF', label: '2 (LDCF). Area of land managed for climate resilience' }
+// ];
 
 onBeforeMount(async () => {
-    const [fetchedProject, fetchedCountries] = await Promise.all([
+    const [fetchedProject] = await Promise.all([
         getPublicProject(route.params.id as string),
-        getGaulLevel0()
+        // getGaulLevel0()
     ]);
     project.value = fetchedProject;
-    countries.value = fetchedCountries;
+    // countries.value = fetchedCountries;
 
     if (fetchedProject.reportingLine === 'GEF') {
         areaByGefIndicatorGroup.value = areaByGefIndicatorGroupUtil(fetchedProject.areas);
@@ -107,42 +89,6 @@ async function getThumbnail() {
         console.error('Error displaying the thumbnail:', error);
     }
 }
-
-// async function getUploadedFiles() {
-//     try {
-//         const accessToken = await authStore.getIdToken();
-//         uploadedFiles.value = await listProjectFiles(route.params.id, "images", accessToken);
-
-//         // Load each file in parallel
-//         uploadedFiles.value.forEach(async (file: { name: string, path: string }, index: number) => {
-//             try {
-//                 const blob = await getFileAsBlob(route.params.id, file.path, accessToken);
-//                 const imageUrl = URL.createObjectURL(blob);
-
-//                 // Place the file at the correct index
-//                 uploadedFiles.value[index] = { ...file, imageUrl };
-//                 // Trigger a reactive update
-//                 uploadedFiles.value = [...uploadedFiles.value];
-//             } catch (error) {
-//                 console.error(`Failed to load file ${file.path}:`, error);
-//             }
-//         });
-//     } catch (error) {
-//         console.error(error);
-//         alert('Failed to load files: ' + error);
-//     }
-// }
-
-// GEF
-// function getLastTargetArea() {
-//     const registration = store.project?.project;
-//     const targetAreaDesignPhase = registration.targetAreaDesignPhase;
-//     const targetAreaReviewPhase = registration.targetAreaReviewPhase;
-//     const targetAreaEvaluationPhase = registration.targetAreaEvaluationPhase;
-
-//     return targetAreaEvaluationPhase || targetAreaReviewPhase || targetAreaDesignPhase;
-// }
-// const areaByGefIndicator = store.areaByGefIndicator();
 
 let chartData: { value: number, name: string }[] = [];
 const chartDiv = ref(null);
@@ -392,9 +338,9 @@ async function initChart() {
 // }
 
 const countriesObj = computed(() => {
-    if (!countries.value || !project?.value?.project?.countries) return '';
+    if (!iso2codes || !project?.value?.project?.countries) return '';
     const projectCountries = (project?.value?.project?.countries || []).map((iso2: string) => {
-        return countries.value!.find(c => c.iso2 === iso2)
+        return iso2codes!.find(c => c.iso2 === iso2)
     });
     return projectCountries.map(c => ({ name: c?.label, iso2: c?.iso2 })).sort((a, b) => a.name.localeCompare(b.name));
 });
@@ -436,18 +382,6 @@ function zoomToArea(uuid: string) {
 
 const showFullDescription = ref(false);
 
-function formatNumber(n: number) {
-    // Use the toLocaleString method to add suffixes to the number
-    return n.toLocaleString('en-US', {
-        // add suffixes for thousands, millions, and billions
-        // the maximum number of decimal places to use
-        maximumFractionDigits: 0,
-        // specify the abbreviations to use for the suffixes
-        notation: 'compact',
-        compactDisplay: 'short'
-    });
-}
-
 const selectedArea = ref(null);
 function areaClicked(area: any) {
     // if there's only one area, don't do anything because the information would be the same
@@ -477,6 +411,25 @@ const areaUnderRestoration = computed(() => {
         return project.value.project.areaUnderRestoration;
     }
 });
+
+function areaForGefIndicatorGroup(indicatorGroup: number) {
+    return areaByGefIndicatorGroup.value.find(i => +i[0] === indicatorGroup)?.[1];
+}
+
+function nCIOtherThan3() {
+    const allIndicators = [
+        project.value.project.targetAreaCoreIndicator1,
+        project.value.project.targetAreaCoreIndicator2,
+        project.value.project.targetAreaCoreIndicator2LDCF,
+        project.value.project.targetAreaCoreIndicator4,
+        project.value.project.targetAreaCoreIndicator5
+    ];
+    return allIndicators.filter(i => i).length;
+}
+
+function otherChartSize() {
+    return nCIOtherThan3() > 1 ? 'small' : undefined;
+}
 </script>
 
 <template>
@@ -617,92 +570,72 @@ const areaUnderRestoration = computed(() => {
                                     class="object-cover aspect-[162/100]"
                                 />
                             </div>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8 font-roboto text-black">
-                                <div class="flex flex-row lg:flex-col gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#589C33]">
-                                    <div class="flex-0">
-                                        <svg
-                                            class="h-10 w-10 text-gray-400 mix-blend-multiply"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                        >
-                                            <title>forest</title>
-                                            <path d="M16 12L9 2L2 12H3.86L0 18H7V22H11V18H18L14.14 12H16M20.14 12H22L15 2L12.61 5.41L17.92 13H15.97L19.19 18H24L20.14 12M13 19H17V22H13V19Z" />
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col flex-grow">
-                                        <div class="flex-0 flex flex-grow">
-                                            <div>
-                                                <span class="font-bold text-3xl mr-1">{{ targetArea ? formatNumber(targetArea) : 'n/a' }}</span>
-                                                <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-end">
-                                            <div>Committed area</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-row lg:flex-col gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#dd6b66]">
-                                    <div class="flex-0">
-                                        <svg
-                                            class="h-10 w-10 text-gray-400 mix-blend-multiply"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                        >
-                                            <title>sprout</title>
-                                            <path d="M2,22V20C2,20 7,18 12,18C17,18 22,20 22,20V22H2M11.3,9.1C10.1,5.2 4,6.1 4,6.1C4,6.1 4.2,13.9 9.9,12.7C9.5,9.8 8,9 8,9C10.8,9 11,12.4 11,12.4V17C11.3,17 11.7,17 12,17C12.3,17 12.7,17 13,17V12.8C13,12.8 13,8.9 16,7.9C16,7.9 14,10.9 14,12.9C21,13.6 21,4 21,4C21,4 12.1,3 11.3,9.1Z" />
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col flex-grow">
-                                        <div class="flex-0 flex flex-grow">
-                                            <div>
-                                                <span class="font-bold text-3xl mr-1">{{ areaUnderRestoration ? formatNumber(areaUnderRestoration) : 'n/a' }}</span>
-                                                <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-end">
-                                            <div>Area under restoration</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- <div class="flex flex-row lg:flex-col gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#69B2BA]">
-                                    <div class="flex-0">
-                                        <!- - <svg
-                                            class="h-10 w-10 text-gray-400 mix-blend-multiply"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                        >
-                                            <title>cactus</title>
-                                            <path d="M14,16V21H10V18H9A3,3 0 0,1 6,15V12A1,1 0 0,1 7,11A1,1 0 0,1 8,12V15C8,15.56 8.45,16 9,16H10V6A2,2 0 0,1 12,4A2,2 0 0,1 14,6V14H15A1,1 0 0,0 16,13V11A1,1 0 0,1 17,10A1,1 0 0,1 18,11V13A3,3 0 0,1 15,16H14Z" />
-                                        </svg> - ->
-                                        <svg
-                                            class="h-10 w-10 text-gray-400 mix-blend-multiply"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill="currentColor"
-                                        >
-                                            <title>leaf-off</title>
-                                            <path d="M20.84 22.73L15.14 17.03C13.26 18.79 10.92 20 8 20C7.64 20 7.14 19.87 6.66 19.7L5.71 22L3.82 21.34C5.15 18.03 6.5 14.32 9.66 11.55L8.77 10.66C6.76 12.03 4.86 14.1 3.75 17.25C3.75 17.25 2 15.5 2 13.5C2 12 3.12 9.32 5.72 7.61L1.11 3L2.39 1.73C2.39 1.73 16.39 15.74 16.39 15.74L22.11 21.46L20.84 22.73M17 8C15.35 8.37 13.93 8.88 12.7 9.5L17.5 14.29C20.87 9.35 22 3 22 3C21.03 4.95 14.35 5.24 9.38 6.18L12.15 8.95C14.81 8 17 8 17 8Z" />
-                                        </svg>
-                                    </div>
 
-
-                                    <div class="flex flex-col flex-grow">
-                                        <div class="flex-0 flex flex-grow">
-                                            <div>
-                                                <span class="font-bold text-3xl mr-1">{{ project.project.targetArea && project.project.areaUnderRestoration ? formatNumber(project.project.targetArea - project.project.areaUnderRestoration) : 'n/a' }}</span>
-                                                <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-end">
-                                            <div>Area not achieved</div>
-                                        </div>
-                                    </div>
-                                </div> -->
+                            <CommittedAreaChart
+                                v-if="project.reportingLine !== 'GEF'"
+                                :areaUnderRestoration="areaUnderRestoration"
+                                :targetArea="project.project.targetArea"
+                                :units="project.project.areaUnits"
+                            />
+                            <div v-else>
+                                <CommittedAreaChart
+                                    v-if="project.project.targetAreaCoreIndicator3"
+                                    title="Area of land and ecosystems under restoration"
+                                    :targetArea="project.project.targetAreaCoreIndicator3"
+                                    :areaUnderRestoration="areaForGefIndicatorGroup(3) ?? 0"
+                                    :units="project.project.areaUnits"
+                                />
+                                <div :class="['mt-2', nCIOtherThan3() > 1 ? 'grid grid-cols-2 gap-2' : '']">
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator4"
+                                        title="Area of landscapes under improved practices"
+                                        :targetArea="project.project.targetAreaCoreIndicator4"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup(4) ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator5"
+                                        title="Area of marine habitat under improved practices to benefit biodiversity"
+                                        :targetArea="project.project.targetAreaCoreIndicator5"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup(2) ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator1"
+                                        title="Terrestrial protected areas created or under improved management for conservation and sustainable use"
+                                        :targetArea="project.project.targetAreaCoreIndicator1"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup(1) ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator2"
+                                        title="Marine protected areas created or under improved management for conservation and sustainable use"
+                                        :targetArea="project.project.targetAreaCoreIndicator2"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup(2) ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="project.project.targetAreaCoreIndicator2LDCF"
+                                        title="Area of land managed for climate resilience"
+                                        :targetArea="project.project.targetAreaCoreIndicator2LDCF"
+                                        :areaUnderRestoration="areaForGefIndicatorGroup('2LDCF') ?? 0"
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                </div>
                             </div>
-                            <div
+
+
+                            <!-- <div
                                 v-if="project.reportingLine === 'GEF'"
                                 class="gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#dd6b66]"
                             >
@@ -722,7 +655,7 @@ const areaUnderRestoration = computed(() => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- <div
                         v-if="project.project.targetArea && project.project.areaUnderRestoration"
@@ -767,13 +700,6 @@ const areaUnderRestoration = computed(() => {
                     </div> -->
 
                             <ResultPanel>
-                                <!-- <div class="
-                            px-4
-                            sm:px-0"
-                        >
-                            <h3 class="text-base font-semibold leading-7 text-gray-900">Applicant Information</h3>
-                            <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Personal details and application.</p>
-                    </div> -->
                                 <div class="border-gray-100">
                                     <dl class="divide-y divide-gray-100">
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
@@ -804,30 +730,14 @@ const areaUnderRestoration = computed(() => {
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                                <template v-if="project.reportingLine !== 'GEF'">
-                                                    <template v-if="project.project.restorationStatus">
-                                                        {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
-                                                    </template>
-                                                    <span
-                                                        v-else
-                                                        class="italic text-gray-500"
-                                                    >n/a</span>
+                                                <template v-if="project.project.restorationStatus">
+                                                    {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
                                                 </template>
-                                                <template v-else>
-                                                    <template v-if="project.project.targetAreaEvaluationPhase">
-                                                        Post-completion
-                                                    </template>
-                                                    <template v-else-if="project.project.targetAreaReviewPhase">
-                                                        In progress
-                                                    </template>
-                                                    <template v-else-if="project.project.targetAreaDesignPhase">
-                                                        In preparation
-                                                    </template>
-                                                    <span
-                                                        v-else
-                                                        class="italic text-gray-500"
-                                                    >n/a</span>
-                                                </template>
+                                                <span
+                                                    v-else
+                                                    class="italic text-gray-500"
+                                                >n/a</span>
+
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

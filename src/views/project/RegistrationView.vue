@@ -338,7 +338,6 @@ watch(
             />
 
             <RecursiveRadioFormGroup
-                v-if="store.project.reportingLine !== 'GEF'"
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :label="$t('projectRegistration.fields.restorationStatus.label')"
                 v-model="store.project.project.restorationStatus"

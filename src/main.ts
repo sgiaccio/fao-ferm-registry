@@ -12,6 +12,7 @@ import './index.css'
 import Vue3Toasity, { type ToastContainerOptions, toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
+
 console.log(messages);
 const i18n = createI18n({
     locale: 'en',
@@ -29,32 +30,17 @@ const i18n = createI18n({
         autoClose: 3000
     } as ToastContainerOptions);
 
-    // const auth = useAuthStore();
-    // await auth.fetchUser();
-
-    // !!! ORDER IS IMPORTANT !!!
-    // !!! LOAD ROUTER AFTER THE AUTH STORE IS LOADED AND USER IS FETCHED !!!
     app.use(router);
-
     await router.isReady();
-    // if (router.currentRoute.value.path === '/login' && auth.authLoaded) {
-    //     await router.push(auth.returnUrl);
-    // }
 
     app.config.errorHandler = (error, _vm, _info) => {
         // Handle the error globally
         if (process.env.NODE_ENV === 'development') {
-            toast.error(i18n.global.t('error.unexpected'), {
-                // autoClose: false
+            toast.error('An unexpected error occurred, please check the console for more information.', {
             });
         }
         console.error(error);
     };
 
-    // app.use(PrimeVue, {
-    //     unstyled: true,
-    //     pt: Lara
-    // });
-    
     app.mount('#app');
 })();

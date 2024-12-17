@@ -148,10 +148,11 @@ exports.getPolygonZonalStats = functions
     // .runWith({ secrets: [dbUser, dbHost, dbDatabase, dbPassword, earthMapApiKey] })
     .https
     .onCall(async ({ polygonId, stats, options }, context) => {
+        // TODO user should be authenticated if the polygon is not public
         // Check if the user is logged in
-        if (!context.auth) {
-            throw new functions.https.HttpsError("unauthenticated", "User must be authenticated to fetch polygon data.");
-        }
+        // if (!context.auth) {
+        //     throw new functions.https.HttpsError("unauthenticated", "User must be authenticated to fetch polygon data.");
+        // }
 
         const client = await getDatabaseClient({
             user: dbUser.value(),

@@ -29,13 +29,13 @@ import AoiViewInfo from '@/views/project/AoiViewInfo.vue';
 import AlertModal from '@/views/AlertModal.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
 
-import { roundToPrecisionAsString, getLastTargetArea } from '@/lib/util';
+import { roundToPrecisionAsString } from '@/lib/util';
 
 import { getGaulLevel0 } from '@/firebase/firestore';
 
+
 const store = useProjectStore();
 const authStore = useAuthStore();
-// const menus = useMenusStore().menus;
 
 let countries = ref();
 
@@ -107,7 +107,7 @@ const paAndTraditionalTerritoriesComponent = {
     //     { key: 'country', f: (_: any, i: number) => store.project.project.countries[i] },
     // ],
     // has to be calculated props to be dynamic
-    calculatedProps: [{key: 'units', f: (_: any, i: number) => store.project.project.areaUnits}]
+    calculatedProps: [{ key: 'units', f: (_: any, i: number) => store.project.project.areaUnits }]
 };
 
 const showUploadInfoModal = ref(false);
@@ -254,66 +254,22 @@ const uniqueEcosystems = computed(() => {
 
         <template #default>
             <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 shadow-md border-gray-300">
-                <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data).</span>
-                    The sum of committed land in GEF Core Indicators 1&mdash;5 shall be included
-                    in project design phase, at mid-term review phase (MT) and at
-                    terminal evaluation (TE) phase.</p>
-
-                <FormGroup
-                    :edit="edit"
-                    label="Target area in design phase [Hectares]"
-                    description="Area of land committed in design phase"
-                >
-                    <NumberInput
-                        :edit="edit"
-                        v-model="store.project.project.targetAreaDesignPhase"
-                    />
-                    <template v-slot:info>
-                        <p>Please include the land (in ha) committed in <span class="font-bold">project design phase</span>
-                            (sum of GEF Core Indicators 1-5).</p>
-                    </template>
-                </FormGroup>
-                <FormGroup
-                    :edit="edit || !!store.project.project.targetAreaReviewPhase"
-                    label="Target area in mid-term review phase [Hectares]"
-                    description="Area of land committed in mid-term review phase"
-                >
-                    <NumberInput
-                        :edit="edit"
-                        v-model="store.project.project.targetAreaReviewPhase"
-                    />
-
-                    <template v-slot:info>
-                        <p>Please include the land (in ha) committed in project <span class="font-bold">mid-term review phase</span>
-                            (sum of GEF Core Indicators 1-5).</p>
-                    </template>
-                </FormGroup>
-                <FormGroup
-                    :edit="edit || !!store.project.project.targetAreaEvaluationPhase"
-                    label="Target area in terminal evaluation phase [Hectares]"
-                    description="Area of land committed in terminal evaluation phase"
-                >
-                    <NumberInput
-                        :edit="edit"
-                        v-model="store.project.project.targetAreaEvaluationPhase"
-                    />
-
-                    <template v-slot:info>
-                        <p>Please include the land (in ha) committed in project <span class="font-bold">terminal evaluation phase</span>
-                            (sum of GEF Core Indicators 1-5).</p>
-                    </template>
-                </FormGroup>
+                <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data):</span> The land committed in GEF Core Indicators includes the ha committed in GEF Core Indicators 1-5 and LDCF Indicator 2.</p>
                 <FormGroup
                     :edit="edit"
                     label="Breakdown of commitment by core indicator [Hectares]"
                     description="Area of land committed by core indicator"
                 >
-                    <div class="grid _grid-flow-row gap-x-6 gap-y-2 grid-cols-[min-content_minmax(0px,_200px)]">
-                        <!-- <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
+                    <div class="grid _grid-flow-row gap-x-6 gap-y-4 grid-cols-2 items-start _grid-cols-[min-content_minmax(0px,_200px)]">
                         <label
                             for="targetAreaCoreIndicator1"
-                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
-                        >CI 1</label>
+                            class="block text-sm font-medium text-gray-700"
+                        >Core Indicator 1
+                            -
+                            <span class="font-normal">
+                                Terrestrial protected areas created or under improved Management
+                            </span>
+                        </label>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator1"
@@ -325,8 +281,13 @@ const uniqueEcosystems = computed(() => {
                         <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
                         <label
                             for="targetAreaCoreIndicator2"
-                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
-                        >CI 2</label>
+                            class="block text-sm font-medium text-gray-700"
+                        >Core Indicator 2
+                            -
+                            <span class="font-normal">
+                                Marine protected areas created or under improved management
+                            </span>
+                        </label>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator2"
@@ -338,8 +299,13 @@ const uniqueEcosystems = computed(() => {
                         <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
                         <label
                             for="targetAreaCoreIndicator3"
-                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
-                        >CI 3</label>
+                            class="block text-sm font-medium text-gray-700"
+                        >Core Indicator 3
+                            -
+                            <span class="font-normal">
+                                Area of land and ecosystems under restoration
+                            </span>
+                        </label>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator3"
@@ -351,8 +317,13 @@ const uniqueEcosystems = computed(() => {
                         <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
                         <label
                             for="targetAreaCoreIndicator4"
-                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
-                        >CI 4</label>
+                            class="block text-sm font-medium text-gray-700"
+                        >Core Indicator 4
+                            -
+                            <span class="font-normal">
+                                Area of landscapes under improved practices
+                            </span>
+                        </label>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator4"
@@ -364,8 +335,13 @@ const uniqueEcosystems = computed(() => {
                         <!-- <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
                         <label
                             for="targetAreaCoreIndicator5"
-                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
-                        >CI 5</label>
+                            class="block text-sm font-medium text-gray-700"
+                        >Core Indicator 5
+                            -
+                            <span class="font-normal">
+                                Area of marine habitat under improved practices to benefit biodiversity
+                            </span>
+                        </label>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator5"
@@ -377,8 +353,13 @@ const uniqueEcosystems = computed(() => {
                         <!-- <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
                         <label
                             for="targetAreaCoreIndicator2LDCF"
-                            class="block text-sm font-medium text-gray-700 whitespace-nowrap"
-                        >2 (LDCF)</label>
+                            class="block text-sm font-medium text-gray-700"
+                        >LDCF CI 2
+                            -
+                            <span class="font-normal">
+                                Area of land managed for climate resilience
+                            </span>
+                        </label>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator2LDCF"
@@ -439,7 +420,7 @@ const uniqueEcosystems = computed(() => {
                     <template v-slot:info>
                         <p>Please include the land (in ha) reported in the Restoration Plans/Management Plans (tabular data).</p>
                     </template>
-                </FormGroup> -->
+</FormGroup> -->
                 <FileUploadFormGroup2
                     label="Please upload Restoration Plans/Management Plans"
                     :projectId="store.id!"
@@ -603,7 +584,7 @@ const uniqueEcosystems = computed(() => {
                     :edit="edit"
                     :countries="store.project.project.countries"
                     :ecosystems="uniqueEcosystems"
-                    :totalArea="getLastTargetArea(store.project)"
+                    :totalArea="store.project.project.targetAreaCoreIndicator3"
                     :areaUnits="store.project.project.areaUnits"
                 />
                 <div class="mt-4 text-lg text-gray-700 font-bold mb-2">
