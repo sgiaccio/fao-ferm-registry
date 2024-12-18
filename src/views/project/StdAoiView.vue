@@ -250,7 +250,7 @@ const uniqueEcosystems = computed(() => {
                         <span class="text-gray-300 text-sm">Units</span>
                     </div>
                 </div>
-                <template v-slot:info>
+                <template #info>
                     Includes pledges, targets, aspirations, or commitments of area to restore. This parameter will not be counted as area under restoration but will serve as a reference to monitor restoration progress.
                 </template>
             </FormGroup>

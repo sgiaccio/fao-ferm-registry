@@ -12,8 +12,6 @@ import RecursiveRadio from '@/components/inputs/base/RecursiveRadio.vue';
 
 import { roundToPrecisionAsString } from '@/lib/util';
 
-import { GoalIndicator } from '@/lib/auroraIndicators';
-
 import IndicatorsList from './IndicatorsList.vue';
 import CustomIndicatorsList from './CustomIndicatorsList.vue';
 
@@ -161,7 +159,7 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                     </router-link>
                 </div>
                 <div v-else>
-                    <div class="text-lg italic text-gray-600">None selected</div>
+                    <div class="text-lg italic text-gray-600">{{ $t('inputs.noneSelected') }}</div>
                 </div>
             </div>
 
@@ -232,7 +230,7 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                     </router-link>
                 </div>
                 <div v-else>
-                    <div class="text-lg italic text-gray-600">None selected</div>
+                    <div class="text-lg italic text-gray-600">{{ $t('inputs.noneSelected') }}</div>
                 </div>
             </div>
         </template>

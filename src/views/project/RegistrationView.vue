@@ -3,6 +3,8 @@ import { getStorage, ref, listAll } from 'firebase/storage';
 
 import { ref as vueRef, watch, computed } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
 import { useAuthStore } from '@/stores/auth';
@@ -45,11 +47,13 @@ withDefaults(
 
 // DynamicHeading.props = ['level']
 
+const { t } = useI18n();
+
 const organizations = {
     organization: {
         component: Organization,
         newData: {},
-        addItemLabel: 'Add organization',
+        addItemLabel: t('inputs.organization.addItemLabel'),
     },
 };
 
@@ -57,9 +61,10 @@ const pointsOfContact = {
     poc: {
         component: PointOfContact,
         newData: {},
-        addItemLabel: 'Add point of contact',
+        addItemLabel: t('inputs.pointOfContact.addItemLabel'),
     },
 };
+
 
 const store = useProjectStore();
 const menus = useMenusStore().menus;
@@ -209,13 +214,13 @@ watch(
 </script>
 
 <template>
-    <TabTemplate title="General">
+    <TabTemplate :title="t('projectRegistration.title')">
         <template #description>
             <p v-if="store.project.reportingLine === 'GEF'">
-                {{ $t('projectRegistration.gef.description') }}
+                {{ t('projectRegistration.gef.description') }}
             </p>
             <p v-else>
-                {{ $t('projectRegistration.description') }}
+                {{ t('projectRegistration.description') }}
             </p>
         </template>
         <div class="divide-y divide-slate-100 border-2 border-slate-200 rounded-md shadow-sm mt-4 mb-6 overflow-hidden">
@@ -223,15 +228,15 @@ watch(
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.title"
-                :label="$t('projectRegistration.fields.title.label')"
-                :description="$t('projectRegistration.fields.title.description')"
+                :label="t('projectRegistration.fields.title.label')"
+                :description="t('projectRegistration.fields.title.description')"
             />
             <RecursiveMenuFormGroup
                 v-if="store.project.reportingLine === 'GEF'"
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.gefImplementingAgencies"
-                :label="$t('projectRegistration.fields.gef.implementingAgencies.label')"
+                :label="t('projectRegistration.fields.gef.implementingAgencies.label')"
                 :searchable="false"
                 :showSelection="false"
                 :options="menus.gefImplementingAgencies"
@@ -243,11 +248,11 @@ watch(
                     class="px-4 odd:bg-white even:bg-slate-50"
                     :edit="edit"
                     v-model="store.project.project.gefFaoSymbol"
-                    :label="$t('projectRegistration.fields.gef.faoSymbol.label')"
+                    :label="t('projectRegistration.fields.gef.faoSymbol.label')"
                 />
                 <FormGroup
                     class="px-4 odd:bg-white even:bg-slate-50"
-                    :label="$t('projectRegistration.fields.gef.investmentType.label')"
+                    :label="t('projectRegistration.fields.gef.investmentType.label')"
                 >
                     <SmallCardsFormGroup
                         v-model="store.project.project.gefInvestmentType"
@@ -257,7 +262,7 @@ watch(
                 </FormGroup>
                 <FormGroup
                     class="px-4 odd:bg-white even:bg-slate-50"
-                    :label="$t('projectRegistration.fields.gef.gefCycle.label')"
+                    :label="t('projectRegistration.fields.gef.gefCycle.label')"
                 >
                     <SmallCardsFormGroup
                         v-model="store.project.project.gefCycle"
@@ -270,13 +275,13 @@ watch(
                     v-if="store.project.project.gefInvestmentType === 'project'"
                     :edit="edit"
                     v-model="store.project.project.gefFocalAreas"
-                    :label="$t('projectRegistration.fields.gef.focalAreas.label')"
+                    :label="t('projectRegistration.fields.gef.focalAreas.label')"
                     :options="menus.gefFocalAreas"
                 />
                 <RecursiveRadioFormGroup
                     class="px-4 odd:bg-white even:bg-slate-50"
                     v-if="store.project.project.gefInvestmentType === 'program'"
-                    :label="$t('projectRegistration.fields.gef.gefProgram.label')"
+                    :label="t('projectRegistration.fields.gef.gefProgram.label')"
                     v-model="store.project.project.gefProgram"
                     :options="gefPrograms"
                     :showSelection="false"
@@ -289,15 +294,15 @@ watch(
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.description"
-                :label="$t('projectRegistration.fields.description.label')"
-                :description="$t('projectRegistration.fields.description.description')"
+                :label="t('projectRegistration.fields.description.label')"
+                :description="t('projectRegistration.fields.description.description')"
             >
-                <template v-slot:info>
+                <template #info>
                     <p v-if="store.project.reportingLine === 'GEF'">
-                        {{ $t('projectRegistration.fields.description.gef.info') }}
+                        {{ t('projectRegistration.fields.description.gef.info') }}
                     </p>
                     <p v-else>
-                        {{ $t('projectRegistration.fields.description.info') }}
+                        {{ t('projectRegistration.fields.description.info') }}
                     </p>
                 </template>
             </TextareaFormGroup>
@@ -305,7 +310,7 @@ watch(
             <!-- TODO translation -->
             <ImageUploadFormGroup
                 label="Initiative photos"
-                :dangerousHtmlDescription="`<p>${$t('projectRegistration.fields.initiativePhotos.description.line1')}</p><p>${$t('projectRegistration.fields.initiativePhotos.description.line2')}</p><p><b>${$t('projectRegistration.fields.initiativePhotos.description.line3')}</b></p>`"
+                :dangerousHtmlDescription="`<p>${t('projectRegistration.fields.initiativePhotos.description.line1')}</p><p>${t('projectRegistration.fields.initiativePhotos.description.line2')}</p><p><b>${t('projectRegistration.fields.initiativePhotos.description.line3')}</b></p>`"
                 :projectId="store.id!"
                 folder="images"
                 :multiple="true"
@@ -318,103 +323,51 @@ watch(
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.website"
-                :label="$t('projectRegistration.fields.website.label')"
-                :description="$t('projectRegistration.fields.website.description')"
+                :label="t('projectRegistration.fields.website.label')"
+                :description="t('projectRegistration.fields.website.description')"
                 placeholder="www.example.com"
             />
             <SelectFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.startingYear"
-                :label="$t('projectRegistration.fields.startingYear.label')"
+                :label="t('projectRegistration.fields.startingYear.label')"
                 :options="years"
             />
             <SelectFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.endingYear"
-                :label="$t('projectRegistration.fields.endingYear.label')"
+                :label="t('projectRegistration.fields.endingYear.label')"
                 :options="years"
             />
 
             <RecursiveRadioFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
-                :label="$t('projectRegistration.fields.restorationStatus.label')"
+                :label="t('projectRegistration.fields.restorationStatus.label')"
                 v-model="store.project.project.restorationStatus"
                 :options="menus.restorationStatuses"
                 :showSelection="false"
                 :searchable="false"
                 :edit="edit"
             >
-                <!-- <template v-slot:info>
-                    <p>
-                        Provides an indication of whether the restoration area
-                        can be counted towards a reporting period. Restoration
-                        status is broken down into four components and an area
-                        specifies one of the components to represent its status.
-                        Each restoration status is characterized by a temporal
-                        component, which includes the start year of the
-                        restoration activities and end year, if applicable.
-                    </p>
-
-                    <p class="mt-2">
-                        References:
-                        <br />
-                        <a
-                            href="https://www.post-2020indicators.org/metadata/headline/2-2"
-                            target="_blank"
-                            class="text-blue-700 underline"
-                        >
-                            https://www.post-2020indicators.org/metadata/headline/2-2
-                        </a>
-                    </p>
-
-                    <select
-                        v-model="selectedItemInRestorationStatusInfo"
-                        class="mt-6 mb-3 block w-full font-bold rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    >
-                        <option value="1">In preparation</option>
-                        <option value="2">In progress</option>
-                        <option value="3">Post-completion monitoring</option>
-                    </select>
-
-                    <p v-if="selectedItemInRestorationStatusInfo === '1'">
-                        It is considered that the initiative is enabled, has
-                        been launched, has the necessary funds committed or the
-                        restoration areas has been officially gazetted. Still
-                        the the activities have not started in the field and the
-                        effect of restoration may not yet be measurable.
-                    </p>
-                    <p v-if="selectedItemInRestorationStatusInfo === '2'">
-                        Restoration activities have started in the site and
-                        depending on the time that the activities have been
-                        ongoing, impacts may start to be measurable.
-                    </p>
-                    <p v-if="selectedItemInRestorationStatusInfo === '3'">
-                        Restoration activities have finished and the focus is
-                        now on monitoring results. It is acknowledged that an
-                        area will not be restored as soon as activities are
-                        completed, therefore, post-completion assessments on the
-                        restoration status shall be made periodically.
-                    </p>
-                </template> -->
-                <template v-slot:info>
+                <template #info>
                     <div>
                         <!-- Introductory text -->
                         <p>
-                            {{ $t('projectRegistration.fields.restorationStatus.info.intro') }}
+                            {{ t('projectRegistration.fields.restorationStatus.info.intro') }}
                         </p>
 
                         <!-- References -->
                         <p class="mt-2">
-                            {{ $t('projectRegistration.fields.restorationStatus.info.references.title') }}
+                            {{ t('projectRegistration.fields.restorationStatus.info.references.title') }}
                             <br />
                             <a
-                                :href="$t('projectRegistration.fields.restorationStatus.info.references.linkHref')"
+                                :href="t('projectRegistration.fields.restorationStatus.info.references.linkHref')"
                                 target="_blank"
                                 class="text-blue-700 underline"
                             >
-                                {{ $t('projectRegistration.fields.restorationStatus.info.references.linkText') }}
+                                {{ t('projectRegistration.fields.restorationStatus.info.references.linkText') }}
                             </a>
                         </p>
 
@@ -423,20 +376,20 @@ watch(
                             v-model="selectedItemInRestorationStatusInfo"
                             class="mt-6 mb-3 block w-full font-bold rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         >
-                            <option value="1">{{ $t('projectRegistration.fields.restorationStatus.options.preparation') }}</option>
-                            <option value="2">{{ $t('projectRegistration.fields.restorationStatus.options.progress') }}</option>
-                            <option value="3">{{ $t('projectRegistration.fields.restorationStatus.options.monitoring') }}</option>
+                            <option value="1">{{ t('projectRegistration.fields.restorationStatus.options.preparation') }}</option>
+                            <option value="2">{{ t('projectRegistration.fields.restorationStatus.options.progress') }}</option>
+                            <option value="3">{{ t('projectRegistration.fields.restorationStatus.options.monitoring') }}</option>
                         </select>
 
                         <!-- Conditional descriptions -->
                         <p v-if="selectedItemInRestorationStatusInfo === '1'">
-                            {{ $t('projectRegistration.fields.restorationStatus.descriptions.preparation') }}
+                            {{ t('projectRegistration.fields.restorationStatus.descriptions.preparation') }}
                         </p>
                         <p v-if="selectedItemInRestorationStatusInfo === '2'">
-                            {{ $t('projectRegistration.fields.restorationStatus.descriptions.progress') }}
+                            {{ t('projectRegistration.fields.restorationStatus.descriptions.progress') }}
                         </p>
                         <p v-if="selectedItemInRestorationStatusInfo === '3'">
-                            {{ $t('projectRegistration.fields.restorationStatus.descriptions.monitoring') }}
+                            {{ t('projectRegistration.fields.restorationStatus.descriptions.monitoring') }}
                         </p>
                     </div>
 
@@ -446,121 +399,32 @@ watch(
                 :edit="edit"
                 v-model="store.project.project.restorationTypes"
                 :label="store.project.reportingLine === 'GEF'
-                    ? $t('projectRegistration.fields.restorationTypes.gef.label')
-                    : $t('projectRegistration.fields.restorationTypes.label')
+                    ? t('projectRegistration.fields.restorationTypes.gef.label')
+                    : t('projectRegistration.fields.restorationTypes.label')
                     "
                 :options="menus.restorationTypes"
                 :searchable="false"
                 :showSelection="false"
                 class="px-4 odd:bg-white even:bg-slate-50"
             >
-                <template v-slot:info>
-                    {{ $t('projectRegistration.fields.restorationTypes.info') }}
+                <template #info>
+                    {{ t('projectRegistration.fields.restorationTypes.info') }}
                 </template>
             </RecursiveMenuFormGroup>
-
-            <!-- <FormGroup
-                class="px-4 odd:bg-white even:bg-slate-50"
-                label="Objectives"
-                :dangerousHtmlDescription="'Please select the primary aim(s) of the restoration initiative. Reference: <a class=&quot;text-blue-600&quot; target=&quot;_blank&quot; href=&quot;https://gbf-indicators.org/metadata/headline/2-2&quot;>https://gbf-indicators.org/metadata/headline/2-2</a>'"
-            >
-                <RecursiveMenu
-                    :edit="edit"
-                    v-model="store.project.project.objectives"
-                    :options="menus.projectObjectives"
-                    :searchable="false"
-                    :showSelection="false"
-                />
-                <div class="flex items-center gap-x-3 w-full">
-                    <RecursiveMenu
-                        v-if="edit"
-                        :edit="edit"
-                        v-model="otherObjectives"
-                        :options="[{ value: 0, label: 'Other' }]"
-                        :searchable="false"
-                        :showSelection="false"
-                    />
-                    <span
-                        v-else
-                        class="text-sm font-bold text-gray-600"
-                    >Other objectives:</span>
-                    <div class="flex-1">
-                        <TextInput
-                            ref="otherObjectivesTextInput"
-                            :enabled="!!otherObjectives.length"
-                            :edit="edit"
-                            v-model="store.project.project.otherObjectives"
-                            :placeholder="otherObjectives.length ? 'Please specify' : ''
-                                "
-                        />
-                    </div>
-                </div>
-
-                <div
-                    v-if="store.project.project.objectives?.length || store.project.project.otherObjectives"
-                    class="mt-3"
-                >
-                    <p class="font-semibold text-sm text-gray-500 mb-3">
-                        Please provide additional information on the primary
-                        aims of the restoration initiative.
-                        <InfoButton title="Objectives additional information">
-                            <slot>
-                                <p>
-                                    Please explain how your project contributes
-                                    to the selected objectives. If applicable,
-                                    please provide for each objective selected:
-                                    specific objectives, description of the
-                                    project's impacts, and other relevant
-                                    information. See an example below.
-                                </p>
-                                <p class="mt-2">
-                                    <b>Example:</b> The project aims to restore
-                                    local biodiversity by reintroducing species
-                                    that play key roles in ecosystem functioning
-                                    and enhancing conditions that support the
-                                    return and increase of migratory species
-                                    populations. 30 wolves were reintroduced in
-                                    a previously wolf-free area to control deer
-                                    populations. Additionally, 15 species of
-                                    migratory birds were observed in a wetland
-                                    area.
-                                </p>
-                            </slot>
-                        </InfoButton>
-                    </p>
-                    <textarea
-                        v-if="edit"
-                        rows="3"
-                        :disabled="false"
-                        class="block w-full rounded-md pr-10 focus:outline-none border-gray-300 sm:text-sm focus:ring-0"
-                        v-model="store.project.project.objectivesAdditionalInformation"
-                    ></textarea>
-                    <div
-                        v-else-if="store.project.project.objectivesAdditionalInformation"
-                        class="whitespace-pre-wrap"
-                    >
-                        {{ store.project.project.objectivesAdditionalInformation }}
-                    </div>
-                    <div
-                        v-else
-                        class="italic text-gray-400"
-                    >{{ $t('notAvailable') }}</div>
-                </div>
-            </FormGroup> -->
             <FormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
-                :label="$t('projectRegistration.fields.objectives.label')"
+                :label="t('projectRegistration.fields.objectives.label')"
             >
                 <!-- Description -->
-                <p>{{ $t('projectRegistration.fields.objectives.description') }}</p>
+                <p>{{ t('projectRegistration.fields.objectives.description') }}</p>
                 <p class="mt-2">
-                    {{ $t('projectRegistration.fields.objectives.reference') }}
+                    {{ t('projectRegistration.fields.objectives.reference') }}
                     <a
                         href="https://gbf-indicators.org/metadata/headline/2-2"
                         target="_blank"
                         class="text-blue-600 underline"
                     >
-                        {{ $t('projectRegistration.fields.objectives.referenceLink') }}
+                        {{ t('projectRegistration.fields.objectives.referenceLink') }}
                     </a>
                 </p>
 
@@ -585,7 +449,7 @@ watch(
                         v-else
                         class="text-sm font-bold text-gray-600"
                     >
-                        {{ $t('projectRegistration.fields.objectives.otherObjectives') }}
+                        {{ t('projectRegistration.fields.objectives.otherObjectives') }}
                     </span>
                     <div class="flex-1">
                         <TextInput
@@ -594,7 +458,7 @@ watch(
                             :edit="edit"
                             v-model="store.project.project.otherObjectives"
                             :placeholder="otherObjectives.length
-                                ? $t('projectRegistration.fields.objectives.placeholder')
+                                ? t('projectRegistration.fields.objectives.placeholder')
                                 : ''"
                         />
                     </div>
@@ -606,12 +470,12 @@ watch(
                     class="mt-3"
                 >
                     <p class="font-semibold text-sm text-gray-500 mb-3">
-                        {{ $t('projectRegistration.fields.objectives.additionalInfo.intro') }}
-                        <InfoButton :title="$t('projectRegistration.fields.objectives.label')">
+                        {{ t('projectRegistration.fields.objectives.additionalInfo.intro') }}
+                        <InfoButton :title="t('projectRegistration.fields.objectives.label')">
                             <template #default>
-                                <p>{{ $t('projectRegistration.fields.objectives.additionalInfo.details') }}</p>
+                                <p>{{ t('projectRegistration.fields.objectives.additionalInfo.details') }}</p>
                                 <p class="mt-2">
-                                    <b>{{ $t('projectRegistration.fields.objectives.additionalInfo.example') }}</b>
+                                    <b>{{ t('projectRegistration.fields.objectives.additionalInfo.example') }}</b>
                                 </p>
                             </template>
                         </InfoButton>
@@ -633,21 +497,21 @@ watch(
                         v-else
                         class="italic text-gray-400"
                     >
-                        {{ $t('projectRegistration.fields.objectives.notAvailable') }}
+                        {{ t('projectRegistration.fields.objectives.notAvailable') }}
                     </div>
                 </div>
             </FormGroup>
             <RecursiveMenuFormGroup
                 :edit="edit"
                 v-model="store.project.project.tenureStatuses"
-                :label="$t('projectRegistration.fields.tenureStatuses.label')"
+                :label="t('projectRegistration.fields.tenureStatuses.label')"
                 :options="menus.tenureStatuses"
                 :searchable="false"
                 :showSelection="false"
                 class="px-4 odd:bg-white even:bg-slate-50"
             >
-                <template v-slot:info>
-                    <p>
+                <template #info>
+                    <!-- <p>
                         It is the legal status of the area under restoration.
                         Information on tenure status should include
                         documentation of Free and Prior Consent (FPIC) to ensure
@@ -674,14 +538,21 @@ watch(
                         FAO, IUCN CEM & SER. (2021). Principles for ecosystem
                         restoration to guide the United Nations Decade
                         2021&mdash;2030. Rome, FAO.
-                    </p>
+                    </p> -->
+                    <i18n-t keypath="projectRegistration.fields.tenureStatuses.info">
+                        <template #description>
+                            <p>{{ t('projectRegistration.fields.tenureStatuses.info1') }} </p>
+                            <p>{{ t('projectRegistration.fields.tenureStatuses.info2') }} </p>
+                        </template>
+                    </i18n-t>
+                        
                 </template>
             </RecursiveMenuFormGroup>
 
             <RecursiveMenuFormGroup
                 :edit="edit"
                 v-model="store.project.contributionToSdg"
-                :label="$t('projectRegistration.fields.contributionToSdg.label')"
+                :label="t('projectRegistration.fields.contributionToSdg.label')"
                 :options="menus.contributionToSdg"
                 :searchable="false"
                 :showSelection="false"
@@ -689,7 +560,7 @@ watch(
             />
 
             <FileUploadFormGroup2
-                :label="store.project.reportingLine === 'GEF' ? $t('projectRegistration.fields.uploadInitiativeDocument.gef.label') : $t('projectRegistration.fields.uploadInitiativeDocument.label')"
+                :label="store.project.reportingLine === 'GEF' ? t('projectRegistration.fields.uploadInitiativeDocument.gef.label') : t('projectRegistration.fields.uploadInitiativeDocument.label')"
                 :projectId="store.id!"
                 folder="documents"
                 :multiple="false"
@@ -701,7 +572,7 @@ watch(
             <MultiInputFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
-                :label="$t('projectRegistration.fields.pointsOfContact.label')"
+                :label="t('projectRegistration.fields.pointsOfContact.label')"
                 :inputComponents="pointsOfContact"
                 v-model="store.project.project.pointsOfContact"
             />
@@ -709,13 +580,13 @@ watch(
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
                 v-model="store.project.project.keywords"
-                :label="$t('projectRegistration.fields.keywords.label')"
+                :label="t('projectRegistration.fields.keywords.label')"
             />
             <MultiInputFormGroup
                 class="px-4 odd:bg-white even:bg-slate-50"
                 :edit="edit"
-                :label="$t('projectRegistration.fields.organizations.label')"
-                :description="$t('projectRegistration.fields.organizations.description')"
+                :label="t('projectRegistration.fields.organizations.label')"
+                :description="t('projectRegistration.fields.organizations.description')"
                 :inputComponents="organizations"
                 v-model="store.project.project.organizations"
             />

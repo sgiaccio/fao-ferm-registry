@@ -260,15 +260,6 @@ function handleAfterLeave(el: any) {
             :showSelection="false"
         />
     </div>
-    <!-- <div v-else-if="edit"
-         class="text-red-600 font-bold text-lg pb-4 mt-6">Please enter at least one area in the
-        <router-link class="text-blue-400 underline hover:text-blue-600"
-                     :to="{ path: 'area' }">Area tab
-        </router-link>
-    </div>
-    <div v-else>
-        <div class="text-lg italic mt-6 text-gray-600">None selected</div>
-    </div> -->
 </template>
 
 

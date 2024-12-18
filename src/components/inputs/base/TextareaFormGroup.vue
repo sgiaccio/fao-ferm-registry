@@ -61,7 +61,7 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
            v-for="message in errorMessages"
            class="mt-2 text-sm text-red-600"
            id="email-error">{{ message }}</p>
-        <template v-slot:info
+        <template #info
                   v-if="$slots.info">
             <slot name="info" />
         </template>

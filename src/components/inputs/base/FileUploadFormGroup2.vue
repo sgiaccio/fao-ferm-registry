@@ -224,7 +224,7 @@ function notify(nFiles: number) {
             <p class="text-gray-400 italic">No files uploaded yet</p>
         </div> -->
         <template
-            v-slot:info
+            #info
             v-if="$slots.info"
         >
             <slot name="info" />

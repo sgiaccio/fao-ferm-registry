@@ -134,7 +134,7 @@ watch(() => props.modelValue, (newValue, oldValue) => {
                 v-if="!props.modelValue?.length"
             >
                 <template v-if="edit">Please select from the list below</template>
-                <template v-else>None selected</template>
+                <template v-else>{{ $t('inputs.noneSelected') }}</template>
             </div>
             <div
                 v-for="value in (props.modelValue || []).sort(sortCheckedValuesByLabel)"

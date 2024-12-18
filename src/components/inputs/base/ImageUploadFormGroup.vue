@@ -341,7 +341,7 @@ async function makeCover(path: string) {
             </div>
         </div>
         <template
-            v-slot:info
+            #info
             v-if="$slots.info"
         >
             <slot name="info" />

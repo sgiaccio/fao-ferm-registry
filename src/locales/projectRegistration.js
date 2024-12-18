@@ -1,5 +1,6 @@
 export default {
     en: {
+        title: 'General',
         description: `In this tab, you can provide basic information about your restoration initiative. The title and a summary of the aims and expected results of the initiative can be provided in the description section. Further information can be provided such as when the initiative is expected to start and end, the restoration status, web links or documentation that you find relevant, responsible organisms and the contact person who can provide further technical details of the restoration initiative.`,
         fields: {
             title: {

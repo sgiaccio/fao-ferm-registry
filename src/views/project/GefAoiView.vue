@@ -417,7 +417,7 @@ const uniqueEcosystems = computed(() => {
                         v-model="store.project.project.areaAchieved"
                     />
 
-                    <template v-slot:info>
+                    <template #info>
                         <p>Please include the land (in ha) reported in the Restoration Plans/Management Plans (tabular data).</p>
                     </template>
 </FormGroup> -->
@@ -430,7 +430,7 @@ const uniqueEcosystems = computed(() => {
                     :edit="edit"
                 >
 
-                    <template v-slot:info>
+                    <template #info>
                         <p>Please upload the Restoration Plans/ Management plans with the description of restoration / land
                             management activities and baseline information of the territory, including pictures.</p>
                     </template>
@@ -508,7 +508,7 @@ const uniqueEcosystems = computed(() => {
                     :value="roundToPrecisionAsString(store.polygonsArea(), 2)"
                 >
 
-                    <template v-slot:info>
+                    <template #info>
                         <p>The total of the land (in ha) will be computed by the
                             plattorm based on spatially explicit information provided.</p>
                     </template>

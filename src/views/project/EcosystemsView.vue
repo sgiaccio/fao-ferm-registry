@@ -36,10 +36,6 @@ let unwatchers = store.projectAreas.map((area, i) => {
     return watchEcosystemsChangeInArea(i);
 });
 
-//     loadAllAreasBiomesButtonPressed.value = false;
-//     areaBiomesLoadingStatus[];
-// });
-
 function applyToAll() {
     if (!confirm('Are you sure you want to apply this ecosystem to all areas? Your current selections will be overwritten.')) return;
 
@@ -94,12 +90,6 @@ async function getBiomeStats(area: any) {
 // const loadAllAreasBiomesButtonPressed = ref(false);
 type Status = 'idle' | 'loading' | 'success' | 'error';
 const areaBiomesLoadingStatus = reactive<Status[]>(new Array(store.projectAreas.length).fill('idle'));
-// const anyAreaBiomesLoading = computed(() => areaBiomesLoadingStatus.some(l => l === 'loading'));
-// const anyAreaBiomesError = computed(() => areaBiomesLoadingStatus.some(l => l === 'error'));
-// const allAreaBiomesSuccess = computed(() => areaBiomesLoadingStatus.every(l => l === 'success'));
-// const anyPolygonArea = computed(() => store.projectAreas.some(area => ['upload', 'draw'].includes(getAreaType(area))));
-// const loadingAllAreasBiomes = ref(false);
-
 
 const realms = [
     { value: 'T', label: 'Terrestrial realm', color: '#1f77b4', borderColor: '#0d4d8a' },
@@ -190,83 +180,11 @@ function findBiomeLabel(biome: string, biomes: any = menus.iucnEcosystems): stri
     return null;  // Return null if the biome is not found
 }
 
-// async function getAllAreasBiomeStats() {
-//     // Stop watching, the watcher is only supposed to watch when it's the user that changes the ecosystems
-//     unwatchers.forEach(u => u());
-
-//     const areas = store.projectAreas;
-
-//     // Check if any area already has ecosystems
-//     const askConfirm = areas.some((area) => {
-//         const areaValue = getAreaValue(area);
-//         return areaValue.ecosystems?.length;
-//     });
-
-//     if (askConfirm && !confirm('Are you sure you want to overwrite the existing ecosystems?')) return;
-
-//     loadAllAreasBiomesButtonPressed.value = true;
-//     loadingAllAreasBiomes.value = true;
-//     areaBiomesLoadingStatus.fill('loading');
-
-//     const filteredAreas = areas.filter(area => ['upload', 'draw'].includes(getAreaType(area)));
-//     const chunkSize = 5; // Number of areas to process at a time
-//     const errors: string[] = [];
-
-//     for (let i = 0; i < filteredAreas.length; i += chunkSize) {
-//         const chunk = filteredAreas.slice(i, i + chunkSize);
-//         const promises = chunk.map((area) => getBiomeStats(area));
-
-//         await Promise.all(promises.map((p, j) => {
-//             return new Promise(async (resolve) => {
-//                 const index = i + j;
-
-//                 try {
-//                     areaBiomesLoadingStatus[index] = 'loading';
-//                     const ecosystems = await p;
-//                     const areaValue = getAreaValue(filteredAreas[index]);
-//                     areaValue.ecosystems = ecosystems;
-//                     areaBiomesLoadingStatus[index] = 'success';
-//                 } catch (e) {
-//                     areaBiomesLoadingStatus[index] = 'error';
-//                     errors.push(`An error occurred while fetching the ecosystems for area n. ${index + 1}`);
-//                     console.error(e);
-//                 } finally {
-//                     resolve(null);
-//                 }
-//             });
-//         }));
-//     }
-
-//     // Check if there were any errors
-//     if (errors.length) {
-//         alert(errors.join('\n'));
-//     }
-//     loadingAllAreasBiomes.value = false;
-
-//     // Start watching again for user's changes
-//     unwatchers = store.projectAreas.map((area, i) => {
-//         return watchEcosystemsChangeInArea(i);
-//     });
-// }
-
 function deleteOption(area: any, biome: string) {
     const areaValue = getAreaValue(area);
     areaValue.ecosystems = areaValue.ecosystems?.filter((e: string) => e !== biome);
 }
 
-
-// function handleBeforeLeave(el) {
-//   console.log("Before leave:", el);
-//   console.log("Opacity before leave:", window.getComputedStyle(el).opacity);
-// }
-// function handleLeave(el, done) {
-//   console.log('handleLeave called');
-//   console.log('done:', done);
-//   setTimeout(() => {
-//     console.log('Calling done after 0.5s');
-//     done();
-//   }, 500);
-// }
 function handleBeforeLeave(el) {
     // Ensure the parent is relative
     el.parentNode.style.position = 'relative';
@@ -318,27 +236,6 @@ function handleAfterLeave(el) {
         <template #default>
             <div v-if="true"
                  class="flex flex-col gap-y-4 pt-6 mb-6">
-                <!-- <div class="flex-shrink justify-self-end ml-auto">
-                    <button v-if="anyPolygonArea && edit"
-                            type="button"
-                            :disabled="anyAreaBiomesLoading"
-                            @click="() => getAllAreasBiomeStats()"
-                            :class="[anyAreaBiomesLoading ? 'bg-gray-100 text-gray-400' : 'bg-ferm-blue-dark-100 hover:bg-ferm-blue-dark-200 text-gray-900', 'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 flex-shrink']">
-                        <ButtonWait v-if="loadingAllAreasBiomes" />
-                        <ExclamationTriangleIcon v-else-if="anyAreaBiomesError && loadAllAreasBiomesButtonPressed"
-                                                 class="-ml-0.5 h-5 w-5 text-red-600"
-                                                 aria-hidden="true" />
-                        <CheckCircleIcon v-else-if="allAreaBiomesSuccess"
-                                         class="-ml-0.5 h-5 w-5 text-green-600"
-                                         aria-hidden="true" />
-                        <ListBulletIcon v-else
-                                        class="-ml-0.5 h-5 w-5 text-gray-400"
-                                        aria-hidden="true" />
-
-
-                        Get biomes in all polygon areas
-                    </button>
-                </div> -->
                 <div v-for="(area, i) in store.projectAreas"
                      class="border-2 px-3 py-2 rounded-lg border-gray-300">
                     <div class="flex flex-row my-3">
@@ -420,7 +317,7 @@ function handleAfterLeave(el) {
                 </router-link>
             </div>
             <div v-else>
-                <div class="text-lg italic mt-6 text-gray-600">None selected</div>
+                <div class="text-lg italic mt-6 text-gray-600">{{ $t('inputs.noneSelected') }}</div>
             </div>
         </template>
     </TabTemplate>
