@@ -1,0 +1,47 @@
+export default {
+    en: {
+        title: "Characteristics",
+        description: "This section provides spatial and satellite data through {earthMap}. EarthMap delivers high-quality, up-to-date satellite imagery and geographic information, enabling you to monitor the restoration progress of your initiatives. It facilitates the tracking of changes in land cover, land degradation, biodiversity, and other key restoration indicators. By integrating this data, the tool enhances your ability to assess progress and make informed decisions, ensuring effective and transparent ecosystem restoration efforts. For more detailed information and example tutorials, please follow: {earthMapHelp}.",
+        quickGuideTitle: "Quick guide",
+        quickGuide: {
+            language: "Select your language in the upper right menu (English, Spanish, French, and Portuguese).",
+            addLayers: "Add one or more layers to the map by opening the left menu and selecting them.",
+            adjustVisibility: "Adjust layer visibility and order through the legend.",
+            layerInfo: "Retrieve information on the layers by clicking the 'information' button.",
+            areaAnalysis: "Refine your analysis by selecting an area of interest or boundary in the left drop-down menu and then clicking on the polygon of interest on the map.",
+            zonalStats: "In the right menu, you can also perform zonal statistics using several spatial datasets.",
+            pointStats: "Point statistics can be shown by right-clicking on the map at any location.",
+            extendedInstructions: "For extended instructions, please download the FERM guidance and check Section 1: Planning & Assessment - characteristics.",
+        },
+    },
+    es: {
+        title: "Características",
+        description: "Esta sección proporciona datos espaciales y satelitales a través de {earthMap}. EarthMap ofrece imágenes satelitales de alta calidad y actualizadas, así como información geográfica, que le permite monitorear el progreso de restauración de sus iniciativas. Facilita el seguimiento de cambios en la cobertura del suelo, la degradación del suelo, la biodiversidad y otros indicadores clave de restauración. Al integrar estos datos, la herramienta mejora su capacidad para evaluar el progreso y tomar decisiones informadas, garantizando esfuerzos de restauración de ecosistemas efectivos y transparentes. Para obtener más información detallada y tutoriales de ejemplo, por favor siga: {earthMapHelp}.",
+        quickGuideTitle: "Guía rápida",
+        quickGuide: {
+            language: "Seleccione su idioma en el menú superior derecho (inglés, español, francés y portugués).",
+            addLayers: "Agregue una o más capas al mapa abriendo el menú izquierdo y seleccionándolas.",
+            adjustVisibility: "Ajuste la visibilidad y el orden de las capas a través de la leyenda.",
+            layerInfo: "Obtenga información sobre las capas haciendo clic en el botón 'información'.",
+            areaAnalysis: "Refine su análisis seleccionando un área de interés o límite en el menú desplegable izquierdo y luego haciendo clic en el polígono de interés en el mapa.",
+            zonalStats: "En el menú derecho, también puede realizar estadísticas zonales utilizando varios conjuntos de datos espaciales.",
+            pointStats: "Se pueden mostrar estadísticas puntuales haciendo clic con el botón derecho en cualquier ubicación del mapa.",
+            extendedInstructions: "Para obtener instrucciones extendidas, descargue la guía de FERM y consulte la Sección 1: Planificación y evaluación - características.",
+        },
+    },
+    fr: {
+        title: "Caractéristiques",
+        description: "Cette section fournit des données spatiales et satellitaires via {earthMap}. EarthMap offre des images satellites de haute qualité et à jour ainsi que des informations géographiques, vous permettant de surveiller les progrès de restauration de vos initiatives. Il facilite le suivi des changements de couverture terrestre, de dégradation des terres, de biodiversité et d'autres indicateurs clés de restauration. En intégrant ces données, l'outil améliore votre capacité à évaluer les progrès et à prendre des décisions éclairées, garantissant des efforts de restauration des écosystèmes efficaces et transparents. Pour des informations plus détaillées et des tutoriels d'exemple, veuillez suivre : {earthMapHelp}.",
+        quickGuideTitle: "Guide rapide",
+        quickGuide: {
+            language: "Sélectionnez votre langue dans le menu en haut à droite (anglais, espagnol, français et portugais).",
+            addLayers: "Ajoutez une ou plusieurs couches à la carte en ouvrant le menu de gauche et en les sélectionnant.",
+            adjustVisibility: "Ajustez la visibilité et l'ordre des couches via la légende.",
+            layerInfo: "Récupérez des informations sur les couches en cliquant sur le bouton 'information'.",
+            areaAnalysis: "Affinez votre analyse en sélectionnant une zone d'intérêt ou une limite dans le menu déroulant de gauche, puis en cliquant sur le polygone d'intérêt sur la carte.",
+            zonalStats: "Dans le menu de droite, vous pouvez également effectuer des statistiques zonales en utilisant plusieurs ensembles de données spatiales.",
+            pointStats: "Les statistiques ponctuelles peuvent être affichées en cliquant avec le bouton droit sur la carte à n'importe quel endroit.",
+            extendedInstructions: "Pour des instructions complètes, téléchargez le guide FERM et consultez la Section 1 : Planification et évaluation - caractéristiques.",
+        },
+    },
+}

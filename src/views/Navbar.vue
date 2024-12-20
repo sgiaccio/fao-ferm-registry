@@ -1,11 +1,24 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+import { useI18n } from 'vue-i18n'
+
+import {
+    Disclosure,
+    DisclosureButton,
+    DisclosurePanel,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuItems
+} from '@headlessui/vue'
+
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 
 import { useAuthStore } from "../stores/auth"
 
+
+const { locale } = useI18n();
 
 const authStore = useAuthStore();
 
@@ -14,7 +27,6 @@ const route = useRoute();
 function logout() {
     authStore.logout();
 }
-
 </script>
 
 <template>
@@ -95,6 +107,30 @@ function logout() {
                         id="content-specific"
                         class="flex flex-row items-center"
                     />
+
+                    <!-- Language Links -->
+                    <div class="flex space-x-4 text-gray-50 font-semibold">
+                        <button
+                            :class="[locale === 'en' ? 'underline' : '', 'hover:underline']"
+                            @click="() => locale = 'en'"
+                        >
+                            EN
+                        </button>
+                        <button
+                            :class="[locale === 'es' ? 'underline' : '', 'hover:underline']"
+                            @click="() => locale = 'es'"
+                        >
+                            ES
+                        </button>
+                        <button
+                            :class="[locale === 'fr' ? 'underline' : '', 'hover:underline']"
+                            @click="() => locale = 'fr'"
+                        >
+                            FR
+                        </button>
+                    </div>
+
+
                     <!-- Profile dropdown -->
                     <Menu
                         v-if="authStore.user"

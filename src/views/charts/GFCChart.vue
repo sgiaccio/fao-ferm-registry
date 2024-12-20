@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import EMChartContainer from './EMChartContainer.vue';
 
+import { useI18n } from 'vue-i18n';
+
 
 defineProps<{
     area: any;
     isActive: boolean;
 }>();
+
+const { t } = useI18n();
 
 const referenceYearStart = 2011;
 const referenceYearEnd = 2020;
@@ -23,7 +27,7 @@ function processData(stats: any) {
     const yDataOnwards = dataOnwards.map(([ _, loss ]: any) => loss);
 
     const yData = [referencePeriodAverage, ...yDataOnwards];
-    const xData = [ `Reference\n${referenceYearStart}-${referenceYearEnd}`, ...xDataOnwards ];
+    const xData = [ `${t('publicPagePreview.charts.reference')}\n${referenceYearStart}-${referenceYearEnd}`, ...xDataOnwards ];
 
     return { xData, yData };
 }
@@ -34,7 +38,7 @@ function processData(stats: any) {
         :area="area"
         statisticType="hansen"
         :processData="processData"
-        title="Forest Tree Cover > 10% (FRA Forest definition)"
+        :title="t('publicPagePreview.charts.gfc')"
         :isActive="isActive"
         type="bar"
     />

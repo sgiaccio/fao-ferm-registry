@@ -2,6 +2,8 @@
 import { computed } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
 
+import { useI18n } from 'vue-i18n';
+
 import router from '@/router';
 import { defineAsyncComponent } from 'vue';
 import {
@@ -30,58 +32,53 @@ import { XMarkIcon } from '@heroicons/vue/16/solid';
 
 import { useProjectStore } from '@/stores/project';
 
-// import ResultsView from './ResultsView.vue';
+
+const { t } = useI18n();
+
 const ResultsView = defineAsyncComponent(() => import('./ResultsView.vue'));
 
 const navigation = [{
-    name: 'Planning & Assessment',
-    color: 'bg-yellow-200',
+    name: computed(() => t('project.planningAndAssessment')),
+    // color: 'bg-yellow-200',
     tabs: [{
-        name: 'General',
+        name: computed(() => t('projectRegistration.title')),
         path: 'general',
         icon: InformationCircleIcon,
         solidIcon: InformationCircleIconSolid
     }, {
-        name: 'Area & Ecosystems',
+        name: computed(() => t('areaAndEcosystems.title')),
         path: 'area',
         icon: GlobeAltIcon,
         solidIcon: GlobeAltIconSolid
     }, {
-        name: 'Characteristics',
+        name: computed(() => t('characteristics.title')),
         path: 'characteristics',
         icon: ListBulletIcon,
         solidIcon: ListBulletIconSolid
     }]
 }, {
-    name: 'Implementation',
-    color: 'bg-green-200',
+    name: computed(() => t('project.implementation')),
+    // color: 'bg-green-200',
     tabs: [{
-        name: 'Activities',
+        name: computed(() => t('activities.title')),
         path: 'activities',
         icon: WrenchScrewdriverIcon,
         solidIcon: WrenchScrewdriverIconSolid
     }]
 }, {
-    name: 'Monitoring & Reporting',
-    color: 'bg-blue-200',
+    name: computed(() => t('project.monitoringAndReporting')),
+    // color: 'bg-blue-200',
     tabs: [{
-        name: 'Indicators',
+        name: computed(() => t('indicators.title')),
         path: 'indicators',
         icon: ChartBarIcon,
         solidIcon: ChartBarIconSolid
     }, {
-        name: 'Monitoring',
+        name: computed(() => t('monitoring.title')),
         path: 'monitoring',
         icon: EyeIcon,
         solidIcon: EyeIconSolid
-    }
-        //     , {
-        //     name: 'Public Page Preview',
-        //     path: 'preview',
-        //     icon: ComputerDesktopIcon,
-        //     solidIcon: ComputerDesktopIconSolid
-        // }
-    ]
+    }]
 }];
 
 const store = useProjectStore();
@@ -164,7 +161,7 @@ function closeModal() {
                         </div>
                     </div>
                 </div>
-                <!-- add public page preview link -->
+                <!-- Public page preview link -->
                 <div class="flex gap-x-3 rounded-md text-sm leading-6 font-semibold justify-center">
                     <div
                         @click="openPreviewModal"
@@ -204,16 +201,11 @@ function closeModal() {
                                         aria-hidden="true"
                                     />
                                     {{ item.name }}
-                                    <!-- <span
-                                        v-if="item.count"
-                                        class="ml-auto w-9 min-w-max whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-center text-xs font-medium leading-5 text-gray-600 ring-1 ring-inset ring-gray-200"
-                                        aria-hidden="true"
-                                    >{{ item.count }}</span> -->
                                 </router-link>
                             </li>
                         </ul>
                     </li>
-                    <!-- add public page preview link -->
+                    <!-- Public page preview link -->
                     <li class="border-t border-gray-200 pt-6">
                         <div
                             class="group flex gap-x-3 rounded-md text-sm leading-6 font-semibold cursor-pointer hover:text-indigo-600 hover:bg-gray-50"
@@ -223,24 +215,9 @@ function closeModal() {
                                 class="h-6 w-6 shrink-0"
                                 aria-hidden="true"
                             />
-                            Public Page Preview
+                            {{ t('publicPagePreview.title') }}
                         </div>
                     </li>
-                    <!--
-                    <li class="-mx-6 mt-auto">
-                        <a
-                            href="#"
-                            class="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50"
-                        >
-                            <img
-                                class="h-8 w-8 rounded-full bg-gray-50"
-                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                alt=""
-                            />
-                            <span class="sr-only">Your profile</span>
-                            <span aria-hidden="true">Name here</span>
-                        </a>
-                    </li> -->
                 </ul>
             </nav>
         </div>
@@ -255,31 +232,6 @@ function closeModal() {
             />
         </div>
     </div>
-
-
-    <!-- <div
-        v-if="isPreviewOpen"
-        class="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-70 z-40"
-        @click.stop="closePreview"
-    />
-    <div :class="{ 'fixed top-0 left-0 w-screen h-screen z-50 p-12 shadow-lg rounded-md overflow-hidden': isPreviewOpen }">
-        <div
-            class="relative h-full w-full"
-            v-if="isPreviewOpen"
-        >
-        <ResultsView />
-        <div
-                class="absolute -top-4 -right-4 rounded-full bg-white hover:bg-gray-300 cursor-pointer"
-                @click.stop="closePreview"
-            >
-                <XMarkIcon
-                    @click.stop="closePreview"
-                    class="h-4 w-4 text-gray-500 m-2"
-                />
-            </div>
-        </div>
-    </div> -->
-
 
     <TransitionRoot
         as="template"

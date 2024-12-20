@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
+import { toast } from 'vue3-toastify';
+
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
 import { useAuthStore } from '../../stores/auth';
@@ -11,9 +15,6 @@ import { DocumentIcon } from '@heroicons/vue/24/outline';
 import FileUploadFormGroup from '@/components/inputs/base/FileUploadFormGroup.vue';
 
 
-const authStore = useAuthStore();
-const projectStore = useProjectStore();
-
 const props = withDefaults(defineProps<{
     open?: boolean
 }>(), {
@@ -21,6 +22,11 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits(['cancel', 'done']);
+
+const { t } = useI18n();
+
+const authStore = useAuthStore();
+const projectStore = useProjectStore();
 
 const selectedFile = ref<File | null>(null);
 
@@ -83,9 +89,19 @@ async function uploadFile() {
             // }
             projectStore.updateCountries();
 
-            alert(`Files uploaded with UUIDs ${uuidsArr}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
+            // alert(`Files uploaded with UUIDs ${uuidsArr}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
+            toast.success(`</p>${t('inputs.aoi.uploadSuccess', { fileCount: uuidsArr.length })}</p><p>${t('inputs.aoi.reminder')}</p>`, {
+                dangerouslyHTMLString: true,
+                position: 'top-right',
+                autoClose: false
+            });
+
         }).catch(e => {
-            alert('Error uploading the file: ' + e.message);
+            // alert('Error uploading the file: ' + e.message);
+            toast.error(`${t('inputs.aoi.uploadError', { error: e.message })}`, {
+                position: 'top-right',
+                autoClose: false
+            });
             console.error(e);
             uploadStatus.value = 'idle';
         });
@@ -140,29 +156,42 @@ watch(() => props.open, open => {
                                     <DialogTitle
                                         as="h3"
                                         class="text-lg font-medium leading-6 text-gray-900"
-                                    >Upload
-                                        shapefile
+                                    >
+                                        {{ t('inputs.aoi.uploadGeoJson') }}
                                     </DialogTitle>
                                     <div class="mt-2">
                                         <div class="text-xs mt-3 text-gray-800 font-light">
-                                            <p class="mb-2">Please upload a file in KML, KMZ of geojson format.</p>
-                                            <p class="mb-2">For each feature on the shapefile, one area will be
-                                                added to the registry.
+                                            <!-- <p class="mb-2">Please upload a file in KML, KMZ of geojson format.</p>
+                                            <p class="mb-2">For each feature on the shapefile, one area will be added to the registry.
                                             </p>
                                             <p class="mb-4">IIf possible, the data should be in <span class="font-semibold">geographic projection</span>
                                                 (latitude/longitude). If not, the system will try to reproject it.
-                                            </p>
+                                            </p> -->
+                                            <div class="text-xs mt-3 text-gray-800 font-light">
+                                                <p class="mb-2">
+                                                    <i18n-t keypath="inputs.aoi.geoJsonUpload.instruction1">
+                                                        <template #fileFormats>
+                                                            <span class="font-semibold">
+                                                                {{ t('inputs.aoi.geoJsonUpload.fileFormats') }}
+                                                            </span>
+                                                        </template>
+                                                    </i18n-t>
+                                                </p>
+                                                <p class="mb-2">
+                                                    {{ t('inputs.aoi.geoJsonUpload.instruction2') }}
+                                                </p>
+                                                <p class="mb-4">
+                                                    <i18n-t keypath="inputs.aoi.geoJsonUpload.instruction3">
+                                                        <template #projectionType>
+                                                            <span class="font-semibold">
+                                                                {{ t('inputs.aoi.geoJsonUpload.projectionType') }}
+                                                            </span>
+                                                        </template>
+                                                    </i18n-t>
+                                                </p>
+                                            </div>
                                         </div>
-                                        <!-- <ul class="text-sm ml-4 text-gray-800 list-disc list-inside font-light">
-                                            <li>Please upload a file in KML, KMZ of geojson format.
-                                            </li>
-                                            <li>For each feature on the shapefile, one area will be
-                                                added to the registry.
-                                            </li>
-                                            <li>If possible, the data should be in <span class="font-semibold">geographic projection</span>
-                                                (latitude/longitude). If not, the system will try to reproject it.
-                                            </li>
-                                        </ul> -->
+
                                         <div class="mt-2 flex rounded-md shadow-sm">
                                             <div class="flex-grow focus-within:z-10">
                                                 <FileUploadFormGroup
@@ -173,7 +202,7 @@ watch(() => props.open, open => {
                                                     class="w-full"
                                                 >
                                                     <template v-if="selectedFile === null">
-                                                        Drop file here or click to upload
+                                                        {{ t('inputs.aoi.geoJsonUpload.dropFile') }}
                                                     </template>
                                                     <template v-else>
                                                         <DocumentIcon class="h-6 w-6 mr-1.5 text-gray-600" />

@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { useMenusStore } from '@/stores/menus';
 
 import ResultPanel from './ResultPanel.vue';
 
 import { flattenMenu, getAllSelectedItemsInAreas, getRecursiveMenuItem } from '@/lib/util';
 
+
 const { menus } = useMenusStore();
 
 const props = defineProps<{
     areas: any[]
 }>();
+
+const { t } = useI18n();
 
 // function getAllActivities(areas) {
 //     if (areas.length === 0) return [];
@@ -57,7 +62,7 @@ const enablingActivities = computed(() => groupActivitiesByType().enablingActivi
 </script>
 
 <template>
-    <ResultPanel title="Activities">
+    <ResultPanel :title="t('publicPagePreview.activitiesPanel.title')">
         <div
             v-if="biophysicalActivities.length > 0"
             class="flex flex-col"
@@ -83,6 +88,8 @@ const enablingActivities = computed(() => groupActivitiesByType().enablingActivi
         <div
             v-if="biophysicalActivities.length === 0 && enablingActivities.length === 0"
             class="italic text-gray-500"
-        >No activities</div>
+        >
+            {{ t('publicPagePreview.activitiesPanel.noActivities') }}
+        </div>
     </ResultPanel>
 </template>

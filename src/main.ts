@@ -15,7 +15,7 @@ import 'vue3-toastify/dist/index.css';
 
 console.log(messages);
 const i18nConfig: any = {
-    locale: 'es',
+    locale: 'fr',
     fallbackLocale: 'en',
     messages,
     legacy: false,
@@ -25,8 +25,6 @@ const i18nConfig: any = {
 if (process.env.NODE_ENV === 'development') {
     console.log('Development mode');
     i18nConfig.postTranslation = (str: any, key: string) => {
-        console.log(str);
-        console.log(typeof str === 'string');
         if (typeof str === 'string') {
             return str ? `${str} (i18n)` : key;
         }
@@ -43,7 +41,8 @@ app.use(createPinia());
 app.use(i18n);
 
 app.use(Vue3Toasity, {
-    autoClose: 3000
+    autoClose: 3000,
+    position: 'bottom-right',
 });
 
 app.use(router);

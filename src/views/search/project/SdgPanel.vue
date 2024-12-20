@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
+import { useI18n } from 'vue-i18n';
+
 import ResultPanel from './ResultPanel.vue';
 
 
 defineProps<{
     sdgs: number[]
 }>();
+
+const { t } = useI18n();
 
 // SDG images
 import sdg1 from '@/assets/SDG/E_GIF_01_small_static.gif';
@@ -53,7 +58,10 @@ function changeSrc(index: number, isHover: boolean) {
 </script>
 
 <template>
-    <ResultPanel title="Contributions to SDGs" titleLink="https://www.un.org/sustainabledevelopment/">
+    <ResultPanel
+        :title="t('publicPagePreview.sdgPanel.title')"
+        titleLink="https://www.un.org/sustainabledevelopment/"
+    >
         <div
             v-if="sdgs?.length > 0"
             class="grid grid-cols-4 gap-4"
@@ -77,6 +85,8 @@ function changeSrc(index: number, isHover: boolean) {
         <div
             v-else
             class="italic text-gray-500"
-        >No contributions</div>
+        >
+            {{ t('publicPagePreview.sdgPanel.noContributions') }}
+        </div>
     </ResultPanel>
 </template>

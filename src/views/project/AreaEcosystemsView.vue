@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch, inject } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { ListBulletIcon, ExclamationTriangleIcon, CheckCircleIcon } from '@heroicons/vue/20/solid';
 
 import ButtonWait from '@/components/ButtonWait.vue';
@@ -13,6 +15,7 @@ import { getPolygonZonalStats } from '@/firebase/functions';
 
 import { groupBiomesByRealm, getRealmLabel, getRealmColor, getRealmBorderColor } from '@/lib/util';
 
+
 const props = withDefaults(defineProps<{
     edit?: boolean,
     area: any
@@ -21,6 +24,8 @@ const props = withDefaults(defineProps<{
 }>(), {
     edit: true
 });
+
+const { t } = useI18n();
 
 const menus = useMenusStore().menus;
 
@@ -205,7 +210,7 @@ function handleAfterLeave(el: any) {
                     :class="[!area.ecosystems?.length ? 'bg-gray-100 text-gray-400' : 'bg-ferm-blue-dark-100 hover:bg-ferm-blue-dark-200 text-gray-900', 'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 ml-4']"
                     @click="applyToAll"
                 >
-                    Apply to all
+                    {{ t('edit.applyToAll') }}
                 </button>
             </div>
         </div>

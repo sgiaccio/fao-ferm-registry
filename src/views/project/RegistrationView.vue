@@ -309,7 +309,7 @@ watch(
 
             <!-- TODO translation -->
             <ImageUploadFormGroup
-                label="Initiative photos"
+                :label="t('projectRegistration.fields.initiativePhotos.label')"
                 :dangerousHtmlDescription="`<p>${t('projectRegistration.fields.initiativePhotos.description.line1')}</p><p>${t('projectRegistration.fields.initiativePhotos.description.line2')}</p><p><b>${t('projectRegistration.fields.initiativePhotos.description.line3')}</b></p>`"
                 :projectId="store.id!"
                 folder="images"
@@ -511,18 +511,11 @@ watch(
                 class="px-4 odd:bg-white even:bg-slate-50"
             >
                 <template #info>
-                    <!-- <p>
-                        It is the legal status of the area under restoration.
-                        Information on tenure status should include
-                        documentation of Free and Prior Consent (FPIC) to ensure
-                        that people's rights are respected in the process of
-                        restoration and adherence to the UN Decade principles
-                        (FAO, IUCN CEM & SER, 2021) as well as the Voluntary
-                        Guidelines on the Responsible Governance of Tenure
-                        (VGGT) (FAO, 2022).
+                    <p>
+                        {{ $t('projectRegistration.fields.tenureStatuses.info.fpic') }}
                     </p>
                     <p class="pt-4">
-                        References:
+                        {{ t('references') }}:
                         <br />
                         FAO. 2022. Voluntary Guidelines on the Responsible
                         Governance of Tenure of Land, Fisheries and Forests in
@@ -538,14 +531,7 @@ watch(
                         FAO, IUCN CEM & SER. (2021). Principles for ecosystem
                         restoration to guide the United Nations Decade
                         2021&mdash;2030. Rome, FAO.
-                    </p> -->
-                    <i18n-t keypath="projectRegistration.fields.tenureStatuses.info">
-                        <template #description>
-                            <p>{{ t('projectRegistration.fields.tenureStatuses.info1') }} </p>
-                            <p>{{ t('projectRegistration.fields.tenureStatuses.info2') }} </p>
-                        </template>
-                    </i18n-t>
-                        
+                    </p>
                 </template>
             </RecursiveMenuFormGroup>
 

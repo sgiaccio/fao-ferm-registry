@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import EMChartContainer from './EMChartContainer.vue';
 
+import { useI18n } from 'vue-i18n';
+
 
 defineProps<{
     area: any;
     isActive: boolean;
 }>();
+
+const { t } = useI18n();
 
 function processData(stats: any) {
     const yData = stats.statisticResults.data.map((v: any) => v.total);
@@ -20,7 +24,7 @@ function processData(stats: any) {
         :area="area"
         statisticType="CCIBiomass"
         :processData="processData"
-        title="ESA CCI Global Forest Above Ground Biomass"
+        :title="t('publicPagePreview.charts.biomass')"
         :isActive="isActive"
         type="bar"
         unit="MT/ha"

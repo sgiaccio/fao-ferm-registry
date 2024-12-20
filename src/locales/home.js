@@ -7,7 +7,7 @@ export default {
         userGuide: 'User guide',
         userGuideDescription: 'Download the FERM user guide',
         search: 'Search',
-        searchDescription: 'For good practices on ecosystem restoration',
+        searchDescription: 'For initiatives and good practices on ecosystem restoration',
 
         description: 'The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.',
 

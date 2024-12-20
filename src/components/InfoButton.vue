@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { InformationCircleIcon } from '@heroicons/vue/20/solid';
 
 import AlertModal from '@/views/AlertModal.vue';
+
+const { t } = useI18n();
 
 
 defineProps({
@@ -19,7 +23,7 @@ const show = ref(false);
         :onClose="() => show = false"
         :open="show"
         :title="title"
-        buttonText="Close"
+        :buttonText="t('close')"
     >
         <div class="text-left text-sm">
             <slot />

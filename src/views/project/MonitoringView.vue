@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { watch } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { useProjectStore } from '@/stores/project';
 
 import TabTemplate from '../TabTemplate.vue';
@@ -20,6 +22,8 @@ withDefaults(defineProps<{
 }>(), {
     edit: true
 });
+
+const { t } = useI18n();
 
 // Delete restorationType and tenureStatus for GEF3 indicators. This should be done in the store, but will be done here for now.
 watch(() => store.projectAreas, areas => areas.forEach(area => {
@@ -45,7 +49,7 @@ function removeIndicator(monitoring, i: number) {
 <template>
     <TabTemplate title="Monitoring">
         <template #description>
-            With robust monitoring, it is possible to track restoration actions, determine their effectiveness, and adopt adaptive management practices to improve the outcomes of the restoration. To facilitate the monitoring, this section allows you to input the metric values corresponding to your chosen indicators on an annual basis. This process can be executed for each of the areas of your restoration initiative.
+            {{ t('monitoring.description') }}
         </template>
         <template #default>
             <div
@@ -58,7 +62,8 @@ function removeIndicator(monitoring, i: number) {
                 >
                     <div class="flex flex-row my-3">
                         <div class="text-gray-500 text-lg font-bold mb-2 flex-grow">
-                            Area {{ i + 1 }}<span
+                            {{ t('areaAndEcosystems.area') }}
+                            {{ i + 1 }}<span
                                 class="text-black"
                                 v-if="area[Object.keys(area)[0]].siteName"
                             >: {{ area[Object.keys(area)[0]].siteName
@@ -103,7 +108,7 @@ function removeIndicator(monitoring, i: number) {
                                                     :for="`year-${i}`"
                                                     class="block text-xs font-medium text-gray-700"
                                                 >
-                                                    Year
+                                                    {{ t('monitoring.year') }}
                                                 </label>
                                                 <input
                                                     v-if="edit"
@@ -191,7 +196,7 @@ function removeIndicator(monitoring, i: number) {
                                                 :for="`year-${i}`"
                                                 class="block text-xs font-medium text-gray-700"
                                             >
-                                                Year
+                                                {{ t('monitoring.year') }}
                                             </label>
                                             <input
                                                 v-if="edit"

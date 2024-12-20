@@ -2,11 +2,15 @@
 import EMChartContainer from './EMChartContainer.vue';
 import { createEchartValuesFromEMStats, getEMStatsYears } from '@/lib/util';
 
+import { useI18n } from 'vue-i18n';
+
 
 defineProps<{
     area: any;
     isActive: boolean;
 }>();
+
+const { t } = useI18n();
 
 function processData(stats: any) {
     const allYears = stats.statisticResults.years;
@@ -31,7 +35,7 @@ function processData(stats: any) {
         :area="area"
         statisticType="landProductivity"
         :processData="processData"
-        title="Land Productivity Dynamics - MODIS"
+        :title="t('publicPagePreview.charts.lpd')"
         :isActive="isActive"
         type="stacked-bar"
         :getLegendFromStats="true"

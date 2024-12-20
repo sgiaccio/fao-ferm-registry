@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed, onBeforeUnmount } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import View from 'ol/View';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
@@ -45,10 +47,11 @@ const props = withDefaults(defineProps<{
     edit: true
 });
 
+const emit = defineEmits(['update:modelValue']);
+
+const { t } = useI18n();
 
 const uploadStatus = ref('idle');
-
-const emit = defineEmits(['update:modelValue']);
 
 const authStore = useAuthStore();
 const projectStore = useProjectStore();
@@ -283,7 +286,7 @@ function clear() {
             <fieldset>
                 <div class="md:mt-5 mb-5">
                     <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
-                        Site name
+                        {{ t('inputs.aoi.siteName') }}
                     </legend>
                     <div>
                         <TextInput
@@ -297,7 +300,7 @@ function clear() {
             <fieldset>
                 <div>
                     <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
-                        {{ `Area [${getMenuSelectedLabel(projectStore.project.project.areaUnits, menus.units)}]` }}
+                        {{ `${t('inputs.areaSurface')} [${getMenuSelectedLabel(projectStore.project.project.areaUnits, menus.units)}]` }}
                     </legend>
                     <div>
                         <template v-if="edit">
@@ -319,7 +322,8 @@ function clear() {
                                         class="-ml-0.5 h-5 w-5 text-gray-400"
                                         aria-hidden="true"
                                     />
-                                    Calculate area
+                                    <!-- Calculate area -->
+                                    {{ t('inputs.aoi.calculateArea') }}
                                 </button>
                             </div>
                         </template>
@@ -334,13 +338,15 @@ function clear() {
         class="rounded-md px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         :class="[uploadStatus === 'idle' ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400 cursor-default']"
         @click="postGeoJson()"
-    >Upload
+    >
+        {{ t('inputs.aoi.uploadArea') }}
     </button>
     <button
         v-if="!areaUploaded && edit"
         class="ml-4 mt-4 rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         @click="clear"
-    >Clear
+    >
+        {{ $t('inputs.aoi.clear') }}
     </button>
 
     <AreaEcosystemsView

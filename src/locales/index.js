@@ -1,54 +1,132 @@
-import home from './home';
-import inputs from './inputs';
-import projectRegistration from './projectRegistration';
+import home from "./home";
+import inputs from "./inputs";
+import projectRegistration from "./projectRegistration";
+import project from "./project";
+import areaAndEcosystems from "./areaAndEcosystems";
+import characteristics from "./characteristics";
+import activities from "./activities";
+import indicators from "./indicators";
+import monitoring from "./monitoring";
+import publicPagePreview from "./publicPagePreview";
+
 
 export default {
     en: {
-        fermRegistryLong1: 'Framework for Ecosystem',
-        fermRegistryLong2: 'Restoration Monitoring',
-        fermRegistry: 'FERM Registry',
-        
-        userGuide: 'User guide',
-        support: 'Support',
+        fermRegistryLong1: "Framework for Ecosystem",
+        fermRegistryLong2: "Restoration Monitoring",
+        fermRegistry: "FERM Registry",
+
+        references: "References",
+
+        userGuide: "User guide",
+        support: "Support",
 
         inputs: inputs.en,
-        notAvailable: 'Not available',
+        notAvailable: "Not available",
         error: {
-            unexpected: 'An unexpected error occurred, please check the console log.'
+            error: "Error",
+            unexpected: "An unexpected error occurred, please check the console log."
         },
+        close: "Close",
+        view: {
+            previous: "Previous",
+            next: "Next",
+        },
+        edit: {
+            saveAndExit: "Save and exit",
+            saveAndNext: "Save and next",
+            cancel: "Cancel",
+            applyToAll: "Apply to all",
+        },
+        search: "Search",
+
+        project: project.en,
         home: home.en,
         projectRegistration: projectRegistration.en,
+        areaAndEcosystems: areaAndEcosystems.en,
+        characteristics: characteristics.en,
+        activities: activities.en,
+        indicators: indicators.en,
+        monitoring: monitoring.en,
+        publicPagePreview: publicPagePreview.en,
     },
     fr: {
-        fermRegistryLong1: 'Cadre de Surveillanceszzz',
-        fermRegistryLong2: 'de la Restauration des Écosystèmes',
-        fermRegistry: 'Registre FERM',
+        fermRegistryLong1: "Cadre de Surveillances",
+        fermRegistryLong2: "de la Restauration des Écosystèmes",
+        fermRegistry: "Registre FERM",
 
-        userGuide: 'Guide de l’utilisateur',
-        support: 'Support',
+        references: "Références",
+
+        userGuide: "Guide de l'utilisateur",
+        support: "Support",
 
         inputs: inputs.fr,
-        notAvailable: 'Non disponible',
+        notAvailable: "Non disponible",
         error: {
-            unexpected: 'Une erreur inattendue s\'est produite, veuillez vérifier le journal de la console.'
+            error: "Erreur",
+            unexpected: "Une erreur inattendue s'est produite, veuillez vérifier le journal de la console."
         },
+        close: "Fermer",
+        view: {
+            previous: "Précédent",
+            next: "Suivant",
+        },
+        edit: {
+            saveAndExit: "Enregistrer et quitter",
+            saveAndNext: "Enregistrer et suivant",
+            cancel: "Annuler",
+            applyToAll: "Appliquer à tous",
+        },
+        search: "Rechercher",
+
+        project: project.fr,
         home: home.fr,
         projectRegistration: projectRegistration.fr,
+        areaAndEcosystems: areaAndEcosystems.fr,
+        characteristics: characteristics.fr,
+        activities: activities.fr,
+        indicators: indicators.fr,
+        monitoring: monitoring.fr,
+        publicPagePreview: publicPagePreview.fr,
+
     },
     es: {
-        fermRegistryLong1: 'Marco de Monitoreo',
-        fermRegistryLong2: 'de la Restauración de Ecosistemas',
-        fermRegistry: 'Registro FERM',
+        fermRegistryLong1: "Marco de Monitoreo",
+        fermRegistryLong2: "de la Restauración de Ecosistemas",
+        fermRegistry: "Registro FERM",
 
-        userGuide: 'Guía del usuario',
-        support: 'Soporte',
+        references: "Referencias",
+
+        userGuide: "Guía del usuario",
+        support: "Soporte",
 
         inputs: inputs.es,
-        notAvailable: 'No disponible',
+        notAvailable: "No disponible",
         error: {
-            unexpected: 'Se produjo un error inesperado, por favor revise el registro de la consola.'
+            error: "Error",
+            unexpected: "Se produjo un error inesperado, por favor revise el registro de la consola."
         },
+        close: "Cerrar",
+        view: {
+            previous: "Anterior",
+            next: "Siguiente",
+        },
+        edit: {
+            saveAndExit: "Guardar y salir",
+            saveAndNext: "Guardar y siguiente",
+            cancel: "Cancelar",
+            applyToAll: "Aplicar a todos",
+        },
+        search: "Buscar",
+        
+        project: project.es,
         home: home.es,
         projectRegistration: projectRegistration.es,
+        areaAndEcosystems: areaAndEcosystems.es,
+        characteristics: characteristics.es,
+        activities: activities.es,
+        indicators: indicators.es,
+        monitoring: monitoring.es,
+        publicPagePreview: publicPagePreview.es,
     },
 };

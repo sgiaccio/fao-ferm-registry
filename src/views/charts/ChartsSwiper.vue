@@ -14,7 +14,7 @@ import BiodiversityChart from './BiodiversityChart.vue';
 import BiomassChart from './BiomassChart.vue';
 
 
-const chartComnponents = [ CCILCChart, GFCChart, LCMChart, LPDChart, BiodiversityChart, BiomassChart ];
+const chartComponents = [ CCILCChart, GFCChart, LCMChart, LPDChart, BiodiversityChart, BiomassChart ];
 
 const modules = [ Navigation ];
 
@@ -43,7 +43,7 @@ function slideChanged(swiper: any) {
         :touchStartPreventDefault="false"
     >
         <swiper-slide
-            v-for="(component, index) in chartComnponents"
+            v-for="(component, index) in chartComponents"
             :key="index"
             :area="area"
         >

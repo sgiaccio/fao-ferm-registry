@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -14,13 +16,14 @@ import { CanvasRenderer } from 'echarts/renderers';
 // import { MapPinIcon } from '@heroicons/vue/24/outline'
 
 
-const modules = [ Navigation ];
-
+const { t } = useI18n();
 const props = defineProps<{
     areas: any
 }>();
 
 const emit = defineEmits(['zoomToArea']);
+
+const modules = [Navigation];
 
 echarts.use([GridComponent, BarChart, CanvasRenderer]);
 
@@ -156,18 +159,24 @@ watch([areasWithMonitoring, chartDivRefs], () => {
                     </div>
                     <dl class="divide-y divide-gray-100">
                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                            <dt class="text-sm font-medium leading-6 text-gray-900">Indicator</dt>
+                            <dt class="text-sm font-medium leading-6 text-gray-900">
+                                {{ t('publicPagePreview.areasCharts.indicator') }}
+                            </dt>
                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.indicator.trim() }}</dd>
                         </div>
                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                            <dt class="text-sm font-medium leading-6 text-gray-900">Metric</dt>
+                            <dt class="text-sm font-medium leading-6 text-gray-900">
+                                {{ t('publicPagePreview.areasCharts.metric') }}
+                            </dt>
                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.metric.trim() }} <span class="whitespace-nowrap">[{{ area.indicator.unit.trim() }}]</span></dd>
                         </div>
                         <div
                             v-if="area.indicator.action"
                             class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
                         >
-                            <dt class="text-sm font-medium leading-6 text-gray-900">Action</dt>
+                            <dt class="text-sm font-medium leading-6 text-gray-900">
+                                {{ t('publicPagePreview.areasCharts.action') }}
+                            </dt>
                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ area.indicator.action.trim() }}</dd>
                         </div>
                     </dl>
@@ -185,11 +194,16 @@ watch([areasWithMonitoring, chartDivRefs], () => {
                                     <th
                                         scope="col"
                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                                    >Year</th>
+                                    >
+                                        {{ t('publicPagePreview.areasCharts.year') }}
+                                    </th>
                                     <th
                                         scope="col"
                                         class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                                    >Value</th>
+                                    >
+                                        Value
+                                        {{ t('publicPagePreview.areasCharts.value') }}
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">

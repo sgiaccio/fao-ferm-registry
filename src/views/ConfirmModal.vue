@@ -3,7 +3,7 @@ import { nextTick } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { CheckIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue';
-import ButtonWait from '@/components/ButtonWait.vue';
+
 
 withDefaults(defineProps<{
     open: boolean

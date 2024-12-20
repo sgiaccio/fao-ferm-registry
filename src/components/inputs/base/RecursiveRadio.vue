@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
 import { filterByLabel } from '@/components/project/menus';
 import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
 import { ref, computed } from 'vue';
@@ -27,6 +29,8 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits(["update:modelValue"])
+
+const { t } = useI18n();
 
 let flattenedOptions: any = {}
 function flatten(data: RecursiveMenu) {
@@ -96,7 +100,7 @@ function showAlertModal(title: string, info: string) {
         v-if="!level && edit && searchable"
         type="text"
         class="w-80 text-sm font-bold text-gray-600 rounded-full border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mb-2 mt-2"
-        placeholder="Search"
+        :placeholder="$t('inputs.recursiveRadio.search')"
         v-model="searchString"
     />
     <template v-if="edit">

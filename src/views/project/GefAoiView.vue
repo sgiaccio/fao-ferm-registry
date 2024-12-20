@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, provide, onMounted, computed } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
+import { toast } from 'vue3-toastify';
+
 import { InformationCircleIcon } from '@heroicons/vue/24/outline';
 import { TrashIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 
@@ -34,6 +38,14 @@ import { roundToPrecisionAsString } from '@/lib/util';
 import { getGaulLevel0 } from '@/firebase/firestore';
 
 
+withDefaults(defineProps<{
+    edit?: boolean
+}>(), {
+    edit: true
+});
+
+const { t } = useI18n();
+
 const store = useProjectStore();
 const authStore = useAuthStore();
 
@@ -48,17 +60,11 @@ function getCountryName(iso2: string) {
     return country?.label || null;
 }
 
-withDefaults(defineProps<{
-    edit?: boolean
-}>(), {
-    edit: true
-});
-
 const multiInputComponents = {
     adminArea: {
         component: AdminArea,
         newData: {},
-        addItemLabel: 'Add admin area',
+        addItemLabel: computed(() => t('inputs.aoi.addAdminArea')),
         calculatedProps: [
             { key: 'index', f: (area: any, i: number) => i },
             { key: 'nAreas', f: (areas: any) => areas.length }
@@ -67,7 +73,7 @@ const multiInputComponents = {
     draw: {
         component: MapInput,
         newData: {},
-        addItemLabel: 'Draw polygon',
+        addItemLabel: computed(() => t('inputs.aoi.drawPolygon')),
         calculatedProps: [
             { key: 'index', f: (area: any, i: number) => i },
             { key: 'nAreas', f: (areas: any) => areas.length }
@@ -76,7 +82,7 @@ const multiInputComponents = {
     upload: {
         component: MapUpload,
         newData: {},
-        addItemLabel: 'Upload shapefile',
+        addItemLabel: computed(() => t('inputs.aoi.uploadShapefile')),
         addDialog: ShapefileUploadDialog,
         calculatedProps: [
             { key: 'index', f: (area: any, i: number) => i },
@@ -86,13 +92,13 @@ const multiInputComponents = {
     uploadKml: {
         component: MapUpload,
         newData: {},
-        addItemLabel: 'Upload KML/KMZ/GeoJSON',
+        addItemLabel: computed(() => t('inputs.aoi.uploadGeoJson')),
         addDialog: KmlKmzUploadDialog,
         calculatedProps: [
             { key: 'index', f: (area: any, i: number) => i },
             { key: 'nAreas', f: (areas: any) => areas.length }
         ],
-    },
+    }
 };
 
 const paAndTraditionalTerritoriesComponent = {
@@ -161,11 +167,13 @@ function getAreaValue(area: any) {
 }
 
 provide('applyToAll', () => {
-    if (!confirm('Are you sure you want to apply this ecosystem to all areas? Your current selections will be overwritten.')) return;
+    if (!confirm(t('areaAndEcosystems.alerts.applyEcosystemsToAll'))) {
+        return;
+    }
 
     const ecosystems = getAreaValue(store.projectAreas[0]).ecosystems;
     if (!ecosystems?.length) {
-        alert('Please select ecosystems for the first area first.');
+        toast.info(t('areaAndEcosystems.alerts.selectEcosystems'), { position: 'top-right' });
         return;
     }
     store.projectAreas.forEach((area, i) => {
@@ -202,8 +210,8 @@ const uniqueEcosystems = computed(() => {
         buttonText="Close"
     >
         <div class="text-left text-sm">
-            Please upload a shapefile with the land (in ha) reported in the geographic information system (spatially
-            explicit data) if available. Otherwise please include the coordinates of project location.
+            <!-- Please upload a shapefile with the land (in ha) reported in the geographic information system (spatially explicit data) if available. Otherwise please include the coordinates of project location. -->
+            {{ t('areaAndEcosystems.alerts.gef.uploadPolygons') }}
         </div>
     </AlertModal>
     <AlertModal
@@ -214,7 +222,8 @@ const uniqueEcosystems = computed(() => {
         buttonText="Close"
     >
         <div class="text-left text-sm">
-            Please use the drawer feature to draw the land directly on the platform. The calculator function will calculate the land (in ha).
+            <!-- Please use the drawer feature to draw the land directly on the platform. The calculator function will calculate the land (in ha). -->
+            {{ t('areaAndEcosystems.alerts.gef.drawOnPlatform') }}
         </div>
     </AlertModal>
     <AlertModal
@@ -225,7 +234,8 @@ const uniqueEcosystems = computed(() => {
         buttonText="Close"
     >
         <div class="text-left text-sm">
-            Please select the administrative area where your project is working and enter the full land (in ha) of the administrative area or enter the land (in ha) within an administrative area where your project is working
+            <!-- Please select the administrative area where your project is working and enter the full land (in ha) of the administrative area or enter the land (in ha) within an administrative area where your project is working -->
+            {{ t('areaAndEcosystems.alerts.gef.selectAdminArea') }}
         </div>
     </AlertModal>
     <ConfirmModal
@@ -238,23 +248,38 @@ const uniqueEcosystems = computed(() => {
         Are you sure you want to delete all project areas? This action will only remove areas temporarily in your
         current session. <span class="font-bold">To permanently apply this change, you must save the project afterwards</span>. Proceed?
     </ConfirmModal>
-    <TabTemplate title="Area & ecosystems">
+    <TabTemplate :title="t('areaAndEcosystems.title')">
         <template #description>
-            <p>
-                In this tab information on the project areas and ecosystems is needed in tabular and in geospatial form. You will need to provide details on committed land under GEF Core Indicators 1-5, and information on Restoration Plans/Management Plans with the extension of the area of intervention as well as the geospatial information of the areas including ecosystems covered.
-            </p>
-            <p class="pt-4">
-                It is crucial to identify the ecosystems that your initiative is restoring. The IUCN Global Ecosystem Typology 2.0 is the outcome of critical review and input by an extensive international network of ecosystem scientists, containing profiles for 5 realms and their combinations, 25 biomes and 108 ecosystem functional groups (Keith et al.2022). <InfoButton title="More information">
-                    <slot>
-                        <AoiViewInfo />
-                    </slot>
-                </InfoButton>
-            </p>
+            {{ t('areaAndEcosystems.description.gef.main') }}
+            <i18n-t
+                keypath="areaAndEcosystems.description.gef.ecosystems"
+                tag="p"
+                class="pt-4"
+            >
+                <template v-slot:infoButton>
+                    <InfoButton :title="t('areaAndEcosystems.description.moreInformation')">
+                        <slot>
+                            <AoiViewInfo />
+                        </slot>
+                    </InfoButton>
+                </template>
+            </i18n-t>
         </template>
-
         <template #default>
             <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 shadow-md border-gray-300">
-                <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data):</span> The land committed in GEF Core Indicators includes the ha committed in GEF Core Indicators 1-5 and LDCF Indicator 2.</p>
+                <!-- <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data):</span> The land committed in GEF Core Indicators includes the ha committed in GEF Core Indicators 1-5 and LDCF Indicator 2.</p> -->
+
+                <i18n-t
+                    keypath="areaAndEcosystems.gef.landCommitted.info.text"
+                    tag="p"
+                    class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"
+                >
+                    <template #title>
+                        <span class="font-bold">
+                            {{ $t('areaAndEcosystems.gef.landCommitted.info.title') }}:
+                        </span>
+                    </template>
+                </i18n-t>
                 <FormGroup
                     :edit="edit"
                     label="Breakdown of commitment by core indicator [Hectares]"
@@ -367,60 +392,13 @@ const uniqueEcosystems = computed(() => {
                             v-model="store.project.project.targetAreaCoreIndicator2LDCF"
                             min="0"
                         />
-                        <!-- </div> -->
-                        <!-- <div>
-                            <label class="block text-sm font-medium text-gray-700">CI 2</label>
-                            <NumberInput
-                                :edit="edit"
-                                v-model="store.project.project.targetAreaCoreIndicator2"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">CI 3</label>
-                            <NumberInput
-                                :edit="edit"
-                                v-model="store.project.project.targetAreaCoreIndicator3"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">CI 4</label>
-                            <NumberInput
-                                :edit="edit"
-                                v-model="store.project.project.targetAreaCoreIndicator4"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">CI 5</label>
-                            <NumberInput
-                                :edit="edit"
-                                v-model="store.project.project.targetAreaCoreIndicator5"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">2 (LDCF)</label>
-                            <NumberInput
-                                :edit="edit"
-                                v-model="store.project.project.targetAreaCoreIndicator2LDCF"
-                            />
-                        </div> -->
                     </div>
                 </FormGroup>
             </div>
 
             <div class="border-2 rounded-xl my-4 px-5 bg-teal-50 shadow-md border-gray-300">
-                <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Restoration Plans/Management Plans (tabular data).</span> The
-                    plan should at least include a description of restoration or land management
-                    activities and the extension of the area of intervention.</p>
-                <!-- <FormGroup label="Total area of land achieved (tabular format)">
-                    <NumberInput
-                        :edit="edit"
-                        v-model="store.project.project.areaAchieved"
-                    />
-
-                    <template #info>
-                        <p>Please include the land (in ha) reported in the Restoration Plans/Management Plans (tabular data).</p>
-                    </template>
-</FormGroup> -->
+                <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Restoration Plans/Management Plans (tabular data).</span>
+                    The plan should at least include a description of restoration or land management activities and the extension of the area of intervention.</p>
                 <FileUploadFormGroup2
                     label="Please upload Restoration Plans/Management Plans"
                     :projectId="store.id!"
@@ -431,41 +409,19 @@ const uniqueEcosystems = computed(() => {
                 >
 
                     <template #info>
-                        <p>Please upload the Restoration Plans/ Management plans with the description of restoration / land
-                            management activities and baseline information of the territory, including pictures.</p>
+                        <p>Please upload the Restoration Plans/ Management plans with the description of restoration / land management activities and baseline information of the territory, including pictures.</p>
                     </template>
                 </FileUploadFormGroup2>
-                <!-- <FormGroup
-                    class="odd:bg-white even:bg-slate-50"
-                    label="GEF investment type"
-                    dangerousHtmlDescription="Do the areas of intervention described in the Restoration Plans/Management Plans coincide with the areas of intervention uploaded in the <span class='text-black'>Geographic Areas?</span>"
-                >
-                    <SmallCardsFormGroup
-                        v-model="store.project.project.areaAchievedMatch"
-                        :options="menus.boolean"
-                        :edit="edit"
-                    />
-                </FormGroup> -->
-                <!-- <RecursiveRadioFormGroup
-                    :edit="edit"
-                    dangerousHtmlDescription="Do the areas of intervention described in the Restoration Plans/Management Plans coincide with the areas of intervention uploaded in the <span class='text-black'>Geographic Areas?</span>"
-                    :options="menus.boolean"
-                    :searchable="false"
-                    v-model="store.project.project.areaAchievedMatch"
-                    :show-selection="false"
-                /> -->
             </div>
 
             <div class="border-2 rounded-xl my-4 px-5 pb-5 bg-red-50 shadow-md border-gray-300">
                 <div class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm">
                     <p><span class="font-bold">Information on Geographic Areas (spatially explicit data).</span>
-                        The data should
-                        have the following <a
+                        The data should have the following <a
                             class="text-ferm-blue-dark-800 underline"
                             href="/gef/Requirements of geospatial data.pdf"
                             target="_blank"
-                        >requirements</a> and the feature table to be uploaded
-                        the following <a
+                        >requirements</a> and the feature table to be uploaded the following <a
                             class="text-ferm-blue-dark-800 underline"
                             href="/gef/Sample feature table GEF Projects.csv"
                             target="_blank"
@@ -509,8 +465,7 @@ const uniqueEcosystems = computed(() => {
                 >
 
                     <template #info>
-                        <p>The total of the land (in ha) will be computed by the
-                            plattorm based on spatially explicit information provided.</p>
+                        <p>The total of the land (in ha) will be computed by the plattorm based on spatially explicit information provided.</p>
                     </template>
                 </LabelFormGroup>
                 <div
@@ -555,13 +510,6 @@ const uniqueEcosystems = computed(() => {
                     :paging-size="25"
                     delete-confirm-message="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted."
                 />
-                <!--                <button v-if="store.projectAreas.length > 0 && edit"-->
-                <!--                        @click="deleteProjectAreas()" type="button"-->
-                <!--                        class="mt-6 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">-->
-                <!--                    <TrashIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />-->
-                <!--                    Delete all areas-->
-                <!--                </button>-->
-
                 <button
                     v-if="store.projectAreas.length > 0 && edit"
                     @click="() => { showDeleteAreasConfirm = true }"
@@ -572,7 +520,7 @@ const uniqueEcosystems = computed(() => {
                         class="-ml-0.5 h-5 w-5"
                         aria-hidden="true"
                     />
-                    Delete all areas
+                    {{ t('areaAndEcosystems.deleteAllAreas') }}
                 </button>
             </div>
             <div
@@ -592,7 +540,6 @@ const uniqueEcosystems = computed(() => {
                 </div>
                 <MultiInputPassive
                     :edit="edit"
-                    :numbering="(n, v) => 'n'"
                     :ids="store.project.project.countries"
                     :input-component="paAndTraditionalTerritoriesComponent"
                     v-model="store.project.paAndTraditionalTerritories"
