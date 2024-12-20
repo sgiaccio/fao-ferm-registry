@@ -364,7 +364,7 @@ onMounted(async () => {
                                 </div>
                                 <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
                                     <div class="text-xl font-semibold uppercase md:tracking-wide">Search</div>
-                                    <div class="text-sm md:text-base">For good practices on ecosystem restoration</div>
+                                    <div class="text-sm md:text-base">For initiatives and good practices on ecosystem restoration</div>
                                 </div>
                             </div>
                         </router-link>
