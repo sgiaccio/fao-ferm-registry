@@ -111,8 +111,9 @@ async function checkSaveCollaboratorPrivileges(context, projectRef) {
     const isSuperAdmin = util.isSuperAdmin(context);
     const isGroupAdmin = util.isGroupAdmin(context, projectData);
     const isAuthorAndEditor = util.isGroupEditor(context, projectData) && projectData.created_by === context.auth.uid;
+    const isCollaborator = projectData.collaborators?.includes(context.auth.uid);
 
-    if (!isSuperAdmin && !isGroupAdmin && !isAuthorAndEditor) {
+    if (!isSuperAdmin && !isGroupAdmin && !isAuthorAndEditor && !isCollaborator) {
         console.error("User is not a superadmin, nor a group admin, nor a group editor and owner of the project");
         throw new functions.https.HttpsError("permission-denied", "User is not a superadmin, nor a group admin, nor a group editor and owner of the project");
     }
