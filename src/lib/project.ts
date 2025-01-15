@@ -31,6 +31,10 @@ function isOwner(project) {
     return getOwner(project) === getUserId();
 }
 
+function isCollaborator(project) {
+    return project.data.collaborators?.includes(getUserId());
+}
+
 export function canEdit(project) {
     // if the project is not a draft, it cannot be edited by anyone else but the super admin
     if (getStatus(project) !== 'draft') {
@@ -50,7 +54,7 @@ export function canEdit(project) {
     }
 
     // if the user is editor, he can edit the project if it is a draft and he is the owner
-    return level === 'editor' && (isOwner(project) || project.data.collaborators?.includes(getUserId()));
+    return level === 'editor' && (isOwner(project) || isCollaborator(project));
 }
 
 export function canSubmit(project) {
@@ -109,11 +113,10 @@ export function canAddBestPractice(project) {
 }
 
 export function canAddCollaborators(project) {
-    const authStore = useAuthStore();
-
     // Superadmins can add collaborators to any project
+    // const authStore = useAuthStore();
     // if (authStore.isAdmin) return true;
 
     // If the user is not an admin, check if they are an editor of the project's group
-    return ['admin'].includes(getPrivileges(project)) || (['editor'].includes(getPrivileges(project)) &&isOwner(project));
+    return ['admin'].includes(getPrivileges(project)) || (['editor'].includes(getPrivileges(project)) && isOwner(project) || isCollaborator(project));
 }

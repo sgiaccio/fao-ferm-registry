@@ -29,7 +29,8 @@ const authStore = useAuthStore();
 const newBestPractice = {
     implementationSteps: [
         { step: {} }
-    ]
+    ],
+    status: 'draft',
 };
 
 export const useBestPracticesStore = defineStore({
@@ -217,7 +218,10 @@ export const useBestPracticesStore = defineStore({
         async createEmpty(projectId: string) {
             this.id = null;
             this.projectId = projectId;
-            this.bestPractice = { ...newBestPractice };
+            this.bestPractice = {
+                ...newBestPractice,
+                projectId: projectId
+            };
             await this.fetchProjectAreas(projectId);
         },
 

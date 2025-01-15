@@ -356,7 +356,6 @@ function otherChartSize() {
                                     :units="project.project.areaUnits"
                                 />
                                 <div :class="['mt-2', nCIOtherThan3() > 1 ? 'grid grid-cols-2 gap-2' : '']">
-                                    {{ areaForGefIndicatorGroup(4) }}
                                     <CommittedAreaChart
                                         v-if="project.project.targetAreaCoreIndicator4"
                                         title="Area of landscapes under improved practices"
