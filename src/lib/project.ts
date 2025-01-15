@@ -118,5 +118,5 @@ export function canAddCollaborators(project) {
     // if (authStore.isAdmin) return true;
 
     // If the user is not an admin, check if they are an editor of the project's group
-    return ['admin'].includes(getPrivileges(project)) || (['editor'].includes(getPrivileges(project)) &&isOwner(project) || isCollaborator(project));
+    return ['admin'].includes(getPrivileges(project)) || (['editor'].includes(getPrivileges(project)) && isOwner(project) || isCollaborator(project));
 }

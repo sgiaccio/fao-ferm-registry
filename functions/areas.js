@@ -988,13 +988,9 @@ async function getVersionedAggregatedPolygons(projectId, areas, version) {
         geoms AS (
             SELECT
                 -- the first ST_CollectionExtract merges all the polygons into a single geometry
-                -- ST_Collect merges all the geometries into a single geometry
-                -- and the last ST_CollectionExtract merges the geometry into a single geometry again
-                -- looks ugly but it works, at least with the use cases we tested
-                ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson,
-                ST_PointOnSurface(ST_Collect(ST_CollectionExtract(geom::geometry))) AS pointOnSurface,
-
-                pa.area_uuid,
+                -- ST_Collect merges all the geometries into a single geometry...
+                ST_Collect(ST_CollectionExtract(geom::geometry)) AS collected_geom,
+                pa.area_uuid AS area_uuid,
                 an.name AS name,
                 an.areaJson AS areaJson
             FROM
@@ -1004,6 +1000,16 @@ async function getVersionedAggregatedPolygons(projectId, areas, version) {
                 project_id = $2
                 AND pa.area_uuid = ANY($${areaUuids.length * 3 + 3})
             GROUP BY pa.area_uuid, an.name, an.areaJson
+        ),
+        processed_geoms AS (
+            SELECT
+                -- ... and the last ST_CollectionExtract merges the geometry into a single geometry again. It looks ugly but it works, at least with the use cases we tested
+                ST_AsGeoJSON(ST_CollectionExtract(collected_geom)) AS geojson,
+                ST_PointOnSurface(ST_MakeValid(collected_geom)) AS pointOnSurface,
+                area_uuid,
+                name,
+                areaJson
+            FROM geoms
         )
         SELECT
             json_build_object(
@@ -1033,9 +1039,7 @@ async function getVersionedAggregatedPolygons(projectId, areas, version) {
                     )
                 )
             ) AS geojson
-        FROM
-            geoms;
-        `;
+        FROM processed_geoms;`;
         const values = [version, projectId, ...areaUuids, ...areaNames, ...areaJsons, areaUuids];
 
         const result = await client.query(query, values);
@@ -1071,21 +1075,13 @@ async function getAggregatedPolygons(projectId, areas) {
 
         const query = `
         WITH area_names AS (
-            SELECT
-                *
-            FROM
-                (
-                    VALUES ${areaValues}
-                ) AS t (area_uuid, name, json)
+            SELECT * FROM (VALUES ${areaValues}) AS t (area_uuid, name, json)
         ),
         geoms AS (
             SELECT
                 -- the first ST_CollectionExtract merges all the polygons into a single geometry
-                -- ST_Collect merges all the geometries into a single geometry
-                -- and the last ST_CollectionExtract merges the geometry into a single geometry again
-                -- looks ugly but it works, at least with the use cases we tested
-                ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(geom::geometry)))) AS geojson,
-                ST_PointOnSurface(ST_Collect(ST_CollectionExtract(geom::geometry))) AS pointOnSurface,
+                -- ST_Collect merges all the geometries into a single geometry...
+                ST_Collect(ST_CollectionExtract(geom::geometry)) AS collected_geom ,
                 pa.area_uuid,
                 an.name AS name,
                 an.json AS json
@@ -1096,6 +1092,16 @@ async function getAggregatedPolygons(projectId, areas) {
                 project_id = $1
                 AND pa.area_uuid = ANY($${areaUuids.length * 3 + 2})
             GROUP BY pa.area_uuid, an.name, an.json
+        ),
+        processed_geoms AS (
+            -- ... and the last ST_CollectionExtract merges the geometry into a single geometry again. It looks ugly but it works, at least with the use cases we tested
+            SELECT
+                ST_AsGeoJSON(ST_CollectionExtract(collected_geom)) AS geojson,
+                ST_PointOnSurface(ST_MakeValid(collected_geom)) AS pointOnSurface,
+                area_uuid,
+                name,
+                json
+            FROM geoms
         )
         SELECT
             json_build_object(
@@ -1126,9 +1132,7 @@ async function getAggregatedPolygons(projectId, areas) {
                     )
                 )
             ) AS geojson
-        FROM
-            geoms;
-        `;
+        FROM processed_geoms;`;
         const values = [projectId, ...areaUuids, ...areaNames, ...areaJsons, areaUuids];
         const result = await client.query(query, values);
 
