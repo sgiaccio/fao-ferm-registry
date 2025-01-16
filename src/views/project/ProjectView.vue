@@ -74,14 +74,7 @@ const navigation = [{
         path: 'monitoring',
         icon: EyeIcon,
         solidIcon: EyeIconSolid
-    }
-        //     , {
-        //     name: 'Public Page Preview',
-        //     path: 'preview',
-        //     icon: ComputerDesktopIcon,
-        //     solidIcon: ComputerDesktopIconSolid
-        // }
-    ]
+    }]
 }];
 
 const store = useProjectStore();
@@ -123,7 +116,7 @@ function openPreviewModal() {
     });
 }
 
-const isPreviewOpen = computed(() => route.query.modal === 'preview');
+const isPreviewOpen = computed(() => route.query.modal === 'preview' && !!store.project);
 
 function closeModal() {
     router.push({
@@ -204,11 +197,6 @@ function closeModal() {
                                         aria-hidden="true"
                                     />
                                     {{ item.name }}
-                                    <!-- <span
-                                        v-if="item.count"
-                                        class="ml-auto w-9 min-w-max whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-center text-xs font-medium leading-5 text-gray-600 ring-1 ring-inset ring-gray-200"
-                                        aria-hidden="true"
-                                    >{{ item.count }}</span> -->
                                 </router-link>
                             </li>
                         </ul>
@@ -226,21 +214,6 @@ function closeModal() {
                             Public Page Preview
                         </div>
                     </li>
-                    <!--
-                    <li class="-mx-6 mt-auto">
-                        <a
-                            href="#"
-                            class="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50"
-                        >
-                            <img
-                                class="h-8 w-8 rounded-full bg-gray-50"
-                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                alt=""
-                            />
-                            <span class="sr-only">Your profile</span>
-                            <span aria-hidden="true">Name here</span>
-                        </a>
-                    </li> -->
                 </ul>
             </nav>
         </div>
@@ -255,31 +228,6 @@ function closeModal() {
             />
         </div>
     </div>
-
-
-    <!-- <div
-        v-if="isPreviewOpen"
-        class="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-70 z-40"
-        @click.stop="closePreview"
-    />
-    <div :class="{ 'fixed top-0 left-0 w-screen h-screen z-50 p-12 shadow-lg rounded-md overflow-hidden': isPreviewOpen }">
-        <div
-            class="relative h-full w-full"
-            v-if="isPreviewOpen"
-        >
-        <ResultsView />
-        <div
-                class="absolute -top-4 -right-4 rounded-full bg-white hover:bg-gray-300 cursor-pointer"
-                @click.stop="closePreview"
-            >
-                <XMarkIcon
-                    @click.stop="closePreview"
-                    class="h-4 w-4 text-gray-500 m-2"
-                />
-            </div>
-        </div>
-    </div> -->
-
 
     <TransitionRoot
         as="template"
