@@ -120,7 +120,7 @@ function openPreviewModal() {
     });
 }
 
-const isPreviewOpen = computed(() => route.query.modal === 'preview');
+const isPreviewOpen = computed(() => route.query.modal === 'preview' && !!store.project);
 
 function closeModal() {
     router.push({
