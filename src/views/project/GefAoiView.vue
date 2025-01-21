@@ -210,7 +210,6 @@ const uniqueEcosystems = computed(() => {
         buttonText="Close"
     >
         <div class="text-left text-sm">
-            <!-- Please upload a shapefile with the land (in ha) reported in the geographic information system (spatially explicit data) if available. Otherwise please include the coordinates of project location. -->
             {{ t('areaAndEcosystems.alerts.gef.uploadPolygons') }}
         </div>
     </AlertModal>
@@ -222,7 +221,6 @@ const uniqueEcosystems = computed(() => {
         buttonText="Close"
     >
         <div class="text-left text-sm">
-            <!-- Please use the drawer feature to draw the land directly on the platform. The calculator function will calculate the land (in ha). -->
             {{ t('areaAndEcosystems.alerts.gef.drawOnPlatform') }}
         </div>
     </AlertModal>
@@ -234,7 +232,6 @@ const uniqueEcosystems = computed(() => {
         buttonText="Close"
     >
         <div class="text-left text-sm">
-            <!-- Please select the administrative area where your project is working and enter the full land (in ha) of the administrative area or enter the land (in ha) within an administrative area where your project is working -->
             {{ t('areaAndEcosystems.alerts.gef.selectAdminArea') }}
         </div>
     </AlertModal>
@@ -245,8 +242,14 @@ const uniqueEcosystems = computed(() => {
         title="Delete all project areas"
         @cancel="() => { showDeleteAreasConfirm = false }"
     >
-        Are you sure you want to delete all project areas? This action will only remove areas temporarily in your
-        current session. <span class="font-bold">To permanently apply this change, you must save the project afterwards</span>. Proceed?
+        <i18n-t
+            keypath="areaAndEcosystems.deleteAllAreasConfirm.main"
+            tag="p"
+        >
+            <template v-slot:saveProject>
+                <span class="font-bold">{{ t('areaAndEcosystems.deleteAllAreasConfirm.saveProject') }}</span>
+            </template>
+        </i18n-t>
     </ConfirmModal>
     <TabTemplate :title="t('areaAndEcosystems.title')">
         <template #description>
@@ -267,8 +270,6 @@ const uniqueEcosystems = computed(() => {
         </template>
         <template #default>
             <div class="border-2 rounded-xl my-4 px-5 bg-yellow-100 shadow-md border-gray-300">
-                <!-- <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Land committed in GEF Core Indicators (tabular data):</span> The land committed in GEF Core Indicators includes the ha committed in GEF Core Indicators 1-5 and LDCF Indicator 2.</p> -->
-
                 <i18n-t
                     keypath="areaAndEcosystems.gef.landCommitted.info.text"
                     tag="p"
@@ -282,19 +283,21 @@ const uniqueEcosystems = computed(() => {
                 </i18n-t>
                 <FormGroup
                     :edit="edit"
-                    label="Breakdown of commitment by core indicator [Hectares]"
-                    description="Area of land committed by core indicator"
+                    :label="t('areaAndEcosystems.gef.landCommitted.label')"
+                    :description="t('areaAndEcosystems.gef.landCommitted.description')"
                 >
                     <div class="grid _grid-flow-row gap-x-6 gap-y-4 grid-cols-2 items-start _grid-cols-[min-content_minmax(0px,_200px)]">
-                        <label
-                            for="targetAreaCoreIndicator1"
+                        <i18n-t
+                            keypath="areaAndEcosystems.gef.landCommitted.coreIndicator1.main"
+                            tag="label"
                             class="block text-sm font-medium text-gray-700"
-                        >Core Indicator 1
-                            -
-                            <span class="font-normal">
-                                Terrestrial protected areas created or under improved Management
-                            </span>
-                        </label>
+                        >
+                            <template #info>
+                                <span class="font-normal">
+                                    {{ $t('areaAndEcosystems.gef.landCommitted.coreIndicator1.description') }}
+                                </span>
+                            </template>
+                        </i18n-t>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator1"
@@ -302,17 +305,17 @@ const uniqueEcosystems = computed(() => {
                             v-model="store.project.project.targetAreaCoreIndicator1"
                             min="0"
                         />
-                        <!-- </div>
-                        <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
-                        <label
-                            for="targetAreaCoreIndicator2"
+                        <i18n-t
+                            keypath="areaAndEcosystems.gef.landCommitted.coreIndicator2.main"
+                            tag="label"
                             class="block text-sm font-medium text-gray-700"
-                        >Core Indicator 2
-                            -
-                            <span class="font-normal">
-                                Marine protected areas created or under improved management
-                            </span>
-                        </label>
+                        >
+                            <template #info>
+                                <span class="font-normal">
+                                    {{ $t('areaAndEcosystems.gef.landCommitted.coreIndicator2.description') }}
+                                </span>
+                            </template>
+                        </i18n-t>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator2"
@@ -320,17 +323,17 @@ const uniqueEcosystems = computed(() => {
                             v-model="store.project.project.targetAreaCoreIndicator2"
                             min="0"
                         />
-                        <!-- </div>
-                        <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
-                        <label
-                            for="targetAreaCoreIndicator3"
+                        <i18n-t
+                            keypath="areaAndEcosystems.gef.landCommitted.coreIndicator3.main"
+                            tag="label"
                             class="block text-sm font-medium text-gray-700"
-                        >Core Indicator 3
-                            -
-                            <span class="font-normal">
-                                Area of land and ecosystems under restoration
-                            </span>
-                        </label>
+                        >
+                            <template #info>
+                                <span class="font-normal">
+                                    {{ $t('areaAndEcosystems.gef.landCommitted.coreIndicator3.description') }}
+                                </span>
+                            </template>
+                        </i18n-t>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator3"
@@ -338,17 +341,17 @@ const uniqueEcosystems = computed(() => {
                             v-model="store.project.project.targetAreaCoreIndicator3"
                             min="0"
                         />
-                        <!-- </div>
-                        <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
-                        <label
-                            for="targetAreaCoreIndicator4"
+                        <i18n-t
+                            keypath="areaAndEcosystems.gef.landCommitted.coreIndicator4.main"
+                            tag="label"
                             class="block text-sm font-medium text-gray-700"
-                        >Core Indicator 4
-                            -
-                            <span class="font-normal">
-                                Area of landscapes under improved practices
-                            </span>
-                        </label>
+                        >
+                            <template #info>
+                                <span class="font-normal">
+                                    {{ $t('areaAndEcosystems.gef.landCommitted.coreIndicator4.description') }}
+                                </span>
+                            </template>
+                        </i18n-t>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator4"
@@ -356,17 +359,17 @@ const uniqueEcosystems = computed(() => {
                             v-model="store.project.project.targetAreaCoreIndicator4"
                             min="0"
                         />
-                        <!-- </div> -->
-                        <!-- <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
-                        <label
-                            for="targetAreaCoreIndicator5"
+                        <i18n-t
+                            keypath="areaAndEcosystems.gef.landCommitted.coreIndicator5.main"
+                            tag="label"
                             class="block text-sm font-medium text-gray-700"
-                        >Core Indicator 5
-                            -
-                            <span class="font-normal">
-                                Area of marine habitat under improved practices to benefit biodiversity
-                            </span>
-                        </label>
+                        >
+                            <template #info>
+                                <span class="font-normal">
+                                    {{ $t('areaAndEcosystems.gef.landCommitted.coreIndicator5.description') }}
+                                </span>
+                            </template>
+                        </i18n-t>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator5"
@@ -374,17 +377,17 @@ const uniqueEcosystems = computed(() => {
                             v-model="store.project.project.targetAreaCoreIndicator5"
                             min="0"
                         />
-                        <!-- </div> -->
-                        <!-- <div class="flex flex-row md:flex-col items-center md:items-start gap-x-3"> -->
-                        <label
-                            for="targetAreaCoreIndicator2LDCF"
+                        <i18n-t
+                            keypath="areaAndEcosystems.gef.landCommitted.coreIndicator2LDCF.main"
+                            tag="label"
                             class="block text-sm font-medium text-gray-700"
-                        >LDCF CI 2
-                            -
-                            <span class="font-normal">
-                                Area of land managed for climate resilience
-                            </span>
-                        </label>
+                        >
+                            <template #info>
+                                <span class="font-normal">
+                                    {{ $t('areaAndEcosystems.gef.landCommitted.coreIndicator2LDCF.description') }}
+                                </span>
+                            </template>
+                        </i18n-t>
                         <NumberInput
                             class="flex-1"
                             id="targetAreaCoreIndicator2LDCF"
@@ -397,10 +400,19 @@ const uniqueEcosystems = computed(() => {
             </div>
 
             <div class="border-2 rounded-xl my-4 px-5 bg-teal-50 shadow-md border-gray-300">
-                <p class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"><span class="font-bold">Information on Restoration Plans/Management Plans (tabular data).</span>
-                    The plan should at least include a description of restoration or land management activities and the extension of the area of intervention.</p>
+                <i18n-t
+                    keypath="areaAndEcosystems.gef.restorationPlans.info.text"
+                    tag="p"
+                    class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm"
+                >
+                    <template #title>
+                        <span class="font-bold">
+                            {{ $t('areaAndEcosystems.gef.restorationPlans.info.title') }}:
+                        </span>
+                    </template>
+                </i18n-t>
                 <FileUploadFormGroup2
-                    label="Please upload Restoration Plans/Management Plans"
+                    :label="t('areaAndEcosystems.gef.restorationPlans.upload.label')"
                     :projectId="store.id!"
                     folder="documents/gef/plans"
                     :multiple="true"
@@ -409,48 +421,67 @@ const uniqueEcosystems = computed(() => {
                 >
 
                     <template #info>
-                        <p>Please upload the Restoration Plans/ Management plans with the description of restoration / land management activities and baseline information of the territory, including pictures.</p>
+                        <p>
+                            {{ t('areaAndEcosystems.gef.restorationPlans.upload.info') }}
+                        </p>
                     </template>
                 </FileUploadFormGroup2>
             </div>
 
             <div class="border-2 rounded-xl my-4 px-5 pb-5 bg-red-50 shadow-md border-gray-300">
                 <div class="mt-5 border border-gray-300 rounded-lg px-4 py-3 bg-stone-50 text-sm">
-                    <p><span class="font-bold">Information on Geographic Areas (spatially explicit data).</span>
-                        The data should have the following <a
-                            class="text-ferm-blue-dark-800 underline"
-                            href="/gef/Requirements of geospatial data.pdf"
-                            target="_blank"
-                        >requirements</a> and the feature table to be uploaded the following <a
-                            class="text-ferm-blue-dark-800 underline"
-                            href="/gef/Sample feature table GEF Projects.csv"
-                            target="_blank"
-                        >structure</a>
-                    </p>
-                    <p
+                    <i18n-t
+                        keypath="areaAndEcosystems.gef.geographicAreas.info.text"
+                        tag="p"
+                    >
+                        <template #title>
+                            <span class="font-bold">
+                                {{ $t('areaAndEcosystems.gef.geographicAreas.info.title') }}:
+                            </span>
+                        </template>
+                        <template #requirementsLink>
+                            <a
+                                class="text-ferm-blue-dark-800 underline"
+                                href="/gef/Requirements of geospatial data.pdf"
+                                target="_blank"
+                            >
+                                {{ $t('areaAndEcosystems.gef.geographicAreas.info.requirements') }}
+                            </a>
+                        </template>
+                        <template #structureLink>
+                            <a
+                                class="text-ferm-blue-dark-800 underline"
+                                href="/gef/Sample feature table GEF Projects.csv"
+                                target="_blank"
+                            >
+                                {{ $t('areaAndEcosystems.gef.geographicAreas.info.structure') }}
+                            </a>
+                        </template>
+                    </i18n-t>
+                    <!-- <p
                         @click="() => showDisclaimer = true"
                         class="mt-4 font-semibold cursor-pointer text-ferm-blue-dark-800 underline uppercase"
                     >
                         Disclaimer
-                    </p>
-                    <p class="mt-4">Areas can be identified based on different options:
+                    </p> -->
+                    <p class="mt-4">{{ t('areaAndEcosystems.gef.geographicAreas.info.identifyArea') }}
                     <ul class="list-disc list-inside">
                         <li>
-                            Select administrative areas
+                            {{ t('areaAndEcosystems.description.selectAdminAreas') }}
                             <InformationCircleIcon
                                 @click="() => { showAdminAreaInfoModal = true }"
                                 class="w-6 h-6 inline-block ml-1 text-yellow-600 cursor-pointer"
                             />
                         </li>
                         <li>
-                            Upload polygons/vector
+                            {{ t('areaAndEcosystems.description.uploadPolygons') }}
                             <InformationCircleIcon
                                 @click="() => { showUploadInfoModal = true }"
                                 class="w-6 h-6 inline-block ml-1 text-yellow-600 cursor-pointer"
                             />
 
                         </li>
-                        <li>Draw directly on the platform
+                        <li>{{ t('areaAndEcosystems.description.drawOnPlatform') }}
                             <InformationCircleIcon
                                 @click="() => { showDrawInfoModal = true }"
                                 class="w-6 h-6 inline-block ml-1 text-yellow-600 cursor-pointer"
@@ -460,12 +491,12 @@ const uniqueEcosystems = computed(() => {
                     </p>
                 </div>
                 <LabelFormGroup
-                    label="Total area of land achieved (spatially explicit format)"
+                    :label="t('areaAndEcosystems.gef.geographicAreas.totalArea.label')"
                     :value="roundToPrecisionAsString(store.polygonsArea(), 2)"
                 >
 
                     <template #info>
-                        <p>The total of the land (in ha) will be computed by the plattorm based on spatially explicit information provided.</p>
+                        <p>{{ t('areaAndEcosystems.gef.geographicAreas.totalArea.info') }}</p>
                     </template>
                 </LabelFormGroup>
                 <div
@@ -491,7 +522,9 @@ const uniqueEcosystems = computed(() => {
                             @change="addCountry"
                             class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                         >
-                            <option value="">Add country</option>
+                            <option value="">
+                                {{ t('inputs.aoi.addCountry') }}
+                            </option>
                             <option
                                 v-for="country in countries"
                                 :value="country.iso2"
@@ -536,7 +569,8 @@ const uniqueEcosystems = computed(() => {
                     :areaUnits="store.project.project.areaUnits"
                 />
                 <div class="mt-4 text-lg text-gray-700 font-bold mb-2">
-                    Protected Area (PA), Other Effective Area-based Conservation Measures (OECM) and Indigenous and Traditional Territory (ITT)
+                    <!-- Protected Area (PA), Other Effective Area-based Conservation Measures (OECM) and Indigenous and Traditional Territory (ITT) -->
+                    {{ t('areaAndEcosystems.paAndTraditionalTerritories.gef.title') }}
                 </div>
                 <MultiInputPassive
                     :edit="edit"

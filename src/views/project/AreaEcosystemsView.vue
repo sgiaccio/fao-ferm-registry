@@ -92,7 +92,7 @@ async function getAreaBiomeStats() {
     const areaValue = props.area;
     try {
         // check if there are already ecosystems for that area
-        if (!areaValue.ecosystems?.length || confirm('Are you sure you want to overwrite the existing biomes?')) {
+        if (!areaValue.ecosystems?.length || confirm(t('areaAndEcosystems.areaEcosystems.confirmOverwrite'))) {
             areaBiomesLoadingStatus.value = 'loading';
             const newBiomes = await getBiomeStats(areaValue);
             areaValue.ecosystems = newBiomes;
@@ -173,7 +173,10 @@ function handleAfterLeave(el: any) {
         <!-- class="border-2 px-3 py-2 rounded-lg border-gray-300"> -->
         <!-- <div class="flex flex-row my-3"> -->
         <div class="flex flex-col md:flex-row md:items-center gap-x-4">
-            <div class="flex-1 font-bold text-lg">IUCN Global Ecosystem Typology 2.0 - Biomes</div>
+            <div class="flex-1 font-bold text-lg">
+                <!-- IUCN Global Ecosystem Typology 2.0 - Biomes -->
+                {{ t('areaAndEcosystems.areaEcosystems.title') }}
+            </div>
             <div
                 v-if="edit"
                 class="flex flex-row shrink mt-3 md:mt-0"
@@ -201,7 +204,8 @@ function handleAfterLeave(el: any) {
                         class="-ml-0.5 h-5 w-5 text-green-600"
                         aria-hidden="true"
                     />
-                    Get biomes in this area
+                    <!-- Get biomes in this area -->
+                    {{ t('areaAndEcosystems.areaEcosystems.getBiomes') }}
                 </button>
                 <button
                     v-if="index === 0 && nAreas > 1"

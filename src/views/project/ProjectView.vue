@@ -132,7 +132,6 @@ function closeModal() {
 }
 </script>
 
-
 <template>
     <div class="lg:inset-0">
         <div class="hidden sm:fixed sm:inset-y-0 sm:z-40 sm:flex sm:w-16 lg:w-60 lg:flex-col grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 mt-16">

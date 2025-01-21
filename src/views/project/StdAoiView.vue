@@ -208,8 +208,14 @@ const uniqueEcosystems = computed(() => {
         title="Delete all project areas"
         @cancel="() => { showDeleteAreasConfirm = false }"
     >
-        Are you sure you want to delete all project areas? This action will only remove areas temporarily in your
-        current session. <span class="font-bold">To permanently apply this change, you must save the project afterwards</span>. Proceed?
+        <i18n-t
+            keypath="areaAndEcosystems.deleteAllAreasConfirm.main"
+            tag="p"
+        >
+            <template v-slot:saveProject>
+                <span class="font-bold">{{ t('areaAndEcosystems.deleteAllAreasConfirm.saveProject') }}</span>
+            </template>
+        </i18n-t>
     </ConfirmModal>
     <TabTemplate
         :title="t('areaAndEcosystems.title')"

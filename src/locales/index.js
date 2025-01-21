@@ -1,4 +1,5 @@
 import home from "./home";
+import projects from './projects';
 import inputs from "./inputs";
 import projectRegistration from "./projectRegistration";
 import project from "./project";
@@ -37,9 +38,11 @@ export default {
             saveAndNext: "Save and next",
             cancel: "Cancel",
             applyToAll: "Apply to all",
+            confirmLeave: "You have unsaved changes. Are you sure you want to leave?",
         },
         search: "Search",
 
+        projects: projects.en,
         project: project.en,
         home: home.en,
         projectRegistration: projectRegistration.en,
@@ -76,9 +79,11 @@ export default {
             saveAndNext: "Enregistrer et suivant",
             cancel: "Annuler",
             applyToAll: "Appliquer à tous",
+            confirmLeave: "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?",
         },
         search: "Rechercher",
 
+        projects: projects.fr,
         project: project.fr,
         home: home.fr,
         projectRegistration: projectRegistration.fr,
@@ -116,9 +121,11 @@ export default {
             saveAndNext: "Guardar y siguiente",
             cancel: "Cancelar",
             applyToAll: "Aplicar a todos",
+            confirmLeave: "Tiene cambios sin guardar. ¿Está seguro de que desea salir?",
         },
         search: "Buscar",
         
+        projects: projects.es,
         project: project.es,
         home: home.es,
         projectRegistration: projectRegistration.es,

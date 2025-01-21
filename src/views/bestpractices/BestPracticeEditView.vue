@@ -50,7 +50,8 @@ onBeforeRouteLeave((to, from) => {
     if (!store.bestPractice) return true
 
     const answer = window.confirm(
-        'Do you really want to leave? you have unsaved changes!'
+        // 'Do you really want to leave? you have unsaved changes!'
+        t('edit.confirmLeave')
     )
     if (!answer) return false
 })

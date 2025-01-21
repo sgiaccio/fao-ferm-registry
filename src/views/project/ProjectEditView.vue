@@ -73,7 +73,7 @@ onBeforeRouteLeave((to, from) => {
     if (!store.loaded) return true;
 
     const answer = window.confirm(
-        'Do you really want to leave? you have unsaved changes!'
+        t('edit.confirmLeave')
     );
     if (!answer) return false;
 });

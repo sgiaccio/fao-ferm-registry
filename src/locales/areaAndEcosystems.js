@@ -37,11 +37,85 @@ export default {
         },
         countriesInfo: "Countries are automatically selected based on your uploaded polygons and selected admin areas. You can also edit them manually.",
         deleteAllAreas: "Delete all areas",
+        deleteAllAreasConfirm: {
+            main: "Are you sure you want to delete all project areas? This action will only remove areas temporarily in your current session. {saveProject}",
+            saveProject: "To permanently apply this change, you must save the project afterwards",
+        },
+        areaEcosystems: {
+            title: "IUCN Global Ecosystem Typology 2.0 - Biomes",
+            getBiomes: "Get biomes in this area",
+            confirmOverwrite: "Are you sure you want to overwrite the selected ecosystems for this area?",
+        },
+        paAndTraditionalTerritories: {
+            theRestorationAreaHas: "The restoration area has",
+            protectedAreaOrOECM: "{units} of Protected Area (PA) or Other Effective Area-based Conservation Measures (OECM)",
+            indigenousAndTraditionalTerritory: "{units} of Indigenous and Traditional Territory (ITT)",
+            gef: {
+                title: "Protected Area (PA), Other Effective Area-based Conservation Measures (OECM) and Indigenous and Traditional Territory (ITT)"
+            },
+        },
+        areaByEcosystem: {
+            totalPercentage: "Total percentage:",
+            title: "Area by {country} ecosystem",
+            countryAnd: "country and",
+            validation: {
+                percentageCheck: "The total percentage should equal 100%, but it currently sums to {totalPercentage}%",
+            },
+        },
         gef: {
             landCommitted: {
                 info: {
                     title: "Information on Land committed in GEF Core Indicators (tabular data)",
                     text: "{title} The land committed in GEF Core Indicators includes the ha committed in GEF Core Indicators 1-5 and LDCF Indicator 2.",
+                },
+                label: "Breakdown of commitment by core indicator [Hectares]",
+                description: "Area of land committed by core indicator",
+                coreIndicator1: {
+                    main: "Core Indicator 1 {info}",
+                    description: "Terrestrial protected areas created or under improved Management",
+                },
+                coreIndicator2: {
+                    main: "Core Indicator 2 {info}",
+                    description: "Marine protected areas created or under improved management",
+                },
+                coreIndicator3: {
+                    main: "Core Indicator 3 {info}",
+                    description: "Area of land and ecosystems under restoration",
+                },
+                coreIndicator4: {
+                    main: "Core Indicator 4 {info}",
+                    description: "Area of landscapes under improved practices",
+                },
+                coreIndicator5: {
+                    main: "Core Indicator 5 {info}",
+                    description: "Area of marine habitat under improved practices to benefit biodiversity",
+                },
+                coreIndicator2LDCF: {
+                    main: "LDCF CI 2 {info}",
+                    description: "Area of land managed for climate resilience",
+                },
+            },
+            restorationPlans: {
+                info: {
+                    title: "Information on Restoration Plans/Management Plans (tabular data).",
+                    text: "{title} The plan should at least include a description of restoration or land management activities and the extension of the area of intervention.",
+                },
+                upload: {
+                    label: "Please upload Restoration Plans/Management Plans",
+                    info: "Please upload the Restoration Plans/ Management plans with the description of restoration / land management activities and baseline information of the territory, including pictures.",
+                },
+            },
+            geographicAreas: {
+                info: {
+                    identifyArea: "Areas can be identified based on different options:",
+                    title: "Information on Geographic Areas (spatially explicit data).",
+                    text: "{title} The data should have the following {requirementsLink} and the feature table to be uploaded the following {structureLink}.",
+                    requirements: "requirements",
+                    structure: "structure",
+                },
+                totalArea: {
+                    label: "Total area of land achieved (spatially explicit format)",
+                    info: "The total of the land (in ha) will be computed by the plattorm based on spatially explicit information provided.",
                 },
             },
         },
@@ -84,11 +158,85 @@ export default {
         },
         countriesInfo: "Los países se seleccionan automáticamente en función de los polígonos cargados y las áreas administrativas seleccionadas. También puedes editarlos manualmente.",
         deleteAllAreas: "Eliminar todas las áreas",
+        deleteAllAreasConfirm: {
+            main: "¿Está seguro de que desea eliminar todas las áreas del proyecto? Esta acción solo eliminará las áreas temporalmente en su sesión actual. {saveProject}",
+            saveProject: "Para aplicar permanentemente este cambio, deberá guardar el proyecto después",
+        },
+        areaEcosystems: {
+            title: "Tipología Global de Ecosistemas 2.0 de la UICN - Biomas",
+            getBiomes: "Obtener biomas en esta área",
+            confirmOverwrite: "¿Está seguro de que desea sobrescribir los ecosistemas seleccionados para esta área?",
+        },
+        paAndTraditionalTerritories: {
+            theRestorationAreaHas: "El área de restauración tiene",
+            protectedAreaOrOECM: "{units} de Área Protegida (PA) o de Otras Medidas Eficaces de Conservación Basadas en Áreas (OECM)",
+            indigenousAndTraditionalTerritory: "{units} de Territorio Indígena y Tradicional (ITT)",
+            gef: {
+                title: "Área Protegida (PA), Otras Medidas Eficaces de Conservación Basadas en Áreas (OECM) y Territorio Indígena y Tradicional (ITT)"
+            },
+        },
+        areaByEcosystem: {
+            totalPercentage: "Porcentaje total:",
+            title: "Área por {country} ecosistema",
+            countryAnd: "país y",
+            validation: {
+                percentageCheck: "El porcentaje total debe ser igual al 100%, pero actualmente suma {totalPercentage}%",
+            },
+        },
         gef: {
             landCommitted: {
                 info: {
                     title: "Información sobre la tierra comprometida en los Indicadores Centrales del FMAM (datos tabulares)",
                     text: "{title} La tierra comprometida en los Indicadores Centrales del FMAM incluye las ha comprometidas en los Indicadores Centrales del FMAM 1-5 e Indicador 2 del Fondo para los Países Menos Adelantados.",
+                },
+                label: "Desglose del compromiso por indicador central [Hectáreas]",
+                description: "Área de tierra comprometida por indicador central",
+                coreIndicator1: {
+                    main: "Indicador Central 1 {info}",
+                    description: "Áreas protegidas terrestres creadas o bajo mejoramiento de la gestión",
+                },
+                coreIndicator2: {
+                    main: "Indicador Central 2 {info}",
+                    description: "Áreas protegidas marinas creadas o bajo mejoramiento de la gestión",
+                },
+                coreIndicator3: {
+                    main: "Indicador Central 3 {info}",
+                    description: "Área de tierra y ecosistemas en restauración",
+                },
+                coreIndicator4: {
+                    main: "Indicador Central 4 {info}",
+                    description: "Área de paisajes bajo prácticas mejoradas",
+                },
+                coreIndicator5: {
+                    main: "Indicador Central 5 {info}",
+                    description: "Área de hábitat marino bajo prácticas mejoradas para beneficiar la biodiversidad",
+                },
+                coreIndicator2LDCF: {
+                    main: "ICF LDCF 2 {info}",
+                    description: "Área de tierra gestionada para la resiliencia climática",
+                },
+            },
+            restorationPlans: {
+                info: {
+                    title: "Información sobre Planes de Restauración/Planes de Manejo (datos tabulares).",
+                    text: "{title} El plan debe incluir al menos una descripción de las actividades de restauración o manejo de tierras y la extensión del área de intervención.",
+                },
+                upload: {
+                    label: "Por favor suba Planes de Restauración/Planes de Manejo",
+                    info: "Por favor suba los Planes de Restauración/Planes de Manejo con la descripción de las actividades de restauración / manejo de tierras e información de línea base del territorio, incluyendo imágenes.",
+                },
+            },
+            geographicAreas: {
+                info: {
+                    identifyArea: "Las áreas pueden identificarse en base a diferentes opciones:",
+                    title: "Información sobre Áreas Geográficas (datos explícitos espacialmente).",
+                    text: "{title} Los datos deben tener los siguientes {requirementsLink} y la tabla de características a subir la siguiente {structureLink}.",
+                    requirements: "requisitos",
+                    structure: "estructura",
+                },
+                totalArea: {
+                    label: "Área total de tierra lograda (formato explícito espacialmente)",
+                    info: "El total de la tierra (en ha) será calculado por la plataforma en base a la información explícita espacialmente proporcionada.",
                 },
             },
         },
@@ -131,11 +279,85 @@ export default {
         },
         countriesInfo: "Les pays sont sélectionnés automatiquement en fonction de vos polygones téléchargés et des zones administratives sélectionnées. Vous pouvez également les modifier manuellement.",
         deleteAllAreas: "Supprimer toutes les zones",
+        deleteAllAreasConfirm: {
+            main: "Êtes-vous sûr de vouloir supprimer toutes les zones du projet ? Cette action ne supprimera les zones que temporairement dans votre session actuelle. {saveProject}",
+            saveProject: "Pour appliquer ce changement de manière permanente, vous devez enregistrer le projet par la suite",
+        },
+        areaEcosystems: {
+            title: "Typologie mondiale des écosystèmes 2.0 de l'UICN - Biomes",
+            getBiomes: "Obtenir les biomes dans cette zone",
+            confirmOverwrite: "Êtes-vous sûr de vouloir écraser les écosystèmes sélectionnés pour cette zone ?",
+        },
+        paAndTraditionalTerritories: {
+            theRestorationAreaHas: "La zone de restauration a",
+            protectedAreaOrOECM: "{units} d'Aire Protégée (AP) ou d'autres Mesures de Conservation Basées sur les Aires (OECM)",
+            indigenousAndTraditionalTerritory: "{units} de Territoire Autochtone et Traditionnel (TAT)",
+            gef: {
+                title: "Aire Protégée (AP), Autres Mesures de Conservation Basées sur les Aires (OECM) et Territoire Autochtone et Traditionnel (TAT)"
+            },
+        },
+        areaByEcosystem: {
+            totalPercentage: "Pourcentage total:",
+            title: "Zone par {country} écosystème",
+            countryAnd: "pays et",
+            validation: {
+                percentageCheck: "Le pourcentage total doit être égal à 100 %, mais il s'élève actuellement à {totalPercentage}%",
+            },
+        },
         gef: {
             landCommitted: {
                 info: {
                     title: "Informations sur les terres engagées dans les Indicateurs centraux du FEM (données tabulaires)",
                     text: "{title} Les terres engagées dans les Indicateurs centraux du FEM comprennent les ha engagés dans les Indicateurs centraux du FEM 1-5 et l'Indicateur 2 du Fonds pour les pays les moins avancés.",
+                },
+                label: "Répartition de l'engagement par indicateur central [Hectares]",
+                description: "Superficie de terres engagées par indicateur central",
+                coreIndicator1: {
+                    main: "Indicateur central 1 {info}",
+                    description: "Aires protégées terrestres créées ou sous amélioration de la gestion",
+                },
+                coreIndicator2: {
+                    main: "Indicateur central 2 {info}",
+                    description: "Aires protégées marines créées ou sous amélioration de la gestion",
+                },
+                coreIndicator3: {
+                    main: "Indicateur central 3 {info}",
+                    description: "Superficie de terres et d'écosystèmes en restauration",
+                },
+                coreIndicator4: {
+                    main: "Indicateur central 4 {info}",
+                    description: "Superficie de paysages sous pratiques améliorées",
+                },
+                coreIndicator5: {
+                    main: "Indicateur central 5 {info}",
+                    description: "Superficie d'habitat marin sous pratiques améliorées pour bénéficier de la biodiversité",
+                },
+                coreIndicator2LDCF: {
+                    main: "ICF LDCF 2 {info}",
+                    description: "Superficie de terres gérées pour la résilience climatique",
+                },
+            },
+            restorationPlans: {
+                info: {
+                    title: "Informations sur les Plans de Restauration/Plans de Gestion (données tabulaires).",
+                    text: "{title} Le plan doit inclure au moins une description des activités de restauration ou de gestion des terres et l'extension de la zone d'intervention.",
+                },
+                upload: {
+                    label: "Veuillez télécharger les Plans de Restauration/Plans de Gestion",
+                    info: "Veuillez télécharger les Plans de Restauration/Plans de Gestion avec la description des activités de restauration / gestion des terres et les informations de base du territoire, y compris des images.",
+                },
+            },
+            geographicAreas: {
+                info: {
+                    identifyArea: "Les zones peuvent être identifiées sur la base de différentes options:",
+                    title: "Informations sur les Zones Géographiques (données explicitement spatiales).",
+                    text: "{title} Les données doivent avoir les {requirementsLink} suivantes et la table des entités à télécharger la {structureLink} suivante.",
+                    requirements: "exigences",
+                    structure: "structure",
+                },
+                totalArea: {
+                    label: "Superficie totale de terres réalisées (format explicitement spatial)",
+                    info: "Le total des terres (en ha) sera calculé par la plateforme en fonction des informations explicitement spatiales fournies.",
                 },
             },
         },
