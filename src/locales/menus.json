@@ -1,4 +1,4 @@
-const menus = {
+{
     "objectives": [
         {
             "value": 1,

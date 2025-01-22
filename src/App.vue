@@ -5,12 +5,18 @@ import { storeToRefs } from 'pinia'
 
 import { useLoadingStore } from '@/stores/loading';
 
+import { useI18n } from 'vue-i18n';
+import { useMenusStore } from '@/stores/menus';
+
 // import { useAuthStore } from './stores/auth';
 // import { useUserPrefsStore } from './stores/userPreferences';
 
 import CustomAlert from '@/views/project/CustomAlert.vue';
 
 import LoadingView from '@/views/LoadingView.vue';
+
+
+const { locale } = useI18n();
 
 // const authStore = useAuthStore();
 // const userPrefsStore = useUserPrefsStore();
@@ -28,6 +34,13 @@ provide('customAlert', function (title: string, message: string, type: string | 
 // });
 
 const { isLoading } = storeToRefs(useLoadingStore());
+
+watch(locale, async () => {
+    const menuStore = useMenusStore();
+    if (menuStore.loaded) {
+        await menuStore.fetchMenus(locale.value);
+    }
+});
 </script>
 
 <template>

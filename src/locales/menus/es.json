@@ -1,0 +1,2121 @@
+{
+    "objectives": [
+        {
+            "value": 1,
+            "label": "Reforestar tierras degradadas"
+        },
+        {
+            "value": 2,
+            "label": "Mejorar la salud del suelo"
+        },
+        {
+            "value": 3,
+            "label": "Aumentar la producción de alimentos y productos"
+        },
+        {
+            "value": 4,
+            "label": "Mejorar la biodiversidad"
+        },
+        {
+            "value": 5,
+            "label": "Contribuir a la adaptación y mitigación del cambio climático"
+        },
+        {
+            "value": 6,
+            "label": "Mejorar la disponibilidad y calidad del agua"
+        },
+        {
+            "value": 7,
+            "label": "Mejorar los medios de subsistencia"
+        },
+        {
+            "value": 8,
+            "label": "Mejorar el acceso a la energía"
+        },
+        {
+            "value": 9,
+            "label": "Garantizar/proteger los derechos y la cultura"
+        },
+        {
+            "value": 10,
+            "label": "Garantizar la sostenibilidad de las prácticas de restauración"
+        },
+        {
+            "value": 11,
+            "label": "Mejorar la resiliencia de los ecosistemas"
+        },
+        {
+            "value": 0,
+            "label": "Otro"
+        }
+    ],
+    "ecosystems": [
+        {
+            "value": 1,
+            "label": "Tierras de cultivo"
+        },
+        {
+            "value": 2,
+            "label": "Bosques"
+        },
+        {
+            "value": 3,
+            "label": "Aguas dulces"
+        },
+        {
+            "value": 4,
+            "label": "Pastizales, matorrales y sabanas"
+        },
+        {
+            "value": 5,
+            "label": "Montañas"
+        },
+        {
+            "value": 6,
+            "label": "Océanos y costas"
+        },
+        {
+            "value": 7,
+            "label": "Turberas"
+        },
+        {
+            "value": 8,
+            "label": "Áreas urbanas"
+        }
+    ],
+    "agencyTypes": [
+        {
+            "value": 1,
+            "label": "Gobierno"
+        },
+        {
+            "value": 2,
+            "label": "ONG"
+        },
+        {
+            "value": 3,
+            "label": "Asociación público-privada"
+        },
+        {
+            "value": 4,
+            "label": "Multilateral"
+        },
+        {
+            "value": 5,
+            "label": "Fundación"
+        },
+        {
+            "value": 6,
+            "label": "Sector privado"
+        },
+        {
+            "value": 7,
+            "label": "Académico e investigación"
+        },
+        {
+            "value": 0,
+            "label": "Otro"
+        }
+    ],
+    "agencyRoles": [
+        {
+            "value": 1,
+            "label": "Liderando"
+        },
+        {
+            "value": 2,
+            "label": "Apoyando"
+        }
+    ],
+    "drivers": [
+        {
+            "value": 1,
+            "label": "Gestión de tierras de pastoreo (p. ej., cambio en la extensión de las tierras de pastoreo; regímenes de rotación)"
+        },
+        {
+            "value": 2,
+            "label": "Gestión de tierras de cultivo (p. ej., cambio en la extensión de las tierras cultivadas, incluido el drenaje de humedales; insumos agrícolas)"
+        },
+        {
+            "value": 3,
+            "label": "Gestión de bosques y plantaciones de árboles (p. ej., cambio en la extensión de bosques gestionados y plantados; intensidad de la cosecha)"
+        },
+        {
+            "value": 4,
+            "label": "Extracción de recursos naturales no madereros (p. ej., recolección de leña; caza)"
+        },
+        {
+            "value": 5,
+            "label": "Cambios en los regímenes de fuego (p. ej., cambios en la frecuencia, intensidad, época y momento del fuego, incluida la supresión de incendios)"
+        },
+        {
+            "value": 6,
+            "label": "Introducción de especies invasoras"
+        },
+        {
+            "value": 7,
+            "label": "Desarrollo de la industria extractiva (p. ej., técnicas de extracción y refinación; vertido de contaminantes y eliminación de desechos)"
+        },
+        {
+            "value": 8,
+            "label": "Desarrollo de infraestructura e industrial y urbanización (p. ej., presas y centrales hidroeléctricas; carreteras y ferrocarriles)"
+        },
+        {
+            "value": 9,
+            "label": "Cambio climático"
+        },
+        {
+            "value": 10,
+            "label": "Actividades ilegales (p. ej., acaparamiento de tierras; violaciones de derechos humanos)"
+        },
+        {
+            "value": 11,
+            "label": "Demográfico (p. ej., tasa de crecimiento de la población; migración y movilidad poblacional)"
+        },
+        {
+            "value": 12,
+            "label": "Económico (p. ej., demanda y consumo; pobreza)"
+        },
+        {
+            "value": 13,
+            "label": "Ciencia, conocimiento y tecnología (p. ej., falta de educación e integración del conocimiento local y tradicional; falta de inversión en investigación y desarrollo)"
+        },
+        {
+            "value": 14,
+            "label": "Instituciones y gobernanza (p. ej., política pública regulatoria y basada en incentivos; derechos de propiedad)"
+        },
+        {
+            "value": 15,
+            "label": "Cultural (p. ej., comportamiento del consumidor; dieta)"
+        },
+        {
+            "value": 0,
+            "label": "Otro"
+        }
+    ],
+    "engagement": [
+        {
+            "value": 1,
+            "label": "Líderes comunitarios"
+        },
+        {
+            "value": 2,
+            "label": "Grupos indígenas"
+        },
+        {
+            "value": 3,
+            "label": "Organizaciones de mujeres"
+        },
+        {
+            "value": 4,
+            "label": "Organizaciones juveniles"
+        },
+        {
+            "value": 5,
+            "label": "Usuarios de la tierra (p. ej., agricultores, pastores) y productores/pescadores a pequeña escala"
+        },
+        {
+            "value": 6,
+            "label": "ONG y OCB locales/subnacionales"
+        },
+        {
+            "value": 7,
+            "label": "Cooperativas, PyMEs y sector privado"
+        },
+        {
+            "value": 8,
+            "label": "Formuladores de políticas"
+        },
+        {
+            "value": 9,
+            "label": "Sector medioambiental (conservación, gestión de cuencas, silvicultura)"
+        },
+        {
+            "value": 10,
+            "label": "Sector agrícola, incluidos servicios de extensión"
+        },
+        {
+            "value": 11,
+            "label": "Sector marino/pesquero"
+        },
+        {
+            "value": 12,
+            "label": "Sector minero y energético"
+        },
+        {
+            "value": 13,
+            "label": "Gobierno local/subnacional"
+        },
+        {
+            "value": 14,
+            "label": "Socios de desarrollo internacional, organización regional, redes e iniciativas"
+        },
+        {
+            "value": 15,
+            "label": "Investigación/academia"
+        },
+        {
+            "value": 16,
+            "label": "Educación"
+        },
+        {
+            "value": 17,
+            "label": "Sector financiero"
+        },
+        {
+            "value": 0,
+            "label": "Otro"
+        }
+    ],
+    "knowledgeTypes": [
+        {
+            "value": 1,
+            "dangerousHtmlLabel": {
+                "en": "Indigenous Peoples' traditional knowledge: Cumulative body of knowledge (for example know-how), practices and manifestations maintained and developed by Indigenous Peoples with long histories of interaction with their natural environment. Indigenous Peoples’ knowledge is adapted to the local culture and transmitted orally from generation to generation. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704</a>",
+                "fr": "Connaissances traditionnelles des peuples autochtones : Ensemble cumulatif de connaissances (par exemple, savoir-faire), de pratiques et de manifestations conservées et développées par les peuples autochtones ayant de longues histoires d'interaction avec leur environnement naturel. Les connaissances des peuples autochtones sont adaptées à la culture locale et transmises oralement de génération en génération. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704</a>",
+                "es": "Conocimientos tradicionales de los Pueblos Indígenas: Conjunto acumulativo de conocimientos (por ejemplo, saber-hacer), prácticas y manifestaciones mantenidas y desarrolladas por los Pueblos Indígenas con largas historias de interacción con su entorno natural. El conocimiento de los Pueblos Indígenas se adapta a la cultura local y se transmite oralmente de generación en generación. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704</a>"
+            }
+        },
+        {
+            "value": 2,
+            "label": "Conocimiento científico: cuantitativo y basado en la experimentación y la acumulación sistemática de hechos (Berkes, 1993)."
+        },
+        {
+            "value": 3,
+            "label": "Conocimiento práctico: conocimiento proveniente de los practicantes de la restauración de ecosistemas, obtenido a través de sus experiencias en la implementación de iniciativas."
+        },
+        {
+            "value": 4,
+            "dangerousHtmlLabel": {
+                "en": "Local knowledge: Local knowledge is the knowledge that people in a given community have developed over time and continue to develop. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>",
+                "fr": "Connaissances locales : Les connaissances locales sont celles que les personnes d'une communauté donnée ont développées au fil du temps et continuent de développer. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>",
+                "es": "Conocimientos locales: Los conocimientos locales son aquellos que las personas de una comunidad determinada han desarrollado a lo largo del tiempo y continúan desarrollando. <a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>"
+            }
+        },
+        {
+            "value": 0,
+            "label": "Otros"
+        }
+    ],
+    "scale": [
+        {
+            "value": 1,
+            "label": "Nivel local (comunidad, finca)"
+        },
+        {
+            "value": 2,
+            "label": "Nivel de paisaje"
+        },
+        {
+            "value": 3,
+            "label": "Regional"
+        },
+        {
+            "value": 4,
+            "label": "Nacional"
+        },
+        {
+            "value": 5,
+            "label": "Global"
+        }
+    ],
+    "replicability": [
+        {
+            "value": 1,
+            "label": "Sí, la práctica ha sido probada y replicada en múltiples contextos y escalas y por lo tanto puede transferirse y/o adaptarse fácilmente a otras iniciativas con objetivos similares."
+        },
+        {
+            "value": 2,
+            "label": "No, la práctica solo se ha probado en el mismo contexto y escala, pero actualmente se está demostrando su replicabilidad y adaptabilidad a diversos contextos."
+        },
+        {
+            "value": 3,
+            "label": "No, la práctica solo se ha probado en el mismo contexto y escala, necesita ser probada en cuanto a su replicabilidad y adaptabilidad a diversos contextos."
+        },
+        {
+            "value": 4,
+            "label": "No, la práctica no ha sido probada, por lo que no puede transferirse y/o adaptarse a otras iniciativas."
+        }
+    ],
+    "keyFactors": [
+        {
+            "value": 1,
+            "label": "Conciencia de los beneficios sociales, económicos y/o ambientales"
+        },
+        {
+            "value": 2,
+            "label": "Las condiciones ecológicas son adecuadas"
+        },
+        {
+            "value": 3,
+            "label": "Existen cadenas de valor para los productos del área restaurada"
+        },
+        {
+            "value": 4,
+            "label": "La tenencia de la tierra y los recursos naturales está asegurada"
+        },
+        {
+            "value": 5,
+            "label": "Las políticas y restricciones están alineadas"
+        },
+        {
+            "value": 6,
+            "label": "La población local se beneficia de la restauración y participa en la toma de decisiones"
+        },
+        {
+            "value": 7,
+            "label": "Los roles y responsabilidades están claros"
+        },
+        {
+            "value": 8,
+            "label": "Existe un compromiso político/social sostenido"
+        },
+        {
+            "value": 9,
+            "label": "Las directrices de restauración por ecosistema son accesibles"
+        },
+        {
+            "value": 10,
+            "label": "El diseño tiene una base técnica bien desarrollada"
+        },
+        {
+            "value": 11,
+            "label": "Los incentivos y fondos son accesibles"
+        },
+        {
+            "value": 12,
+            "label": "Existe un monitoreo eficaz"
+        },
+        {
+            "value": 13,
+            "label": "Se proporciona desarrollo de capacidades a los implementadores"
+        },
+        {
+            "value": 14,
+            "label": "Las acciones están coordinadas entre las partes interesadas, instituciones y sectores"
+        }
+    ],
+    "outcomes": [
+        {
+            "value": 1,
+            "label": "Tierra sagrada o sitio cultural protegido"
+        },
+        {
+            "value": 2,
+            "label": "Oportunidades recreativas mejoradas"
+        },
+        {
+            "value": 3,
+            "label": "Tenencia de la tierra y recursos naturales asegurada"
+        },
+        {
+            "value": 4,
+            "label": "Mejora en la mitigación de conflictos"
+        },
+        {
+            "value": 5,
+            "label": "Aumento de la seguridad alimentaria e hídrica/autosuficiencia"
+        },
+        {
+            "value": 6,
+            "label": "Aumento de los ingresos agrícolas"
+        },
+        {
+            "value": 7,
+            "label": "Aumento de la diversidad de fuentes de ingresos"
+        },
+        {
+            "value": 8,
+            "label": "Mayor equidad: en beneficio de mujeres y minorías"
+        },
+        {
+            "value": 9,
+            "label": "Mayor acceso a mercados y/o servicios financieros"
+        },
+        {
+            "value": 10,
+            "label": "Aumento de la biomasa y la captura de carbono"
+        },
+        {
+            "value": 12,
+            "label": "Aumento de la cantidad y/o calidad del agua"
+        },
+        {
+            "value": 13,
+            "label": "Mejora de la salud del suelo"
+        },
+        {
+            "value": 14,
+            "label": "Aumento de la cobertura de áreas protegidas"
+        },
+        {
+            "value": 15,
+            "label": "Aumento de la diversidad de plantas y/o animales"
+        },
+        {
+            "value": 16,
+            "label": "Reducción de especies exóticas invasoras"
+        },
+        {
+            "value": 17,
+            "label": "Reducción del riesgo de incendio"
+        },
+        {
+            "value": 18,
+            "label": "Reducción de los impactos de las inundaciones"
+        },
+        {
+            "value": 19,
+            "label": "Reducción de los impactos de la sequía"
+        },
+        {
+            "value": 0,
+            "label": "Otro"
+        }
+    ],
+    "activities": [
+        {
+            "label": "Biofísico",
+            "items": [
+                {
+                    "value": 1000,
+                    "label": "Restauración de la cobertura vegetal",
+                    "items": [
+                        {
+                            "value": 1,
+                            "label": "Restricciones a la conversión de bosques"
+                        },
+                        {
+                            "value": 2,
+                            "label": "Promoción de prácticas sostenibles de gestión forestal"
+                        },
+                        {
+                            "value": 3,
+                            "label": "Gestión del fuego"
+                        },
+                        {
+                            "value": 4,
+                            "label": "Regeneración natural asistida"
+                        },
+                        {
+                            "value": 5,
+                            "label": "Plantación de enriquecimiento"
+                        },
+                        {
+                            "value": 6,
+                            "label": "Plantación de árboles"
+                        },
+                        {
+                            "value": 7,
+                            "label": "Plantación de pastos"
+                        }
+                    ]
+                },
+                {
+                    "value": 1001,
+                    "label": "Control de especies invasoras",
+                    "items": [
+                        {
+                            "value": 8,
+                            "label": "Medidas de cuarentena"
+                        },
+                        {
+                            "value": 9,
+                            "label": "Medidas de control de especies (físicas/químicas/biológicas)"
+                        }
+                    ]
+                },
+                {
+                    "value": 1002,
+                    "label": "Rehabilitación y descontaminación",
+                    "items": [
+                        {
+                            "value": 10,
+                            "label": "Gestión in situ de residuos mineros (suelos y agua)"
+                        },
+                        {
+                            "value": 11,
+                            "label": "Recuperación de la topografía del sitio minero"
+                        },
+                        {
+                            "value": 12,
+                            "label": "Conservación y reemplazo temprano de la capa superior del suelo"
+                        },
+                        {
+                            "value": 13,
+                            "label": "Control de fuentes de contaminación puntuales y difusas"
+                        }
+                    ]
+                },
+                {
+                    "value": 1003,
+                    "label": "Gestión del suelo y el agua",
+                    "items": [
+                        {
+                            "value": 14,
+                            "label": "Labranza reducida"
+                        },
+                        {
+                            "value": 15,
+                            "label": "Mayor eficiencia en el uso de fertilizantes y agroquímicos"
+                        },
+                        {
+                            "value": 16,
+                            "label": "Mejora del riego y la eficiencia del uso del agua"
+                        },
+                        {
+                            "value": 17,
+                            "label": "Captación de agua de lluvia y escorrentía (p. ej., terrazas, cordones de piedra, zaï, medias lunas)"
+                        },
+                        {
+                            "value": 18,
+                            "label": "Recolección de niebla"
+                        },
+                        {
+                            "value": 19,
+                            "label": "Tratamiento de aguas residuales de desalinización"
+                        },
+                        {
+                            "value": 20,
+                            "label": "Construcción o rehabilitación de humedales"
+                        },
+                        {
+                            "value": 21,
+                            "label": "Mejora de suelos contaminados y sellados"
+                        }
+                    ]
+                },
+                {
+                    "value": 1004,
+                    "label": "Gestión agrícola/forestal/pesquera/acuícola",
+                    "items": [
+                        {
+                            "value": 22,
+                            "label": "Agricultura de conservación"
+                        },
+                        {
+                            "value": 23,
+                            "label": "Sistemas integrados de cultivos, ganadería y silvicultura"
+                        },
+                        {
+                            "value": 24,
+                            "label": "Agroforestería"
+                        },
+                        {
+                            "value": 25,
+                            "label": "Gestión de la presión del pastoreo (cercados físicos/sociales)"
+                        },
+                        {
+                            "value": 26,
+                            "label": "Mejora de pastizales y cultivos forrajeros"
+                        },
+                        {
+                            "value": 27,
+                            "label": "Manejo silvopastoril"
+                        },
+                        {
+                            "value": 28,
+                            "label": "Gestión de malezas y plagas"
+                        },
+                        {
+                            "value": 29,
+                            "label": "Aumentar la diversidad y la cobertura vegetal en los sistemas de producción"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Facilitador",
+            "items": [
+                {
+                    "value": 1005,
+                    "label": "Instrumentos legales y basados en derechos",
+                    "items": [
+                        {
+                            "value": 30,
+                            "label": "Ordenamiento territorial (nacional, regional, local)"
+                        },
+                        {
+                            "value": 31,
+                            "label": "Evaluaciones de impacto social y ambiental"
+                        },
+                        {
+                            "value": 32,
+                            "label": "Incentivos para prácticas sostenibles de uso de la tierra"
+                        },
+                        {
+                            "value": 33,
+                            "label": "Establecimiento de áreas protegidas"
+                        },
+                        {
+                            "value": 34,
+                            "label": "Conservación privada y comunitaria"
+                        },
+                        {
+                            "value": 35,
+                            "label": "Mejoras en la seguridad de la tenencia de la tierra"
+                        },
+                        {
+                            "value": 36,
+                            "label": "Clarificación de los derechos de uso de recursos naturales"
+                        }
+                    ]
+                },
+                {
+                    "value": 1006,
+                    "label": "Instrumentos sociales y culturales",
+                    "items": [
+                        {
+                            "value": 37,
+                            "label": "Promoción del uso tradicional basado en el conocimiento indígena y local"
+                        },
+                        {
+                            "value": 38,
+                            "label": "Gestión y gobernanza participativa de los recursos naturales"
+                        },
+                        {
+                            "value": 39,
+                            "label": "Eco-certificación"
+                        },
+                        {
+                            "value": 40,
+                            "label": "Promoción de la responsabilidad social corporativa"
+                        },
+                        {
+                            "value": 41,
+                            "label": "Consultas comunitarias"
+                        }
+                    ]
+                },
+                {
+                    "value": 1007,
+                    "label": "Fortalecimiento de capacidades, habilidades y desarrollo del conocimiento",
+                    "items": [
+                        {
+                            "value": 42,
+                            "label": "Capacitaciones en el lugar"
+                        },
+                        {
+                            "value": 43,
+                            "label": "Capacitaciones en línea"
+                        },
+                        {
+                            "value": 44,
+                            "label": "Desarrollo de guías y materiales de cursos"
+                        },
+                        {
+                            "value": 45,
+                            "label": "Capacitación de formadores"
+                        }
+                    ]
+                },
+                {
+                    "value": 1008,
+                    "label": "Planificación integrada del paisaje",
+                    "items": [
+                        {
+                            "value": 46,
+                            "label": "Evaluación y mapeo de la degradación de suelos/aguas"
+                        },
+                        {
+                            "value": 47,
+                            "label": "Planificación y gestión integradas"
+                        },
+                        {
+                            "value": 48,
+                            "label": "Zonificación"
+                        },
+                        {
+                            "value": 49,
+                            "label": "Evaluación de la vulnerabilidad al cambio climático y las necesidades de adaptación"
+                        },
+                        {
+                            "value": 50,
+                            "label": "Evaluación de áreas naturales con grandes reservas de carbono (p. ej., turberas, bosques maduros, manglares)"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "indicators": [
+        {
+            "label": "Objetivo 1. Poner fin a la pobreza en todas sus formas en todo el mundo",
+            "items": [
+                {
+                    "label": "Meta 1.1: Para 2030, erradicar la pobreza extrema en todas partes, medida actualmente como las personas que viven con menos de 1,25 dólares diarios",
+                    "items": [
+                        {
+                            "value": "SDG_I_1.1.1",
+                            "label": "SDG_I_1.1.1: Proporción de la población que vive por debajo de la línea internacional de pobreza según sexo, edad, situación laboral y ubicación geográfica (urbana/rural) [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 1.2: Para 2030, reducir al menos a la mitad la proporción de hombres, mujeres y niños de todas las edades que viven en la pobreza en todas sus dimensiones según las definiciones nacionales",
+                    "items": [
+                        {
+                            "value": "SDG_I_1.2.1",
+                            "label": "SDG_I_1.2.1: Proporción de la población que vive por debajo de la línea nacional de pobreza según sexo y edad [%]"
+                        },
+                        {
+                            "value": "SDG_I_1.2.2",
+                            "label": "SDG_I_1.2.2: Proporción de hombres, mujeres y niños de todas las edades que viven en la pobreza en todas sus dimensiones según las definiciones nacionales [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 1.4: Para 2030, garantizar que todos los hombres y mujeres, en particular los pobres y vulnerables, tengan los mismos derechos a los recursos económicos, así como acceso a servicios básicos, propiedad y control de la tierra y otras formas de propiedad, herencia, recursos naturales, tecnología adecuada y servicios financieros, incluida la microfinanza",
+                    "items": [
+                        {
+                            "value": "SDG_I_1.4.1",
+                            "label": "SDG_I_1.4.1: Proporción de la población que vive en hogares con acceso a servicios básicos [%]"
+                        },
+                        {
+                            "value": "SDG_I_1.4.2",
+                            "label": "SDG_I_1.4.2: Proporción de la población adulta total con derechos de tenencia de la tierra seguros, a) con documentación legalmente reconocida, y b) que percibe sus derechos a la tierra como seguros, por sexo y tipo de tenencia [%]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 2. Poner fin al hambre, lograr la seguridad alimentaria y la mejora de la nutrición y promover la agricultura sostenible",
+            "items": [
+                {
+                    "label": "Meta 2.1: Para 2030, poner fin al hambre y asegurar el acceso de todas las personas, en particular los pobres y las personas en situaciones vulnerables, incluidos los lactantes, a alimentos inocuos, nutritivos y suficientes durante todo el año",
+                    "items": [
+                        {
+                            "value": "SDG_I_2.1.1",
+                            "label": "SDG_I_2.1.1: Prevalencia de la subalimentación [%,nb]"
+                        },
+                        {
+                            "value": "SDG_I_2.1.2",
+                            "label": "SDG_I_2.1.2: Prevalencia de inseguridad alimentaria moderada o grave en la población según la Escala de Experiencia de Inseguridad Alimentaria (FIES) [%,nb]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 2.2: Para 2030, poner fin a todas las formas de malnutrición, incluyendo el logro, para 2025, de las metas internacionalmente acordadas sobre el retraso del crecimiento y la emaciación en los niños menores de 5 años, y abordar las necesidades nutricionales de las adolescentes, las mujeres embarazadas y lactantes y las personas de edad",
+                    "items": [
+                        {
+                            "value": "SDG_I_2.2.1",
+                            "label": "SDG_I_2.2.1: Prevalencia del retraso del crecimiento (altura para la edad <-2 desviación estándar de la mediana de las Normas de Crecimiento Infantil de la OMS) en niños menores de 5 años [nb,%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 2.3: Para 2030, duplicar la productividad agrícola y los ingresos de los pequeños productores de alimentos, ...",
+                    "items": [
+                        {
+                            "value": "SDG_I_2.3.1",
+                            "label": "SDG_I_2.3.1: Volumen de producción por unidad de trabajo por clases de tamaño de empresa agrícola, pastoral, forestal [USD]"
+                        },
+                        {
+                            "value": "SDG_I_2.3.2",
+                            "label": "SDG_I_2.3.2: Ingreso promedio de los pequeños productores de alimentos por sexo y condición indígena [USD]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 2.4: Para 2030, asegurar sistemas de producción de alimentos sostenibles e implementar prácticas agrícolas resilientes ...",
+                    "items": [
+                        {
+                            "value": "SDG_I_2.4.1",
+                            "label": "SDG_I_2.4.1: Proporción de la superficie agrícola bajo agricultura productiva y sostenible [%]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-1",
+                            "label": "SDG_I_2.4.1-1: Valor de la producción agrícola por hectárea [ha]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-2",
+                            "label": "SDG_I_2.4.1-2: Ingreso neto agrícola [USD]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-3",
+                            "label": "SDG_I_2.4.1-3: Mecanismos de mitigación de riesgos [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-4",
+                            "label": "SDG_I_2.4.1-4: Prevalencia de la degradación del suelo [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-5",
+                            "label": "SDG_I_2.4.1-5: Variación en la disponibilidad de agua [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-6",
+                            "label": "SDG_I_2.4.1-6: Gestión de fertilizantes [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-7",
+                            "label": "SDG_I_2.4.1-7: Gestión de pesticidas [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-8",
+                            "label": "SDG_I_2.4.1-8: Uso de prácticas que favorecen la agrobiodiversidad [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-9",
+                            "label": "SDG_I_2.4.1-9: Tasa salarial en la agricultura [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-10",
+                            "label": "SDG_I_2.4.1-10: Escala de Experiencia de Inseguridad Alimentaria (FIES) [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_2.4.1-11",
+                            "label": "SDG_I_2.4.1-11: Derechos de tenencia de la tierra seguros [desconocido]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 2.5: Para 2020, mantener la diversidad genética de las semillas, las plantas cultivadas y los animales criados y domesticados y sus especies silvestres afines...",
+                    "items": [
+                        {
+                            "value": "SDG_I_2.5.1",
+                            "label": "SDG_I_2.5.1: Número de recursos genéticos de plantas y animales para la alimentación y la agricultura asegurados en instalaciones de conservación a mediano o largo plazo [nb]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 2.a: Aumentar la inversión, incluso a través de una mayor cooperación internacional, en la infraestructura rural...",
+                    "items": [
+                        {
+                            "value": "SDG_I_2.a.2",
+                            "label": "SDG_I_2.a.2: Flujos oficiales totales (asistencia oficial para el desarrollo más otros flujos oficiales) hacia el sector agrícola [millones USD (2018)]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 3. Garantizar una vida sana y promover el bienestar para todos en todas las edades",
+            "items": [
+                {
+                    "label": "Meta 3.2: Para 2030, poner fin a las muertes evitables de recién nacidos y niños menores de 5 años...",
+                    "items": [
+                        {
+                            "value": "SDG_I_3.2.1",
+                            "label": "SDG_I_3.2.1: Tasa de mortalidad de menores de 5 años [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 3.3: Para 2030, poner fin a las epidemias de sida, tuberculosis, paludismo y enfermedades tropicales desatendidas...",
+                    "items": [
+                        {
+                            "value": "SDG_I_3.3.3",
+                            "label": "SDG_I_3.3.3: Incidencia de la malaria por cada 1000 habitantes [%]"
+                        },
+                        {
+                            "value": "SDG_I_3.3.5",
+                            "label": "SDG_I_3.3.5: Número de personas que requieren intervenciones contra las enfermedades tropicales desatendidas [nb]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 3.9: Para 2030, reducir sustancialmente el número de muertes y enfermedades ocasionadas por productos químicos peligrosos y la contaminación del aire, el agua y el suelo",
+                    "items": [
+                        {
+                            "value": "SDG_I_3.9.1",
+                            "label": "SDG_I_3.9.1: Tasa de mortalidad atribuida a la contaminación del aire doméstico y ambiental [nb]"
+                        },
+                        {
+                            "value": "SDG_I_3.9.2",
+                            "label": "SDG_I_3.9.2: Tasa de mortalidad atribuida al agua insegura, saneamiento deficiente y falta de higiene, exposición a servicios de Agua, Saneamiento e Higiene (WASH) no seguros [nb]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 4. Garantizar una educación inclusiva, equitativa y de calidad y promover oportunidades de aprendizaje permanente para todos",
+            "items": [
+                {
+                    "label": "Meta 4.1: Para 2030, asegurar que todas las niñas y niños completen la enseñanza primaria y secundaria gratuita, equitativa y de calidad...",
+                    "items": [
+                        {
+                            "value": "SDG_I_4.1.1",
+                            "label": "SDG_I_4.1.1: Proporción de niños y jóvenes a) en los grados 2/3, b) al final de la primaria y c) al final de la educación secundaria inferior que alcanzan al menos un nivel mínimo de competencia en i) lectura y ii) matemáticas, por sexo [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 4.4: Para 2030, aumentar considerablemente el número de jóvenes y adultos que tienen las competencias relevantes...",
+                    "items": [
+                        {
+                            "value": "SDG_I_4.4.1",
+                            "label": "SDG_I_4.4.1: Proporción de jóvenes y adultos con competencias en tecnologías de la información y la comunicación (TIC) por tipo de competencia [%]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 5. Lograr la igualdad de género y empoderar a todas las mujeres y las niñas",
+            "items": [
+                {
+                    "label": "Meta 5.1: Poner fin a todas las formas de discriminación contra todas las mujeres y niñas en todas partes",
+                    "items": [
+                        {
+                            "value": "SDG_I_5.1.1",
+                            "label": "SDG_I_5.1.1: Existencia o no de marcos jurídicos para promover, hacer cumplir y supervisar la igualdad y la no discriminación por razón de sexo []"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 5.2: Eliminar todas las formas de violencia contra todas las mujeres y las niñas...",
+                    "items": [
+                        {
+                            "value": "SDG_I_5.2.1",
+                            "label": "SDG_I_5.2.1: Proporción de mujeres y niñas de 15 años o más que alguna vez tuvieron pareja y que han sufrido violencia física, sexual o psicológica por parte de una pareja íntima actual o anterior ..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 5.6: Garantizar el acceso universal a la salud sexual y reproductiva y los derechos reproductivos...",
+                    "items": [
+                        {
+                            "value": "SDG_I_5.6.1",
+                            "label": "SDG_I_5.6.1: Proporción de mujeres de 15 a 49 años que toman sus propias decisiones informadas sobre las relaciones sexuales, el uso de anticonceptivos y la atención de la salud reproductiva []"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 5.a: Emprender reformas para otorgar a las mujeres los mismos derechos a los recursos económicos...",
+                    "items": [
+                        {
+                            "value": "SDG_I_5.a.1",
+                            "label": "SDG_I_5.a.1: a) Proporción de la población agrícola total con propiedad o derechos seguros sobre la tierra agrícola por sexo y b) porcentaje de mujeres entre los propietarios o titulares de derechos sobre la tierra agrícola según el tipo de tenencia [%]"
+                        },
+                        {
+                            "value": "SDG_I_5.a.2",
+                            "label": "SDG_I_5.a.2: Proporción de países donde el marco jurídico, incluida la ley consuetudinaria, garantiza la igualdad de derechos de las mujeres a la propiedad y/o control de la tierra [nb]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 6. Garantizar la disponibilidad y la gestión sostenible del agua y el saneamiento para todos",
+            "items": [
+                {
+                    "label": "Meta 6.1: Para 2030, lograr el acceso universal y equitativo a agua potable segura y asequible para todos",
+                    "items": [
+                        {
+                            "value": "SDG_I_6.1.1",
+                            "label": "SDG_I_6.1.1: Proporción de la población que utiliza servicios de agua potable gestionados de forma segura [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 6.2: Para 2030, lograr el acceso a servicios de saneamiento e higiene adecuados y equitativos para todos...",
+                    "items": [
+                        {
+                            "value": "SDG_I_6.2.1",
+                            "label": "SDG_I_6.2.1: Extensión espacial de los ecosistemas relacionados con el agua [ha]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 6.3: Para 2030, mejorar la calidad del agua reduciendo la contaminación, eliminando los vertidos...",
+                    "items": [
+                        {
+                            "value": "SDG_I_6.3.2",
+                            "label": "SDG_I_6.3.2: Cantidad de vertido de agua en ríos y estuarios [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 6.4: Para 2030, aumentar sustancialmente la eficiencia en el uso del agua en todos los sectores...",
+                    "items": [
+                        {
+                            "value": "SDG_I_6.4.2",
+                            "label": "SDG_I_6.4.2: Proporción de la población que utiliza a) servicios de saneamiento gestionados de forma segura y b) una instalación para lavarse las manos con agua y jabón [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 6.5: Para 2030, aplicar la gestión integrada de los recursos hídricos a todos los niveles...",
+                    "items": [
+                        {
+                            "value": "SDG_I_6.5.1",
+                            "label": "SDG_I_6.5.1: Proporción de flujos de aguas residuales domésticas e industriales tratadas de forma segura [nb,%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 6.6: Para 2020, proteger y restaurar los ecosistemas relacionados con el agua, incluidas las montañas...",
+                    "items": [
+                        {
+                            "value": "SDG_I_6.6.1",
+                            "label": "SDG_I_6.6.1: Cambio en la eficiencia del uso del agua a lo largo del tiempo [Mm3/año, km2, %]"
+                        },
+                        {
+                            "value": "SDG_I_6.6.1-1",
+                            "label": "SDG_I_6.6.1-1: Nivel de estrés hídrico: extracción de agua dulce en proporción a los recursos de agua dulce disponibles [%]"
+                        },
+                        {
+                            "value": "SDG_I_6.6.1-2",
+                            "label": "SDG_I_6.6.1-2: Grado de gestión integrada de recursos hídricos [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_6.6.1-3",
+                            "label": "SDG_I_6.6.1-3: Proporción del área de la cuenca transfronteriza con un acuerdo operativo de cooperación sobre el agua [%]"
+                        },
+                        {
+                            "value": "SDG_I_6.6.1-5",
+                            "label": "SDG_I_6.6.1-5: Cambio en la extensión de los ecosistemas relacionados con el agua a lo largo del tiempo [%; ha]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 6.a: Para 2030, ampliar la cooperación internacional y el apoyo al desarrollo de capacidades a los países en desarrollo en las actividades relacionadas con el agua y el saneamiento...",
+                    "items": [
+                        {
+                            "value": "SDG_I_6.a.1",
+                            "label": "SDG_I_6.a.1: Cantidad de asistencia oficial para el desarrollo relacionada con el agua y el saneamiento que forma parte de un plan de gastos coordinado por el gobierno [millones USD (2018)]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 6.b: Apoyar y fortalecer la participación de las comunidades locales en la mejora de la gestión del agua y el saneamiento",
+                    "items": [
+                        {
+                            "value": "SDG_I_6.b.1",
+                            "label": "SDG_I_6.b.1: Proporción de unidades administrativas locales con políticas y procedimientos establecidos y operativos para la participación de las comunidades locales en la gestión del agua y el saneamiento [%; nb]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 7. Garantizar el acceso a una energía asequible, confiable, sostenible y moderna para todos",
+            "items": [
+                {
+                    "label": "Meta 7.1: Para 2030, garantizar el acceso universal a servicios de energía asequibles, confiables y modernos",
+                    "items": [
+                        {
+                            "value": "SDG_I_7.1.1",
+                            "label": "SDG_I_7.1.1: Proporción de la población con acceso a la electricidad [%]"
+                        },
+                        {
+                            "value": "SDG_I_7.1.2",
+                            "label": "SDG_I_7.1.2: Proporción de la población que depende principalmente de combustibles y tecnologías limpias [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 7.2: Para 2030, aumentar sustancialmente la proporción de energía renovable en la combinación energética mundial",
+                    "items": [
+                        {
+                            "value": "SDG_I_7.2.1",
+                            "label": "SDG_I_7.2.1: Proporción de energía renovable en el consumo final total de energía [%]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 8. Promover el crecimiento económico sostenido, inclusivo y sostenible, el empleo pleno y productivo y el trabajo decente para todos",
+            "items": [
+                {
+                    "label": "Meta 8.1: Mantener el crecimiento económico per cápita de conformidad con las circunstancias nacionales ...",
+                    "items": [
+                        {
+                            "value": "SDG_I_8.1.1",
+                            "label": "SDG_I_8.1.1: Tasa de crecimiento anual del PIB real per cápita [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 8.3: Promover políticas orientadas al desarrollo que apoyen las actividades productivas ...",
+                    "items": [
+                        {
+                            "value": "SDG_I_8.3.1",
+                            "label": "SDG_I_8.3.1: Proporción del empleo informal en el empleo total, por sector y sexo [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 8.5: Para 2030, lograr el empleo pleno y productivo y un trabajo decente para todas las mujeres y hombres...",
+                    "items": [
+                        {
+                            "value": "SDG_I_8.5.2",
+                            "label": "SDG_I_8.5.2: Tasa de desempleo por sexo, edad y personas con discapacidad [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 8.7: Adoptar medidas inmediatas y eficaces para erradicar el trabajo forzoso, poner fin a la esclavitud moderna y la trata de personas...",
+                    "items": [
+                        {
+                            "value": "SDG_I_8.7.1",
+                            "label": "SDG_I_8.7.1: Proporción y número de niños de 5 a 17 años que trabajan, por sexo y edad [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 8.8: Proteger los derechos laborales y promover entornos de trabajo seguros y protegidos para todos los trabajadores...",
+                    "items": [
+                        {
+                            "value": "SDG_I_8.8.2",
+                            "label": "SDG_I_8.8.2: Nivel de cumplimiento nacional de los derechos laborales, la libertad de asociación y la negociación colectiva ..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 8.10: Fortalecer la capacidad de las instituciones financieras nacionales para fomentar y ampliar el acceso a la banca...",
+                    "items": [
+                        {
+                            "value": "SDG_I_8.10.2",
+                            "label": "SDG_I_8.10.2: Proporción de adultos de 15 años o más con una cuenta en un banco u otra institución financiera o con un proveedor de servicios de dinero móvil [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 8.b: Para 2020, elaborar y poner en marcha una estrategia mundial para el empleo juvenil...",
+                    "items": [
+                        {
+                            "value": "SDG_I_8.b.1",
+                            "label": "SDG_I_8.b.1: Existencia de una estrategia nacional desarrollada y operativa para el empleo juvenil..."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 9. Construir infraestructuras resilientes, promover la industrialización inclusiva y sostenible y fomentar la innovación",
+            "items": [
+                {
+                    "label": "Meta 9.1: Desarrollar una infraestructura de calidad, confiable, sostenible y resiliente...",
+                    "items": [
+                        {
+                            "value": "SDG_I_9.1.1",
+                            "label": "SDG_I_9.1.1: Proporción de la población rural que vive a menos de 2 km de una carretera apta todo el año [%]"
+                        },
+                        {
+                            "value": "SDG_I_9.1.2",
+                            "label": "SDG_I_9.1.2: Volúmenes de pasajeros y carga por modo de transporte [(unidades equivalentes a veinte pies; toneladas métricas; t/km; pasajeros-km]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 9.c: Aumentar significativamente el acceso a la tecnología de la información y las comunicaciones y esforzarse por proporcionar acceso universal y asequible a Internet ...",
+                    "items": [
+                        {
+                            "value": "SDG_I_9.c.1",
+                            "label": "SDG_I_9.c.1: Proporción de la población cubierta por una red móvil por tecnología [%]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 10. Reducir la desigualdad en y entre los países",
+            "items": [
+                {
+                    "label": "Meta 10.2: Para 2030, empoderar y promover la inclusión social, económica y política de todos...",
+                    "items": [
+                        {
+                            "value": "SDG_I_10.2.1",
+                            "label": "SDG_I_10.2.1: Proporción de personas que viven por debajo del 50% de la mediana de ingresos por sexo, edad y personas con discapacidad [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 10.3: Garantizar la igualdad de oportunidades y reducir las desigualdades de resultados...",
+                    "items": [
+                        {
+                            "value": "SDG_I_10.3.1",
+                            "label": "SDG_I_10.3.1: Proporción de la población que declara haberse sentido personalmente discriminada..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 10.b: Fomentar la asistencia oficial para el desarrollo y los flujos financieros...",
+                    "items": [
+                        {
+                            "value": "SDG_I_10.b.1",
+                            "label": "SDG_I_10.b.1: Flujos totales de recursos para el desarrollo por países receptores y donantes ..."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 11. Lograr que las ciudades y los asentamientos humanos sean inclusivos, seguros, resilientes y sostenibles",
+            "items": [
+                {
+                    "label": "Meta 11.1: Para 2030, asegurar el acceso de todos a viviendas y servicios básicos adecuados, seguros y asequibles, y mejorar los barrios marginales",
+                    "items": [
+                        {
+                            "value": "SDG_I_11.1.1",
+                            "label": "SDG_I_11.1.1: Proporción de la población urbana que vive en tugurios, asentamientos informales o viviendas inadecuadas [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 11.3: Para 2030, mejorar la urbanización inclusiva y sostenible ...",
+                    "items": [
+                        {
+                            "value": "SDG_I_11.3.1",
+                            "label": "SDG_I_11.3.1: Relación entre la tasa de consumo de tierra y la tasa de crecimiento de la población [nb]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 11.4: Redoblar los esfuerzos para proteger y salvaguardar el patrimonio cultural y natural del mundo",
+                    "items": [
+                        {
+                            "value": "SDG_I_11.4.1",
+                            "label": "SDG_I_11.4.1: Gasto total per cápita en la preservación, protección y conservación de todo el patrimonio cultural y natural, por fuente de financiamiento ..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 11.6: Para 2030, reducir el impacto ambiental adverso per cápita de las ciudades...",
+                    "items": [
+                        {
+                            "value": "SDG_I_11.6.1",
+                            "label": "SDG_I_11.6.1: Proporción de los desechos sólidos municipales recolectados y gestionados en instalaciones controladas ..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 11.a: Apoyar los vínculos económicos, sociales y ambientales positivos entre las zonas urbanas, periurbanas y rurales mediante el fortalecimiento de la planificación del desarrollo nacional y regional",
+                    "items": [
+                        {
+                            "value": "SDG_I_11.a.1",
+                            "label": "SDG_I_11.a.1: Número de países que tienen políticas urbanas nacionales o planes de desarrollo regional ..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 11.b: Para 2020, aumentar considerablemente el número de ciudades y asentamientos humanos que adoptan e implementan políticas integradas...",
+                    "items": [
+                        {
+                            "value": "SDG_I_11.b.1",
+                            "label": "SDG_I_11.b.1: Número de países que adoptan e implementan estrategias nacionales de reducción del riesgo de desastres ..."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 12. Garantizar modalidades de consumo y producción sostenibles",
+            "items": [
+                {
+                    "label": "Meta 12.b: Desarrollar e implementar herramientas para supervisar los efectos del desarrollo sostenible en el turismo sostenible...",
+                    "items": [
+                        {
+                            "value": "SDG_I_12.b.1",
+                            "label": "SDG_I_12.b.1: Aplicación de herramientas contables estándar para supervisar los aspectos económicos y ambientales de la sostenibilidad del turismo [tablas SEEA]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 13. Adoptar medidas urgentes para combatir el cambio climático y sus efectos",
+            "items": [
+                {
+                    "label": "Meta 13.1: Fortalecer la resiliencia y la capacidad de adaptación a los peligros relacionados con el clima y los desastres naturales en todos los países",
+                    "items": [
+                        {
+                            "value": "SDG_I_13.1.2",
+                            "label": "SDG_I_13.1.2: Número de países que adoptan e implementan estrategias nacionales de reducción del riesgo de desastres ..."
+                        },
+                        {
+                            "value": "SDG_I_13.1.3",
+                            "label": "SDG_I_13.1.3: Proporción de gobiernos locales que adoptan e implementan estrategias locales de reducción del riesgo de desastres ..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 13.2: Integrar las medidas relativas al cambio climático en las políticas, estrategias y planes nacionales",
+                    "items": [
+                        {
+                            "value": "SDG_I_13.2.1",
+                            "label": "SDG_I_13.2.1: Número de países con contribuciones determinadas a nivel nacional, estrategias a largo plazo, planes nacionales de adaptación ..."
+                        },
+                        {
+                            "value": "SDG_I_13.2.2",
+                            "label": "SDG_I_13.2.2: Emisiones totales de gases de efecto invernadero por año [desconocido]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 14. Conservar y utilizar en forma sostenible los océanos, los mares y los recursos marinos para el desarrollo sostenible",
+            "items": [
+                {
+                    "label": "Meta 14.1: Para 2025, prevenir y reducir significativamente la contaminación marina de todo tipo...",
+                    "items": [
+                        {
+                            "value": "SDG_I_14.1.1",
+                            "label": "SDG_I_14.1.1: a) Índice de eutrofización costera y b) densidad de desechos plásticos [desconocido]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 14.2: Para 2020, gestionar y proteger de forma sostenible los ecosistemas marinos y costeros...",
+                    "items": [
+                        {
+                            "value": "SDG_I_14.2.1",
+                            "label": "SDG_I_14.2.1: Número de países que utilizan enfoques basados en ecosistemas para la gestión de áreas marinas [desconocido]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 14.4: Para 2020, regular eficazmente la pesca y poner fin a la sobrepesca, la pesca ilegal, no declarada y no reglamentada...",
+                    "items": [
+                        {
+                            "value": "SDG_I_14.4.1",
+                            "label": "SDG_I_14.4.1: Proporción de poblaciones de peces en niveles biológicamente sostenibles [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 14.5: Para 2020, conservar al menos el 10% de las zonas costeras y marinas...",
+                    "items": [
+                        {
+                            "value": "SDG_I_14.5.1",
+                            "label": "SDG_I_14.5.1: Cobertura de áreas protegidas en relación con las áreas marinas [km2, %]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 14.b: Facilitar el acceso de los pescadores artesanales de pequeña escala a los recursos marinos y los mercados",
+                    "items": [
+                        {
+                            "value": "SDG_I_14.b.1",
+                            "label": "SDG_I_14.b.1: Grado de aplicación de un marco jurídico, normativo y político que reconoce y protege los derechos de acceso de las pesquerías artesanales de pequeña escala [nb]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 15. Proteger, restablecer y promover el uso sostenible de los ecosistemas terrestres...",
+            "items": [
+                {
+                    "label": "Meta 15.1: Para 2020, asegurar la conservación, restauración y uso sostenible de los ecosistemas terrestres y de agua dulce continentales...",
+                    "items": [
+                        {
+                            "value": "SDG_I_15.1.1",
+                            "label": "SDG_I_15.1.1: Superficie forestal en proporción de la superficie total de la tierra [kha, %]"
+                        },
+                        {
+                            "value": "SDG_I_15.1.2",
+                            "label": "SDG_I_15.1.2: Proporción de sitios importantes para la biodiversidad terrestre y de agua dulce que están cubiertos por áreas protegidas, por tipo de ecosistema [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 15.2: Para 2020, promover la aplicación de la gestión sostenible de todos los tipos de bosques...",
+                    "items": [
+                        {
+                            "value": "SDG_I_15.2.1",
+                            "label": "SDG_I_15.2.1: Progresos hacia la gestión forestal sostenible [t/ha, kha, %]"
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-1",
+                            "label": "SDG_I_15.2.1-1: Tasa de cambio neto anual del área forestal [ha]"
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-2",
+                            "label": "SDG_I_15.2.1-2: Biomasa aérea en el bosque [t/ha]"
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-3",
+                            "label": "SDG_I_15.2.1-3: Proporción de la superficie forestal ubicada en áreas protegidas establecidas legalmente [%]"
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-4",
+                            "label": "SDG_I_15.2.1-4: Proporción de la superficie forestal bajo un plan de gestión forestal a largo plazo [%]"
+                        },
+                        {
+                            "value": "SDG_I_15.2.1-5",
+                            "label": "SDG_I_15.2.1-5: Superficie forestal bajo un esquema de certificación de gestión forestal verificado de forma independiente [ha]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 15.3: Para 2030, luchar contra la desertificación, restaurar las tierras y suelos degradados...",
+                    "items": [
+                        {
+                            "value": "SDG_I_15.3.1",
+                            "label": "SDG_I_15.3.1: Proporción de la tierra degradada sobre la superficie total de la tierra [%]"
+                        },
+                        {
+                            "value": "SDG_I_15.3.1-1",
+                            "label": "SDG_I_15.3.1-1: Tendencias en la cobertura de la tierra [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_15.3.1-2",
+                            "label": "SDG_I_15.3.1-2: Tendencias en la productividad de la tierra [desconocido]"
+                        },
+                        {
+                            "value": "SDG_I_15.3.1-3",
+                            "label": "SDG_I_15.3.1-3: Tendencias en las reservas de carbono [nb, t/ha, Mg/ha]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 15.4: Para 2030, asegurar la conservación de los ecosistemas montañosos...",
+                    "items": [
+                        {
+                            "value": "SDG_I_15.4.2",
+                            "label": "SDG_I_15.4.2: Índice de cobertura verde de la montaña [nb, km2]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 15.5: Adoptar medidas urgentes y significativas para reducir la degradación de los hábitats naturales...",
+                    "items": [
+                        {
+                            "value": "SDG_I_15.5.1",
+                            "label": "SDG_I_15.5.1: Índice de la Lista Roja [nb]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 15.7: Adoptar medidas urgentes para poner fin a la caza furtiva y el tráfico de especies protegidas ...",
+                    "items": [
+                        {
+                            "value": "SDG_I_15.7.1",
+                            "label": "SDG_I_15.7.1: Proporción de la vida silvestre comercializada que fue objeto de caza furtiva o tráfico ilícito [%]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 16. Promover sociedades pacíficas e inclusivas para el desarrollo sostenible...",
+            "items": [
+                {
+                    "label": "Meta 16.2: Poner fin al abuso, la explotación, la trata y todas las formas de violencia y tortura contra los niños",
+                    "items": [
+                        {
+                            "value": "SDG_I_16.2.2",
+                            "label": "SDG_I_16.2.2: Número de víctimas de la trata de personas por cada 100000 habitantes, por sexo, edad y forma de explotación []"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 16.5: Reducir sustancialmente la corrupción y el soborno en todas sus formas",
+                    "items": [
+                        {
+                            "value": "SDG_I_16.5.1",
+                            "label": "SDG_I_16.5.1: Proporción de personas que tuvieron al menos un contacto con un funcionario público y que pagaron un soborno ..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 16.6: Crear a todos los niveles instituciones eficaces, responsables y transparentes",
+                    "items": [
+                        {
+                            "value": "SDG_I_16.6.1",
+                            "label": "SDG_I_16.6.1: Gastos primarios del gobierno en proporción con el presupuesto inicial aprobado, por sector..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 16.7: Garantizar la adopción de decisiones receptivas, inclusivas, participativas y representativas en todos los niveles",
+                    "items": [
+                        {
+                            "value": "SDG_I_16.7.2",
+                            "label": "SDG_I_16.7.2: Proporción de la población que considera que la toma de decisiones es inclusiva y receptiva..."
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 16.10: Garantizar el acceso público a la información y proteger las libertades fundamentales...",
+                    "items": [
+                        {
+                            "value": "SDG_I_16.10.2",
+                            "label": "SDG_I_16.10.2: Número de países que adoptan y aplican garantías constitucionales, legales o políticas para el acceso público a la información [nb]"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Objetivo 17. Fortalecer los medios de implementación y revitalizar la Alianza Mundial para el Desarrollo Sostenible",
+            "items": [
+                {
+                    "label": "Meta 17.11: Aumentar considerablemente las exportaciones de los países en desarrollo...",
+                    "items": [
+                        {
+                            "value": "SDG_I_17.11.1",
+                            "label": "SDG_I_17.11.1: Porcentaje de los países en desarrollo y los países menos adelantados en las exportaciones mundiales [%]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 17.14: Mejorar la coherencia de las políticas para el desarrollo sostenible",
+                    "items": [
+                        {
+                            "value": "SDG_I_17.14.1",
+                            "label": "SDG_I_17.14.1: Número de países con mecanismos establecidos para mejorar la coherencia de las políticas de desarrollo sostenible [millones USD (2017)]"
+                        }
+                    ]
+                },
+                {
+                    "label": "Meta 17.19: Para 2030, basarse en las iniciativas existentes para elaborar mediciones del progreso en el desarrollo sostenible...",
+                    "items": [
+                        {
+                            "value": "SDG_I_17.19.2",
+                            "label": "SDG_I_17.19.2: Proporción de países que a) han realizado al menos un censo de población y vivienda en los últimos 10 años y b) han logrado un 100% de registro de nacimientos y un 80% de registro de defunciones [%]"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "achieved": [
+        {
+            "value": 1,
+            "label": "Sí"
+        },
+        {
+            "value": 3,
+            "label": "Parcialmente"
+        },
+        {
+            "value": 2,
+            "label": "No"
+        }
+    ],
+    "iucnEcosystems": [
+        {
+            "label": "T - Reino terrestre",
+            "items": [
+                {
+                    "value": "T1",
+                    "label": "T1 - Bioma de bosques tropicales-subtropicales"
+                },
+                {
+                    "value": "T2",
+                    "label": "T2 - Bioma de bosques y matorrales templado-boreales"
+                },
+                {
+                    "value": "T3",
+                    "label": "T3 - Bioma de matorrales y bosques arbustivos"
+                },
+                {
+                    "value": "T4",
+                    "label": "T4 - Bioma de sabanas y pastizales"
+                },
+                {
+                    "value": "T5",
+                    "label": "T5 - Bioma de desiertos y semidesiertos"
+                },
+                {
+                    "value": "T6",
+                    "label": "T6 - Bioma polar/alpino (criogénico)"
+                },
+                {
+                    "value": "T7",
+                    "label": "T7 - Bioma de uso intensivo de la tierra"
+                }
+            ]
+        },
+        {
+            "label": "M - Reino marino",
+            "items": [
+                {
+                    "value": "M1",
+                    "label": "M1 - Bioma de la plataforma marina"
+                },
+                {
+                    "value": "M2",
+                    "label": "M2 - Bioma de aguas oceánicas pelágicas"
+                },
+                {
+                    "value": "M3",
+                    "label": "M3 - Bioma de fondos marinos profundos"
+                },
+                {
+                    "value": "M4",
+                    "label": "M4 - Bioma marino antropogénico"
+                }
+            ]
+        },
+        {
+            "label": "F - Reino de agua dulce",
+            "items": [
+                {
+                    "value": "F1",
+                    "label": "F1 - Bioma de ríos y arroyos"
+                },
+                {
+                    "value": "F2",
+                    "label": "F2 - Bioma de lagos"
+                },
+                {
+                    "value": "F3",
+                    "label": "F3 - Bioma de humedales artificiales"
+                }
+            ]
+        },
+        {
+            "label": "S - Reino subterráneo",
+            "items": [
+                {
+                    "value": "S1",
+                    "label": "S1 - Bioma litico subterráneo"
+                },
+                {
+                    "value": "S2",
+                    "label": "S2 - Bioma de vacíos subterráneos antropogénicos"
+                }
+            ]
+        },
+        {
+            "label": "MT - Reino marino-terrestre",
+            "items": [
+                {
+                    "value": "MT1",
+                    "label": "MT1 - Bioma de costas"
+                },
+                {
+                    "value": "MT2",
+                    "label": "MT2 - Bioma costero supralitoral"
+                },
+                {
+                    "value": "MT3",
+                    "label": "MT3 - Bioma de litorales antropogénicos"
+                }
+            ]
+        },
+        {
+            "label": "SF - Reino subterráneo-agua dulce",
+            "items": [
+                {
+                    "value": "SF1",
+                    "label": "SF1 - Bioma de aguas dulces subterráneas"
+                },
+                {
+                    "value": "SF2",
+                    "label": "SF2 - Bioma de aguas dulces subterráneas antropogénicas"
+                }
+            ]
+        },
+        {
+            "label": "FM - Reino agua dulce-marino",
+            "items": [
+                {
+                    "value": "FM1",
+                    "label": "FM1 - Bioma de aguas transicionales semiconfinadas"
+                }
+            ]
+        },
+        {
+            "label": "MFT - Reino marino-agua dulce-terrestre",
+            "items": [
+                {
+                    "value": "MFT1",
+                    "label": "MFT1 - Bioma de aguas salobres mareales"
+                }
+            ]
+        },
+        {
+            "label": "SM - Reino subterráneo-marino",
+            "items": [
+                {
+                    "value": "SM1",
+                    "label": "SM1 - Bioma subterráneo mareal"
+                }
+            ]
+        },
+        {
+            "label": "TF - Reino terrestre-agua dulce",
+            "items": [
+                {
+                    "value": "TF1",
+                    "label": "TF1 - Bioma de humedales palustres"
+                }
+            ]
+        }
+    ],
+    "restorationTypes": [
+        {
+            "value": 1,
+            "label": "Restauración ecológica",
+            "info": {
+                "en": "<p>Ecological restoration is a type of ecosystem restoration. According to CBD (2016)...</p><p>The Society for Ecological Restoration (SER) defines ecological restoration as...</p><p>References: <a href=\"https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf\" target=\"_blank\">https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf</a></p>",
+                "fr": "<p>La restauration écologique est un type de restauration d'écosystèmes. Selon la CBD (2016)...</p><p>La Society for Ecological Restoration (SER) définit la restauration écologique comme...</p><p>Références : <a href=\"https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf\" target=\"_blank\">https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf</a></p>",
+                "es": "<p>La restauración ecológica es un tipo de restauración de ecosistemas. Según el CDB (2016)...</p><p>La Society for Ecological Restoration (SER) define la restauración ecológica como...</p><p>Referencias: <a href=\"https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf\" target=\"_blank\">https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf</a></p>"
+            }
+        },
+        {
+            "value": 2,
+            "label": "Rehabilitación",
+            "info": {
+                "en": "<p>The Society for Ecological Restoration (SER) defines rehabilitation as: \"Management actions...\"</p><p>References:<br>Gann, G.D., McDonald, T., et al. (2019)...</p>",
+                "fr": "<p>La Society for Ecological Restoration (SER) définit la réhabilitation comme : \"Des actions de gestion...\"</p><p>Références :<br>Gann, G.D., McDonald, T., et al. (2019)...</p>",
+                "es": "<p>La Society for Ecological Restoration (SER) define la rehabilitación como: \"Acciones de gestión...\"</p><p>Referencias:<br>Gann, G.D., McDonald, T., et al. (2019)...</p>"
+            }
+        }
+    ],
+    "tenureStatuses": [
+        {
+            "value": 1,
+            "label": "Comunal"
+        },
+        {
+            "value": 2,
+            "label": "Gubernamental"
+        },
+        {
+            "value": 3,
+            "label": "Territorios Indígenas y Tradicionales (TIT)"
+        },
+        {
+            "value": 4,
+            "label": "Propiedad conjunta"
+        },
+        {
+            "value": 5,
+            "label": "Privado"
+        },
+        {
+            "value": 6,
+            "label": "Otro"
+        },
+        {
+            "value": 7,
+            "label": "No sabe"
+        }
+    ],
+    "gefIndicators": [
+        {
+            "label": "1. Áreas protegidas terrestres creadas o bajo gestión mejorada para la conservación y el uso sostenible (hectáreas)",
+            "items": [
+                {
+                    "label": "Subindicadores de componente",
+                    "items": [
+                        {
+                            "value": "GEF1.1",
+                            "label": "1.1 Áreas protegidas terrestres recientemente creadas"
+                        },
+                        {
+                            "value": "GEF1.2",
+                            "label": "1.2 Áreas protegidas terrestres bajo una efectividad de gestión mejorada"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "2. Áreas marinas protegidas creadas o bajo gestión mejorada para la conservación y el uso sostenible (hectáreas)",
+            "items": [
+                {
+                    "label": "Subindicadores de componente",
+                    "items": [
+                        {
+                            "value": "GEF2.1",
+                            "label": "2.1 Áreas marinas protegidas recientemente creadas"
+                        },
+                        {
+                            "value": "GEF2.2",
+                            "label": "2.2 Áreas marinas protegidas bajo una efectividad de gestión mejorada"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "3. Superficie de tierras y ecosistemas bajo restauración (hectáreas)",
+            "items": [
+                {
+                    "label": "Subindicadores de componente",
+                    "items": [
+                        {
+                            "value": "GEF3.1",
+                            "label": "3.1 Superficie de tierras agrícolas degradadas en restauración"
+                        },
+                        {
+                            "value": "GEF3.2",
+                            "label": "3.2 Superficie de bosques y tierras forestales en restauración"
+                        },
+                        {
+                            "value": "GEF3.3",
+                            "label": "3.3 Superficie de pastizales naturales y bosques en restauración"
+                        },
+                        {
+                            "value": "GEF3.4",
+                            "label": "3.4 Superficie de humedales (incluidos estuarios y manglares) en restauración"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "4. Superficie de paisajes bajo prácticas mejoradas (hectáreas; excluyendo áreas protegidas)",
+            "items": [
+                {
+                    "label": "Subindicadores de componente",
+                    "items": [
+                        {
+                            "value": "GEF4.1",
+                            "label": "4.1 Superficie de paisajes bajo gestión mejorada en beneficio de la biodiversidad (evaluación cualitativa, no certificada)"
+                        },
+                        {
+                            "value": "GEF4.2",
+                            "label": "4.2 Superficie de paisajes que cumplen con la certificación nacional o internacional de terceros e incorporan consideraciones de biodiversidad"
+                        },
+                        {
+                            "value": "GEF4.3",
+                            "label": "4.3 Superficie de paisajes bajo gestión sostenible de la tierra en sistemas de producción"
+                        },
+                        {
+                            "value": "GEF4.4",
+                            "label": "4.4 Superficie de bosque de alto valor de conservación cuya pérdida se ha evitado"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "5. Superficie de hábitats marinos bajo prácticas mejoradas para beneficiar la biodiversidad (hectáreas; excluyendo áreas protegidas)",
+            "value": "GEF5"
+        },
+        {
+            "label": "2 (FEM-FVC). Superficie de tierras gestionadas para la resiliencia climática (hectáreas)",
+            "value": "GEF2LDCF"
+        }
+    ],
+    "gefCycles": [
+        {
+            "value": 6,
+            "label": "GEF 6"
+        },
+        {
+            "value": 7,
+            "label": "GEF 7"
+        },
+        {
+            "value": 8,
+            "label": "GEF 8"
+        }
+    ],
+    "gefFocalAreas": [
+        {
+            "value": 1,
+            "label": "Degradación de la tierra"
+        },
+        {
+            "value": 2,
+            "label": "Biodiversidad"
+        },
+        {
+            "value": 3,
+            "label": "Cambio climático"
+        },
+        {
+            "value": 4,
+            "label": "Productos químicos & desechos"
+        },
+        {
+            "value": 5,
+            "label": "Aguas internacionales"
+        }
+    ],
+    "gefInvestmentTypes": [
+        {
+            "value": "project",
+            "label": "Proyecto"
+        },
+        {
+            "value": "program",
+            "label": "Programa"
+        }
+    ],
+    "gef6Programs": [
+        {
+            "value": "6.1",
+            "label": "La Iniciativa de Restauración"
+        }
+    ],
+    "gef7Programs": [
+        {
+            "value": "7.1",
+            "label": "Sistemas alimentarios, uso de la tierra y restauración"
+        },
+        {
+            "value": "7.2",
+            "label": "Paisajes sostenibles en tierras áridas"
+        },
+        {
+            "value": "7.3",
+            "label": "Programa Paisajes Sostenibles de la Amazonía"
+        }
+    ],
+    "gef8Programs": [
+        {
+            "value": 8.1,
+            "label": "Amazonía, Congo y biomas forestales críticos"
+        },
+        {
+            "value": 8.2,
+            "label": "Islas azules y verdes"
+        },
+        {
+            "value": 8.3,
+            "label": "Restauración de ecosistemas"
+        },
+        {
+            "value": 8.4,
+            "label": "Sistemas alimentarios"
+        }
+    ],
+    "boolean": [
+        {
+            "label": "No",
+            "value": 0
+        },
+        {
+            "label": "Sí",
+            "value": 1
+        }
+    ],
+    "restorationStatuses": [
+        {
+            "value": 1,
+            "label": "En preparación"
+        },
+        {
+            "value": 2,
+            "label": "En progreso"
+        },
+        {
+            "value": 3,
+            "label": "Monitoreo posterior a la finalización"
+        }
+    ],
+    "units": [
+        {
+            "value": "ha",
+            "label": "Hectáreas"
+        },
+        {
+            "value": "km2",
+            "label": "Kilómetros cuadrados"
+        },
+        {
+            "value": "km",
+            "label": "Kilómetros lineales"
+        }
+    ],
+    "gefImplementingAgencies": [
+        {
+            "value": 1,
+            "label": "Banco Africano de Desarrollo"
+        },
+        {
+            "value": 2,
+            "label": "Banco Asiático de Desarrollo"
+        },
+        {
+            "value": 3,
+            "label": "Fondo Brasileño para la Biodiversidad"
+        },
+        {
+            "value": 4,
+            "label": "Conservation International"
+        },
+        {
+            "value": 5,
+            "label": "Banco de Desarrollo de América Latina"
+        },
+        {
+            "value": 6,
+            "label": "Banco de Desarrollo de África Austral"
+        },
+        {
+            "value": 7,
+            "label": "Banco Europeo de Reconstrucción y Desarrollo"
+        },
+        {
+            "value": 8,
+            "label": "Organización de las Naciones Unidas para la Alimentación y la Agricultura (FAO)"
+        },
+        {
+            "value": 9,
+            "label": "Oficina de Cooperación Económica Exterior"
+        },
+        {
+            "value": 10,
+            "label": "Secretaría del FMAM"
+        },
+        {
+            "value": 11,
+            "label": "Banco Interamericano de Desarrollo"
+        },
+        {
+            "value": 12,
+            "label": "Corporación Financiera Internacional"
+        },
+        {
+            "value": 13,
+            "label": "Fondo Internacional de Desarrollo Agrícola"
+        },
+        {
+            "value": 14,
+            "label": "Unión Internacional para la Conservación de la Naturaleza"
+        },
+        {
+            "value": 15,
+            "label": "Ministerio de Protección Ambiental de China"
+        },
+        {
+            "value": 16,
+            "label": "El Banco Mundial"
+        },
+        {
+            "value": 17,
+            "label": "Programa de las Naciones Unidas para el Desarrollo"
+        },
+        {
+            "value": 18,
+            "label": "Programa de las Naciones Unidas para el Medio Ambiente"
+        },
+        {
+            "value": 19,
+            "label": "Organización de las Naciones Unidas para el Desarrollo Industrial"
+        },
+        {
+            "value": 20,
+            "label": "Banco de Desarrollo de África Occidental"
+        },
+        {
+            "value": 21,
+            "label": "Fondo Mundial para la Naturaleza - Capítulo de EE. UU."
+        }
+    ],
+    "projectObjectives": [
+        {
+            "value": 1,
+            "label": "Mejorar la biodiversidad"
+        },
+        {
+            "value": 2,
+            "label": "Mejorar las funciones y servicios del ecosistema"
+        },
+        {
+            "value": 3,
+            "label": "Mejorar la integridad ecológica"
+        },
+        {
+            "value": 4,
+            "label": "Mejorar la conectividad"
+        }
+    ]
+}

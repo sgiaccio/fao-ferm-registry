@@ -347,13 +347,13 @@ router.afterEach((to) => {
     }
 });
 
-async function _loadMenus() {
+async function _loadMenus(locale: string) {
     // dynamically load the menus store to save bandwidth
     const { useMenusStore } = await import('../stores/menus');
     const menusStore = useMenusStore();
 
     if (!menusStore.loaded) {
-        await menusStore.fetchMenus();
+        await menusStore.fetchMenus(locale || 'en');
     }
 }
 

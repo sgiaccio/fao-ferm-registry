@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { getMenus } from "@/firebase/firestore";
 
 import type { Menu } from "@/components/project/menus";
 
@@ -20,10 +19,13 @@ export const useMenusStore = defineStore({
         // recursiveMenus: {} as { [key: string]: RecursiveMenu },
     }),
     actions: {
-        async fetchMenus() {
-            const tMenus = await getMenus();
+        async fetchMenus(locale: string) {
+            // const tMenus = await getMenus();
 
-            // iterate through the tMenus array
+            // import the json file dynamically from @/locales/menus/[locale].json
+            const tMenus: Menu = await import(`@/locales/menus/${locale}.json`);
+
+            // iterate through the tMenus array - for reactivity to work, we need to assign the values one by one
             Object.entries(tMenus).forEach(([id, menu]) => {
                 this.menus[id] = menu;
             });
