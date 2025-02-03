@@ -8,13 +8,14 @@ import {
 
 import { MapPinIcon, GlobeAltIcon, MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/vue/24/solid'
 
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import WavyDivider from '@/views/WavyDivider.vue';
 import Footer from '@/views/Footer.vue'
 
 import { useI18n } from 'vue-i18n';
 
 
-const { t, locale } = useI18n();
+const { t } = useI18n();
 
 const points = [
     {
@@ -264,16 +265,10 @@ async function initMap() {
 }
 
 onMounted(initMap);
-
-function changeLanguage(lang: string) {
-    locale.value = lang;
-}
 </script>
 
 <template>
-    <div
-        class="bg-white"
-    >
+    <div class="bg-white">
         <header class="inset-x-0 top-0">
             <div class="overflow-hidden bg-none relative">
                 <img
@@ -307,27 +302,7 @@ function changeLanguage(lang: string) {
                                 </a>
                             </div>
                         </div>
-                        <!-- Language Links -->
-                        <div class="flex space-x-4 text-gray-50 font-semibold">
-                            <button
-                                :class="[locale === 'en' ? 'underline' : '', 'hover:underline']"
-                                @click="changeLanguage('en')"
-                            >
-                                EN
-                            </button>
-                            <button
-                                :class="[locale === 'es' ? 'underline' : '', 'hover:underline']"
-                                @click="changeLanguage('es')"
-                            >
-                                ES
-                            </button>
-                            <button
-                                :class="[locale === 'fr' ? 'underline' : '', 'hover:underline']"
-                                @click="changeLanguage('fr')"
-                            >
-                                FR
-                            </button>
-                        </div>
+                        <LanguageSwitcher />
                     </div>
                     <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-5xl md:text-6xl lg:text-7xl uppercase shadow-black text-shadow-sm">
                         {{ t('fermRegistryLong1') }}

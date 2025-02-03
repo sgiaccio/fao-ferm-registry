@@ -5,6 +5,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useLoadingStore } from '../stores/loading';
 
+// import i18n from '@/lib/i18n';
+
+import { setI18nLanguage, loadLocaleMessages, getI18n } from '@/lib/i18n';
 
 
 // Initiatives tabs are used both for editing and viewing projects, so define them once here
@@ -38,11 +41,11 @@ const projectTabs = [{
     name: 'projectMonitoring',
     component: () => import('../views/project/MonitoringView.vue')
 },
-// {
-//     path: 'preview',
-//     name: 'projectResults',
-//     component: () => import('../views/project/ResultsView.vue')
-// }
+    // {
+    //     path: 'preview',
+    //     name: 'projectResults',
+    //     component: () => import('../views/project/ResultsView.vue')
+    // }
 ];
 
 // Good Practices tabs are used both for editing and viewing projects, so define them once here
@@ -122,7 +125,8 @@ const router = createRouter({
                     path: 'initiatives/:id',
                     name: 'publicInitiativePage',
                     beforeEnter: async (_to, _from) => {
-                        _loadMenus();
+                        const locale = getI18n().global.locale.value;
+                        _loadMenus(locale);
                     },
                     component: () => import('../views/search/project/ProjectView.vue'),
                     meta: { newLayout: true, public: true }
@@ -191,7 +195,8 @@ const router = createRouter({
             component: () => import('../views/RegistryView.vue'),
 
             beforeEnter: async (_to, _from) => {
-                _loadMenus();
+                const locale = getI18n().global.locale.value;
+                _loadMenus(locale);
             },
             redirect: { name: 'initiatives' },
             children: [
@@ -278,7 +283,31 @@ const router = createRouter({
     ],
 });
 
-router.beforeEach(async (to) => {
+
+async function setLocale(locale: string) {
+    // use locale if paramsLocale is not in SUPPORT_LOCALES
+    // if (!SUPPORT_LOCALES.includes(paramsLocale)) {
+    //     return next(`/${locale}`)
+    // }
+
+    // load locale messages
+    const i18n = getI18n();
+
+    // check that the locale is already loaded - we don't use availableLocales because the locale is set before the messages are loaded
+    const localeLoaded = Object.keys(i18n.global.getLocaleMessage(locale)).length > 0;
+    if (!localeLoaded) {
+        await loadLocaleMessages(locale);
+    }
+
+    // set i18n language
+    setI18nLanguage(locale);
+}
+
+router.beforeEach(async to => {
+    // const paramsLocale = 'en' //to.params.locale
+    const paramsLocale = getI18n().global.locale || 'en';
+    await setLocale(paramsLocale);
+
     const loadingStore = useLoadingStore();
 
     if (to.matched.every(record => record.meta.public)) {

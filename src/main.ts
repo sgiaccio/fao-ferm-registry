@@ -1,8 +1,9 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import { createI18n } from 'vue-i18n'
-import messages from '@/locales';
+// import i18n from '@/lib/i18n';
+
+import { setupI18n } from '@/lib/i18n';
 
 import App from './App.vue';
 import router from './router';
@@ -13,31 +14,31 @@ import Vue3Toasity, { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
 
-console.log(messages);
-const i18nConfig: any = {
-    locale: 'fr',
-    fallbackLocale: 'en',
-    messages,
-    legacy: false,
-    globalInjection: true,
-};
+// const i18nConfig: any = {
+//     locale: 'fr',
+//     fallbackLocale: 'en',
+//     messages,
+//     legacy: false,
+//     globalInjection: true,
+// };
 
-if (process.env.NODE_ENV === 'development') {
-    console.log('Development mode');
-    i18nConfig.postTranslation = (str: any, key: string) => {
-        if (typeof str === 'string') {
-            return str ? `${str} (i18n)` : key;
-        }
-        return str;
-    }
-}
+// if (process.env.NODE_ENV === 'development') {
+//     console.log('Development mode');
+//     i18nConfig.postTranslation = (str: any, key: string) => {
+//         if (typeof str === 'string') {
+//             return str ? `${str} (i18n)` : key;
+//         }
+//         return str;
+//     }
+// }
 
-const i18n = createI18n(i18nConfig);
+// const i18n = createI18n(i18nConfig);
 
 // (async () => {
 const app = createApp(App);
 app.use(createPinia());
 
+const i18n = setupI18n();
 app.use(i18n);
 
 app.use(Vue3Toasity, {

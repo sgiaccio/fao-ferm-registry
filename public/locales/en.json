@@ -1,0 +1,581 @@
+{
+  "fermRegistryLong1": "Framework for Ecosystem",
+  "fermRegistryLong2": "Restoration Monitoring",
+  "fermRegistry": "FERM Registry",
+  "references": "References",
+  "userGuide": "User guide",
+  "support": "Support",
+  "notAvailable": "Not available",
+  "error": {
+    "error": "Error",
+    "unexpected": "An unexpected error occurred, please check the console log."
+  },
+  "close": "Close",
+  "view": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "edit": {
+    "saveAndExit": "Save and exit",
+    "saveAndNext": "Save and next",
+    "cancel": "Cancel",
+    "applyToAll": "Apply to all",
+    "confirmLeave": "You have unsaved changes. Are you sure you want to leave?"
+  },
+  "search": "Search",
+  "activities": {
+    "title": "Activities",
+    "description": "Activities describe what is being implemented on the ground in order to achieve restoration objectives. Activities are adapted from the Glossary of restoration interventions of The Economics of Ecosystem Restoration (TEER) initiative ({teerLink}). They are divided into two main categories (biophysical and enabling) and secondary categories according to the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES) Assessment Report on Land Degradation and Restoration ({ipbesLink}). Implementing enabling activities often corresponds to the preparation stage.",
+    "otherActivities": "Other activities",
+    "gef": {
+      "description": "Activities describe what is being implemented on the ground in order to achieve sustainable management or restoration objectives. Activities are adapted from the Glossary of restoration interventions of The Economics of Ecosystem Restoration (TEER) initiative ({teerLink}). They are divided into two main categories (biophysical and enabling) and secondary categories according to the Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES) Assessment Report on Land Degradation and Restoration ({ipbesLink}). Implementing enabling activities often corresponds to the preparation stage."
+    }
+  },
+  "areaAndEcosystems": {
+    "title": "Area and Ecosystems",
+    "description": {
+      "main": "Identification of geographic areas under ecosystem restoration is key for geospatial applications and is essential to keep track of effective restoration, being the main objective of {target2} of the Kunming-Montreal Global Biodiversity Framework. One initiative can implement ecosystem restoration in one or more geographic areas. Activities, indicators, ecosystem characterization, and results will be provided for each area. Geographic areas can be identified based on different options:",
+      "target2": "Target 2",
+      "selectAdminAreas": "Select administrative areas",
+      "uploadPolygons": "Upload polygons/vector",
+      "drawOnPlatform": "Draw directly on the platform",
+      "typology2": "It is crucial to identify the ecosystems that your initiative is restoring. The IUCN Global Ecosystem Typology 2.0 is the outcome of critical review and input by an extensive international network of ecosystem scientists, containing profiles for 5 realms and their combinations, 25 biomes and 108 ecosystem functional groups (Keith et al. 2022). {infoButton}",
+      "moreInformation": "More information",
+      "gef": {
+        "main": "In this tab information on the project areas and ecosystems is needed in tabular and in geospatial form. You will need to provide details on committed land under GEF Core Indicators 1-5, and information on Restoration Plans/Management Plans with the extension of the area of intervention as well as the geospatial information of the areas including ecosystems covered.",
+        "ecosystems": "It is crucial to identify the ecosystems that your initiative is restoring. The IUCN Global Ecosystem Typology 2.0 is the outcome of critical review and input by an extensive international network of ecosystem scientists, containing profiles for 5 realms and their combinations, 25 biomes and 108 ecosystem functional groups (Keith et al.2022). {infoButton}"
+      }
+    },
+    "info": {
+      "realmsTitle": "Realms",
+      "biomesTitle": "Biomes",
+      "ecosystemGroupsTitle": "Ecosystem functional groups",
+      "realms": "{realms} are the five major components of the biosphere that differ fundamentally in ecosystem organization and function: terrestrial, freshwater, marine, subterranean, and atmospheric.",
+      "biomes": "{biomes} are components of a realm united by one or a few common major ecological drivers that regulate major ecosystem functions and ecological processes.",
+      "ecosystemGroups": "{ecosystemGroups} are a group of related ecosystems within a biome that share common ecological drivers promoting convergence of ecosystem properties that characterize the group.",
+      "spatialInfo": "If spatially explicit information about an area is provided and represents the entirety of the area under restoration (i.e. points or polygons of the areas are provided), the button \"get biomes in this area\" can be used to automatically generate a map overlay to indicate potential biomes that may be under restoration in the area. The user will need to review the automatically selected biomes and ensure that the biomes selected are truly those under restoration. If only tabular data of an area is provided, we kindly ask you to select the corresponding ecosystems using biomes of the IUCN Global Ecosystem Typology 2.0 (Keith et al., 2022)."
+    },
+    "area": "Area",
+    "alerts": {
+      "areaUnitsChanged": "You have changed the units of the target area. Please note that the areas you have defined will not be converted to the new units. Please review all the areas you have defined.",
+      "areaUnitsSet": "You have set the units of the target area for the whole project. Please note that all the areas will have to be entered in the same units.",
+      "selectEcosystems": "Please select ecosystems for the first area first.",
+      "applyEcosystemsToAll": "Are you sure you want to apply this ecosystem to all areas? Your current selections will be overwritten.",
+      "gef": {
+        "uploadPolygons": "Please upload a shapefile with the land (in ha) reported in the geographic information system (spatially explicit data) if available. Otherwise please include the coordinates of project location.",
+        "drawOnPlatform": "Please use the drawer feature to draw the land directly on the platform. The calculator function will calculate the land (in ha).",
+        "selectAdminArea": "Please select the administrative area where your project is working and enter the full land (in ha) of the administrative area or enter the land (in ha) within an administrative area where your project is working."
+      }
+    },
+    "countriesInfo": "Countries are automatically selected based on your uploaded polygons and selected admin areas. You can also edit them manually.",
+    "deleteAllAreas": "Delete all areas",
+    "deleteAllAreasConfirm": {
+      "main": "Are you sure you want to delete all project areas? This action will only remove areas temporarily in your current session. {saveProject}",
+      "saveProject": "To permanently apply this change, you must save the project afterwards"
+    },
+    "areaEcosystems": {
+      "title": "IUCN Global Ecosystem Typology 2.0 - Biomes",
+      "getBiomes": "Get biomes in this area",
+      "confirmOverwrite": "Are you sure you want to overwrite the selected ecosystems for this area?"
+    },
+    "paAndTraditionalTerritories": {
+      "theRestorationAreaHas": "The restoration area has",
+      "protectedAreaOrOECM": "{units} of Protected Area (PA) or Other Effective Area-based Conservation Measures (OECM)",
+      "indigenousAndTraditionalTerritory": "{units} of Indigenous and Traditional Territory (ITT)",
+      "gef": {
+        "title": "Protected Area (PA), Other Effective Area-based Conservation Measures (OECM) and Indigenous and Traditional Territory (ITT)"
+      }
+    },
+    "areaByEcosystem": {
+      "totalPercentage": "Total percentage:",
+      "title": "Area by {country} ecosystem",
+      "countryAnd": "country and",
+      "validation": {
+        "percentageCheck": "The total percentage should equal 100%, but it currently sums to {totalPercentage}%"
+      }
+    },
+    "gef": {
+      "landCommitted": {
+        "info": {
+          "title": "Information on Land committed in GEF Core Indicators (tabular data)",
+          "text": "{title} The land committed in GEF Core Indicators includes the ha committed in GEF Core Indicators 1-5 and LDCF Indicator 2."
+        },
+        "label": "Breakdown of commitment by core indicator [Hectares]",
+        "description": "Area of land committed by core indicator",
+        "coreIndicator1": {
+          "main": "Core Indicator 1 {info}",
+          "description": "Terrestrial protected areas created or under improved Management"
+        },
+        "coreIndicator2": {
+          "main": "Core Indicator 2 {info}",
+          "description": "Marine protected areas created or under improved management"
+        },
+        "coreIndicator3": {
+          "main": "Core Indicator 3 {info}",
+          "description": "Area of land and ecosystems under restoration"
+        },
+        "coreIndicator4": {
+          "main": "Core Indicator 4 {info}",
+          "description": "Area of landscapes under improved practices"
+        },
+        "coreIndicator5": {
+          "main": "Core Indicator 5 {info}",
+          "description": "Area of marine habitat under improved practices to benefit biodiversity"
+        },
+        "coreIndicator2LDCF": {
+          "main": "LDCF CI 2 {info}",
+          "description": "Area of land managed for climate resilience"
+        }
+      },
+      "restorationPlans": {
+        "info": {
+          "title": "Information on Restoration Plans/Management Plans (tabular data).",
+          "text": "{title} The plan should at least include a description of restoration or land management activities and the extension of the area of intervention."
+        },
+        "upload": {
+          "label": "Please upload Restoration Plans/Management Plans",
+          "info": "Please upload the Restoration Plans/ Management plans with the description of restoration / land management activities and baseline information of the territory, including pictures."
+        }
+      },
+      "geographicAreas": {
+        "info": {
+          "identifyArea": "Areas can be identified based on different options:",
+          "title": "Information on Geographic Areas (spatially explicit data).",
+          "text": "{title} The data should have the following {requirementsLink} and the feature table to be uploaded the following {structureLink}.",
+          "requirements": "requirements",
+          "structure": "structure"
+        },
+        "totalArea": {
+          "label": "Total area of land achieved (spatially explicit format)",
+          "info": "The total of the land (in ha) will be computed by the plattorm based on spatially explicit information provided."
+        }
+      }
+    }
+  },
+  "characteristics": {
+    "title": "Characteristics",
+    "description": "This section provides spatial and satellite data through {earthMap}. EarthMap delivers high-quality, up-to-date satellite imagery and geographic information, enabling you to monitor the restoration progress of your initiatives. It facilitates the tracking of changes in land cover, land degradation, biodiversity, and other key restoration indicators. By integrating this data, the tool enhances your ability to assess progress and make informed decisions, ensuring effective and transparent ecosystem restoration efforts. For more detailed information and example tutorials, please follow: {earthMapHelp}.",
+    "quickGuideTitle": "Quick guide",
+    "quickGuide": {
+      "language": "Select your language in the upper right menu (English, Spanish, French, and Portuguese).",
+      "addLayers": "Add one or more layers to the map by opening the left menu and selecting them.",
+      "adjustVisibility": "Adjust layer visibility and order through the legend.",
+      "layerInfo": "Retrieve information on the layers by clicking the 'information' button.",
+      "areaAnalysis": "Refine your analysis by selecting an area of interest or boundary in the left drop-down menu and then clicking on the polygon of interest on the map.",
+      "zonalStats": "In the right menu, you can also perform zonal statistics using several spatial datasets.",
+      "pointStats": "Point statistics can be shown by right-clicking on the map at any location.",
+      "extendedInstructions": "For extended instructions, please download the FERM guidance and check Section 1: Planning & Assessment - characteristics."
+    }
+  },
+  "home": {
+    "register": "Register",
+    "registerDescription": "Your restoration initiative and good practices",
+    "visualize": "Visualize",
+    "visualizeDescription": "The latest geospatial data on restoration",
+    "userGuide": "User guide",
+    "userGuideDescription": "Download the FERM user guide",
+    "search": "Search",
+    "searchDescription": "For initiatives and good practices on ecosystem restoration",
+    "description": "The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.",
+    "fermRegistryDescription": "The {fermRegistry} provides a harmonized data collection mechanism to aggregate data from restoration platforms.",
+    "fermPlatformDescription": "The {fermPlatform} is built on FAO's corporate {handInHand} geospatial architecture and provides accessible and transparent information for restoration practitioners.",
+    "handInHand": "Hand-In-Hand",
+    "joinGenerationRestoration": "Join {generationRestoration} and share your restoration initiative and good practices with the world.",
+    "countries": "Countries",
+    "ecosystems": "Ecosystems",
+    "newInitiatives": "New initiatives"
+  },
+  "indicators": {
+    "title": "Indicators",
+    "auroraTool": "AURORA tool",
+    "description": {
+      "intro": "The progress of restoration efforts can be tracked using indicators and their corresponding metrics. Initiative-level indicators for monitoring primarily terrestrial restoration efforts are from the publication: \"The Road to Restoration\" (FAO and WRI, 2019) also available through the {auroraLink}.",
+      "noIndicators": "If you do not know or have not yet decided which indicators you will need in your restoration initiative, use the AURORA tool and follow the process. In the future you will be able to import the selected indicators from the AURORA tool into the FERM registry.",
+      "selectIndicators": "If you already know the indicators needed to monitor your restoration initiative, please select them from the drop-down list in this section.",
+      "customIndicator": "If the indicator needed to monitor your initiative is not available in this list, please insert your custom indicator by providing a short name for the indicator and the measurement unit.",
+      "sdgContribution": "The initiative level indicators contribute to SDGs, emphasizing the interconnectedness of restoration efforts with broader sustainable development objectives (FAO and UNEP, 2022).",
+      "gef": {
+        "intro": "Indicators are selected to monitor project progress. The methodology proposed to report and monitor the achievement of GEF commitments including restoration (in ha of land) in FERM is through GEF Core Indicators.",
+        "links": "Details on GEF Core Indicators can be found {gefCoreIndicatorsLink}.",
+        "here": "here"
+      }
+    },
+    "totalArea": "Total area of land achieved (spatially explicit format)",
+    "gef": {
+      "indicators": "GEF indicators",
+      "projectIndicators": "Project indicators"
+    }
+  },
+  "inputs": {
+    "noneSelected": "None selected",
+    "areaSurface": "Area",
+    "pointOfContact": {
+      "individualName": "Individual Name",
+      "email": "Email",
+      "organization": "Organization",
+      "addItemLabel": "Add point of contact"
+    },
+    "organization": {
+      "name": "Name",
+      "acronym": "Acronym",
+      "type": "Type",
+      "role": "Role",
+      "addItemLabel": "Add organization"
+    },
+    "recursiveMenu": {
+      "pleaseSelect": "Please select from the list below",
+      "search": "@:search"
+    },
+    "recursiveRadio": {
+      "search": "@:search"
+    },
+    "indicatorsList": {
+      "title": "Project indicators",
+      "noIndicators": "No indicators selected for this area",
+      "addIndicators": "Add project indicators"
+    },
+    "customIndicatorsList": {
+      "title": "Custom indicators",
+      "noIndicators": "No custom indicators selected for this area",
+      "addIndicator": "Add custom indicator"
+    },
+    "validation": {
+      "area": {
+        "required": "Please enter at least one area in the {areaTabLink}.",
+        "areaTabLinkText": "Area tab"
+      }
+    },
+    "aoi": {
+      "addAdminArea": "Add admin area",
+      "drawPolygon": "Draw polygon",
+      "uploadShapefile": "Upload shapefile",
+      "uploadGeoJson": "Upload KML/KMZ/GeoJSON",
+      "addCountry": "Add country",
+      "deleteAreaConfirm": "Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted.",
+      "siteName": "Site name",
+      "calculateArea": "Calculate area",
+      "uploadArea": "Upload",
+      "clear": "Clear",
+      "administrativeArea": "Administrative area",
+      "selectCountry": "Please select country",
+      "selectRegion": "Please select region",
+      "selectProvince": "Please select province",
+      "uploadSuccess": "{fileCount} feature(s) uploaded.",
+      "reminder": "Please remember to click \"Save and close\" otherwise the data will be lost.",
+      "uploadError": "Error uploading the file: {error}",
+      "shapefileUpload": {
+        "instruction1": "Please upload a {zipFile} containing the {shapefileExtensions}.",
+        "instruction2": "The shapefile can contain one or many {geometryTypes}.",
+        "instruction3": "If possible, the shapefile should be in {projectionType} (latitude/longitude). If not, the system will try to reproject it.",
+        "zipFile": "zip file",
+        "shapefileExtensions": ".shp, .shx, .dbf, and .prj files",
+        "geometryTypes": "points, polygons, or multipolygons",
+        "projectionType": "geographic projection",
+        "dropFile": "Drop the zip file here or click to upload"
+      },
+      "geoJsonUpload": {
+        "instruction1": "Please upload a file in {fileFormats}.",
+        "instruction2": "For each feature in the shapefile, one area will be added to the registry.",
+        "instruction3": "If possible, the data should be in {projectionType} (latitude/longitude). If not, the system will try to reproject it.",
+        "fileFormats": "KML, KMZ, or GeoJSON format",
+        "projectionType": "geographic projection",
+        "dropFile": "Drop the file here or click to upload"
+      }
+    },
+    "committedAreaToRestore": {
+      "title": "Committed area to restore",
+      "area": "@:areaSurface",
+      "units": "Units",
+      "info": "Includes pledges, targets, aspirations, or commitments of area to restore. This parameter will not be counted as area under restoration but will serve as a reference to monitor restoration progress."
+    },
+    "totalAreaUnderRestoration": {
+      "title": "Total area under restoration"
+    },
+    "upload": {
+      "uploadPrompt": "Drop {fileText} here or click to upload",
+      "fileText": {
+        "single": "file",
+        "multiple": "files",
+        "more": "more files"
+      }
+    }
+  },
+  "monitoring": {
+    "title": "Monitoring",
+    "description": "With robust monitoring, it is possible to track restoration actions, determine their effectiveness, and adopt adaptive management practices to improve the outcomes of the restoration. To facilitate the monitoring, this section allows you to input the metric values corresponding to your chosen indicators on an annual basis. This process can be executed for each of the areas of your restoration initiative.",
+    "year": "Year"
+  },
+  "project": {
+    "planningAndAssessment": "Planning & Assessment",
+    "implementation": "Implementation",
+    "monitoringAndReporting": "Monitoring & Reporting"
+  },
+  "projectRegistration": {
+    "title": "General",
+    "description": "In this tab, you can provide basic information about your restoration initiative. The title and a summary of the aims and expected results of the initiative can be provided in the description section. Further information can be provided such as when the initiative is expected to start and end, the restoration status, web links or documentation that you find relevant, responsible organisms and the contact person who can provide further technical details of the restoration initiative.",
+    "fields": {
+      "title": {
+        "label": "Title",
+        "description": "Title of the initiative as stated in the official initiative document"
+      },
+      "description": {
+        "label": "Description",
+        "description": "Short description of the initiative",
+        "info": "In this tab, you can provide basic information about your initiative. The title and a summary of the aims and expected results of the initiative can be provided in the description section. Further information can be provided such as when the initiative is expected to start and end, web links or documentation that you find relevant, responsible organisms and the contact person who can provide further technical details of the initiative.",
+        "gef": {
+          "info": "Provide a short context of the initiative in terms of actors and partners leading it, a short background, main management or restoration activities that will be implemented, expected results of the initiative."
+        }
+      },
+      "website": {
+        "label": "Website",
+        "description": "Website of the initiative"
+      },
+      "startingYear": {
+        "label": "Starting year"
+      },
+      "endingYear": {
+        "label": "Ending year"
+      },
+      "restorationStatus": {
+        "label": "Restoration status",
+        "info": {
+          "intro": "Provides an indication of whether the restoration area can be counted towards a reporting period. Restoration status is broken down into four components and an area specifies one of the components to represent its status. Each restoration status is characterized by a temporal component, which includes the start year of the restoration activities and end year, if applicable.",
+          "references": {
+            "title": "References:",
+            "linkText": "https://www.post-2020indicators.org/metadata/headline/2-2",
+            "linkHref": "https://www.post-2020indicators.org/metadata/headline/2-2"
+          }
+        },
+        "options": {
+          "preparation": "In preparation",
+          "progress": "In progress",
+          "monitoring": "Post-completion monitoring"
+        },
+        "descriptions": {
+          "preparation": "It is considered that the initiative is enabled, has been launched, has the necessary funds committed or the restoration areas have been officially gazetted. Still, the activities have not started in the field and the effect of restoration may not yet be measurable.",
+          "progress": "Restoration activities have started in the site and depending on the time that the activities have been ongoing, impacts may start to be measurable.",
+          "monitoring": "Restoration activities have finished and the focus is now on monitoring results. It is acknowledged that an area will not be restored as soon as activities are completed, therefore, post-completion assessments on the restoration status shall be made periodically."
+        }
+      },
+      "restorationTypes": {
+        "label": "Restoration types",
+        "info": "The possible values are ecological restoration and rehabilitation. This can be determined by analyzing the current and target ecosystem (natural or transformed). Examples of transformed ecosystems are: farmlands, forest plantation, urban ecosystems. As a useful rule of thumb, if the target ecosystem is natural, the restoration will be ecological restoration. If the target ecosystem is transformed, the restoration will be rehabilitation.",
+        "gef": {
+          "label": "Intervention/restoration types"
+        }
+      },
+      "tenureStatuses": {
+        "label": "Tenure statuses",
+        "info": {
+          "fpic": "It is the legal status of the area under restoration. Information on tenure status should include documentation of Free and Prior Consent (FPIC) to ensure that people's rights are respected in the process of restoration and adherence to the UN Decade principles (FAO, IUCN CEM & SER, 2021) as well as the Voluntary Guidelines on the Responsible Governance of Tenure (VGGT) (FAO, 2022)."
+        }
+      },
+      "contributionToSdg": {
+        "label": "Contribution to SDG goals"
+      },
+      "uploadInitiativeDocument": {
+        "label": "Upload one initiative document",
+        "gef": {
+          "label": "Upload the GEF project document"
+        }
+      },
+      "pointsOfContact": {
+        "label": "Points of contact"
+      },
+      "keywords": {
+        "label": "Keywords"
+      },
+      "organizations": {
+        "label": "Organizations",
+        "description": "Organizations that implement the project/initiative"
+      },
+      "initiativePhotos": {
+        "label": "Initiative photos",
+        "description": {
+          "line1": "Please upload photos of the initiative.",
+          "line2": "Images that are bigger than 1MB will be resized.",
+          "line3": "You can then choose one as a cover photo by clicking on it."
+        }
+      },
+      "objectives": {
+        "label": "Objectives",
+        "description": "Please select the primary aim(s) of the restoration initiative.",
+        "reference": "Reference:",
+        "referenceLink": "https://gbf-indicators.org/metadata/headline/2-2",
+        "otherObjectives": "Other objectives:",
+        "additionalInfo": {
+          "intro": "Please explain how your project contributes to the selected objectives.",
+          "details": "If applicable, please provide for each objective selected: specific objectives, description of the project's impacts, and other relevant information.",
+          "example": "Example: The project aims to restore local biodiversity by reintroducing species that play key roles in ecosystem functioning and enhancing conditions that support the return and increase of migratory species populations. 30 wolves were reintroduced in a previously wolf-free area to control deer populations. Additionally, 15 species of migratory birds were observed in a wetland area."
+        },
+        "placeholder": "Please specify",
+        "notAvailable": "Not available"
+      },
+      "gef": {
+        "implementingAgencies": {
+          "label": "GEF implementing agencies"
+        },
+        "faoSymbol": {
+          "label": "GEF project symbol"
+        },
+        "investmentType": {
+          "label": "GEF investment type"
+        },
+        "gefCycle": {
+          "label": "GEF cycle"
+        },
+        "focalAreas": {
+          "label": "GEF standalone projects (focal areas)"
+        },
+        "gefProgram": {
+          "label": "GEF programmes"
+        }
+      }
+    },
+    "gef": {
+      "description": "In this tab, you can provide basic information about your initiative. The title and a summary of the aims and expected results of the initiative can be provided in the description section. Further information can be provided such as when the initiative is expected to start and end, web links or documentation that you find relevant, responsible organisms and the contact person who can provide further technical details of the initiative."
+    }
+  },
+  "projects": {
+    "termsAndConditions": {
+      "title": "Terms and Conditions for Adding an Initiative to the FERM Registry",
+      "description": "By adding your initiative to the Framework for Ecosystem Restoration Monitoring (FERM) Registry, you agree to abide by the following terms and conditions:",
+      "ownership": "Ownership and Responsibility:",
+      "ownershipDescription": "You affirm that you are authorized to represent the institution associated with the initiative, and that you hold all necessary rights to share information pertaining to the initiative.",
+      "accuracy": "Accuracy of Information:",
+      "accuracyDescription": "You affirm that all information provided to the FERM Registry is accurate, complete, and up-to-date. You agree to promptly update any information should changes occur.",
+      "dataSharing": "Data Sharing:",
+      "dataSharingDescription": "You understand that the initiative data will be publicly available and shared with other FERM users. The data may be used for monitoring restoration activities, research purposes, informing policy decisions, and furthering the cause of ecosystem restoration.",
+      "privacy": "Privacy:",
+      "privacyDescription": "All personal data provided will be processed in accordance with our Privacy Policy. We will take appropriate measures to ensure your personal data remains secure.",
+      "compliance": "Compliance with Laws:",
+      "complianceDescription": "You agree to comply with all applicable local, national, and international laws and regulations pertaining to environmental conservation and data sharing.",
+      "acceptance": "By clicking \"Accept\", you agree to these terms and conditions.",
+      "contact": "For any further questions regarding these terms, please contact us at {email}.",
+      "accept": "Accept",
+      "decline": "Decline"
+    },
+    "title": "Initiatives",
+    "description": "Restoration projects, programs, and initiatives at all spatial scales, from individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for sustaining life on Earth. The FERM registry allows for consistent and transparent monitoring, reporting, and sharing information on restoration initiatives and good practices. The information published in the FERM Registry will be used to officially report on areas under restoration during the United Nations Decade on Ecosystem Restoration and towards the data collection for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework Target 2.",
+    "joinOrCreateInstitution": "Join or create institution",
+    "createNewInitiative": "Create new initiative",
+    "filterByCountry": "Filter by country",
+    "filterByInstitution": "Filter by institution",
+    "resetFilters": "Reset filters",
+    "initiativesFound": "{count} of {total} initiatives",
+    "noInitiativesFound": "No initiatives found",
+    "loadMore": "Load more",
+    "loading": "Loading...",
+    "status": {
+      "public": "Public",
+      "newRevision": "New revision",
+      "draft": "Draft",
+      "underReview": "Under review"
+    },
+    "dateModified": "Date modified",
+    "addGoodPractice": "Add good practice",
+    "noTitle": "No title",
+    "bestPracticesCount": "{n} good practice | {n} good practices"
+  },
+  "publicPagePreview": {
+    "title": "Public Page Preview",
+    "description": {
+      "intro": "The preview tab provides a comprehensive summary of the initiative's key features, including basic information about the initiative, the biomes and ecosystems involved, the areas committed to and currently under restoration, the restoration activities undertaken, progress on key indicators, and a selection of spatial datasets useful for monitoring restoration progress, all described in more detail in the {fermGuidance}.",
+      "details": "Users can scroll down to review the initiative's details and explore interactive charts activated by clicking on individual areas highlighted by the yellow circles.",
+      "searchPreview": "This section also offers a preview of the content that will be visible in the search engine once the initiative is published.",
+      "fermGuidance": "FERM guidance"
+    },
+    "resultPanel": {
+      "description": "Description",
+      "timeframe": "Timeframe",
+      "restorationStatus": "Restoration status",
+      "restorationTypes": "Restoration types",
+      "tenureStatuses": "Tenure statuses",
+      "website": "Website",
+      "keywords": "Keywords"
+    },
+    "ecosystemsPanel": {
+      "title": "Biomes",
+      "noBiomes": "No biomes"
+    },
+    "activitiesPanel": {
+      "title": "Restoration Activities",
+      "noActivities": "No activities"
+    },
+    "indicatorsPanel": {
+      "title": "Aurora Indicators",
+      "noIndicators": "No indicators",
+      "customIndicators": "Custom indicators"
+    },
+    "sdgPanel": {
+      "title": "Contributions to SDGs",
+      "noContributions": "No contributions"
+    },
+    "areasCharts": {
+      "indicator": "Indicator",
+      "metric": "Metric",
+      "action": "Action",
+      "year": "Year",
+      "value": "Value"
+    },
+    "charts": {
+      "biomass": "ESA CCI Global Forest Above Ground Biomass",
+      "biodiversity": "Biodiversity - IUCN Species Richness",
+      "lpd": "Land Productivity Dynamics - MODIS",
+      "lcm": "Land Cover - MODIS Combined",
+      "ccilc": "CCI Land Cover Change",
+      "gfc": "Forest Tree Cover > 10% (FRA Forest definition)",
+      "reference": "Reference"
+    }
+  },
+  "joinInstitution": {
+    "title": "Join an institution",
+    "text": {
+      "intro": "Please select an institution from the dropdown menu {onlyIfAffiliated}. It's not permitted to request to join an institution to which you don't belong.",
+      "onlyIfAffiliated": "only if you are officially affiliated with it",
+      "reviewRequest": "After you make a selection, our administrators will review your request. They may approve or deny it, and you'll be informed of the decision regardless of the outcome.",
+      "approval": "If approved, you'll be authorized to create new initiatives within the institution you're affiliated with.",
+      "notListed": "In case the institution you belong to isn't listed, you can request its addition. Click on \"{submitNewInstitution}\" and provide the necessary details Administrators will review your submission and inform you of their decision.",
+      "ensureAccurate": "Please ensure you accurately represent your affiliations. Misrepresentation may lead to denial of your request and could limit your participation on our platform."
+    },
+    "submitNewInstitution": "Submit new institution",
+    "requestSent": {
+      "title": "Request sent",
+      "text": "Your request has been sent to the administrator. You will be notified by email once it is processed."
+    },
+    "requestError": {
+      "title": "Error sending request",
+      "text": "An error occurred while sending your request. Please try again later."
+    },
+    "join": "Join",
+    "submitNewInstitutionModal": {
+      "title": "Submit a new institution",
+      "text": "Please submit your institution for inclusion in the registry. Your request will be reviewed.",
+      "name": "Name",
+      "type": "Type",
+      "selectType": "Select type",
+      "types": {
+        "government": "Government",
+        "ngo": "NGO",
+        "publicPrivatePartnership": "Public Private Partnership",
+        "multilateral": "Multilateral",
+        "foundation": "Foundation",
+        "privateSector": "Private sector",
+        "academicAndResearch": "Academic & research",
+        "other": "Other"
+      },
+      "specifyIfOther": "Please specify if the type is 'Other'",
+      "institutionIsA": "The institution is a",
+      "roles": {
+        "partner": "UN Decade partner",
+        "actor": "UN Decade actor",
+        "flagship": "Global Flagship"
+      },
+      "description": "Description",
+      "descriptionPlaceholder": "Please provide description of the institution",
+      "website": "Website",
+      "websitePlaceholder": "Please provide the website of the institution if any",
+      "existsError": "An institution with the name {name} already exists, or a request for it is pending. Please check the list of institutions and try again. If you believe this is an error, please contact us."
+    }
+  }
+}

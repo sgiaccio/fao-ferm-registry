@@ -9,6 +9,8 @@ import {
     ComboboxOptions
 } from '@headlessui/vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { useAuthStore } from '@/stores/auth';
 
 import { toast } from 'vue3-toastify';
@@ -33,6 +35,8 @@ const props = withDefaults(defineProps<{
     onFinished: () => {
     }
 });
+
+const { t } = useI18n();
 
 const authStore = useAuthStore();
 // const projectStore = useProjectStore();
@@ -167,7 +171,8 @@ function submitNewInstitutionRequest() {
 const showSubmitSuccess = ref(false);
 
 function showExistsError(name: string) {
-    toast.error(`<p>An institution with the name <span class="font-bold">${name}</span> already exists, or a request for it is pending.</p><p class="mt-1">Please check the list of institutions and try again. If you believe this is an error, please contact us.</p>`, {
+    toast.error(t('joinInstitution.submitNewInstitutionModal.existsError', { name }),
+    {
         dangerouslyHTMLString: true,
         autoClose: false,
         closeOnClick: false
@@ -210,14 +215,19 @@ function cancelSubmit() {
     <!-- Group assignment confirmation modal -->
     <ConfirmModal
         :title="`Join ${selectedGroup?.group.name}`"
-        :onConfirm="() => { confirmAssignment() }"
+        :onConfirm="confirmAssignment()"
         :onCancel="() => { cancelAssignment() }"
         :okButtonEnabled="selectedGroup !== null && reasons !== ''"
         :open="showConfirmDialog"
         ok-button-text="Join"
     >
-        <p class="text-sm text-gray-700">Please provide your reasons for joining <span class="font-bold">{{ selectedGroup?.group.name }}</span>; your response will be sent to the administrator for
-            review.</p>
+        <i18n-t
+            keypath="institutions.assignment.reasons"
+            tag="p"
+            class="text-sm text-gray-700"
+        >
+            <tempalte #groupName>{{ selectedGroup?.group.name }}</tempalte>
+        </i18n-t>
         <div>
             <div class="mt-2">
                 <textarea
@@ -234,41 +244,47 @@ function cancelSubmit() {
     <!-- Group assignment success modal -->
     <AlertModal
         type="success"
-        title="Request sent"
+        :title="t('joinInstitution.requestSent.title')"
         :onClose="() => { showAssignmentSuccess = false; props.onFinished() }"
         :open="showAssignmentSuccess"
         buttonText="Ok"
     >
-        <p class="text-sm text-gray-500">Your request has been sent to the administrator. You will be notified by email
-            once it is processed.</p>
+        <p class="text-sm text-gray-500">
+            {{ t('joinInstitution.requestSent.text') }}
+        </p>
     </AlertModal>
 
     <!-- Group assignment error modal -->
     <AlertModal
         type="error"
-        title="Error sending request"
+        :title="t('joinInstitution.requestError.title')"
         :onClose="() => { showAssignmentError = false; props.onFinished() }"
         :open="showAssignmentError"
         buttonText="Ok"
     >
-        <p class="text-sm text-gray-500">There was an error sending the request, please try again later.</p>
+        <p class="text-sm text-gray-500">
+            {{ t('joinInstitution.requestError.text') }}
+        </p>
     </AlertModal>
 
     <!-- Submit new institution modal -->
     <ConfirmModal
-        title="SUBMIT A NEW INSTITUTION"
-        :onConfirm="() => { confirmSubmit() }"
-        :onCancel="() => cancelSubmit()"
+        :title="t('joinInstitution.submitNewInstitutionModal.title')"
+        :onConfirm="confirmSubmit"
+        :onCancel="cancelSubmit"
         :open="showSubmitNew"
         okButtonText="Submit"
         :okButtonEnabled="!isNewInstitutionRequestDisabled"
     >
-        <p class="text-sm text-gray-700">Please submit your institution for inclusion in the registry. Your request will be reviewed.</p>
+        <p class="text-sm text-gray-700">
+            <!-- Please submit your institution for inclusion in the registry. Your request will be reviewed. -->
+            {{ t('joinInstitution.submitNewInstitutionModal.text') }}
+        </p>
         <div class="mt-2">
             <label
                 for="institution"
                 class="block text-sm font-medium leading-6 text-gray-900"
-            >Name <span class="text-red-600">*</span></label>
+            >{{ t('joinInstitution.submitNewInstitutionModal.name') }} <span class="text-red-600">*</span></label>
             <div class="mt-2">
                 <input
                     v-model="newInstitutionFormData.name"
@@ -284,7 +300,7 @@ function cancelSubmit() {
             <label
                 for="institutionType"
                 class="block text-sm font-medium leading-6 text-gray-900"
-            >Type <span class="text-red-600">*</span></label>
+            >{{ t('joinInstitution.submitNewInstitutionModal.type') }} <span class="text-red-600">*</span></label>
             <select
                 v-model="newInstitutionFormData.type"
                 id="institutionType"
@@ -295,24 +311,22 @@ function cancelSubmit() {
                     value=""
                     disabled
                     selected
-                >Select type
-                </option>
-                <option>Government</option>
-                <option>NGO</option>
-                <option>Public Private Partnership</option>
-                <option>Multilateral</option>
-                <option>Foundation</option>
-                <option>Private sector</option>
-                <option>Academic & research</option>
-                <option>Other</option>
+                >{{ t('joinInstitution.submitNewInstitutionModal.selectType') }}</option>
+                <option>{{ t('joinInstitution.submitNewInstitutionModal.types.government') }}</option>
+                <option>{{ t('joinInstitution.submitNewInstitutionModal.types.ngo') }}</option>
+                <option>{{ t('joinInstitution.submitNewInstitutionModal.types.publicPrivatePartnership') }}</option>
+                <option>{{ t('joinInstitution.submitNewInstitutionModal.types.multilateral') }}</option>
+                <option>{{ t('joinInstitution.submitNewInstitutionModal.types.foundation') }}</option>
+                <option>{{ t('joinInstitution.submitNewInstitutionModal.types.privateSector') }}</option>
+                <option>{{ t('joinInstitution.submitNewInstitutionModal.types.academicAndResearch') }}</option>
+                <option>{{ t('joinInstitution.submitNewInstitutionModal.types.other') }}</option>
             </select>
         </div>
         <div class="mt-2">
             <label
                 for="institutionTypeOther"
                 :class="[newInstitutionFormData.type === 'Other' ? 'text-gray-900' : 'text-gray-400', 'block text-sm font-medium leading-6']"
-            >Please
-                specify type if other <span
+            >{{ t('joinInstitution.submitNewInstitutionModal.specifyIfOther') }} <span
                     v-if="newInstitutionFormData.type === 'Other'"
                     class="text-red-600"
                 >*</span></label>
@@ -330,11 +344,14 @@ function cancelSubmit() {
         </div>
         <div class="pt-4">
             <fieldset>
-                <legend class="sr-only">The institution is a</legend>
+                <legend class="sr-only">
+                    {{ t('joinInstitution.submitNewInstitutionModal.institutionIsA') }}
+                </legend>
                 <div
                     class="block text-sm font-medium leading-6 text-gray-900"
                     aria-hidden="true"
-                >The institution is a
+                >
+                    {{ t('joinInstitution.submitNewInstitutionModal.institutionIsA') }}
                 </div>
                 <div class="mt-2">
                     <div class="relative flex items-start">
@@ -351,7 +368,9 @@ function cancelSubmit() {
                             <label
                                 for="partner"
                                 class="font-normal text-gray-900"
-                            >UN Decade partner</label>
+                            >
+                                {{ t('joinInstitution.submitNewInstitutionModal.roles.partner') }}
+                            </label>
                         </div>
                     </div>
                     <div class="relative flex items-start">
@@ -368,7 +387,9 @@ function cancelSubmit() {
                             <label
                                 for="actor"
                                 class="font-normal text-gray-900"
-                            >UN Decade actor</label>
+                            >
+                                {{ t('joinInstitution.submitNewInstitutionModal.roles.actor') }}
+                            </label>
                         </div>
                     </div>
                     <div class="relative flex items-start">
@@ -385,7 +406,9 @@ function cancelSubmit() {
                             <label
                                 for="flagship"
                                 class="font-normal text-gray-900"
-                            >Global Flagship </label>
+                            >
+                                {{ t('joinInstitution.submitNewInstitutionModal.roles.flagship') }}
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -395,12 +418,14 @@ function cancelSubmit() {
             <label
                 for="description"
                 class="block text-sm font-medium leading-6 text-gray-900"
-            >Description <span class="text-red-600">*</span></label>
+            >
+                {{ t('joinInstitution.submitNewInstitutionModal.description') }}
+                <span class="text-red-600">*</span></label>
             <div class="mt-2">
                 <textarea
                     v-model="newInstitutionFormData.description"
                     id="description"
-                    placeholder="Please enter a description of the institution"
+                    :placeholder="t('joinInstitution.submitNewInstitutionModal.descriptionPlaceholder')"
                     name="description"
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
@@ -410,12 +435,14 @@ function cancelSubmit() {
             <label
                 for="website"
                 class="block text-sm font-medium leading-6 text-gray-900"
-            >Website</label>
+            >
+                {{ t('joinInstitution.submitNewInstitutionModal.website') }}
+            </label>
             <div class="mt-2">
                 <input
                     v-model="newInstitutionFormData.website"
                     id="website"
-                    placeholder="Please the website of the institution if any"
+                    :placeholder="t('joinInstitution.submitNewInstitutionModal.websitePlaceholder')"
                     name="website"
                     type="text"
                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -438,19 +465,41 @@ function cancelSubmit() {
 
     <div class="shadow sm:rounded-lg max-w-2xl mx-auto bg-ferm-blue-dark-100">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-3xl font-bold leading-6 text-gray-900">Join an institution</h3>
+            <h3 class="text-3xl font-bold leading-6 text-gray-900">{{ t('joinInstitution.title') }}</h3>
             <div class="mt-6 max-w-xl text-sm text-gray-700">
-                <p>Please select an institution from the dropdown menu <span class="font-bold">only if you are officially affiliated with it</span>.
-                    It's not permitted to request to join an institution to which you don't belong.</p>
-                <p class="mt-3">After you make a selection, our administrators will review your request. They may
-                    approve or deny it, and you'll be informed of the decision regardless of the outcome.</p>
-                <p class="mt-3">If approved, you'll be authorized to create new initiatives within the institution
-                    you're affiliated with.</p>
-                <p class="mt-3">In case the institution you belong to isn't listed, you can request its addition. Click
-                    on <span class="font-bold">"Submit new institution"</span> and provide the necessary details.
-                    Administrators will review your submission and inform you of their decision.</p>
-                <p class="mt-3">Please ensure you accurately represent your affiliations. Misrepresentation may lead to
-                    denial of your request and could limit your participation on our platform.</p>
+                <i18n-t
+                    keypath="joinInstitution.text.intro"
+                    tag="p"
+                >
+                    <template #onlyIfAffiliated>
+                        <span class="font-bold">
+                            {{ t('joinInstitution.text.onlyIfAffiliated') }}
+                        </span>
+                    </template>
+                </i18n-t>
+                <p class="mt-3">
+                    {{ t('joinInstitution.text.reviewRequest') }}
+                </p>
+                <p class="mt-3">
+                    {{ t('joinInstitution.text.approval') }}
+                </p>
+                <!-- <p class="mt-3">
+                    {{ t('joinInstitution.text.approvalCreate') }}
+                </p> -->
+                <i18n-t
+                    keypath="joinInstitution.text.notListed"
+                    tag="p"
+                    class="mt-3"
+                >
+                    <template #submitNewInstitution>
+                        <span class="font-bold">
+                            {{ t('joinInstitution.submitNewInstitution') }}
+                        </span>
+                    </template>
+                </i18n-t>
+                <p class="mt-3">
+                    {{ t('joinInstitution.text.ensureAccurate') }}
+                </p>
             </div>
 
             <div class="mt-5 sm:flex sm:items-center">
@@ -503,50 +552,11 @@ function cancelSubmit() {
                 </Combobox>
 
 
-                <!-- <Combobox as="div"
-                          v-model="selectedGroup">
-                    <!- - <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-900">Assigned to</ComboboxLabel> - ->
-                    <div class="relative">
-                        <ComboboxInput class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                       @change="query = $event.target.value"
-                                       :display-value="(group) => group?.name" />
-                        <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                            <ChevronUpDownIcon class="h-5 w-5 text-gray-400"
-                                               aria-hidden="true" />
-                        </ComboboxButton>
-
-                        <ComboboxOptions v-if="filteredGroups.length > 0"
-                                         class="bottom-10 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                            <ComboboxOption v-for="group in filteredGroups"
-                                            :key="group.id"
-                                            :value="group"
-                                            as="template"
-                                            v-slot="{ active, selected }">
-                                <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
-                                    <div class="flex items-center">
-                                        <span :class="['inline-block h-2 w-2 flex-shrink-0 rounded-full', group.online ? 'bg-green-400' : 'bg-gray-200']"
-                                              aria-hidden="true" />
-                                        <span :class="['ml-3 truncate', selected && 'font-semibold']">
-                                            {{ group.name }}
-                                            <span class="sr-only"> is {{ group.online ? 'online' : 'offline' }}</span>
-                                        </span>
-                                    </div>
-
-                                    <span v-if="selected"
-                                          :class="['absolute inset-y-0 right-0 flex items-center pr-4', active ? 'text-white' : 'text-indigo-600']">
-                                        <CheckIcon class="h-5 w-5"
-                                                   aria-hidden="true" />
-                                    </span>
-                                </li>
-                            </ComboboxOption>
-                        </ComboboxOptions>
-                    </div>
-                </Combobox> -->
                 <button
                     @click="() => selectedGroup && (showConfirmDialog = true)"
                     :class="[selectedGroup ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-gray-400', 'mt-3 inline-flex w-full items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']"
                 >
-                    Join
+                    {{ t('joinInstitution.join') }}
                 </button>
                 <div class="sm:justify-items-end sm:text-right flex-grow">
                     <button
@@ -554,13 +564,13 @@ function cancelSubmit() {
                         @click.prevent="router.push({ name: 'initiatives' })"
                         class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
-                        Cancel
+                        {{ t('edit.cancel') }}
                     </button>
                     <button
                         @click.prevent="submitNewInstitutionRequest"
                         :class="['mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 hover:bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto']"
                     >
-                        Submit new institution
+                        {{ t('joinInstitution.submitNewInstitution') }}
                     </button>
                 </div>
             </div>

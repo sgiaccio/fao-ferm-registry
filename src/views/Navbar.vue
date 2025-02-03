@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-import { useI18n } from 'vue-i18n'
 
 import {
     Disclosure,
@@ -17,8 +16,8 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 
 import { useAuthStore } from "../stores/auth"
 
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
-const { locale } = useI18n();
 
 const authStore = useAuthStore();
 
@@ -102,40 +101,19 @@ function logout() {
                     </div>
 
                 </div>
-                <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-8 sm:pr-0">
                     <div
                         id="content-specific"
                         class="flex flex-row items-center"
                     />
 
-                    <!-- Language Links -->
-                    <div class="flex space-x-4 text-gray-50 font-semibold">
-                        <button
-                            :class="[locale === 'en' ? 'underline' : '', 'hover:underline']"
-                            @click="() => locale = 'en'"
-                        >
-                            EN
-                        </button>
-                        <button
-                            :class="[locale === 'es' ? 'underline' : '', 'hover:underline']"
-                            @click="() => locale = 'es'"
-                        >
-                            ES
-                        </button>
-                        <button
-                            :class="[locale === 'fr' ? 'underline' : '', 'hover:underline']"
-                            @click="() => locale = 'fr'"
-                        >
-                            FR
-                        </button>
-                    </div>
-
+                    <LanguageSwitcher />
 
                     <!-- Profile dropdown -->
                     <Menu
                         v-if="authStore.user"
                         as="div"
-                        class="ml-3 relative z-10"
+                        class="ml-4 relative z-10"
                     >
                         <div>
                             <menu-button class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white text-white">

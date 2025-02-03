@@ -2117,5 +2117,75 @@
             "value": 4,
             "label": "Mejorar la conectividad"
         }
+    ],
+    "contributionToSdg": [
+        {
+            "label": "Objetivo 1. Poner fin a la pobreza en todas sus formas y en todo el mundo",
+            "value": 1
+        },
+        {
+            "label": "Objetivo 2. Poner fin al hambre, lograr la seguridad alimentaria y una mejor nutrición, y promover la agricultura sostenible",
+            "value": 2
+        },
+        {
+            "label": "Objetivo 3. Garantizar una vida saludable y promover el bienestar para todos en todas las edades",
+            "value": 3
+        },
+        {
+            "label": "Objetivo 4. Garantizar una educación inclusiva, equitativa y de calidad, y promover oportunidades de aprendizaje permanente para todos",
+            "value": 4
+        },
+        {
+            "label": "Objetivo 5. Lograr la igualdad de género y empoderar a todas las mujeres y las niñas",
+            "value": 5
+        },
+        {
+            "label": "Objetivo 6. Garantizar la disponibilidad de agua y su gestión sostenible, así como el saneamiento para todos",
+            "value": 6
+        },
+        {
+            "label": "Objetivo 7. Garantizar el acceso a una energía asequible, fiable, sostenible y moderna para todos",
+            "value": 7
+        },
+        {
+            "label": "Objetivo 8. Promover un crecimiento económico sostenido, inclusivo y sostenible, el empleo pleno y productivo, y el trabajo decente para todos",
+            "value": 8
+        },
+        {
+            "label": "Objetivo 9. Construir infraestructuras resilientes, promover la industrialización inclusiva y sostenible, y fomentar la innovación",
+            "value": 9
+        },
+        {
+            "label": "Objetivo 10. Reducir la desigualdad dentro de los países y entre ellos",
+            "value": 10
+        },
+        {
+            "label": "Objetivo 11. Lograr que las ciudades y los asentamientos humanos sean inclusivos, seguros, resilientes y sostenibles",
+            "value": 11
+        },
+        {
+            "label": "Objetivo 12. Garantizar modalidades de consumo y producción sostenibles",
+            "value": 12
+        },
+        {
+            "label": "Objetivo 13. Adoptar medidas urgentes para combatir el cambio climático y sus efectos",
+            "value": 13
+        },
+        {
+            "label": "Objetivo 14. Conservar y utilizar de forma sostenible los océanos, los mares y los recursos marinos para el desarrollo sostenible",
+            "value": 14
+        },
+        {
+            "label": "Objetivo 15. Proteger, restaurar y promover el uso sostenible de los ecosistemas terrestres, gestionar los bosques de manera sostenible, luchar contra la desertificación, detener y revertir la degradación de las tierras y detener la pérdida de biodiversidad",
+            "value": 15
+        },
+        {
+            "label": "Objetivo 16. Promover sociedades pacíficas e inclusivas para el desarrollo sostenible, facilitar el acceso a la justicia para todos y crear instituciones eficaces, responsables e inclusivas a todos los niveles",
+            "value": 16
+        },
+        {
+            "label": "Objetivo 17. Fortalecer los medios de implementación y revitalizar la Alianza Mundial para el Desarrollo Sostenible",
+            "value": 17
+        }
     ]
 }

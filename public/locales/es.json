@@ -1,0 +1,462 @@
+{
+  "fermRegistryLong1": "Marco de Monitoreo",
+  "fermRegistryLong2": "de la Restauración de Ecosistemas",
+  "fermRegistry": "Registro FERM",
+
+  "references": "Referencias",
+
+  "userGuide": "Guía del usuario",
+  "support": "Soporte",
+
+  "notAvailable": "No disponible",
+  "error": {
+      "error": "Error",
+      "unexpected": "Se produjo un error inesperado, por favor revise el registro de la consola."
+  },
+  "close": "Cerrar",
+  "view": {
+      "previous": "Anterior",
+      "next": "Siguiente"
+  },
+  "edit": {
+      "saveAndExit": "Guardar y salir",
+      "saveAndNext": "Guardar y siguiente",
+      "cancel": "Cancelar",
+      "applyToAll": "Aplicar a todos",
+      "confirmLeave": "Tiene cambios sin guardar. ¿Está seguro de que desea salir?"
+  },
+  "search": "Buscar",
+
+  "activities": {
+    "title": "Actividades",
+    "description": "Las actividades describen lo que se está implementando en el terreno para lograr objetivos de restauración. Las actividades están adaptadas del Glosario de intervenciones de restauración de la iniciativa La Economía de la Restauración de Ecosistemas (TEER) ({teerLink}). Se dividen en dos categorías principales (biofísicas y habilitantes) y categorías secundarias según el Informe de Evaluación sobre la Degradación y Restauración de Tierras de la Plataforma Intergubernamental Científico-Normativa sobre Diversidad Biológica y Servicios de los Ecosistemas (IPBES) ({ipbesLink}). Implementar actividades habilitantes a menudo corresponde a la etapa de preparación.",
+    "gef": {
+      "description": "Las actividades describen lo que se está implementando en el terreno para lograr objetivos de restauración o gestión sostenible. Las actividades están adaptadas del Glosario de intervenciones de restauración de la iniciativa La Economía de la Restauración de Ecosistemas (TEER) ({teerLink}). Se dividen en dos categorías principales (biofísicas y habilitantes) y categorías secundarias según el Informe de Evaluación sobre la Degradación y Restauración de Tierras de la Plataforma Intergubernamental Científico-Normativa sobre Diversidad Biológica y Servicios de los Ecosistemas (IPBES) ({ipbesLink}). Implementar actividades habilitantes a menudo corresponde a la etapa de preparación."
+    }
+  },
+  "areaAndEcosystems": {
+    "title": "Área y Ecosistemas",
+    "description": {
+      "main": "La identificación de áreas geográficas en proceso de restauración de ecosistemas es clave para las aplicaciones geoespaciales y esencial para realizar un seguimiento efectivo de la restauración, siendo el objetivo principal de {target2} del Marco Mundial de la Biodiversidad de Kunming-Montreal. Una iniciativa puede implementar la restauración de ecosistemas en una o más áreas geográficas. Las actividades, indicadores, caracterizaciones de ecosistemas y resultados se proporcionarán para cada área. Las áreas geográficas pueden identificarse en base a diferentes opciones:",
+      "target2": "Objetivo 2",
+      "selectAdminAreas": "Seleccionar áreas administrativas",
+      "uploadPolygons": "Subir polígonos/vectores",
+      "drawOnPlatform": "Dibujar directamente en la plataforma",
+      "typology2": "Es crucial identificar los ecosistemas que su iniciativa está restaurando. La Tipología Global de Ecosistemas 2.0 de la UICN es el resultado de una revisión crítica y la contribución de una extensa red internacional de científicos de ecosistemas, que contiene perfiles para 5 reinos y sus combinaciones, 25 biomas y 108 grupos funcionales de ecosistemas (Keith et al. 2022). {infoButton}",
+      "moreInformation": "Más información",
+      "gef": {
+        "main": "En esta pestaña se necesita información sobre las áreas del proyecto y los ecosistemas en forma tabular y geoespacial. Deberá proporcionar detalles sobre la tierra comprometida en los Indicadores Centrales del FMAM 1-5, e información sobre los Planes de Restauración/Planes de Manejo con la extensión del área de intervención, así como la información geoespacial de las áreas incluyendo los ecosistemas cubiertos.",
+        "ecosystems": "Es crucial identificar los ecosistemas que su iniciativa está restaurando. La Tipología Global de Ecosistemas 2.0 de la UICN es el resultado de una revisión crítica y la contribución de una extensa red internacional de científicos de ecosistemas, que contiene perfiles para 5 reinos y sus combinaciones, 25 biomas y 108 grupos funcionales de ecosistemas (Keith et al.2022). {infoButton}"
+      }
+    },
+    "info": {
+      "realmsTitle": "Reinos",
+      "biomesTitle": "Biomas",
+      "ecosystemGroupsTitle": "Grupos funcionales de ecosistemas",
+      "realms": "{realms} son los cinco componentes principales de la biosfera que difieren fundamentalmente en la organización y función del ecosistema: terrestre, agua dulce, marino, subterráneo y atmosférico.",
+      "biomes": "{biomes} son componentes de un reino unidos por uno o algunos grandes impulsores ecológicos comunes que regulan las principales funciones del ecosistema y los procesos ecológicos.",
+      "ecosystemGroups": "{ecosystemGroups} son un grupo de ecosistemas relacionados dentro de un bioma que comparten impulsores ecológicos comunes que promueven la convergencia de las propiedades del ecosistema que caracterizan al grupo.",
+      "spatialInfo": "Si se proporciona información espacial explícita sobre un área y representa la totalidad del área en restauración (es decir, se proporcionan puntos o polígonos de las áreas), el botón \"obtener biomas en esta área\" se puede usar para generar automáticamente una superposición de mapa que indique los biomas potenciales que pueden estar bajo restauración en el área. El usuario deberá revisar los biomas seleccionados automáticamente y asegurarse de que los biomas seleccionados sean realmente los que están bajo restauración. Si solo se proporciona información tabular de un área, le pedimos amablemente que seleccione los ecosistemas correspondientes utilizando los biomas de la Tipología Global de Ecosistemas de la UICN 2.0 (Keith et al., 2022)."
+    },
+    "area": "Área",
+    "alerts": {
+      "areaUnitsChanged": "Ha cambiado las unidades del área objetivo. Tenga en cuenta que las áreas que haya definido no se convertirán a las nuevas unidades. Revise todas las áreas que haya definido.",
+      "areaUnitsSet": "Ha establecido las unidades del área objetivo para todo el proyecto. Tenga en cuenta que todas las áreas deberán ingresarse en las mismas unidades.",
+      "selectEcosystems": "Por favor seleccione ecosistemas para la primera área primero.",
+      "applyEcosystemsToAll": "¿Está seguro de que desea aplicar este ecosistema a todas las áreas? Sus selecciones actuales serán sobrescritas.",
+      "gef": {
+        "uploadPolygons": "Por favor suba un shapefile con la tierra (en ha) reportada en el sistema de información geográfica (datos explícitos espacialmente) si está disponible. De lo contrario, incluya las coordenadas de la ubicación del proyecto.",
+        "drawOnPlatform": "Utilice la función de dibujo para dibujar la tierra directamente en la plataforma. La función de calculadora calculará la tierra (en ha).",
+        "selectAdminArea": "Por favor seleccione el área administrativa donde su proyecto está trabajando e ingrese toda la tierra (en ha) del área administrativa o ingrese la tierra (en ha) dentro de un área administrativa donde su proyecto está trabajando."
+      }
+    },
+    "countriesInfo": "Los países se seleccionan automáticamente en función de los polígonos cargados y las áreas administrativas seleccionadas. También puedes editarlos manualmente.",
+    "deleteAllAreas": "Eliminar todas las áreas",
+    "deleteAllAreasConfirm": {
+      "main": "¿Está seguro de que desea eliminar todas las áreas del proyecto? Esta acción solo eliminará las áreas temporalmente en su sesión actual. {saveProject}",
+      "saveProject": "Para aplicar permanentemente este cambio, deberá guardar el proyecto después"
+    },
+    "areaEcosystems": {
+      "title": "Tipología Global de Ecosistemas 2.0 de la UICN - Biomas",
+      "getBiomes": "Obtener biomas en esta área",
+      "confirmOverwrite": "¿Está seguro de que desea sobrescribir los ecosistemas seleccionados para esta área?"
+    },
+    "paAndTraditionalTerritories": {
+      "theRestorationAreaHas": "El área de restauración tiene",
+      "protectedAreaOrOECM": "{units} de Área Protegida (PA) o de Otras Medidas Eficaces de Conservación Basadas en Áreas (OECM)",
+      "indigenousAndTraditionalTerritory": "{units} de Territorio Indígena y Tradicional (ITT)",
+      "gef": {
+        "title": "Área Protegida (PA), Otras Medidas Eficaces de Conservación Basadas en Áreas (OECM) y Territorio Indígena y Tradicional (ITT)"
+      }
+    },
+    "areaByEcosystem": {
+      "totalPercentage": "Porcentaje total:",
+      "title": "Área por {country} ecosistema",
+      "countryAnd": "país y",
+      "validation": {
+        "percentageCheck": "El porcentaje total debe ser igual al 100%, pero actualmente suma {totalPercentage}%"
+      }
+    },
+    "gef": {
+      "landCommitted": {
+        "info": {
+          "title": "Información sobre la tierra comprometida en los Indicadores Centrales del FMAM (datos tabulares)",
+          "text": "{title} La tierra comprometida en los Indicadores Centrales del FMAM incluye las ha comprometidas en los Indicadores Centrales del FMAM 1-5 e Indicador 2 del Fondo para los Países Menos Adelantados."
+        },
+        "label": "Desglose del compromiso por indicador central [Hectáreas]",
+        "description": "Área de tierra comprometida por indicador central",
+        "coreIndicator1": {
+          "main": "Indicador Central 1 {info}",
+          "description": "Áreas protegidas terrestres creadas o bajo mejoramiento de la gestión"
+        },
+        "coreIndicator2": {
+          "main": "Indicador Central 2 {info}",
+          "description": "Áreas protegidas marinas creadas o bajo mejoramiento de la gestión"
+        },
+        "coreIndicator3": {
+          "main": "Indicador Central 3 {info}",
+          "description": "Área de tierra y ecosistemas en restauración"
+        },
+        "coreIndicator4": {
+          "main": "Indicador Central 4 {info}",
+          "description": "Área de paisajes bajo prácticas mejoradas"
+        },
+        "coreIndicator5": {
+          "main": "Indicador Central 5 {info}",
+          "description": "Área de hábitat marino bajo prácticas mejoradas para beneficiar la biodiversidad"
+        },
+        "coreIndicator2LDCF": {
+          "main": "ICF LDCF 2 {info}",
+          "description": "Área de tierra gestionada para la resiliencia climática"
+        }
+      },
+      "restorationPlans": {
+        "info": {
+          "title": "Información sobre Planes de Restauración/Planes de Manejo (datos tabulares).",
+          "text": "{title} El plan debe incluir al menos una descripción de las actividades de restauración o manejo de tierras y la extensión del área de intervención."
+        },
+        "upload": {
+          "label": "Por favor suba Planes de Restauración/Planes de Manejo",
+          "info": "Por favor suba los Planes de Restauración/Planes de Manejo con la descripción de las actividades de restauración / manejo de tierras e información de línea base del territorio, incluyendo imágenes."
+        }
+      },
+      "geographicAreas": {
+        "info": {
+          "identifyArea": "Las áreas pueden identificarse en base a diferentes opciones:",
+          "title": "Información sobre Áreas Geográficas (datos explícitos espacialmente).",
+          "text": "{title} Los datos deben tener los siguientes {requirementsLink} y la tabla de características a subir la siguiente {structureLink}.",
+          "requirements": "requisitos",
+          "structure": "estructura"
+        },
+        "totalArea": {
+          "label": "Área total de tierra lograda (formato explícito espacialmente)",
+          "info": "El total de la tierra (en ha) será calculado por la plataforma en base a la información explícita espacialmente proporcionada."
+        }
+      }
+    }
+  },
+  "characteristics": {
+    "title": "Características",
+    "description": "Esta sección proporciona datos espaciales y satelitales a través de {earthMap}. EarthMap ofrece imágenes satelitales de alta calidad y actualizadas, así como información geográfica, que le permite monitorear el progreso de restauración de sus iniciativas. Facilita el seguimiento de cambios en la cobertura del suelo, la degradación del suelo, la biodiversidad y otros indicadores clave de restauración. Al integrar estos datos, la herramienta mejora su capacidad para evaluar el progreso y tomar decisiones informadas, garantizando esfuerzos de restauración de ecosistemas efectivos y transparentes. Para obtener más información detallada y tutoriales de ejemplo, por favor siga: {earthMapHelp}.",
+    "quickGuideTitle": "Guía rápida",
+    "quickGuide": {
+      "language": "Seleccione su idioma en el menú superior derecho (inglés, español, francés y portugués).",
+      "addLayers": "Agregue una o más capas al mapa abriendo el menú izquierdo y seleccionándolas.",
+      "adjustVisibility": "Ajuste la visibilidad y el orden de las capas a través de la leyenda.",
+      "layerInfo": "Obtenga información sobre las capas haciendo clic en el botón 'información'.",
+      "areaAnalysis": "Refine su análisis seleccionando un área de interés o límite en el menú desplegable izquierdo y luego haciendo clic en el polígono de interés en el mapa.",
+      "zonalStats": "En el menú derecho, también puede realizar estadísticas zonales utilizando varios conjuntos de datos espaciales.",
+      "pointStats": "Se pueden mostrar estadísticas puntuales haciendo clic con el botón derecho en cualquier ubicación del mapa.",
+      "extendedInstructions": "Para obtener instrucciones extendidas, descargue la guía de FERM y consulte la Sección 1: Planificación y evaluación - características."
+    }
+  },
+  "home": {
+    "register": "Registrar",
+    "registerDescription": "Tu iniciativa de restauración y buenas prácticas",
+    "visualize": "Visualizar",
+    "visualizeDescription": "Los últimos datos geoespaciales sobre restauración",
+    "userGuide": "Guía del usuario",
+    "userGuideDescription": "Descarga la guía del usuario de FERM",
+    "search": "Buscar",
+    "searchDescription": "Para buenas prácticas de restauración de ecosistemas",
+    "description": "El FERM consta de una plataforma geoespacial y un registro de iniciativas de restauración. Es la plataforma oficial de monitoreo para rastrear el progreso global y difundir buenas prácticas para la Década de las Naciones Unidas sobre la Restauración de los Ecosistemas. También apoya a los países en la presentación de informes sobre áreas en restauración para el Objetivo 2 del Marco Mundial de Biodiversidad de Kunming-Montreal.",
+    "fermRegistryDescription": "El {fermRegistry} proporciona un mecanismo armonizado de recopilación de datos para agregar datos de las plataformas de restauración.",
+    "fermPlatformDescription": "La {fermPlatform} se basa en la arquitectura geoespacial corporativa {handInHand} de la FAO y proporciona información accesible y transparente para los profesionales de la restauración.",
+    "handInHand": "Mano a Mano",
+    "joinGenerationRestoration": "Únete a {generationRestoration} y comparte tu iniciativa de restauración y buenas prácticas con el mundo.",
+    "countries": "Países",
+    "ecosystems": "Ecosistemas",
+    "newInitiatives": "Nuevas iniciativas"
+  },
+  "indicators": {
+    "title": "Indicadores",
+    "auroraTool": "Herramienta AURORA",
+    "description": {
+      "intro": "El progreso de los esfuerzos de restauración se puede rastrear utilizando indicadores y sus métricas correspondientes. Los indicadores a nivel de iniciativa para monitorear principalmente los esfuerzos de restauración terrestre son de la publicación: \"El camino hacia la restauración\" (FAO y WRI, 2019) también disponible a través del {auroraLink}.",
+      "noIndicators": "Si no sabe o aún no ha decidido qué indicadores necesitará en su iniciativa de restauración, utilice la herramienta AURORA y siga el proceso. En el futuro, podrá importar los indicadores seleccionados de la herramienta AURORA al registro FERM.",
+      "selectIndicators": "Si ya conoce los indicadores necesarios para monitorear su iniciativa de restauración, selecciónelos de la lista desplegable de esta sección.",
+      "customIndicator": "Si el indicador necesario para monitorear su iniciativa no está disponible en esta lista, inserte su indicador personalizado proporcionando un nombre corto para el indicador y la unidad de medida.",
+      "sdgContribution": "Los indicadores a nivel de iniciativa contribuyen a los ODS, enfatizando la interconexión de los esfuerzos de restauración con los objetivos más amplios de desarrollo sostenible (FAO y PNUMA, 2022).",
+      "gef": {
+        "intro": "Los indicadores se seleccionan para monitorear el progreso del proyecto. La metodología propuesta para informar y monitorear el logro de los compromisos del GEF, incluida la restauración (en ha de tierra) en FERM, es a través de los Indicadores Centrales del GEF.",
+        "links": "Los detalles sobre los Indicadores Centrales del GEF se pueden encontrar {gefCoreIndicatorsLink}.",
+        "here": "aquí"
+      }
+    },
+    "totalArea": "Área total de tierra lograda (formato espacialmente explícito)",
+    "gef": {
+      "indicators": "Indicadores GEF",
+      "projectIndicators": "Indicadores del proyecto"
+    }
+  },
+  "inputs": {
+    "areaSurface": "Área",
+    "noneSelected": "Ninguna selección",
+    "pointOfContact": {
+      "individualName": "Nombre del individuo",
+      "email": "Email",
+      "organization": "Organización",
+      "addItemLabel": "Agregar punto de contacto"
+    },
+    "organization": {
+      "name": "Nombre",
+      "acronym": "Acrónimo",
+      "type": "Tipo",
+      "role": "Papel",
+      "addItemLabel": "Agregar organización"
+    },
+    "recursiveMenu": {
+      "pleaseSelect": "Por favor seleccione de la lista a continuación",
+      "search": "@:search"
+    },
+    "recursiveRadio": {
+      "search": "@:search"
+    },
+    "indicatorsList": {
+      "title": "Indicadores del proyecto",
+      "noIndicators": "No se han seleccionado indicadores para esta área",
+      "addIndicators": "Agregar indicadores del proyecto"
+    },
+    "customIndicatorsList": {
+      "title": "Indicadores personalizados",
+      "noIndicators": "No se han seleccionado indicadores personalizados para esta área",
+      "addIndicator": "Agregar indicador personalizado"
+    },
+    "validation": {
+      "area": {
+        "required": "Por favor ingrese al menos un área en la {areaTabLink}.",
+        "areaTabLinkText": "pestaña de área"
+      }
+    },
+    "aoi": {
+      "addAdminArea": "Agregar área administrativa",
+      "drawPolygon": "Dibujar polígono",
+      "uploadShapefile": "Subir shapefile",
+      "uploadGeoJson": "Subir KML/KMZ/GeoJSON",
+      "addCountry": "Agregar país",
+      "deleteAreaConfirm": "¿Estás seguro de que deseas eliminar esta área? También se eliminarán las características, actividades y ecosistemas relacionados.",
+      "siteName": "Nombre del sitio",
+      "calculateArea": "Calcular área",
+      "uploadArea": "Subir",
+      "clear": "Limpiar",
+      "administrativeArea": "Área administrativa",
+      "selectCountry": "Por favor seleccione país",
+      "selectRegion": "Por favor seleccione región",
+      "selectProvince": "Por favor seleccione provincia",
+      "uploadSuccess": "{fileCount} elemento(s) subido(s).",
+      "reminder": "Recuerda hacer clic en \"Guardar y cerrar\" o los datos se perderán.",
+      "uploadError": "Error al subir el archivo: {error}",
+      "shapefileUpload": {
+        "instruction1": "Por favor suba un {zipFile} que contenga los archivos {shapefileExtensions}.",
+        "instruction2": "El shapefile puede contener uno o varios {geometryTypes}.",
+        "instruction3": "Si es posible, el shapefile debe estar en {projectionType} (latitud/longitud). Si no, el sistema intentará reproyectarlo.",
+        "zipFile": "archivo zip",
+        "shapefileExtensions": ".shp, .shx, .dbf, y .prj",
+        "geometryTypes": "puntos, polígonos, o multipolígonos",
+        "projectionType": "proyección geográfica",
+        "dropFile": "Suelta el archivo zip aquí o haz clic para subir"
+      },
+      "geoJsonUpload": {
+        "instruction1": "Por favor suba un archivo en {fileFormats}.",
+        "instruction2": "Para cada elemento en el shapefile, se añadirá un área al registro.",
+        "instruction3": "Si es posible, los datos deben estar en {projectionType} (latitud/longitud). Si no, el sistema intentará reproyectarlo.",
+        "fileFormats": "formato KML, KMZ, o GeoJSON",
+        "projectionType": "proyección geográfica",
+        "dropFile": "Suelta el archivo aquí o haz clic para subir"
+      }
+    },
+    "committedAreaToRestore": {
+      "title": "Área comprometida a restaurar",
+      "area": "@:areaSurface",
+      "units": "Unidades",
+      "info": "Incluye promesas, objetivos, aspiraciones o compromisos de área a restaurar. Este parámetro no se contabilizará como área en restauración, pero servirá como referencia para monitorear el progreso de la restauración."
+    },
+    "totalAreaUnderRestoration": {
+      "title": "Área total en restauración"
+    }
+  },
+  "monitoring": {
+    "title": "Monitoreo",
+    "description": "Con un monitoreo robusto, es posible hacer seguimiento a las acciones de restauración, determinar su efectividad y adoptar prácticas de manejo adaptativo para mejorar los resultados de la restauración. Para facilitar el monitoreo, esta sección le permite ingresar los valores métricos correspondientes a los indicadores elegidos de manera anual. Este proceso puede ser ejecutado para cada una de las áreas de su iniciativa de restauración.",
+    "year": "Año"
+  },
+  "project": {
+    "planningAndAssessment": "Planificación y Evaluación",
+    "implementation": "Implementación",
+    "monitoringAndReporting": "Monitoreo e Informes"
+  },
+  "projectRegistration": {
+    "title": "Général",
+    "description": "Dans cet onglet, vous pouvez fournir des informations de base sur votre initiative de restauration. Le titre et un résumé des objectifs et des résultats attendus de l'initiative peuvent être fournis dans la section description. Des informations supplémentaires peuvent être fournies, telles que la date de début et de fin prévue de l'initiative, le statut de la restauration, des liens Web ou de la documentation que vous jugez pertinents, les organismes responsables et la personne de contact qui peut fournir d'autres détails techniques de l'initiative de restauration.",
+    "fields": {
+      "title": {
+        "label": "Titre",
+        "description": "Titre de l'initiative tel qu'indiqué dans le document officiel de l'initiative"
+      },
+      "description": {
+        "label": "Description",
+        "description": "Brève description de l'initiative",
+        "info": "Dans cet onglet, vous pouvez fournir des informations de base sur votre initiative. Le titre et un résumé des objectifs et des résultats attendus de l'initiative peuvent être fournis dans la section description. Des informations supplémentaires peuvent être fournies, telles que la date de début et de fin prévue de l'initiative, des liens Web ou de la documentation que vous jugez pertinents, les organismes responsables et la personne de contact qui peut fournir d'autres détails techniques de l'initiative.",
+        "gef": {
+          "info": "Fournissez un contexte court de l'initiative en termes d'acteurs et de partenaires la dirigeant, un bref historique, les principales activités de gestion ou de restauration qui seront mises en œuvre, ainsi que les résultats attendus de l'initiative."
+        }
+      },
+      "website": {
+        "label": "Site Web",
+        "description": "Site Web de l'initiative"
+      },
+      "startingYear": {
+        "label": "Année de début"
+      },
+      "endingYear": {
+        "label": "Année de fin"
+      },
+      "restorationStatus": {
+        "label": "Statut de la restauration"
+      },
+      "contributionToSdg": {
+        "label": "Contribution aux objectifs de développement durable (ODD)"
+      },
+      "uploadInitiativeDocument": {
+        "label": "Téléchargez un document de l'initiative",
+        "gef": {
+          "label": "Téléchargez le document du projet GEF"
+        }
+      },
+      "pointsOfContact": {
+        "label": "Points de contact"
+      },
+      "keywords": {
+        "label": "Mots-clés"
+      },
+      "organizations": {
+        "label": "Organismes",
+        "description": "Organismes qui mettent en œuvre le projet/l'initiative"
+      },
+      "initiativePhotos": {
+        "label": "Photos de l'initiative",
+        "description": {
+          "line1": "Veuillez télécharger des photos de l'initiative.",
+          "line2": "Les images de plus de 1 Mo seront redimensionnées.",
+          "line3": "Vous pouvez ensuite en choisir une comme photo de couverture en cliquant dessus."
+        }
+      },
+      "objectives": {
+        "label": "Objectifs",
+        "description": "Veuillez sélectionner le(s) objectif(s) principal(aux) de l'initiative de restauration.",
+        "reference": "Référence:",
+        "referenceLink": "https://gbf-indicators.org/metadata/headline/2-2",
+        "otherObjectives": "Autres objectifs:",
+        "additionalInfo": {
+          "intro": "Veuillez expliquer comment votre projet contribue aux objectifs sélectionnés.",
+          "details": "Si applicable, veuillez fournir pour chaque objectif sélectionné: des objectifs spécifiques, une description des impacts du projet et d'autres informations pertinentes.",
+          "example": "Exemple: Le projet vise à restaurer la biodiversité locale en réintroduisant des espèces qui jouent des rôles clés dans le fonctionnement des écosystèmes et en améliorant les conditions qui soutiennent le retour et l'augmentation des populations d'espèces migratrices. 30 loups ont été réintroduits dans une zone précédemment sans loups pour contrôler les populations de cerfs. De plus, 15 espèces d'oiseaux migrateurs ont été observées dans une zone humide."
+        },
+        "placeholder": "Veuillez spécifier",
+        "notAvailable": "Non disponible"
+      },
+      "gef": {
+        "implementingAgencies": {
+          "label": "Agences d'exécution du GEF"
+        },
+        "faoSymbol": {
+          "label": "Symbole du projet GEF"
+        },
+        "investmentType": {
+          "label": "Type d'investissement du GEF"
+        },
+        "gefCycle": {
+          "label": "Cycle du GEF"
+        },
+        "focalAreas": {
+          "label": "Projets autonomes du GEF (domaines prioritaires)"
+        },
+        "gefProgram": {
+          "label": "Programmes du GEF"
+        }
+      }
+    },
+    "gef": {
+      "description": "Dans cet onglet, vous pouvez fournir des informations de base sur votre initiative. Le titre et un résumé des objectifs et des résultats attendus de l'initiative peuvent être fournis dans la section description. Des informations supplémentaires peuvent être fournies, telles que la date de début et de fin prévue de l'initiative, des liens Web ou de la documentation que vous jugez pertinents, les organismes responsables et la personne de contact qui peut fournir d'autres détails techniques de l'initiative."
+    }
+  },
+  "projects": {
+    "termsAndConditions": {
+      "title": "Términos y Condiciones para Agregar una Iniciativa al Registro FERM",
+      "description": "Al agregar su iniciativa al Registro del Marco para el Monitoreo de la Restauración de Ecosistemas (FERM), usted acepta cumplir con los siguientes términos y condiciones:",
+      "ownership": "Propiedad y Responsabilidad:",
+      "ownershipDescription": "Usted afirma que está autorizado para representar a la institución asociada con la iniciativa, y que posee todos los derechos necesarios para compartir la información relacionada con la iniciativa.",
+      "accuracy": "Exactitud de la Información:",
+      "accuracyDescription": "Usted afirma que toda la información proporcionada al Registro FERM es precisa, completa y actualizada. Se compromete a actualizar cualquier información de manera oportuna si ocurren cambios.",
+      "dataSharing": "Compartición de Datos:",
+      "dataSharingDescription": "Usted entiende que los datos de la iniciativa estarán disponibles públicamente y se compartirán con otros usuarios de FERM. Los datos pueden ser utilizados para monitorear actividades de restauración, fines de investigación, informar decisiones políticas y promover la restauración de ecosistemas.",
+      "privacy": "Privacidad:",
+      "privacyDescription": "Todos los datos personales proporcionados serán procesados de acuerdo con nuestra Política de Privacidad. Tomaremos las medidas adecuadas para garantizar la seguridad de sus datos personales.",
+      "compliance": "Cumplimiento con las Leyes:",
+      "complianceDescription": "Usted acepta cumplir con todas las leyes y regulaciones locales, nacionales e internacionales aplicables en relación con la conservación ambiental y la compartición de datos.",
+      "acceptance": "Al hacer clic en \"Aceptar\", usted acepta estos términos y condiciones.",
+      "contact": "Para cualquier pregunta adicional sobre estos términos, por favor contáctenos en {email}.",
+      "accept": "Aceptar",
+      "decline": "Rechazar"
+    },
+    "title": "Iniciativas",
+    "description": "Los proyectos, programas e iniciativas de restauración en todas las escalas espaciales, desde sitios individuales hasta paisajes y paisajes marinos grandes, desempeñan un papel vital en el logro de objetivos globales ambiciosos para sostener la vida en la Tierra. El registro FERM permite monitorear, informar y compartir información de manera consistente y transparente sobre iniciativas de restauración y buenas prácticas. La información publicada en el Registro FERM se utilizará para informar oficialmente sobre las áreas en restauración durante la Década de las Naciones Unidas sobre la Restauración de Ecosistemas y hacia la recolección de datos para el Marco Mundial de Biodiversidad Post-2020 de la Convención sobre la Diversidad Biológica Objetivo 2.",
+    "joinOrCreateInstitution": "Unirse o crear institución",
+    "createNewInitiative": "Crear nueva iniciativa",
+    "filterByCountry": "Filtrar por país",
+    "filterByInstitution": "Filtrar por institución",
+    "resetFilters": "Restablecer filtros",
+    "initiativesFound": "{count} de {total} iniciativas",
+    "noInitiativesFound": "No se encontraron iniciativas",
+    "loadMore": "Cargar más",
+    "loading": "Cargando...",
+    "status": {
+      "public": "Público",
+      "newRevision": "Nueva revisión",
+      "draft": "Borrador",
+      "underReview": "En revisión"
+    },
+    "dateModified": "Fecha de modificación",
+    "addGoodPractice": "Agregar buena práctica",
+    "noTitle": "Sin título",
+    "bestPracticesCount": "{n} buena práctica | {n} buenas prácticas"
+  },
+  "publicPagePreview": {
+    "title": "Vista Previa de Página Pública",
+    "description": {
+      "intro": "L'onglet aperçu fournit un résumé complet des principales caractéristiques de l'initiative, y compris des informations de base sur l'initiative, les biomes et les écosystèmes concernés, les zones engagées et actuellement en cours de restauration, les activités de restauration entreprises, les progrès sur les indicateurs clés et une sélection de jeux de données spatiales utiles pour suivre les progrès de la restauration, tous décrits en détail dans le {fermGuidance}.",
+      "details": "Les utilisateurs peuvent faire défiler vers le bas pour examiner les détails de l'initiative et explorer des graphiques interactifs activés en cliquant sur les zones individuelles mises en évidence par les cercles jaunes.",
+      "searchPreview": "Cette section offre également un aperçu du contenu qui sera visible dans le moteur de recherche une fois l'initiative publiée.",
+      "fermGuidance": "guide FERM"
+    },
+    "resultPanel": {
+      "description": "Descripción",
+      "timeframe": "Plazo",
+      "restorationStatus": "Estado de restauración",
+      "restorationTypes": "Tipos de restauración",
+      "tenureStatuses": "Estados de tenencia",
+      "website": "Sitio web",
+      "keywords": "Palabras clave"
+    }
+  }
+}
