@@ -42,8 +42,8 @@ export function setI18nLanguage(locale: string) {
 
 export async function loadLocaleMessages(locale: string) {
     try {
-        // const fetchPromise = fetch(`/locales/${locale}.json`);
-        const fetchPromise = fetch(`https://cdn.tolg.ee/1f21497d5e2085ba6c2a858e2647bc02/${locale}.json`);
+        const fetchPromise = fetch(`/locales/${locale}.json`);
+        // const fetchPromise = fetch(`https://cdn.tolg.ee/1f21497d5e2085ba6c2a858e2647bc02/${locale}.json`);
         const response = await fetchPromise;
         const messages = await response.json();
         i18n.global.setLocaleMessage(locale, messages);

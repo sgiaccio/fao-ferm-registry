@@ -577,5 +577,63 @@
       "websitePlaceholder": "Please provide the website of the institution if any",
       "existsError": "An institution with the name {name} already exists, or a request for it is pending. Please check the list of institutions and try again. If you believe this is an error, please contact us."
     }
+  },
+  "goodPractices": {
+    "inputs": {
+      "noSiteName": "Area name not provided",
+      "title": {
+        "label": "Title",
+        "description": "Title of the restoration practice."
+      },
+      "objectives": {
+        "label": "Objectives",
+        "description": "Please select the primary aim(s) of the restoration practice."
+      },
+      "objectivesAdditionalInformation": {
+        "label": "Objectives additional information",
+        "description": "Feel free to provide additional information on specific objectives of the practice."
+      },
+      "areas": {
+        "label": "Areas",
+        "description": "Select the areas where the practice was implemented.",
+        "noAreaSelected": "No area was selected for the project."
+      },
+      "ecosystems": {
+        "label": "Ecosystems",
+        "description": "Ecosystems where the practice was applied [Select all that apply]."
+      },
+      "iucnEcosystems": {
+        "label": "Ecosystems additional informatio",
+        "description": "Select the specific types of ecosystem(s) where the practice was applied."
+      },
+      "context": {
+        "label": "Context",
+        "description": "Please share any relevant ecological, socioeconomic and cultural context for the practice's implementation."
+      },
+      "activities": {
+        "label": "Activities",
+        "description": "Select the activities of your restoration initiative to which the practice belongs.",
+        "noActivitySelected": "No activity was selected for the project."
+      },
+      "drivers": {
+        "label": "Degradation drivers",
+        "description": "Direct and indirect drivers of degradation addressed by the practice [Select all that apply]."
+      },
+      "driversAdditionalInformation": {
+        "label": "Degradation drivers additional information",
+        "description": "Please provide additional information to explain how the practice contributed to reducing the drivers of ecosystem degradation selected above."
+      }
+    },
+    "objectives": {
+      "title": "Objectives and Context"
+    },
+    "methodology": {
+      "title": "Methodology",
+      "description": {
+        "title": "Implementation of the practice",
+        "text1": "Please provide all the information that another practitioner needs to have in order to be able to replicate this practice",
+        "text2": "Please provide a description of the practice and explain in detail the steps for its implementation including when applicable: timing, equipment, labour, species used, and all other relevant information."
+      }
+    }
   }
 }
