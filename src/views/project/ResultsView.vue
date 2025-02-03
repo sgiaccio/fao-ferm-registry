@@ -180,8 +180,8 @@ const areaUnderRestoration = computed(() => {
     }
 });
 
-function areaForGefIndicatorGroup(indicatorGroup: number) {
-    return areaByGefIndicatorGroup.value.find(i => +i[0] === indicatorGroup)?.[1];
+function areaForGefIndicatorGroup(indicatorGroup: string | number) {
+    return areaByGefIndicatorGroup.value.find(i => i[0] == indicatorGroup)?.[1];
 }
 
 function nCIOtherThan3() {
