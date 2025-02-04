@@ -11,7 +11,8 @@ function setLocale(locale: string) {
 }
 
 
-const languages = [{ lang: 'en', flag: 'gb' }, { lang: 'es', flag: 'es' }, { lang: 'fr', flag: 'fr' }, { lang: 'pt', flag: 'pt' }];
+// const languages = [{ lang: 'en', flag: 'gb' }, { lang: 'es', flag: 'es' }, { lang: 'fr', flag: 'fr' }, { lang: 'pt', flag: 'pt' }];
+const languages = ['en', 'es', 'fr', 'pt'];
 </script>
 
 <template>
@@ -42,16 +43,11 @@ const languages = [{ lang: 'en', flag: 'gb' }, { lang: 'es', flag: 'es' }, { lan
         </button> -->
         <button
             v-for="lang in languages"
-            :key="lang.lang"
-            :class="[locale === lang.lang ? 'underline' : '', 'hover:underline']"
-            @click="setLocale(lang.lang)"
+            :key="lang"
+            :class="[locale === lang ? 'underline' : '', 'hover:underline']"
+            @click="setLocale(lang)"
         >
-            <img
-                :src="`/flags/iso2/${lang.flag}.svg`"
-                alt="lang"
-                class="h-5 w-5 hover:opacity-100"
-                :class="[locale === lang.lang ? 'opacity-100' : 'opacity-70']"
-            />
+            {{ lang.toUpperCase() }}
         </button>
     </div>
 </template>

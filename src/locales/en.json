@@ -622,6 +622,95 @@
       "driversAdditionalInformation": {
         "label": "Degradation drivers additional information",
         "description": "Please provide additional information to explain how the practice contributed to reducing the drivers of ecosystem degradation selected above."
+      },
+      "description": {
+        "label": "Description",
+        "description": "Description of the practice."
+      },
+      "implementationSteps": {
+        "label": "Steps for implementation",
+        "description": "Please provide a detailed description of the steps for the implementation of the practice.",
+        "step": "Step",
+        "addStep": "Add step",
+        "stepDetails": "Details of the step"
+      },
+      "engagement": {
+        "label": "Engagement",
+        "description": "Please indicate which stakeholder groups were/are actively involved in the practice."
+      },
+      "stakeholdersInfo": {
+        "label": "Stakeholders additional information",
+        "description": "Please provide additional information on stakeholder's engagement and describe who are the implementers and beneficiaries of the practice."
+      },
+      "knowledgeTypes": {
+        "label": "Types of knowledge",
+        "description": "What types of knowledge have been included in the practice?"
+      },
+      "participatoryApproaches": {
+        "label": "Participatory approaches",
+        "description1": "Please describe to what extent the practice has meaningfully fostered engagement and knowledge integration from the stakeholders, right-holders, and under-represented groups (if any) selected above (e.g., local communities, Indigenous peoples, ethnic minorities, women, youth and LGBTIQ+ people).<br>",
+        "description2": "NOTE: If Indigenous Peoples' traditional knowledge was selected above, please explain how the practice has complied with the right of {link}.",
+        "link": "Free, Prior and Informed Consent"
+      },
+      "scale": {
+        "label": "Scale",
+        "description": "Please indicate the scale(s) at which the practice has been implemented and/or replicated."
+      },
+      "replicability": {
+        "label": "Replicability",
+        "description": "Has the practice been tested and replicated in different contexts (e.g., geographic location, type of ecosystem, different socio-economic groups involved, different locations within a region, etc.)?"
+      },
+      "replicabilityAdditionalInformation": {
+        "label": "Replicability additional information",
+        "description": "Please briefly explain where it was replicated and tested, how many times, with what results and the future opportunities for replication or adaptation."
+      },
+      "keyFactors": {
+        "label": "Key factors",
+        "description": "What are the key factors that need to be in place for the successful implementation of the practice."
+      },
+      "keyFactorsAdditionalInformation": {
+        "label": "Key factors additional information",
+        "description": "Please provide additional information on the key factors required for the successful implementation of the practice."
+      },
+      "constraints": {
+        "label": "Constraints",
+        "description": "What are the technical, economic, social and environmental challenges, constraints and/or risks encountered in applying the practice? How were they addressed?",
+        "addConstraint": "Add constraint"
+      },
+      "lessonsLearned": {
+        "label": "Lessons learned",
+        "description": "What lessons learned/recommendations would you like to share with other practitioners intending to replicate, adapt or scale up this practice?"
+      },
+      "positiveImpacts": {
+        "label": "Positive impacts",
+        "description": "Please select the main ecological and/or cultural and/or socio-economic positive impacts of implementing the practice."
+      },
+      "positiveImpactsAdditionalInformation": {
+        "label": "Positive impacts additional information",
+        "description": "Please describe and provide metrics about the positive ecological and/or cultural and/or socio-economic impacts of the practice (e.g., area of cultural/sacred land protected, number of beneficiaries, aboveground biomass stock per hectare, abundance of indicator species, % accessing financial services, etc.)."
+      },
+      "negativeImpacts": {
+        "label": "Negative impacts",
+        "description": "Does the practice have any negative ecological and/or cultural and/or socio-economic impact(s)? If so, please describe."
+      },
+      "validation": {
+        "label": "Validation",
+        "description": "Please describe how the practice was evaluated (e.g., meta-analysis, expert review, cost-efficiency analysis) from a technical and methodological point of view to demonstrate that it has achieved its measurable objectives, how the impacts of the practice have been validated with the beneficiaries, and how the lessons learned have been integrated."
+      },
+      "links": {
+        "label": "Links",
+        "description": "Please provide links to pictures, testimonials or references from local stakeholders, videos, scientific articles and publications, outreach materials, websites and/or social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice."
+      },
+      "additionalInformationCostsBenefits": {
+        "label": "Additional information on costs and benefits",
+        "description": "Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO's Team on Economics of Ecosystem Restoration (TEER)."
+      },
+      "additionalComments": {
+        "label": "Additional comments",
+        "description": "Feel free to share any additional information regarding the practice."
+      },
+      "image": {
+        "label": "Please upload a picture of the practice"
       }
     },
     "objectives": {
@@ -633,7 +722,19 @@
         "title": "Implementation of the practice",
         "text1": "Please provide all the information that another practitioner needs to have in order to be able to replicate this practice",
         "text2": "Please provide a description of the practice and explain in detail the steps for its implementation including when applicable: timing, equipment, labour, species used, and all other relevant information."
-      }
+      },
+      "stepsDescription": "Please provide for each step (if applicable): timing, equipment, labour, species used, and all other relevant information",
+      "stepsNoteTitle": "Note:",
+      "stepsNote": "It is recommended that the steps for implementation are logical, detailed, well-described, and technically and socially feasible, allowing for replication or adaptation."
+    },
+    "keyFactors": {
+      "title": "Key factors, constraints and lessons learned"
+    },
+    "benefitsAndValidation": {
+      "title": "Benefits and validation"
+    },
+    "additionalResources": {
+      "title": "Additional resources"
     }
   }
 }

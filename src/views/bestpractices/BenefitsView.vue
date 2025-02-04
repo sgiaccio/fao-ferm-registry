@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 import { useBestPracticesStore } from '@/stores/bestpractices';
 import { useMenusStore } from '@/stores/menus';
 
@@ -22,34 +24,44 @@ withDefaults(defineProps<{
     edit: true
 });
 
+const { t } = useI18n();
+
 const store = useBestPracticesStore();
 const menus = useMenusStore().menus;
 </script>
 
 <template>
-    <TabTemplate title="Benefits and validation">
+    <TabTemplate :title="$t('goodPractices.benefitsAndValidation.title')">
         <template #default>
             <template v-if="store.bestPractice">
-                <MultiSelectFormGroup :options="menus.outcomes"
-                                      v-model="store.bestPractice.outcomes"
-                                      label="4.1 Positive impacts"
-                                      description="Please select the main ecological and/or cultural and/or socio-economic positive impacts of implementing the practice."
-                                      :required="true"
-                                      :edit=edit />
-                <TextareaFormGroup v-model="store.bestPractice.positiveImpacts"
-                                   label="4.2 Positive impacts additional information"
-                                   description="Please describe and provide metrics about the positive ecological and/or cultural and/or socio-economic impacts of the practice (e.g., area of cultural/sacred land protected, number of beneficiaries, aboveground biomass stock per hectare, abundance of indicator species, % accessing financial services, etc.)."
-                                   :edit=edit />
-                <TextareaFormGroup v-model="store.bestPractice.negativeImpacts"
-                                   label="4.3 Negative impacts"
-                                   :required="true"
-                                   description="Does the practice have any negative ecological and/or cultural and/or socio-economic impact(s)? If so, please describe."
-                                   :edit=edit />
-                <TextareaFormGroup v-model="store.bestPractice.validation"
-                                   label="4.4 Validation"
-                                   :required="true"
-                                   description="Please describe how the practice was evaluated (e.g., meta-analysis, expert review, cost-efficiency analysis) from a technical and methodological point of view to demonstrate that it has achieved its measurable objectives, how the impacts of the practice have been validated with the beneficiaries, and how the lessons learned have been integrated."
-                                   :edit=edit />
+                <MultiSelectFormGroup
+                    :options="menus.outcomes"
+                    v-model="store.bestPractice.outcomes"
+                    :label="`4.1 ${t('goodPractices.inputs.positiveImpacts.label')}`"
+                    :description="t('goodPractices.inputs.positiveImpacts.description')"
+                    :required="true"
+                    :edit=edit
+                />
+                <TextareaFormGroup
+                    v-model="store.bestPractice.positiveImpacts"
+                    :label="`4.2 ${t('goodPractices.inputs.positiveImpactsAdditionalInformation.label')}`"
+                    :description="t('goodPractices.inputs.positiveImpactsAdditionalInformation.description')"
+                    :edit=edit
+                />
+                <TextareaFormGroup
+                    v-model="store.bestPractice.negativeImpacts"
+                    :required="true"
+                    :label="`4.3 ${t('goodPractices.inputs.negativeImpacts.label')}`"
+                    :description="t('goodPractices.inputs.negativeImpacts.description')"
+                    :edit=edit
+                />
+                <TextareaFormGroup
+                    v-model="store.bestPractice.validation"
+                    :required="true"
+                    :label="`4.4 ${t('goodPractices.inputs.validation.label')}`"
+                    :description="t('goodPractices.inputs.validation.description')"
+                    :edit=edit
+                />
             </template>
         </template>
     </TabTemplate>

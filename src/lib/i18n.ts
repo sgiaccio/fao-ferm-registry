@@ -8,7 +8,7 @@ export function getI18n() {
     return i18n;
 }
 
-export const SUPPORT_LOCALES = ['en', 'es', 'fr', 'pt']
+// export const SUPPORT_LOCALES = ['en', 'es', 'fr', 'pt']
 
 export function setupI18n(defaultOptions = { locale: 'en' }) {
     const options = { ...defaultOptions };
@@ -42,10 +42,13 @@ export function setI18nLanguage(locale: string) {
 
 export async function loadLocaleMessages(locale: string) {
     try {
-        const fetchPromise = fetch(`/locales/${locale}.json`);
+        // const fetchPromise = fetch(`/locales/${locale}.json`);
         // const fetchPromise = fetch(`https://cdn.tolg.ee/1f21497d5e2085ba6c2a858e2647bc02/${locale}.json`);
-        const response = await fetchPromise;
-        const messages = await response.json();
+        // const response = await fetchPromise;
+        // const messages = await response.json();
+        // dynamically import the locale file
+        const fetchPromise = import(`../locales/${locale}.json`);
+        const messages = await fetchPromise;
         i18n.global.setLocaleMessage(locale, messages);
     } catch (e) {
         console.error(e);
