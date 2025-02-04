@@ -293,20 +293,14 @@ export function getPolygonsArea(areasObj: any) {
 }
 
 export function areaByGefIndicator(areas: any) {
-    // Use the reduce function to accumulate areas by their respective indicators
     return Object.entries(
         areas.reduce((acc: { [indicator: string]: number }, area: any) => {
-            // Destructure the first value of the area object to get the gefIndicator and areaValue
             const { gefIndicator, area: areaValue } = Object.values(area)[0] as any;
-
-            // If the gefIndicator exists, accumulate the areaValue for that indicator
-            // Otherwise, return the accumulator as is
             return gefIndicator ? {
                 ...acc,
                 [gefIndicator]: (acc[gefIndicator] || 0) + (+areaValue || 0)
             } : acc;
         }, {}))
-        // Sort the resulting entries by indicator name in ascending order
         .sort((a, b) => {
             if (a[0] > b[0]) return 1;
             if (a[0] < b[0]) return -1;
@@ -317,7 +311,7 @@ export function areaByGefIndicator(areas: any) {
 export function areaByGefIndicatorGroup(areas: any) {
     const indicators = areaByGefIndicator(areas);
     const areabyIndicatorGroup = indicators.reduce((prev, [id, area]) => {
-        const newId = id === 'GEF2LDCF' ? '2LDCF' : id.slice(3, 4);
+        const newId = id.substring(3);
         return prev.set(newId, (prev.get(newId) || 0) + area);
     }, new Map());
     return Array.from(areabyIndicatorGroup);
