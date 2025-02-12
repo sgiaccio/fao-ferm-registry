@@ -68,24 +68,11 @@ async function uploadFile() {
             })));
             selectedFile.value = null;
 
-
-            // // get the list of intersecting countries and put it in the store
-            // try {
-            //     projectStore.getCountriesIso2Codes().then(intersectingCountries => {
-            //         const oldCountries = new Set(projectStore.project.project.countries);
-            //         if (!setsContainSameValues(oldCountries, intersectingCountries)) {
-            //             alert('The list of intersecting countries has changed. Please review the list of countries in the general tab before saving.');
-            //             projectStore.project.project.countries = [...intersectingCountries];
-            //         }
-            //     });
-            // } catch (e) {
-            //     alert('Error getting the new list of countries');
-            // }
             projectStore.updateCountries();
 
-            alert(`Files uploaded with UUIDs ${uuidsArr}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
+            alert(`Areas uploaded with UUIDs ${uuidsArr}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
         }).catch(e => {
-            alert('Error uploading the file: ' + e.message);
+            alert('Error uploading the areas: ' + e.message);
             console.error(e);
             uploadStatus.value = 'idle';
         });

@@ -4,14 +4,20 @@ import { ref } from 'vue';
 import router from '@/router';
 import { useRoute } from 'vue-router';
 
+import { toast } from 'vue3-toastify';
+
 import * as projectUtils from '@/lib/project';
 
 import { useProjectStore } from '@/stores/project';
 
-
-const projectStore = useProjectStore();
-
-import { submitForReview, publishProject, rejectProject, createNewProjectVersion } from '@/firebase/functions';
+import {
+    submitForReview,
+    publishProject,
+    rejectProject,
+    createNewProjectVersion,
+    exportToGround,
+    importFromGround
+} from '@/firebase/functions';
 
 import {
     EllipsisVerticalIcon,
@@ -25,7 +31,10 @@ import {
     EyeIcon,
     ChevronDownIcon,
     UserGroupIcon,
-    WrenchIcon
+    WrenchIcon,
+    ArrowDownOnSquareIcon,
+    ArrowUpOnSquareIcon,
+    ArrowRightStartOnRectangleIcon
 } from '@heroicons/vue/20/solid';
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
@@ -46,6 +55,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits(['done']);
 
 const route = useRoute();
+
+const projectStore = useProjectStore();
 
 async function print(projectId: string) {
     const routeData = router.resolve({ name: 'printInitiative', params: { id: projectId } });
@@ -126,6 +137,80 @@ function newVersionCreated() {
     projectStore.refetchProject(props.project.id);
     router.push({ name: 'projectInfoEdit', params: { id: props.project.id } });
 }
+
+async function _exportToGround() {
+    let groundSurveyId;
+    const id = toast.loading("Exporting to Ground...");
+
+    try {
+        // Attempt to export
+        const response: any = await exportToGround(props.project.id);
+        groundSurveyId = response?.data?.surveyId;
+
+        if (!groundSurveyId) {
+            throw new Error("Ground Survey ID is missing from response");
+        }
+
+        await projectStore.setGroundSurveyId(groundSurveyId);
+
+        // Success: Update toast
+        toast.update(id, {
+            type: 'success',
+            render: 'Successfully exported and saved Ground Survey ID!',
+            isLoading: false,
+            autoClose: 3000,
+            closeOnClick: true,
+            closeButton: true
+        });
+
+    } catch (e) {
+        console.error("Error in Ground export process:", e);
+
+        // Error: Update toast with meaningful message
+        toast.update(id, {
+            type: 'error',
+            render: e instanceof Error ? e.message : 'An unknown error occurred',
+            isLoading: false,
+            closeOnClick: true,
+            closeButton: true
+        });
+    }
+}
+
+function goToGround() {
+    window.open(`https://ground.openforis.org/survey/${projectStore.project?.groundSurveyId}`, '_blank');
+}
+
+async function _importFromGround() {
+    const id = toast.loading("Importing from Ground...");
+
+    if (!projectStore.id) {
+        throw new Error("Project ID is missing");
+    }
+
+    try {
+        // Attempt to import
+        await importFromGround(projectStore.id);
+        toast.update(id, {
+            type: 'success',
+            render: 'Successfully imported from Ground!',
+            isLoading: false,
+            autoClose: 3000,
+            closeOnClick: true,
+            closeButton: true
+        });
+    } catch (e) {
+        console.error("Error in Ground import process:", e);
+        toast.update(id, {
+            type: 'error',
+            render: e instanceof Error ? e.message : 'An unknown error occurred',
+            isLoading: false,
+            closeOnClick: true,
+            closeButton: true
+        });
+    }
+}
+
 </script>
 
 <template>
@@ -175,7 +260,7 @@ function newVersionCreated() {
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
                 <p>
-                    Are you sure you want to publish the initiative <span class="font-bold">'{{ project.data.project?.title}}'</span>?
+                    Are you sure you want to publish the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?
                 </p>
             </div>
         </template>
@@ -431,6 +516,59 @@ function newVersionCreated() {
                             />
                             Add Good Practice
                         </router-link>
+                    </menu-item>
+                </div>
+                <!-- export and import menu items from Ground (two separate menu items) -->
+                <div
+                    v-if="!project.data.groundSurveyId && project.data.status !== 'public'"
+                    ckass="py-1"
+                >
+                    <menu-item v-slot="{ active }">
+                        <span
+                            @click="_exportToGround"
+                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"
+                        >
+                            <ArrowUpOnSquareIcon
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true"
+                            />
+                            Export to Ground
+                        </span>
+                    </menu-item>
+                </div>
+                <div
+                    v-else
+                    class="py-1"
+                >
+                    <menu-item
+                        v-if="project.data.groundSurveyId"
+                        v-slot="{ active }"
+                    >
+                        <span
+                            @click="goToGround"
+                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"
+                        >
+                            <ArrowRightStartOnRectangleIcon
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true"
+                            />
+                            Go to Ground
+                        </span>
+                    </menu-item>
+                    <menu-item
+                        v-if="projectUtils.canEdit(project)"
+                        v-slot="{ active }"
+                    >
+                        <span
+                            @click="_importFromGround"
+                            :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"
+                        >
+                            <ArrowDownOnSquareIcon
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                aria-hidden="true"
+                            />
+                            Import from Ground
+                        </span>
                     </menu-item>
                 </div>
                 <div

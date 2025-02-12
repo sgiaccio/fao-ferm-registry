@@ -88,7 +88,16 @@ const multiInputComponents = {
             { key: 'index', f: (area: any, i: number) => i },
             { key: 'nAreas', f: (areas: any) => areas.length }
         ],
-    }
+    },
+    ground: {
+        component: MapInput,
+        newData: {},
+        addItemLabel: 'Draw polygon',
+        calculatedProps: [
+            { key: 'index', f: (area: any, i: number) => i },
+            { key: 'nAreas', f: (areas: any) => areas.length }
+        ],
+    },
 };
 
 const paAndTraditionalTerritoriesComponent = {

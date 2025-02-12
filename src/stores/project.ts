@@ -13,7 +13,8 @@ import {
     startAfter,
     limit,
     getCount,
-    QueryConstraint
+    QueryConstraint,
+    updateDoc
 } from 'firebase/firestore/lite';
 
 import { defineStore } from 'pinia';
@@ -332,10 +333,12 @@ export const useProjectStore = defineStore('', () => {
 
         await batch.commit();
     }
+
     async function saveAndExit() {
         await save();
         resetProjectState();
     }
+
     function polygonsArea() {
         return getPolygonsAreaUtil(projectAreas.value);
         // const getValue = (area: any) => Object.values(area)[0];
@@ -415,6 +418,27 @@ export const useProjectStore = defineStore('', () => {
         }
     }
 
+    async function setGroundSurveyId(groundSurveyId: string) {
+        if (!id.value) {
+            throw new Error('Id is not set');
+        }
+        if (!groundSurveyId) {
+            throw new Error('Ground Survey Id is not set');
+        }
+
+        // Update the groundSurveyId in the project
+        const projectRef = doc(projectsCollection, id.value);
+        try {
+            await updateDoc(projectRef, { groundSurveyId });
+        } catch (error) {
+            console.error('Error updating document:', error);
+            throw error;
+        }
+
+        // set the groundSurveyId in the project object
+        project.value.project.groundSurveyId = groundSurveyId;
+    }
+
     return {
         id,
         project,
@@ -443,7 +467,8 @@ export const useProjectStore = defineStore('', () => {
         deleteProject,
         getCountriesIso2Codes,
         updateCountries,
-        addCountriesFromAdminAreas
+        addCountriesFromAdminAreas,
+        setGroundSurveyId
     };
 });
 

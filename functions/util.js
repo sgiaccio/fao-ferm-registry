@@ -43,12 +43,21 @@ function getGroupsWhereEditor(context) {
     return _getGroupsWhereRole(context, "editor");
 }
 
-// Find the administrators of a group
-async function _getGroupAdmins(groupId) {
+async function getGroupUsers(groupId, levels) {
     // get all users
     const users = await admin.auth().listUsers();
-    // filter the users that have the admin role for the group
-    return users.users.filter(u => u.customClaims && u.customClaims.privileges && u.customClaims.privileges[groupId] === "admin");
+
+    // filter the users whose privileges match the levels for the group
+    return users.users.filter(u => u.customClaims?.privileges[groupId] && levels.includes(u.customClaims.privileges[groupId]));
+}
+
+// Find the administrators of a group
+async function _getGroupAdmins(groupId) {
+    // // get all users
+    // const users = await admin.auth().listUsers();
+    // // filter the users that have the admin role for the group
+    // return users.users.filter(u => u.customClaims && u.customClaims.privileges && u.customClaims.privileges[groupId] === "admin");
+    return getGroupUsers(groupId, ["admin"]);
 }
 
 // Public functions
@@ -259,6 +268,7 @@ exports = module.exports = {
     STATUSES,
 
     getUser,
+    getGroupUsers,
     getUserEmail,
     getUserDisplayName,
     getGroupName,

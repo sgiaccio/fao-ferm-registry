@@ -1,11 +1,12 @@
 const functions = require("firebase-functions");
 
+const admin = require("firebase-admin");
 const { getStorage } = require('firebase-admin/storage');
 
 const { Pool } = require("pg");
 const axios = require("axios");
 
-const { db, areasCollection } = require("./util");
+const { db, areasCollection, getGroupUsers } = require("./util");
 
 const { defineString } = require("firebase-functions/params");
 
@@ -27,6 +28,9 @@ const dbUser = defineString('DB_USER');
 const dbHost = defineString('DB_HOST');
 const dbDatabase = defineString('DB_DATABASE');
 const dbPassword = defineString('DB_PASSWORD');
+
+const crypto = require('node:crypto');
+
 
 let pool;
 
@@ -738,12 +742,12 @@ exports.getAllProjectAreasGeoJson = functions
         }
 
         if (areaDocSnap.exists) {
-            const data = areaDocSnap.data();
-            if (!data.areas) {
+            const areaData = areaDocSnap.data();
+            if (!areaData.areas) {
                 throw new functions.https.HttpsError("not-found", "No areas found for the given project.");
             }
 
-            const areasWithUuids = data.areas
+            const areasWithUuids = areaData.areas
                 .filter(a => Object.values(a)[0].uuid && isValidUuid(Object.values(a)[0].uuid))
                 .filter(a => uuids.includes(Object.values(a)[0].uuid));
 
@@ -754,13 +758,6 @@ exports.getAllProjectAreasGeoJson = functions
                     features: []
                 };
             }
-
-            // const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
-            // const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
-
-            // delete the areasUuids and areaNames that are not in the uuids array
-            // const filteredAreaUuids = areaUuids.filter(uuid => uuids.includes(uuid));
-            // const filteredAreaNames = areaNames.filter((_, i) => uuids.includes(areaUuids[i]));
 
             // now perform the database query
             const geoJson = await getAggregatedPolygons(projectId, areasWithUuids);
@@ -894,9 +891,6 @@ exports.getSavedProjectAreasGeoJson = functions
             };
         }
 
-        // const areaUuids = areasWithUuids.map(a => Object.values(a)[0].uuid);
-        // const areaNames = areasWithUuids.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
-
         // now perform the database query
         let geoJson;
         if (public) {
@@ -913,6 +907,57 @@ exports.getSavedProjectAreasGeoJson = functions
         }
         return geoJson;
     });
+
+exports.exportToGround = functions
+    .region('europe-west3')
+    .https
+    .onCall(async (data, context) => {
+        const { projectId, projectData } = await authorize(context, data);
+
+        const groundSurveyId = projectData.groundSurveyId;
+        if (groundSurveyId) {
+            throw new functions.https.HttpsError("already-exists", "This project has already been exported to Ground.");
+        }
+
+        const users = await getGroupUsers(projectData.group, ['admin', 'editor']);
+        if (!users) {
+            throw new functions.https.HttpsError("internal", "Error getting users");
+        }
+        if (!users.length) {
+            throw new functions.https.HttpsError("internal", "No users found");
+        }
+
+        const owner = users.find(u => u.uid === projectData.created_by);
+        if (!owner) {
+            throw new functions.https.HttpsError("internal", "Owner not found");
+        }
+
+        const collectors = users.filter(u => u.uid !== projectData.created_by);
+
+        const requestBody = {
+            id: projectId,
+            name: projectData.project.title || 'Untitled project',
+            owner: owner.email,
+            collectors: collectors.map(c => c.email),
+        };
+
+        const response = await fetch('https://ground.openforis.org/importFerm', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new functions.https.HttpsError("internal", `Error exporting to Ground: ${errorMessage || response.statusText}`);
+        }
+
+        return await response.json();
+    });
+
+
 
 // this function periodically (every hour) deletes all the areas in the `areas/` directory of the storage bucket that were created more than 1 hour ago
 exports.deleteOldAreasGeoJson = functions.pubsub.schedule('every 1 hours').onRun(async () => {
@@ -1147,3 +1192,109 @@ async function getAggregatedPolygons(projectId, areas) {
         throw error;
     }
 }
+
+exports.importFromGround = functions
+    .region('europe-west3')
+    .https
+    .onCall(async (data, context) => {
+        if (!context.auth) {
+            throw new functions.https.HttpsError('unauthenticated', 'You must be authenticated to call this function.');
+        }
+
+        const { projectId, projectData } = await authorize(context, data);
+
+        const isAdmin = util.isGroupAdmin(context, project);
+        const isAuthorAndEditor = util.isGroupEditor(context, project) && project.created_by === context.auth.uid;
+        const isCollaborator = project.collaborators?.includes(context.auth.uid);
+        const authorized = util.isSuperAdmin(context) || isAdmin || isAuthorAndEditor || isCollaborator;
+        if (!authorized) {
+            throw new functions.https.HttpsError("permission-denied", "User is not a super admin, nor a group admin, nor a group editor and owner of the project, nor a collaborator of the project");
+        }
+
+        const groundSurveyId = projectData?.groundSurveyId;
+        if (!groundSurveyId) {
+            throw new functions.https.HttpsError("not-found", "This project has not been exported to Ground.");
+        }
+
+        // Fetch project from Ground API
+        let response;
+        try {
+            response = await fetch(`https://ground.openforis.org/exportFerm?survey=${groundSurveyId}`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch Ground data: ${await response.text() || response.statusText}`);
+            }
+        } catch (error) {
+            console.error("Error fetching Ground data:", error);
+            throw new functions.https.HttpsError("internal", "Error fetching data from Ground.");
+        }
+
+        // Parse JSON response
+        let areas;
+        try {
+            areas = await response.json();
+            if (!Array.isArray(areas) || areas.length === 0) {
+                throw new Error("Invalid or empty data received from Ground.");
+            }
+        } catch (error) {
+            console.error("Error parsing Ground data:", error);
+            throw new functions.https.HttpsError("internal", "Invalid data format received.");
+        }
+
+        const batch = db.batch();
+        const client = await getDatabaseClient({
+            user: dbUser.value(),
+            host: dbHost.value(),
+            database: dbDatabase.value(),
+            password: dbPassword.value()
+        });
+
+        try {
+            // Start PostgreSQL transaction
+            await client.query('BEGIN');
+
+            for (const area of areas) {
+                if (!area.geometry) {
+                    console.warn("Skipping area with missing geometry:", area);
+                    continue;
+                }
+
+                const uuid = crypto.randomUUID();
+                const areaData = {
+                    ground: {
+                        uuid,
+                        // Ground doesn't have a id field, so we had to put the ecosystem id into the Ground label
+                        ecosystems: (area.ecosystems || []).filter(e => !!e).map(e => e.split(' ')[0]),
+                    }
+                };
+
+                // Firestore batch update
+                const areaDocRef = areasCollection.doc(projectId);
+                batch.update(areaDocRef, {
+                    areas: admin.firestore.FieldValue.arrayUnion(areaData)
+                });
+
+                // PostgreSQL insert
+                const query = `INSERT INTO project_areas (project_id, area_uuid, geom, source) 
+                           VALUES ($1, $2, ST_SetSRID(ST_GeomFromGeoJSON($3), 4326), $4)`;
+                const values = [projectId, uuid, JSON.stringify(area.geometry), 'ground'];
+                await client.query(query, values);
+            }
+
+            // Commit Firestore batch and PostgreSQL transaction
+            await batch.commit();
+            await client.query('COMMIT');
+            console.log("Successfully imported areas from Ground.");
+
+            return { success: true, message: "Successfully imported Ground survey data." };
+
+        } catch (error) {
+            console.error("Error during import transaction:", error);
+
+            // Rollback PostgreSQL transaction
+            await client.query('ROLLBACK');
+
+            throw new functions.https.HttpsError("internal", "Error importing data. Changes were rolled back.");
+        } finally {
+            client.release();
+        }
+    });

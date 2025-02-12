@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue';
 import { getAllProjectAreasGeoJson } from '@/firebase/functions';
 
-// import LoadingView from '@/views/LoadingView.vue';
 import SpinningThing from '@/components/SpinningThing.vue';
 
 import { XMarkIcon, ArrowsPointingOutIcon } from '@heroicons/vue/16/solid';
@@ -46,7 +45,7 @@ async function refresh() {
         }
 
         geoJsonLoaded.value = true;
-    
+
         const url = new URL('https://ferm.earthmap.org/');
         url.searchParams.append('embed', 'true');
         const nCountries = props.countries.length;
@@ -62,12 +61,12 @@ async function refresh() {
 
 const fullScreenEarthMap = ref(false);
 
-function reduceEarthMap() {
+function collapseEarthMap() {
     fullScreenEarthMap.value = false;
     document.body.style.overflow = 'auto';
 }
 
-function enlargeEarthMap() {
+function expandEarthMap() {
     fullScreenEarthMap.value = true;
     document.body.style.overflow = 'hidden';
 }
@@ -80,20 +79,20 @@ function enlargeEarthMap() {
     />
     <div
         :class="{ 'fixed top-0 left-0 w-screen h-screen z-50 p-12 shadow-lg': fullScreenEarthMap, 'rounded-md w-full h-192 shadow-md': !fullScreenEarthMap }"
-        @click="reduceEarthMap"
+        @click="collapseEarthMap"
     >
         <div class="relative h-full w-full">
             <div
                 class="absolute -top-4 -right-4 rounded-full bg-white hover:bg-gray-300 shadow-md x-50 cursor-pointer"
                 v-if="!fullScreenEarthMap"
-                @click.stop="enlargeEarthMap"
+                @click.stop="expandEarthMap"
             >
                 <ArrowsPointingOutIcon class="h-4 w-4 text-gray-500 m-2" />
             </div>
             <div
                 v-if="fullScreenEarthMap"
                 class="absolute -top-4 -right-4 rounded-full bg-white hover:bg-gray-300 cursor-pointer"
-                @click.stop="reduceEarthMap"
+                @click.stop="collapseEarthMap"
             >
                 <XMarkIcon class="h-4 w-4 text-gray-500 m-2" />
             </div>

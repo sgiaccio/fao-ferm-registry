@@ -1048,6 +1048,7 @@ exports.approveNewGroupRequest = groupRequestsWorkflow.approveNewGroupRequest;
 exports.rejectNewGroupRequest = groupRequestsWorkflow.rejectNewGroupRequest;
 exports.submitNewGroup = groupRequestsWorkflow.submitNewGroup;
 
+
 /************************************************
  *
  * AREAS AND ZONAL STATISTICS
@@ -1064,6 +1065,9 @@ exports.getProjectAreas = areas.getProjectAreas;
 exports.getAllProjectAreasGeoJson = areas.getAllProjectAreasGeoJson;
 exports.getSavedProjectAreasGeoJson = areas.getSavedProjectAreasGeoJson;
 exports.getSavedProjectAdminAreasGeoJson = areas.getSavedProjectAdminAreasGeoJson;
+exports.exportToGround = areas.exportToGround;
+exports.importFromGround = areas.importFromGround;
+
 
 /************************************************
  *
