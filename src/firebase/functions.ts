@@ -203,6 +203,13 @@ export async function getPublicProjectThumbnail(projectId: string) {
     return blob;
 }
 
+export async function getProjectPublicBestPractices(projectId: string) {
+    const functions = getFunctions(getApp(), 'europe-west3');
+    const getProjectPublicBestPractices = httpsCallable(functions, 'getProjectPublicBestPractices');
+    const result = await getProjectPublicBestPractices({ projectId });
+    return result.data;
+}
+
 export async function gefQc() {
     const functions = getFunctions();
     const qcGef = httpsCallable(functions, 'qcGef');
