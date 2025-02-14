@@ -24,8 +24,8 @@ const props = defineProps<{
     countries: []
 }>();
 
-const secondResultsAsiaPopup = ref(false);
-const secondResultsAsiaPopupShown = ref(false);
+const resultsAsiaPopup = ref(false);
+const resultsAsiaPopupShown = ref(false);
 
 onMounted(() => {
     loadMore();
@@ -137,27 +137,14 @@ function changeSource(event, source) {
     img.src = `/interop_logos/${source.toLowerCase()}.png`;
 }
 
-const firstResultAsiaPopup = ref(true);
-const resultAsiaPopupShown = ref(false);
 //wath the searchTerms and if it contains source='RESULT Asia-Pacific', show a popup
 watch(() => props.searchTerms, (val) => {
     if (val.source && val.source.includes('RESULT Asia-Pacific')
-        && !resultAsiaPopupShown.value
-        && !firstResultAsiaPopup.value
-        && !secondResultsAsiaPopupShown.value) {
-        secondResultsAsiaPopup.value = true
-        secondResultsAsiaPopupShown.value = true
+        && !resultsAsiaPopupShown.value) {
+        resultsAsiaPopup.value = true
+        resultsAsiaPopupShown.value = true
     }
 }, { deep: true, immediate: true });
-
-function firstDialogClose() {
-    // show the second dialog
-    if (props.searchTerms.source?.includes('RESULT Asia-Pacific') && !resultAsiaPopupShown.value && !secondResultsAsiaPopupShown.value) {
-        secondResultsAsiaPopup.value = true;
-        secondResultsAsiaPopupShown.value = true;
-    }
-    firstResultAsiaPopup.value = false;
-}
 </script>
 
 <template>
@@ -313,11 +300,11 @@ function firstDialogClose() {
 
     <TransitionRoot
         as="template"
-        :show="secondResultsAsiaPopup"
+        :show="resultsAsiaPopup"
     >
         <Dialog
             class="relative z-50"
-            @close="() => secondResultsAsiaPopup = false"
+            @close="() => resultsAsiaPopup = false"
         >
             <TransitionChild
                 as="template"
@@ -347,7 +334,7 @@ function firstDialogClose() {
                                 <button
                                     type="button"
                                     class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    @click="secondResultsAsiaPopup = false"
+                                    @click="resultsAsiaPopup = false"
                                 >
                                     <span class="sr-only">Close</span>
                                     <XMarkIcon
@@ -458,83 +445,6 @@ function firstDialogClose() {
             </div>
         </Dialog>
     </TransitionRoot> -->
-
-    <TransitionRoot
-        as="template"
-        :show="firstResultAsiaPopup"
-    >
-        <Dialog
-            class="relative z-50"
-            @close="firstDialogClose"
-        >
-            <TransitionChild
-                as="template"
-                enter="ease-out duration-300"
-                enter-from="opacity-0"
-                enter-to="opacity-100"
-                leave="ease-in duration-200"
-                leave-from="opacity-100"
-                leave-to="opacity-0"
-            >
-                <div class="fixed inset-0 bg-gray-500/75 transition-opacity" />
-            </TransitionChild>
-
-            <div class="fixed inset-0 z-50 w-screen overflow-y-auto">
-                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                    <TransitionChild
-                        as="template"
-                        enter="ease-out duration-300"
-                        enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        enter-to="opacity-100 translate-y-0 sm:scale-100"
-                        leave="ease-in duration-200"
-                        leave-from="opacity-100 translate-y-0 sm:scale-100"
-                        leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    >
-                        <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                            <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
-                                <button
-                                    type="button"
-                                    class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                    @click="firstDialogClose"
-                                >
-                                    <span class="sr-only">Close</span>
-                                    <XMarkIcon
-                                        class="size-6"
-                                        aria-hidden="true"
-                                    />
-                                </button>
-                            </div>
-                            <div class="_sm:flex _sm:items-start">
-                                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                    <!-- <DialogTitle
-                                        as="h3"
-                                        class="text-base font-semibold text-gray-900"
-                                    >Deactivate account</DialogTitle> -->
-                                    <div class="mt-2">
-                                        <img src="/resultasiaheader.png">
-
-                                        <h1 class="text-3xl mt-6 font-semibold text-green-500 uppercase">RESULT Asia-Pacific partner initiatives are available in FERM</h1>
-
-                                        <!-- <p class="text-sm text-gray-500">Are you sure you want to deactivate your account? All of your data will be permanently removed from our servers forever. This action cannot be undone.</p> -->
-                                        <p class="mt-3 text-base font-bold text-green-600">
-                                            By making the the RESULT Asia-Pacific initiatives available in the FERM, investments in ecosystem restoration are enabled by connecting donors with viable, bankable projects.
-                                        </p>
-                                        <p class="mt-3 text-base text-gray-700">
-                                            We are pleased to announce Ecosystem Restoration project ideas in the Asia-Pacific region, developed under the RESULT Asia-Pacific framework, are now available on FERM.
-                                        </p>
-                                        <p class="mt-3 text-base text-gray-700">
-                                            You can explore these projects by clicking on the RESULT Asia-Pacific filter in the FERM search engine under sources. Start discovering opportunities for #generationrestoration!
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </DialogPanel>
-                    </TransitionChild>
-                </div>
-            </div>
-        </Dialog>
-    </TransitionRoot>
-
 </template>
 
 <style scoped>

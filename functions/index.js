@@ -1072,6 +1072,7 @@ exports.getSavedProjectAdminAreasGeoJson = areas.getSavedProjectAdminAreasGeoJso
  * **********************************************/
 const goodPractices = require("./goodPractices");
 exports.updateBpIdFieldOnWrite = goodPractices.updateBpIdFieldOnWrite;
+exports.getProjectPublicBestPractices = goodPractices.getProjectPublicBestPractices;
 
 
 /************************************************

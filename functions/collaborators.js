@@ -1,5 +1,4 @@
 const functions = require("firebase-functions");
-const { FieldValue } = require("firebase-admin/firestore");
 
 const { newCollaborator: newCollaboratorTemplate } = require("./emailTemplates");
 

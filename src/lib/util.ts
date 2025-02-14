@@ -311,7 +311,7 @@ export function areaByGefIndicator(areas: any) {
 export function areaByGefIndicatorGroup(areas: any) {
     const indicators = areaByGefIndicator(areas);
     const areabyIndicatorGroup = indicators.reduce((prev, [id, area]) => {
-        const newId = id.substring(3);
+        const newId = id === 'GEF2LDCF' ? '2LDCF' : id.slice(3, 4);
         return prev.set(newId, (prev.get(newId) || 0) + area);
     }, new Map());
     return Array.from(areabyIndicatorGroup);
