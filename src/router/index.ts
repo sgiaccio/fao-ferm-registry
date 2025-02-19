@@ -1,8 +1,8 @@
-// import { useAuthStore } from "../stores/auth"
-// import { useUserPrefsStore } from "../stores/userPreferences"
-// import { useMenusStore } from "../stores/menus"
+// import { useAuthStore } from '../stores/auth'
+// import { useUserPrefsStore } from '../stores/userPreferences'
+// import { useMenusStore } from '../stores/menus'
 
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router';
 import { useLoadingStore } from '../stores/loading';
 
 import { getI18n, setLocale } from '@/lib/i18n';
@@ -75,40 +75,51 @@ const bestPracticeTabs = [{
 }];
 
 const router = createRouter({
-    scrollBehavior(to, from, _savedPosition) {
-        // always scroll to top
-        // return {
-        //     top: 0,
-        //     behavior: 'smooth'
-        // }
-        // scroll on top if the query doesn't contain modal=preview
-        if (!from.query.modal && !to.query.modal) {
-            return { top: 0, behavior: 'smooth' }
+    scrollBehavior(to, from, savedPosition) {
+        // If this was triggered by browser navigation (Back / Forward), and the browser saved a scroll position, restore it.
+        if (savedPosition) {
+            return savedPosition
+        }
+
+        // If we are only changing locales (i.e., from the same route in a different locale), do NOT scroll — just keep the current scroll position.
+        if (from.params.locale !== to.params.locale) {
+            return {}
+        }
+
+        // If either the old route OR the new route includes a `modal` query param, skip auto-scroll. We assume a modal is open or transitioning.
+        if (from.query.modal || to.query.modal) {
+            return {}
+        }
+
+        // Otherwise, scroll to the top, smoothly.
+        return {
+            top: 0,
+            behavior: 'smooth'
         }
     },
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: "/",
-            name: "home",
+            path: '/:locale?',
+            name: 'home',
             component: () => import('../views/HomeView.vue'),
             meta: { public: true }
         }, {
-            path: "/registration",
-            name: "registration",
+            path: '/:locale?/registration',
+            name: 'registration',
             component: () => import('../views/UserRegistrationView.vue')
         },
 
         // Authentication and registration
         {
-            path: "/login",
-            name: "login",
+            path: '/:locale?/login',
+            name: 'login',
             component: () => import('../views/LoginView.vue'),
             meta: { public: true }
         },
         {
-            path: "/search",
-            name: "search",
+            path: '/:locale?/search',
+            name: 'search',
             redirect: { name: 'searchInitiatives' },
             meta: { public: true },
             children: [
@@ -138,23 +149,23 @@ const router = createRouter({
             ]
         },
         // {
-        //     path: "/search/initiatives",
-        //     name: "searchInitiatives",
+        //     path: '/search/initiatives',
+        //     name: 'searchInitiatives',
         //     component: () => import('../views/search/SearchView.vue'),
         //     props: { type: 'initiatives' },
         //     meta: { public: true }
         // },
         // {
-        //     path: "/search/goodPractices",
-        //     name: "searchGoodPractices",
+        //     path: '/search/goodPractices',
+        //     name: 'searchGoodPractices',
         //     component: () => import('../views/search/SearchView.vue'),
         //     props: { type: 'goodPractices' },
         //     meta: { public: true }
         // },
         // Administration
         {
-            path: "/admin",
-            name: "admin",
+            path: '/:locale?/admin',
+            name: 'admin',
             component: () => import('../views/admin/AdminView.vue'),
             children: [
                 {
@@ -166,29 +177,29 @@ const router = createRouter({
                     name: 'groups',
                     component: () => import('../views/admin/GroupListView.vue')
                 }, {
-                    path: "submittedInitiatives",
-                    name: "submittedInitiatives",
+                    path: 'submittedInitiatives',
+                    name: 'submittedInitiatives',
                     component: () => import('../views/admin/SubmittedInitiativesView.vue')
                 }, {
-                    path: "groupAssignments",
-                    name: "groupAssignments",
+                    path: 'groupAssignments',
+                    name: 'groupAssignments',
                     component: () => import('../views/admin/GroupAssignmentRequests.vue')
                 }, {
-                    path: "newGroups",
-                    name: "newGroups",
+                    path: 'newGroups',
+                    name: 'newGroups',
                     component: () => import('../views/admin/NewGroupRequestsView.vue')
                 }, {
-                    path: "appState",
-                    name: "appState",
+                    path: 'appState',
+                    name: 'appState',
                     component: () => import('../views/admin/AppState.vue')
                 }, {
-                    path: "qc",
-                    name: "qc",
+                    path: 'qc',
+                    name: 'qc',
                     component: () => import('../views/admin/Qc.vue')
                 }
             ]
         }, {
-            path: '/registry',
+            path: '/:locale?/registry',
             name: 'registry',
             component: () => import('../views/RegistryView.vue'),
 
@@ -269,21 +280,30 @@ const router = createRouter({
                 }
             ]
         }, {
-            path: '/support',
+            path: '/:locale?/support',
             name: 'support',
             component: () => import('../views/SupportView.vue'),
             meta: { public: true }
         }, {
-            path: '/:pathMatch(.*)',
+            path: '/:locale?/:pathMatch(.*)',
             component: () => import('../views/NotFoundView.vue'),
             meta: { public: true }
         }
     ],
 });
 
-router.beforeEach(async to => {
-    // const paramsLocale = 'en' //to.params.locale
-    const paramsLocale = getI18n().global.locale || 'en';
+router.beforeEach(async (to) => {
+    let paramsLocale =
+        (to.params.locale as string)?.slice(0, 2).toLowerCase() ||
+        navigator.language.slice(0, 2).toLowerCase();
+    if (!['en', 'es', 'fr', 'pt'].includes(paramsLocale)) {
+        if (to.name) {
+            return { name: to.name, params: { ...to.params, locale: 'en' }, query: to.query, hash: to.hash };
+        } else {
+            // fallback in case the route name is not defined - each route should have a name anyway
+            return { name: 'home', params: { locale: 'en' }, query: to.query, hash: to.hash };
+        }
+    }
     await setLocale(paramsLocale);
 
     const loadingStore = useLoadingStore();

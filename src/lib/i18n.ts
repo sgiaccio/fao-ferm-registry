@@ -38,7 +38,7 @@ export function setupI18n(defaultOptions: any = {
     }
 
     i18n = createI18n(options);
-    setI18nLanguage(options.locale);
+    // setI18nLanguage(options.locale);
 
     return i18n;
 }
@@ -68,7 +68,7 @@ export async function setLocale(locale: string) {
 }
 
 function setI18nLanguage(locale: string) {
-    i18n.global.locale = locale;
+    i18n.global.locale.value = locale;
 
     /**
      * NOTE:
