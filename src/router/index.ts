@@ -5,7 +5,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useLoadingStore } from '../stores/loading';
 
-import { getI18n, setLocale } from '@/lib/i18n';
+import { getI18n, setLocale, SUPPORT_LOCALES } from '@/lib/i18n';
 
 
 // Initiatives tabs are used both for editing and viewing projects, so define them once here
@@ -296,12 +296,14 @@ router.beforeEach(async (to) => {
     let paramsLocale =
         (to.params.locale as string)?.slice(0, 2).toLowerCase() ||
         navigator.language.slice(0, 2).toLowerCase();
-    if (!['en', 'es', 'fr', 'pt'].includes(paramsLocale)) {
+    if (!SUPPORT_LOCALES.includes(paramsLocale)) {
+        // get the default locale from i18n
+        const defaultLocale = getI18n().global.fallbackLocale.value;
         if (to.name) {
-            return { name: to.name, params: { ...to.params, locale: 'en' }, query: to.query, hash: to.hash };
+            return { name: to.name, params: { ...to.params, locale: defaultLocale }, query: to.query, hash: to.hash };
         } else {
             // fallback in case the route name is not defined - each route should have a name anyway
-            return { name: 'home', params: { locale: 'en' }, query: to.query, hash: to.hash };
+            return { name: 'home', params: { locale: defaultLocale }, query: to.query, hash: to.hash };
         }
     }
     await setLocale(paramsLocale);
