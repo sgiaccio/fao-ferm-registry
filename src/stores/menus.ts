@@ -2,6 +2,9 @@ import { defineStore } from "pinia";
 
 import type { Menu } from "@/components/project/menus";
 
+import { t } from "@/lib/i18n";
+
+import keys from "@/assets/locales/menu_keys.json";
 
 export const useMenusStore = defineStore({
     id: "edit",
@@ -10,18 +13,33 @@ export const useMenusStore = defineStore({
         menus: {} as { [key: string]: Menu },
     }),
     actions: {
-        async fetchMenus(locale: string) {
-            // import the json file dynamically from @/locales/menus/[locale].json
-            // const tMenus: Menu = await import(`@/locales/menus/${locale}.json`);
+        async fetchMenus() {
+            const recurseMenuKeys = function (menu: any, path: string) {
+                const ret: any[] = []
+                Object.values(menu).forEach((menuItem: any) => {
+                    const newItem: any = {};
+                    if (menuItem.value) {
+                        newItem.value = menuItem.value;
+                    }
+                    if (menuItem.label) {
+                        newItem.label = t(menuItem.label)
+                    }
+                    // if (menuItem.info) {
+                    //     newItem.info = t(menuItem.info)
+                    // }
+                    if (menuItem.dangerousHtmlLabel) {
+                        newItem.dangerousHtmlLabel = t(menuItem.dangerousHtmlLabel, menuItem.templates)
+                    }
+                    if (menuItem.items) {
+                        newItem.items = recurseMenuKeys(menuItem.items, `${path}.${menuItem.label}`);
+                    }
+                    ret.push(newItem);
+                });
+                return ret;
+            }
 
-            // load dynamically the json file from /locales/menus/[locale].json - use fetch
-            // This is a temporary solution to allow editing of the locale files
-            const response = await fetch(`/locales/menus/${locale}.json`);
-            const tMenus: { [key: string]: Menu } = await response.json();
-
-            // Iterate through the tMenus array - for reactivity to work, we need to assign the values one by one
-            Object.entries(tMenus).forEach(([id, menu]) => {
-                this.menus[id] = menu;
+            Object.entries(keys).forEach(([id, menu]) => {
+                this.menus[id] = recurseMenuKeys(menu, '');
             });
 
             this.loaded = true;

@@ -8,11 +8,6 @@ import { useLoadingStore } from '@/stores/loading';
 import { useI18n } from 'vue-i18n';
 import { useMenusStore } from '@/stores/menus';
 
-// import { useAuthStore } from './stores/auth';
-// import { useUserPrefsStore } from './stores/userPreferences';
-
-// import { setI18nLanguage, loadLocaleMessages } from '@/lib/i18n';
-
 import CustomAlert from '@/views/project/CustomAlert.vue';
 
 import LoadingView from '@/views/LoadingView.vue';
@@ -43,10 +38,8 @@ watch(locale, async () => {
     // This is because if they have been loaded it means that they are needed
     // Will change this to a more elegant solution in the future
     if (menuStore.loaded) {
-        // setI18nLanguage(locale.value);
         await Promise.all([
-            // loadLocaleMessages(locale.value),
-            menuStore.fetchMenus(locale.value),
+            menuStore.fetchMenus(),
         ]);
     }
 });
