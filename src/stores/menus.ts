@@ -6,6 +6,8 @@ import { t } from "@/lib/i18n";
 
 import keys from "@/assets/locales/menu_keys.json";
 
+import { getI18n } from '@/lib/i18n';
+
 export const useMenusStore = defineStore({
     id: "edit",
     state: () => ({
@@ -14,6 +16,18 @@ export const useMenusStore = defineStore({
     }),
     actions: {
         async fetchMenus() {
+            const i18n = getI18n();
+            // add the menus messages to vue-i18n dynamically
+            const locale = i18n.global.locale.value;
+            const menuMessages = await fetch(`https://cdn.tolg.ee/fa9930d246d28584262908e4edbb5568/${locale}.json`).then(res => res.json());;
+
+            // Merge the menu messages into the existing messages
+            const existingMessages = i18n.global.getLocaleMessage(locale);
+            i18n.global.setLocaleMessage(locale, {
+                ...existingMessages,
+                ...menuMessages
+            });
+
             const recurseMenuKeys = function (menu: any, path: string) {
                 const ret: any[] = []
                 Object.values(menu).forEach((menuItem: any) => {

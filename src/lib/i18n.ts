@@ -8,24 +8,47 @@ export function getI18n() {
     return i18n;
 }
 
-export const SUPPORT_LOCALES = ['en', 'es', 'fr', 'pt']
-
+export const SUPPORT_LOCALES = ['en', 'es', 'fr', 'pt'];
+const defaultLocale = 'en';
 
 function getNestedValue(obj: any, path: string) {
     return path.split('.').reduce((acc, key) => acc && acc[key] ? acc[key] : null, obj);
 }
 
-// Custom resolver to manually retrieve flat JSON keys
-function flatJsonResolver(obj: any, path: string) {
-    return obj[path] || getNestedValue(obj, path);
-}
+// function flatJsonResolver(obj: any, path: string) {
+//     const result = obj[path] || getNestedValue(obj, path);
+//     return result !== null && result !== undefined ? result : undefined;
+// }
+
+let loadingDefaultLocale = false;
+let defaultLocaleLoaded = false;
 
 export function setupI18n(defaultOptions: any = {
-    locale: 'en',
-    fallbackLocale: 'en',
-    messageResolver: flatJsonResolver,
+    locale: defaultLocale,
+    fallbackLocale: defaultLocale,
+    // messageResolver: flatJsonResolver,
     legacy: false,
-    globalInjection: true
+    globalInjection: true,
+    missing: (locale: string, key: string) => {
+        if (locale === defaultLocale) {
+            // If we're in English, just return the key (or a custom fallback)
+            return key;
+        }
+        if (!defaultLocaleLoaded && !loadingDefaultLocale) {
+            loadingDefaultLocale = true;
+            // Trigger the load of English messages in the background.
+            loadLocaleMessages(defaultLocale).then(() => {
+                defaultLocaleLoaded = true;
+                loadingDefaultLocale = false;
+                console.log(`English fallback messages loaded after missing key: ${key}`);
+            }).catch(err => {
+                console.error('Error loading fallback locale:', err);
+                loadingDefaultLocale = false;
+            });
+        }
+        // Return the key or some fallback text synchronously
+        return key;
+    }
 }) {
     const options = { ...defaultOptions };
     if (process.env.NODE_ENV === 'development') {
@@ -82,14 +105,16 @@ function setI18nLanguage(locale: string) {
 
 async function loadLocaleMessages(locale: string) {
     try {
+        // load locale messages from Tolgee
         const fetchPromise = fetch(`https://cdn.tolg.ee/1f21497d5e2085ba6c2a858e2647bc02/${locale}.json`);
         const response = await fetchPromise;
         const messages = await response.json();
 
-        const responseFromTolgee = await fetch(`https://cdn.tolg.ee/fa9930d246d28584262908e4edbb5568/${locale}.json`);
-        const tMenusFromTolgee: { [key: string]: any } = await responseFromTolgee.json();
+        // load menu labels from Tolgee
+        // const responseFromTolgee = await fetch(`https://cdn.tolg.ee/fa9930d246d28584262908e4edbb5568/${locale}.json`);
+        // const tMenusFromTolgee: { [key: string]: any } = await responseFromTolgee.json();
 
-        i18n.global.setLocaleMessage(locale, { ...messages, ...tMenusFromTolgee });
+        i18n.global.setLocaleMessage(locale, { ...messages });
     } catch (e) {
         console.error(e);
     }

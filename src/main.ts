@@ -47,6 +47,7 @@ app.use(Vue3Toasity, {
 });
 
 app.use(router);
+
 // await router.isReady();
 
 app.config.errorHandler = (error, _vm, _info) => {

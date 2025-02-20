@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
+// import { SUPPORT_LOCALES } from '@/lib/i18n';
+const SUPPORT_LOCALES = ['en']; // Keep this until other locales are ready
+
 const { locale } = useI18n();
 
-import { SUPPORT_LOCALES } from '@/lib/i18n';
 
 
 // get the router
@@ -25,7 +27,10 @@ function forwardToLanguage(lang: string) {
 </script>
 
 <template>
-    <div class="flex space-x-2 text-gray-50 font-semibold">
+    <div
+        v-if="SUPPORT_LOCALES.length > 1"
+        class="flex space-x-2 text-gray-50 font-semibold"
+    >
         <button
             v-for="lang in SUPPORT_LOCALES"
             :key="lang"

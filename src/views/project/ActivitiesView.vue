@@ -56,18 +56,14 @@ function toggleOtherActivitiesInput(i: number) {
                             href="https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/"
                             target="_blank"
                             class="text-blue-600 underline hover:text-blue-500"
-                        >
-                            https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/
-                        </a>
+                        >https://www.fao.org/in-action/forest-landscape-restoration-mechanism/our-work/gl/teer/en/</a>
                     </template>
                     <template v-slot:ipbesLink>
                         <a
                             href="https://www.ipbes.net/assessment-reports/ldr"
                             target="_blank"
                             class="text-blue-600 underline hover:text-blue-500"
-                        >
-                            https://www.ipbes.net/assessment-reports/ldr
-                        </a>
+                        >https://www.ipbes.net/assessment-reports/ldr</a>
                     </template>
                 </i18n-t>
             </p>

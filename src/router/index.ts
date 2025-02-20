@@ -1,11 +1,9 @@
-// import { useAuthStore } from '../stores/auth'
-// import { useUserPrefsStore } from '../stores/userPreferences'
-// import { useMenusStore } from '../stores/menus'
-
 import { createRouter, createWebHistory } from 'vue-router';
 import { useLoadingStore } from '../stores/loading';
 
 import { getI18n, setLocale, SUPPORT_LOCALES } from '@/lib/i18n';
+
+import { useMenusStore } from '../stores/menus';
 
 
 // Initiatives tabs are used both for editing and viewing projects, so define them once here
@@ -74,6 +72,8 @@ const bestPracticeTabs = [{
     meta: { dataPath: 'additionalResources' }
 }];
 
+const localesStr = `${SUPPORT_LOCALES.join('|')}`;
+
 const router = createRouter({
     scrollBehavior(to, from, savedPosition) {
         // If this was triggered by browser navigation (Back / Forward), and the browser saved a scroll position, restore it.
@@ -100,25 +100,26 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/:locale?',
+            path: `/:locale(${localesStr})?`,
             name: 'home',
             component: () => import('../views/HomeView.vue'),
             meta: { public: true }
         }, {
-            path: '/:locale?/registration',
+            // path: '/:locale?/registration',
+            path: `/:locale(${localesStr})?/registration`,
             name: 'registration',
             component: () => import('../views/UserRegistrationView.vue')
         },
 
         // Authentication and registration
         {
-            path: '/:locale?/login',
+            path: `/:locale(${localesStr})?/login`,
             name: 'login',
             component: () => import('../views/LoginView.vue'),
             meta: { public: true }
         },
         {
-            path: '/:locale?/search',
+            path: `/:locale(${localesStr})?/search`,
             name: 'search',
             redirect: { name: 'searchInitiatives' },
             meta: { public: true },
@@ -134,8 +135,7 @@ const router = createRouter({
                     path: 'initiatives/:id',
                     name: 'publicInitiativePage',
                     beforeEnter: async (_to, _from) => {
-                        const locale = getI18n().global.locale.value;
-                        _loadMenus(locale);
+                        _loadMenus();
                     },
                     component: () => import('../views/search/project/ProjectView.vue'),
                     meta: { newLayout: true, public: true }
@@ -164,7 +164,7 @@ const router = createRouter({
         // },
         // Administration
         {
-            path: '/:locale?/admin',
+            path: `/:locale(${localesStr})?/admin`,
             name: 'admin',
             component: () => import('../views/admin/AdminView.vue'),
             children: [
@@ -199,13 +199,12 @@ const router = createRouter({
                 }
             ]
         }, {
-            path: '/:locale?/registry',
+            path: `/:locale(${localesStr})?/registry`,
             name: 'registry',
             component: () => import('../views/RegistryView.vue'),
 
             beforeEnter: async (_to, _from) => {
-                const locale = getI18n().global.locale.value;
-                _loadMenus(locale);
+                _loadMenus();
             },
             redirect: { name: 'initiatives' },
             children: [
@@ -280,12 +279,12 @@ const router = createRouter({
                 }
             ]
         }, {
-            path: '/:locale?/support',
+            path: `/:locale(${localesStr})?/support`,
             name: 'support',
             component: () => import('../views/SupportView.vue'),
             meta: { public: true }
         }, {
-            path: '/:locale?/:pathMatch(.*)',
+            path: '/:pathMatch(.*)',
             component: () => import('../views/NotFoundView.vue'),
             meta: { public: true }
         }
@@ -296,6 +295,7 @@ router.beforeEach(async (to) => {
     let paramsLocale =
         (to.params.locale as string)?.slice(0, 2).toLowerCase() ||
         navigator.language.slice(0, 2).toLowerCase();
+
     if (!SUPPORT_LOCALES.includes(paramsLocale)) {
         // get the default locale from i18n
         const defaultLocale = getI18n().global.fallbackLocale.value;
@@ -376,11 +376,8 @@ router.afterEach((to) => {
     }
 });
 
-async function _loadMenus(locale: string) {
-    // dynamically load the menus store to save bandwidth
-    const { useMenusStore } = await import('../stores/menus');
+async function _loadMenus() {
     const menusStore = useMenusStore();
-
     if (!menusStore.loaded) {
         await menusStore.fetchMenus();
     }
