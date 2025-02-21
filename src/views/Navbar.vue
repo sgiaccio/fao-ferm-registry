@@ -1,10 +1,22 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
+
+import {
+    Disclosure,
+    DisclosureButton,
+    DisclosurePanel,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuItems
+} from '@headlessui/vue'
+
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 
 import { useAuthStore } from "../stores/auth"
+
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 
 
 const authStore = useAuthStore();
@@ -14,7 +26,6 @@ const route = useRoute();
 function logout() {
     authStore.logout();
 }
-
 </script>
 
 <template>
@@ -90,16 +101,19 @@ function logout() {
                     </div>
 
                 </div>
-                <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-8 sm:pr-0">
                     <div
                         id="content-specific"
                         class="flex flex-row items-center"
                     />
+
+                    <LanguageSwitcher />
+
                     <!-- Profile dropdown -->
                     <Menu
                         v-if="authStore.user"
                         as="div"
-                        class="ml-3 relative z-10"
+                        class="ml-4 relative z-10"
                     >
                         <div>
                             <menu-button class="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white text-white">

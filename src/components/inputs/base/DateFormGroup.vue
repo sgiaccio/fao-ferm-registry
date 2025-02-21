@@ -32,6 +32,6 @@
                :value="modelValue"
                @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)">
         <div v-else-if="modelValue">{{modelValue}}</div>
-        <div v-else class="italic text-gray-400">Not available</div>
+        <div v-else class="italic text-gray-400">{{ $t('notAvailable') }}</div>
     </FormGroup>
 </template>

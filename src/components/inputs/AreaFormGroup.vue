@@ -55,7 +55,7 @@ function updateUnits(newUnits) {
                 <span class="text-gray-300 text-sm">Units</span>
             </div>
         </div>
-        <template v-slot:info
+        <template #info
                   v-if="$slots.info">
             <slot name="info" />
         </template>

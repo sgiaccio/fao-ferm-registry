@@ -26,21 +26,24 @@ withDefaults(defineProps<{
         <TextFormGroup
             :edit="edit"
             v-model="modelValue.name"
-            label="Name"></TextFormGroup>
+            :label="$t('inputs.organization.name')"
+        />
         <TextFormGroup
             :edit="edit"
             v-model="modelValue.acronym"
-            label="Acronym"></TextFormGroup>
+            :label="$t('inputs.organization.acronym')"
+        />
         <SelectFormGroup
             :edit="edit"
             v-model="modelValue.type"
             :options="menus.agencyTypes"
-            label="Type"></SelectFormGroup>
+            :label="$t('inputs.organization.type')"
+        />
         <SelectFormGroup
             :edit="edit"
             v-model="modelValue.role"
             :options="menus.agencyRoles"
-            label="Role"></SelectFormGroup>
-
+            :label="$t('inputs.organization.role')"
+        />
     </div>
 </template>

@@ -31,41 +31,39 @@ const lastWord = computed(() => {
 </script>
 
 <template>
-    <!-- <div> -->
-        <fieldset @focusout="emit('focusout')">
-            <div class="sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start py-5 sm:content-center">
-                <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
-                    <template v-if="$slots.info">
-                        {{ labelWithoutLastWord }}
-                        <span class="whitespace-nowrap">
-                            {{ lastWord }}
-                            <InfoButton
-                                v-if="$slots.info"
-                                :title="label"
-                            >
-                                <slot name="info" />
-                            </InfoButton>
-                        </span>
-                    </template>
-                    <template v-else>
-                        {{ label }}
-                    </template>
-                </legend>
-                <div class="sm:col-span-3">
-                    <p
-                        v-if="description"
-                        class="font-semibold mb-3 text-sm text-gray-500"
-                    >
-                        {{ description }}
-                    </p>
-                    <p
-                        v-else-if="dangerousHtmlDescription"
-                        v-html="dangerousHtmlDescription"
-                        class="font-semibold mb-3 text-sm text-gray-500"
-                    />
-                    <slot></slot>
-                </div>
+    <fieldset @focusout="emit('focusout')">
+        <div class="sm:grid sm:grid-cols-4 sm:gap-4 sm:items-start py-5 sm:content-center">
+            <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
+                <template v-if="$slots.info">
+                    {{ labelWithoutLastWord }}
+                    <span class="whitespace-nowrap">
+                        {{ lastWord }}
+                        <InfoButton
+                            v-if="$slots.info"
+                            :title="label"
+                        >
+                            <slot name="info" />
+                        </InfoButton>
+                    </span>
+                </template>
+                <template v-else>
+                    {{ label }}
+                </template>
+            </legend>
+            <div class="sm:col-span-3">
+                <p
+                    v-if="description"
+                    class="font-semibold mb-3 text-sm text-gray-500"
+                >
+                    {{ description }}
+                </p>
+                <p
+                    v-else-if="dangerousHtmlDescription"
+                    v-html="dangerousHtmlDescription"
+                    class="font-semibold mb-3 text-sm text-gray-500"
+                />
+                <slot />
             </div>
-        </fieldset>
-    <!-- </div> -->
+        </div>
+    </fieldset>
 </template>

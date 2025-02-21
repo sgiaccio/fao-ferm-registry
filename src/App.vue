@@ -5,12 +5,15 @@ import { storeToRefs } from 'pinia'
 
 import { useLoadingStore } from '@/stores/loading';
 
-// import { useAuthStore } from './stores/auth';
-// import { useUserPrefsStore } from './stores/userPreferences';
+import { useI18n } from 'vue-i18n';
+import { useMenusStore } from '@/stores/menus';
 
 import CustomAlert from '@/views/project/CustomAlert.vue';
 
 import LoadingView from '@/views/LoadingView.vue';
+
+
+const { locale } = useI18n();
 
 // const authStore = useAuthStore();
 // const userPrefsStore = useUserPrefsStore();
@@ -28,6 +31,18 @@ provide('customAlert', function (title: string, message: string, type: string | 
 // });
 
 const { isLoading } = storeToRefs(useLoadingStore());
+
+watch(locale, async () => {
+    const menuStore = useMenusStore();
+    // Only fetch menus if they are already loaded
+    // This is because if they have been loaded it means that they are needed
+    // Will change this to a more elegant solution in the future
+    if (menuStore.loaded) {
+        await Promise.all([
+            menuStore.fetchMenus(),
+        ]);
+    }
+});
 </script>
 
 <template>

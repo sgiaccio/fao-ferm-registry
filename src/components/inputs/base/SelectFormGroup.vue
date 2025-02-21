@@ -36,7 +36,7 @@ function valueChanged(value: string) {
                      :model-value="modelValue"
                      @update:modelValue="valueChanged"
                      :required="required" />
-        <template v-slot:info
+        <template #info
                   v-if="$slots.info">
             <slot name="info" />
         </template>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import SelectInput from './base/SelectInput.vue';
 
 import { getGaulLevel0, getGaulLevel1, getGaulLevel2 } from '@/firebase/firestore';
@@ -12,9 +14,6 @@ import { getMenuSelectedLabel } from '@/components/project/menus';
 
 import AreaEcosystemsView from '@/views/project/AreaEcosystemsView.vue';
 
-
-const store = useProjectStore();
-const menus = useMenusStore().menus;
 
 // type AdminArea = {
 //     code?: string,
@@ -38,6 +37,11 @@ const props = withDefaults(defineProps<{
 }>(), { edit: true });
 
 const emit = defineEmits(['update:modelValue']);
+
+const { t } = useI18n();
+
+const store = useProjectStore();
+const menus = useMenusStore().menus;
 
 const admin0 = ref(props.modelValue?.admin0);
 const admin1 = ref(props.modelValue?.admin1);
@@ -124,11 +128,14 @@ watch(admin2, val => {
 </script>
 
 <template>
-    <div class="font-bold text-xl">Administrative area</div>
+    <div class="font-bold text-xl">
+        {{ t('inputs.aoi.administrativeArea') }}
+    </div>
     <div class="flex flex-col gap-y-3">
         <div>
             <legend class="block text-sm font-medium leading-6 text-gray-900">
-                Site name
+                
+                {{ t('inputs.aoi.siteName') }}
             </legend>
             <template v-if="edit">
                 <div class="mt-2 flex rounded-md shadow-sm">
@@ -146,7 +153,8 @@ watch(admin2, val => {
         </div>
         <div>
             <legend class="block text-sm font-medium leading-6 text-gray-900">
-                Area [{{ getMenuSelectedLabel(store.project.project.areaUnits, menus.units) }}]
+                {{ t('inputs.areaSurface') }}
+                [{{ getMenuSelectedLabel(store.project.project.areaUnits, menus.units) }}]
             </legend>
             <template v-if="edit">
                 <div class="mt-2 flex rounded-md shadow-sm">
@@ -162,24 +170,29 @@ watch(admin2, val => {
             </template>
             <div v-else>{{ modelValue.area }}</div>
         </div>
-        <div class="block text-sm font-medium leading-6 text-gray-900">Administrative area</div>
+        <div class="block text-sm font-medium leading-6 text-gray-900">
+            {{ t('inputs.aoi.administrativeArea') }}
+        </div>
         <SelectInput
             :edit="edit"
             v-model="admin0"
             :options="admin0Menu"
-            placeholder="Please select Country"
+            _placeholder="Please select Country"
+            :placeholder="t('inputs.aoi.selectCountry')"
         />
         <SelectInput
             :edit="edit"
             v-model="admin1"
             :options="admin1Menu"
-            placeholder="Please select Region"
+            _placeholder="Please select Region"
+            :placeholder="t('inputs.aoi.selectRegion')"
         />
         <SelectInput
             :edit="edit"
             v-model="admin2"
             :options="admin2Menu"
-            placeholder="Please select Province"
+            _placeholder="Please select Province"
+            :placeholder="t('inputs.aoi.selectProvince')"
         />
         <AreaEcosystemsView
             :edit="edit"

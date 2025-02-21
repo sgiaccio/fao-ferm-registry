@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 import { useBestPracticesStore } from '@/stores/bestpractices';
 import { useMenusStore } from '@/stores/menus';
 
@@ -28,6 +30,8 @@ withDefaults(defineProps<{
     edit: true
 });
 
+const { t } = useI18n();
+
 const store = useBestPracticesStore();
 const menus = useMenusStore().menus;
 
@@ -35,38 +39,46 @@ const constraintsComponents = {
     constraint: {
         component: Constraint,
         newData: {},
-        addItemLabel: "Add constraint",
+        addItemLabel: t('goodPractices.inputs.constraints.addConstraint'),
     }
 }
 
 </script>
 
 <template>
-    <TabTemplate title="Key factors, constraints and lessons learned">
+    <TabTemplate :title="$t('goodPractices.keyFactors.title')">
         <template #default>
             <template v-if="store.bestPractice">
                 <div>
-                    <MultiSelectFormGroup :options="menus.keyFactors"
-                                          v-model="store.bestPractice.keyFactors"
-                                          label="3.1 Key factors"
-                                          description="What are the key factors that need to be in place for the successful implementation of the practice."
-                                          :required="true"
-                                          :edit=edit />
-                    <TextareaFormGroup label="3.2 Key factors additional information"
-                                       v-model="store.bestPractice.specifyKeyFactors"
-                                       description="Please provide additional information on the key factors required for the successful implementation of the practice."
-                                       :edit=edit />
+                    <MultiSelectFormGroup
+                        :options="menus.keyFactors"
+                        v-model="store.bestPractice.keyFactors"
+                        :label="`3.1 ${t('goodPractices.inputs.keyFactors.label')}`"
+                        :description="t('goodPractices.inputs.keyFactors.description')"
+                        :required="true"
+                        :edit=edit
+                    />
+                    <TextareaFormGroup
+                        v-model="store.bestPractice.specifyKeyFactors"
+                        :label="`3.2 ${t('goodPractices.inputs.keyFactorsAdditionalInformation.label')}`"
+                        :description="t('goodPractices.inputs.keyFactorsAdditionalInformation.description')"
+                        :edit=edit
+                    />
                 </div>
-                <MultiInputFormGroup label="3.3 Constraints"
-                                     description="What are the technical, economic, social and environmental challenges, constraints and/or risks encountered in applying the practice? How were they addressed?"
-                                     :inputComponents="constraintsComponents"
-                                     v-model="store.bestPractice.constraints"
-                                     :edit=edit />
-                <TextareaFormGroup v-model="store.bestPractice.lessonsLearned"
-                                   label="3.4 Lessons learned/Recommendations"
-                                   :required="true"
-                                   description="What lessons learned/recommendations would you like to share with other practitioners intending to replicate, adapt or scale up this practice?"
-                                   :edit=edit />
+                <MultiInputFormGroup
+                    v-model="store.bestPractice.constraints"
+                    :inputComponents="constraintsComponents"
+                    :label="`3.3 ${t('goodPractices.inputs.constraints.label')}`"
+                    :description="t('goodPractices.inputs.constraints.description')"
+                    :edit=edit
+                />
+                <TextareaFormGroup
+                    v-model="store.bestPractice.lessonsLearned"
+                    :required="true"
+                    :label="`3.4 ${t('goodPractices.inputs.lessonsLearned.label')}`"
+                    :description="t('goodPractices.inputs.lessonsLearned.description')"
+                    :edit=edit
+                />
             </template>
         </template>
     </TabTemplate>

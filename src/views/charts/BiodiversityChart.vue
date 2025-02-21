@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import EMChartContainer from './EMChartContainer.vue';
 
+import { useI18n } from 'vue-i18n';
+
 
 defineProps<{
     area: any;
     isActive: boolean;
 }>();
+
+const { t } = useI18n();
 
 function processData(stats: any) {
     const yData = stats.statisticResults.data.map((v: any) => v.total);
@@ -15,7 +19,6 @@ function processData(stats: any) {
 }
 
 const statisticType = 'IUCN_Biodiversity_species_richness';
-const title = 'Biodiversity - IUCN Species Richness';
 </script>
 
 <template>
@@ -23,7 +26,7 @@ const title = 'Biodiversity - IUCN Species Richness';
         :area="area"
         :statisticType="statisticType"
         :processData="processData"
-        :title="title"
+        :title="t('publicPagePreview.charts.biodiversity')"
         :isActive="isActive"
         type="bar"
     />

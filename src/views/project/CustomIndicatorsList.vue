@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { TrashIcon } from '@heroicons/vue/20/solid';
 
 import ConfirmModal from '@/views/ConfirmModal.vue';
@@ -10,6 +12,9 @@ const props = defineProps({
     modelValue: { type: null, default: undefined },
     edit: { type: Boolean, default: true }
 });
+
+
+const { t } = useI18n();
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -100,7 +105,9 @@ const newIndicatorValid = computed(() => {
     </ConfirmModal>
     <div :class="$attrs.class"
          class="border-2 border-gray-300 rounded-md px-4 py-4 bg-gray-100">
-        <h1 class="font-bold text-gray-700 text-lg pb-3">Custom indicators</h1>
+        <h1 class="font-bold text-gray-700 text-lg pb-3">
+            {{ $t('inputs.customIndicatorsList.title') }}
+        </h1>
         <div class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-black"
              v-if="modelValue">
             <div v-for="(indicator, i) in modelValue"
@@ -119,13 +126,13 @@ const newIndicatorValid = computed(() => {
         </div>
         <div v-else
              class="-mt-2 mb-2 text-gray-500 italic">
-            No custom indicators selected for this area
+            {{ $t('inputs.customIndicatorsList.noIndicators') }}
         </div>
 
         <button v-if="edit"
                 @click="() => { showIndicatorDialog = true }"
                 class="mt-4 px-3 text-sm py-1 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">
-            Add custom indicator
+            {{ $t('inputs.customIndicatorsList.addIndicator') }}
         </button>
     </div>
 </template>

@@ -4,6 +4,7 @@ type Select = string | number
 type MultiSelect = number[] // TODO fix select
 
 export default interface BestPractice {
+    language?: Select
     title?: Text
     objectives?: MultiSelect
     objectivesAdditionalInformation?: TextArea

@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
+import { useI18n } from 'vue-i18n'
+
 import TabTemplate from "../TabTemplate.vue"
 
 import TextFormGroup from "@/components/inputs/base/TextFormGroup.vue";
 import TextareaFormGroup from "@/components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "@/components/inputs/base/MultiSelectFormGroup.vue";
+import SelectFormGroup from "@/components/inputs/base/SelectFormGroup.vue";
 
 import type { MenuItem, RecursiveMenu } from "@/components/project/menus";
 
@@ -18,6 +21,8 @@ withDefaults(defineProps<{
 }>(), {
     edit: true
 });
+
+const { t } = useI18n();
 
 const store = useBestPracticesStore();
 const menus = useMenusStore().menus;
@@ -72,7 +77,7 @@ watch(() => store.projectAreas, areas => {
     if (areas) {
         areasMenu.value = areas.map((el: any, index: number) => ({
             value: index,
-            label: (Object.values(el)[0] as any).siteName || 'Area name not provided'
+            label: (Object.values(el)[0] as any).siteName || t('goodPractices.inputs.noSiteName')
         }));
     }
 });
@@ -132,64 +137,93 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
 </script>
 
 <template>
-    <TabTemplate title="Objectives and Context">
+    <TabTemplate :title="t('goodPractices.objectives.title')">
         <template #default>
             <template v-if="store.bestPractice">
-                <TextFormGroup v-model="store.bestPractice.title"
-                               label="1.1 Title"
-                               description="Title of the restoration practice."
-                               :required=true
-                               :edit=edit>
+                <SelectFormGroup
+                    class="border-b-2 pb-6 mb-6"
+                    :edit="edit"
+                    v-model="store.bestPractice.language"
+                    :options="[{ value: 'en', label: 'English' }, { value: 'es', label: 'Español' }, { value: 'fr', label: 'Français' }, { value: 'pt', label: 'Português' }]"
+                    :label="$t('newProjectDialog.fields.language')"
+                />
+                <TextFormGroup
+                    v-model="store.bestPractice.title"
+                    :label="`1.1 ${t('goodPractices.inputs.title.label')}`"
+                    :description="t('goodPractices.inputs.title.description')"
+                    :required=true
+                    :edit=edit
+                >
                 </TextFormGroup>
-                <MultiSelectFormGroup :options="menus.objectives"
-                                      v-model="store.bestPractice.objectives"
-                                      label="1.2 Objectives"
-                                      description="Please select the main objectives of the practice."
-                                      :required="true"
-                                      :edit=edit />
-                <TextareaFormGroup v-model="store.bestPractice.objectivesAdditionalInformation"
-                                   label="1.3 Objectives additional information"
-                                   description="Feel free to provide additional information on specific objectives of the practice."
-                                   :edit=edit />
-                <MultiSelectFormGroup :options="areasMenu"
-                                      v-model="store.bestPracticeAreaIdxs"
-                                      label="1.4 Areas"
-                                      :description="areasMenu.length ? 'Select the areas where the practice was implemented.' : 'No area was selected for the project.'"
-                                      :edit=edit />
-                <MultiSelectFormGroup :options="menus.ecosystems"
-                                      v-model="store.bestPractice.ecosystems"
-                                      label="1.5 Ecosystems"
-                                      description="Ecosystems where the practice was applied [Select all that apply]"
-                                      :edit=edit />
-                <MultiSelectFormGroup :options="ecosystemsMenu"
-                                      v-model="store.bestPractice.iucnEcosystems"
-                                      label="1.6 Ecosystems additional information"
-                                      description="Select the specific types of ecosystem(s) where the practice was applied."
-                                      :required="true"
-                                      :edit=edit />
-                <TextareaFormGroup v-model="store.bestPractice.context"
-                                   label="1.7 Context"
-                                   description="Please share any relevant ecological, socioeconomic and cultural context for the practice's implementation."
-                                   :edit=edit />
-                <MultiSelectFormGroup :options="activitiesMenu"
-                                      v-model="store.bestPractice.activities"
-                                      label="1.8 Activities"
-                                      :description="areasMenu.length ? 'Select the activities of your restoration initiative to which the practice belongs.' : 'No activity was selected for the project.'"
-                                      :required="true"
-                                      :edit=edit />
-                <MultiSelectFormGroup :options="menus.drivers"
-                                      v-model="store.bestPractice.drivers"
-                                      label="1.9 Degradation drivers"
-                                      description="Direct and indirect drivers of degradation addressed by the practice [Select all that apply]."
-                                      :required="true"
-                                      :edit=edit />
-                <TextareaFormGroup v-model="store.bestPractice.driversAdditionalInformation"
-                                   label="1.10 Degradation drivers additional information"
-                                   description="Please provide additional information to explain how the practice contributed to reducing the drivers of ecosystem degradation selected above."
-                                   :edit=edit />
+                <MultiSelectFormGroup
+                    :options="menus.objectives"
+                    v-model="store.bestPractice.objectives"
+                    :label="`1.2 ${t('goodPractices.inputs.objectives.label')}`"
+                    :description="t('goodPractices.inputs.objectives.description')"
+                    :required="true"
+                    :edit=edit
+                />
+                <TextareaFormGroup
+                    v-model="store.bestPractice.objectivesAdditionalInformation"
+                    :label="`1.3 ${t('goodPractices.inputs.objectivesAdditionalInformation.label')}`"
+                    :description="t('goodPractices.inputs.objectivesAdditionalInformation.description')"
+                    :edit=edit
+                />
+                <MultiSelectFormGroup
+                    :options="areasMenu"
+                    v-model="store.bestPracticeAreaIdxs"
+                    :label="`1.4 ${t('goodPractices.inputs.areas.label')}`"
+                    :description="areasMenu.length ? t('goodPractices.inputs.areas.description') : t('goodPractices.inputs.areas.noAreasSelected')"
+                    :edit=edit
+                />
+                <MultiSelectFormGroup
+                    :options="menus.ecosystems"
+                    v-model="store.bestPractice.ecosystems"
+                    :label="`1.5 ${t('goodPractices.inputs.ecosystems.label')}`"
+                    :description="t('goodPractices.inputs.ecosystems.description')"
+                    :edit=edit
+                />
+                <MultiSelectFormGroup
+                    :options="ecosystemsMenu"
+                    v-model="store.bestPractice.iucnEcosystems"
+                    :label="`1.6 ${t('goodPractices.inputs.iucnEcosystems.label')}`"
+                    :description="t('goodPractices.inputs.iucnEcosystems.description')"
+                    :required="true"
+                    :edit=edit
+                />
+                <TextareaFormGroup
+                    v-model="store.bestPractice.context"
+                    :label="`1.7 ${t('goodPractices.inputs.context.label')}`"
+                    :description="t('goodPractices.inputs.context.description')"
+                    :edit=edit
+                />
+                <MultiSelectFormGroup
+                    :options="activitiesMenu"
+                    v-model="store.bestPractice.activities"
+                    :label="`1.8 ${t('goodPractices.inputs.activities.label')}`"
+                    :description="areasMenu.length ? t('goodPractices.inputs.activities.description') : t('goodPractices.inputs.activities.noActivitiesSelected')"
+                    :required="true"
+                    :edit=edit
+                />
+                <MultiSelectFormGroup
+                    :options="menus.drivers"
+                    v-model="store.bestPractice.drivers"
+                    :label="`1.9 ${t('goodPractices.inputs.drivers.label')}`"
+                    :description="t('goodPractices.inputs.drivers.description')"
+                    :required="true"
+                    :edit=edit
+                />
+                <TextareaFormGroup
+                    v-model="store.bestPractice.driversAdditionalInformation"
+                    _label="1.10 Degradation drivers additional information"
+                    _description="Please provide additional information to explain how the practice contributed to reducing the drivers of ecosystem degradation selected above."
+                    :label="`1.10 ${t('goodPractices.inputs.driversAdditionalInformation.label')}`"
+                    :description="t('goodPractices.inputs.driversAdditionalInformation.description')"
+                    :edit=edit
+                />
             </template>
         </template>
     </TabTemplate>
+    <!-- <pre class="text-white">{{JSON.stringify(store.bestPractice, null, 2)}}</pre> -->
     <!-- <pre class="text-white">{{JSON.stringify(store.projectAreas, null, 2)}}</pre> -->
 </template>
-

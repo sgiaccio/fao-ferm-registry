@@ -30,7 +30,7 @@ async function getUploadedFiles() {
         uploadedFiles.value = await listProjectFiles(props.projectId, props.folder, accessToken);
     } catch (error) {
         console.error(error);
-        alert('Failed to load files: ' + error);
+        toast.error('Failed to load files: ' + error);
     }
 }
 
@@ -224,7 +224,7 @@ function notify(nFiles: number) {
             <p class="text-gray-400 italic">No files uploaded yet</p>
         </div> -->
         <template
-            v-slot:info
+            #info
             v-if="$slots.info"
         >
             <slot name="info" />

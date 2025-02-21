@@ -2,6 +2,8 @@
 import { computed } from 'vue';
 import { useRoute, onBeforeRouteLeave } from 'vue-router';
 
+import { useI18n } from 'vue-i18n';
+
 import router from '@/router';
 import { defineAsyncComponent } from 'vue';
 import {
@@ -30,47 +32,49 @@ import { XMarkIcon } from '@heroicons/vue/16/solid';
 
 import { useProjectStore } from '@/stores/project';
 
-// import ResultsView from './ResultsView.vue';
+
+const { t } = useI18n();
+
 const ResultsView = defineAsyncComponent(() => import('./ResultsView.vue'));
 
 const navigation = [{
-    name: 'Planning & Assessment',
-    color: 'bg-yellow-200',
+    name: computed(() => t('project.planningAndAssessment')),
+    // color: 'bg-yellow-200',
     tabs: [{
-        name: 'General',
+        name: computed(() => t('projectRegistration.title')),
         path: 'general',
         icon: InformationCircleIcon,
         solidIcon: InformationCircleIconSolid
     }, {
-        name: 'Area & Ecosystems',
+        name: computed(() => t('areaAndEcosystems.title')),
         path: 'area',
         icon: GlobeAltIcon,
         solidIcon: GlobeAltIconSolid
     }, {
-        name: 'Characteristics',
+        name: computed(() => t('characteristics.title')),
         path: 'characteristics',
         icon: ListBulletIcon,
         solidIcon: ListBulletIconSolid
     }]
 }, {
-    name: 'Implementation',
-    color: 'bg-green-200',
+    name: computed(() => t('project.implementation')),
+    // color: 'bg-green-200',
     tabs: [{
-        name: 'Activities',
+        name: computed(() => t('activities.title')),
         path: 'activities',
         icon: WrenchScrewdriverIcon,
         solidIcon: WrenchScrewdriverIconSolid
     }]
 }, {
-    name: 'Monitoring & Reporting',
-    color: 'bg-blue-200',
+    name: computed(() => t('project.monitoringAndReporting')),
+    // color: 'bg-blue-200',
     tabs: [{
-        name: 'Indicators',
+        name: computed(() => t('indicators.title')),
         path: 'indicators',
         icon: ChartBarIcon,
         solidIcon: ChartBarIconSolid
     }, {
-        name: 'Monitoring',
+        name: computed(() => t('monitoring.title')),
         path: 'monitoring',
         icon: EyeIcon,
         solidIcon: EyeIconSolid
@@ -128,7 +132,6 @@ function closeModal() {
 }
 </script>
 
-
 <template>
     <div class="lg:inset-0">
         <div class="hidden sm:fixed sm:inset-y-0 sm:z-40 sm:flex sm:w-16 lg:w-60 lg:flex-col grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 mt-16">
@@ -157,7 +160,7 @@ function closeModal() {
                         </div>
                     </div>
                 </div>
-                <!-- add public page preview link -->
+                <!-- Public page preview link -->
                 <div class="flex gap-x-3 rounded-md text-sm leading-6 font-semibold justify-center">
                     <div
                         @click="openPreviewModal"
@@ -201,7 +204,7 @@ function closeModal() {
                             </li>
                         </ul>
                     </li>
-                    <!-- add public page preview link -->
+                    <!-- Public page preview link -->
                     <li class="border-t border-gray-200 pt-6">
                         <div
                             class="group flex gap-x-3 rounded-md text-sm leading-6 font-semibold cursor-pointer hover:text-indigo-600 hover:bg-gray-50"
@@ -211,7 +214,7 @@ function closeModal() {
                                 class="h-6 w-6 shrink-0"
                                 aria-hidden="true"
                             />
-                            Public Page Preview
+                            {{ t('publicPagePreview.title') }}
                         </div>
                     </li>
                 </ul>

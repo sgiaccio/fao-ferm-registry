@@ -49,7 +49,7 @@ async function getUploadedFiles() {
         });
     } catch (error) {
         console.error(error);
-        alert('Failed to load files: ' + error);
+        toast.error('Failed to load files: ' + error);
     }
 }
 
@@ -341,7 +341,7 @@ async function makeCover(path: string) {
             </div>
         </div>
         <template
-            v-slot:info
+            #info
             v-if="$slots.info"
         >
             <slot name="info" />

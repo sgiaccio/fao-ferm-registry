@@ -1,7 +1,4 @@
-<script
-    setup
-    lang="ts"
->
+<script setup lang="ts">
 import { onMounted } from 'vue';
 
 import {
@@ -11,9 +8,14 @@ import {
 
 import { MapPinIcon, GlobeAltIcon, MagnifyingGlassIcon, BookOpenIcon } from '@heroicons/vue/24/solid'
 
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import WavyDivider from '@/views/WavyDivider.vue';
 import Footer from '@/views/Footer.vue'
 
+import { useI18n } from 'vue-i18n';
+
+
+const { t } = useI18n();
 
 const points = [
     {
@@ -262,20 +264,11 @@ async function initMap() {
     });
 }
 
-onMounted(async () => {
-    // if (!window.google) {
-    //     (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({ key: "AIzaSyAt432GRajoVZg2gNtdyQnZyICbhq66H0M", v: "weekly" });
-    // }
-
-    initMap();
-});
+onMounted(initMap);
 </script>
 
 <template>
-    <div
-        class="bg-white"
-        v-once
-    >
+    <div class="bg-white">
         <header class="inset-x-0 top-0">
             <div class="overflow-hidden bg-none relative">
                 <img
@@ -284,10 +277,12 @@ onMounted(async () => {
                 >
                 <wavy-divider class="absolute -left-1 bottom-0" />
                 <div class="px-4 sm:px-12 pt-12 md:pb-4 pb-32">
-                    <!-- Logos -->
-                    <div class="relative w-full pl-10 flex mb-10">
+                    <!-- Logos  and Language Links -->
+                    <!-- <div class="relative w-full pl-10 flex mb-10"> -->
+                    <div class="relative w-full flex items-center justify-between mb-10">
+                        <!-- Logos -->
                         <div class="mb-2 sm:mb-5 mt-2 grid grid-flow-col gap-x-6 mx-auto md:mx-0 divide-x divide-gray-300">
-                            <div class="-ml-10 mr-3">
+                            <div class="-ml-10_ mr-3">
                                 <img
                                     src="@/assets/FERM_LOGO_MASTER_colour_white_EN.svg"
                                     alt="FERM logo"
@@ -307,9 +302,13 @@ onMounted(async () => {
                                 </a>
                             </div>
                         </div>
+                        <LanguageSwitcher />
                     </div>
-                    <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-5xl md:text-6xl lg:text-7xl uppercase shadow-black text-shadow-sm">Framework for Ecosystem<br>Restoration Monitoring</div>
-
+                    <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-5xl md:text-6xl lg:text-7xl uppercase shadow-black text-shadow-sm">
+                        {{ t('fermRegistryLong1') }}
+                        <br>
+                        {{ t('fermRegistryLong2') }}
+                    </div>
                     <div class="relative text-white mt-16 max-w-sm md:max-w-2xl mx-auto grid grid-rows-3 gap-y-4 md:gap-y-8 md:grid-cols-2 md:gap-x-10">
                         <div class="bg-ferm-green-light/70 rounded-lg p-4 md:py-5 text-left transition-colors hover:bg-ferm-green-light shadow backdrop-blur order-1 md:order-none">
                             <router-link :to="{ name: 'initiatives' }">
@@ -318,8 +317,14 @@ onMounted(async () => {
                                         <GlobeAltIcon class="w-12 h-12" />
                                     </div>
                                     <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
-                                        <div class="text-xl font-bold uppercase md:tracking-wide">Register</div>
-                                        <div class="text-sm md:text-base">Your restoration initiative and good practices</div>
+                                        <div class="text-xl font-bold uppercase md:tracking-wide">
+                                            <!-- Register -->
+                                            {{ t('home.register') }}
+                                        </div>
+                                        <div class="text-sm md:text-base">
+                                            {{ t('home.registerDescription') }}
+                                            <!-- Your restoration initiative and good practices -->
+                                        </div>
                                     </div>
                                 </div>
                             </router-link>
@@ -334,8 +339,12 @@ onMounted(async () => {
                                     <MapPinIcon class="w-12 h-12" />
                                 </div>
                                 <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
-                                    <div class="text-xl font-semibold uppercase md:tracking-wide">Visualize</div>
-                                    <div class="text-sm md:text-base">The latest geospatial data on restoration</div>
+                                    <div class="text-xl font-semibold uppercase md:tracking-wide">
+                                        {{ t('home.visualize') }}
+                                    </div>
+                                    <div class="text-sm md:text-base">
+                                        {{ t('home.visualizeDescription') }}
+                                    </div>
                                 </div>
                             </div>
                         </a>
@@ -349,8 +358,12 @@ onMounted(async () => {
                                     <BookOpenIcon class="w-12 h-12" />
                                 </div>
                                 <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
-                                    <div class="text-xl font-semibold uppercase md:tracking-wide">User guide</div>
-                                    <div class="text-sm md:text-base">Download the FERM user guide</div>
+                                    <div class="text-xl font-semibold uppercase md:tracking-wide">
+                                        {{ t('home.userGuide') }}
+                                    </div>
+                                    <div class="text-sm md:text-base">
+                                        {{ t('home.userGuideDescription') }}
+                                    </div>
                                 </div>
                             </div>
                         </a>
@@ -363,8 +376,12 @@ onMounted(async () => {
                                     <MagnifyingGlassIcon class="w-12 h-12" />
                                 </div>
                                 <div class="flex flex-col md:place-content-between gap-y-2 md:gap-y-3">
-                                    <div class="text-xl font-semibold uppercase md:tracking-wide">Search</div>
-                                    <div class="text-sm md:text-base">For initiatives and good practices on ecosystem restoration</div>
+                                    <div class="text-xl font-semibold uppercase md:tracking-wide">
+                                        {{ t('home.search') }}
+                                    </div>
+                                    <div class="text-sm md:text-base">
+                                        {{ t('home.searchDescription') }}
+                                    </div>
                                 </div>
                             </div>
                         </router-link>
@@ -374,24 +391,38 @@ onMounted(async () => {
         </header>
     </div>
     <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-6 lg:py-8 font-roboto">
-        <!-- We've used 3xl here, but feel free to try other max-widths based on your needs -->
         <div class="mx-auto max-w-5xl">
 
-            <div class="px-4 lg:px-0 mt-10 text-lg leading-snug font-akrobat_ font-semibold_ text-center max-w-2xl mx-auto text-gray-700">The FERM consists of a geospatial platform and a registry of restoration initiatives. It is the official monitoring platform for tracking global progress and disseminating good practices for the UN Decade on Ecosystem Restoration. It also supports countries in reporting areas under restoration for the Kunming-Montreal Global Biodiversity Framework Target 2.</div>
+            <div class="px-4 lg:px-0 mt-10 text-lg leading-snug font-akrobat_ font-semibold_ text-center max-w-2xl mx-auto text-gray-700">
+                {{ t('home.description') }}
+            </div>
             <div class="px-4 sm:px-0 mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
                 <div class="bg-ferm-blue-light p-4 rounded-lg text-sm font-base flex flex-col shadow">
-                    <div>
-                        The <span class="font-semibold">FERM Registry</span> provides a harmodized data collection mechanism to aggregate data from restoration platforms.
-                    </div>
+                    <i18n-t
+                        keypath="home.fermRegistryDescription"
+                        tag="div"
+                    >
+                        <template #fermRegistry>
+                            <span class="font-semibold">{{ t('fermRegistry') }}</span>
+                        </template>
+                    </i18n-t>
                     <div class="flex-grow flex h-full justify-end items-end">
                         <BuildingLibraryIcon class="text-white h-10 w-10" />
                     </div>
                 </div>
 
                 <div class="bg-ferm-green-light p-4 rounded-lg text-sm font-base flex flex-col shadow">
-                    <div>
-                        The <span class="font-semibold">FERM Platform</span> is built on FAO's corporate <span class="whitespace-nowrap">Hand-In-Hand</span> geospatial architecture and provides accessible and transparent information for restoration practitioners.
-                    </div>
+                    <i18n-t
+                        keypath="home.fermPlatformDescription"
+                        tag="div"
+                    >
+                        <template #fermPlatform>
+                            <span class="font-semibold">{{ t('home.fermPlatform') }}</span>
+                        </template>
+                        <template #handInHand>
+                            <span class="whitespace-nowrap">{{ t('home.handInHand') }}</span>
+                        </template>
+                    </i18n-t>
                     <div class="flex-grow flex h-full justify-end items-end">
                         <GlobeEuropeAfricaIcon class="text-gray-100 h-10 w-10" />
                     </div>
@@ -399,17 +430,26 @@ onMounted(async () => {
 
 
                 <div class="p-4 font-akrobat font-semibold text-white col-span-2 rounded-lg text-sm bg-[url('/soil.jpg')] bg-cover bg-center flex lg:h-full justify-end items-end h-48">
-                    <div class="px-16 aligh-bottom text-center bottom-3 text-lg sm:text-xl brightness-100 z-50 sm:leading-tight text-shadow-sm shadow-black">
-                        Join <a
-                            href="https://twitter.com/hashtag/GenerationRestoration"
-                            class="underline hover:text-yellow-300"
-                            target="_blank"
-                        >#GenerationRestoration</a> and share your restoration initiative and good practices with the world.
-                    </div>
+                    <i18n-t
+                        keypath="home.joinGenerationRestoration"
+                        tag="div"
+                        class="px-16 aligh-bottom text-center bottom-3 text-lg sm:text-xl brightness-100 z-50 sm:leading-tight text-shadow-sm shadow-black"
+                    >
+                        <template #generationRestoration>
+                            <a
+                                href="https://twitter.com/hashtag/GenerationRestoration"
+                                class="underline hover:text-yellow-300"
+                                target="_blank"
+                            >#GenerationRestoration</a>
+                        </template>
+                    </i18n-t>
                 </div>
 
                 <div class="col-span-2 h-72 rounded-lg bg-white border-2_ border-ferm-blue-dark-300 overflow-hidden shadow flex flex-col">
-                    <div class="py-4 px-8 font-akrobat font-bold text-xl bg-ferm-blue-light-200">New Initiatives</div>
+                    <div class="py-4 px-8 font-akrobat font-bold text-xl bg-ferm-blue-light-200">
+                        <!-- New Initiatives -->
+                        {{ t('home.newInitiatives') }}
+                    </div>
                     <div class="overflow-y-auto px-4 py-2">
                         <ul
                             role="list"
@@ -422,8 +462,8 @@ onMounted(async () => {
                             >
                                 <div class="flex flex-col">
                                     <div class="font-bold text-ferm-blue-dark">{{ flagship.name }}</div>
-                                    <div><span class="font-semibold text-ferm-blue-dark-900">Countries: </span>{{ flagship.memberStates }}</div>
-                                    <div><span class="font-semibold text-ferm-blue-dark-900">Ecosystems: </span>{{ flagship.iucnBiomes }}</div>
+                                    <div><span class="font-semibold text-ferm-blue-dark-900">{{ t('home.countries') }}: </span>{{ flagship.memberStates }}</div>
+                                    <div><span class="font-semibold text-ferm-blue-dark-900">{{ t('home.ecosystems') }}: </span>{{ flagship.iucnBiomes }}</div>
                                 </div>
                             </li>
                         </ul>

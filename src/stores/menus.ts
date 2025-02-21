@@ -1,31 +1,59 @@
 import { defineStore } from "pinia";
-import { getMenus } from "@/firebase/firestore";
 
 import type { Menu } from "@/components/project/menus";
 
-// Define the type guard functions
-// function isMenu(menu: Menu | RecursiveMenu): menu is Menu {
-//     return !menu.some((item) => 'items' in item);
-// }
+import { t } from "@/lib/i18n";
 
-// function isRecursiveMenu(menu: Menu | RecursiveMenu): menu is RecursiveMenu {
-//     return !isMenu(menu);
-// }
+import keys from "@/assets/locales/menu_keys.json";
+
+import { getI18n } from '@/lib/i18n';
 
 export const useMenusStore = defineStore({
     id: "edit",
     state: () => ({
         loaded: false,
         menus: {} as { [key: string]: Menu },
-        // recursiveMenus: {} as { [key: string]: RecursiveMenu },
     }),
     actions: {
         async fetchMenus() {
-            const tMenus = await getMenus();
+            const i18n = getI18n();
+            // add the menus messages to vue-i18n dynamically
+            const locale = i18n.global.locale.value;
+            const menuMessages = await fetch(`https://cdn.tolg.ee/fa9930d246d28584262908e4edbb5568/${locale}.json`).then(res => res.json());;
 
-            // iterate through the tMenus array
-            Object.entries(tMenus).forEach(([id, menu]) => {
-                this.menus[id] = menu;
+            // Merge the menu messages into the existing messages
+            const existingMessages = i18n.global.getLocaleMessage(locale);
+            i18n.global.setLocaleMessage(locale, {
+                ...existingMessages,
+                ...menuMessages
+            });
+
+            const recurseMenuKeys = function (menu: any, path: string) {
+                const ret: any[] = []
+                Object.values(menu).forEach((menuItem: any) => {
+                    const newItem: any = {};
+                    if (menuItem.value) {
+                        newItem.value = menuItem.value;
+                    }
+                    if (menuItem.label) {
+                        newItem.label = t(menuItem.label)
+                    }
+                    // if (menuItem.info) {
+                    //     newItem.info = t(menuItem.info)
+                    // }
+                    if (menuItem.dangerousHtmlLabel) {
+                        newItem.dangerousHtmlLabel = t(menuItem.dangerousHtmlLabel, menuItem.templates)
+                    }
+                    if (menuItem.items) {
+                        newItem.items = recurseMenuKeys(menuItem.items, `${path}.${menuItem.label}`);
+                    }
+                    ret.push(newItem);
+                });
+                return ret;
+            }
+
+            Object.entries(keys).forEach(([id, menu]) => {
+                this.menus[id] = recurseMenuKeys(menu, '');
             });
 
             this.loaded = true;

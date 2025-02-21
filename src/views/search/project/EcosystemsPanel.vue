@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { useMenusStore } from '@/stores/menus';
 
 import ResultPanel from './ResultPanel.vue';
@@ -14,11 +16,14 @@ import marine from '@/assets/iucn_realms/marine.svg';
 import freshwater from '@/assets/iucn_realms/freshwater.svg';
 import subterranean from '@/assets/iucn_realms/subterranean.svg';
 
-const { menus } = useMenusStore();
 
 const props = defineProps<{
     areas: any[]
 }>();
+
+const { t } = useI18n();
+
+const { menus } = useMenusStore();
 
 function getRealmImages(value: string) {
     switch (value) {
@@ -63,13 +68,15 @@ const groupedBiomes = computed(() => {
     </div> -->
 
     <ResultPanel
-        title="Biomes"
+        :title="t('publicPagePreview.ecosystemsPanel.title')"
         titleLink="https://global-ecosystems.org"
     >
         <div
             v-if="groupedBiomes.length === 0"
             class="italic text-gray-500"
-        >No ecosystems</div>
+        >
+            {{ t('publicPagePreview.ecosystemsPanel.noBiomes') }}
+    </div>
         <template v-else>
             <div
                 v-for="realm in groupedBiomes"

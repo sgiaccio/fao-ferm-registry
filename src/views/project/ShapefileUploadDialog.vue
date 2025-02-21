@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
+import { toast } from 'vue3-toastify';
+
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
 import { useAuthStore } from '../../stores/auth';
@@ -15,9 +19,6 @@ import { DocumentIcon, ExclamationTriangleIcon } from '@heroicons/vue/20/solid';
 import FileUploadFormGroup from '@/components/inputs/base/FileUploadFormGroup.vue';
 
 
-const authStore = useAuthStore();
-const projectStore = useProjectStore();
-
 const props = withDefaults(defineProps<{
     open?: boolean
 }>(), {
@@ -25,6 +26,11 @@ const props = withDefaults(defineProps<{
 });
 
 const emit = defineEmits(['cancel', 'done']);
+
+const { t } = useI18n();
+
+const authStore = useAuthStore();
+const projectStore = useProjectStore();
 
 const selectedFile = ref<File | null>(null);
 const dissolve = ref(true);
@@ -127,7 +133,6 @@ async function uploadFile() {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${authStore.user.accessToken}`
-                // 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             },
             body: formData
         }).then(response => {
@@ -155,10 +160,19 @@ async function uploadFile() {
             // get the list of intersecting countries and put it in the store
             projectStore.updateCountries();
 
-            alert(`${uuidsArr.length} files uploaded. Please remember to click "Save and close" otherwise the data will be lost.`);
+            toast.success(`</p>${t('inputs.aoi.uploadSuccess', { fileCount: uuidsArr.length })}</p><p>${t('inputs.aoi.reminder')}</p>`, {
+                dangerouslyHTMLString: true,
+                position: 'top-right',
+                autoClose: false
+            });
         }).catch(e => {
-            alert('Error uploading the Shapefile: ' + e.message);
+            toast.error(`${t('inputs.aoi.uploadError', { error: e.message })}`, {
+                position: 'top-right',
+                autoClose: false
+            });
             console.error(e);
+            // uploadStatus.value = 'idle';
+        }).finally(() => {
             uploadStatus.value = 'idle';
         });
 }
@@ -230,21 +244,54 @@ const areaIdField = ref<String | null>(null);
                                     <DialogTitle
                                         as="h3"
                                         class="text-lg font-medium leading-6 text-gray-900"
-                                    >Upload shapefile
+                                    >
+                                        {{ t('inputs.aoi.uploadShapefile') }}
                                     </DialogTitle>
                                     <div>
-                                        <div class="text-xs mt-3 text-gray-800 font-light">
+                                        <!-- <div class="text-xs mt-3 text-gray-800 font-light">
                                             <p class="mb-2">Please upload a <span class="font-semibold">zip file</span> containing
                                                 the <span class="font-semibold text-blue-500">.shp, .shx,
                                                     .dbf</span>, and .<span class="font-semibold text-blue-500">prj</span> files.
                                             </p>
                                             <p class="mb-2">The shapefile can contain one or many <span class="font-semibold">points</span>, <span class="font-semibold">polygons</span>, or <span class="font-semibold">multipolygons</span>.
                                             </p>
-                                            <!-- <p class="mb-2">For each feature on the shapefile, one area will be
+                                            <!- - <p class="mb-2">For each feature on the shapefile, one area will be
                                                 added to the registry.
-                                            </p> -->
+                                            </p> - ->
                                             <p class="mb-4">If possible, the shapefile should be in <span class="font-semibold">geographic projection</span>
                                                 (latitude/longitude). If not, the system will try to reproject it.
+                                            </p>
+                                        </div> -->
+                                        <div class="text-xs mt-3 text-gray-800 font-light">
+                                            <p class="mb-2">
+                                                <i18n-t keypath="inputs.aoi.shapefileUpload.instruction1">
+                                                    <template #zipFile>
+                                                        <span class="font-semibold">
+                                                            {{ t('inputs.aoi.shapefileUpload.zipFile') }}
+                                                        </span>
+                                                    </template>
+                                                    <template #shapefileExtensions>
+                                                        <span class="font-semibold text-blue-700">
+                                                            {{ $t('inputs.aoi.shapefileUpload.shapefileExtensions') }}
+                                                        </span>
+                                                    </template>
+                                                </i18n-t>
+                                            </p>
+                                            <p class="mb-2">
+                                                <i18n-t keypath="inputs.aoi.shapefileUpload.instruction2">
+                                                    <template #geometryTypes>
+                                                        <span class="font-semibold">{{ t('inputs.aoi.shapefileUpload.geometryTypes') }}</span>
+                                                    </template>
+                                                </i18n-t>
+                                            </p>
+                                            <p class="mb-4">
+                                                <i18n-t keypath="inputs.aoi.shapefileUpload.instruction3">
+                                                    <template #projectionType>
+                                                        <span class="font-semibold">
+                                                            {{ t('inputs.aoi.shapefileUpload.projectionType') }}
+                                                        </span>
+                                                    </template>
+                                                </i18n-t>
                                             </p>
                                         </div>
                                         <div class="flex-grow focus-within:z-10">
@@ -256,7 +303,7 @@ const areaIdField = ref<String | null>(null);
                                                 class="w-full"
                                             >
                                                 <template v-if="selectedFile === null">
-                                                    Drop file here or click to upload
+                                                    {{ t('inputs.aoi.shapefileUpload.dropFile') }}
                                                 </template>
                                                 <template v-else>
                                                     <DocumentIcon class="h-5 w-5 mr-1.5 text-gray-600" />

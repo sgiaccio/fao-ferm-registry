@@ -242,8 +242,8 @@ export const useProjectStore = defineStore('', () => {
         loaded.value = true;
     }
 
-    async function createProject(groupId: string, title: string, reportingLine: string, termsAndConditionsAccepted: boolean) {
-        if (!groupId || !title || !reportingLine || !termsAndConditionsAccepted) {
+    async function createProject(groupId: string, title: string, reportingLine: string, termsAndConditionsAccepted: boolean, language: string) {
+        if (!groupId || !title || !reportingLine || !termsAndConditionsAccepted || !language) {
             throw new Error('Missing required fields');
         }
 
@@ -255,14 +255,15 @@ export const useProjectStore = defineStore('', () => {
         batch.set(projectRef, {
             group: groupId,
             project: {
-                title: title
+                title
             },
             indicators: [],
             results: {},
-            reportingLine: reportingLine,
+            reportingLine,
             created_by: authStore.user!.uid,
             created_by_name: authStore.user!.displayName,
-            termsAndConditionsAccepted: termsAndConditionsAccepted,
+            language,
+            termsAndConditionsAccepted,
             createTime: serverTimestamp(),
             updateTime: serverTimestamp(),
             status: 'draft'

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, withDefaults, defineProps } from 'vue';
+import { ref } from 'vue';
 
 
 const props = withDefaults(defineProps<{
@@ -61,7 +61,15 @@ function handleFiles() {
         @click="openFileDialog"
         :class="isDragging ? 'bg-ferm-blue-dark-200' : ''"
     >
-        Drop {{ files?.length ? 'more' : '' }} file{{ multiple ? 's' : '' }} here or click to upload
+        <i18n-t keypath="inputs.upload.uploadPrompt">
+            <template #fileText>
+                {{
+                    files?.length
+                        ? $t('inputs.upload.fileText.more')
+                        : $t(`inputs.upload.fileText.${multiple ? 'multiple' : 'single'}`)
+                }}
+            </template>
+        </i18n-t>
         <input
             ref="fileInput"
             type="file"

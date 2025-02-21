@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
+
+import { useI18n } from 'vue-i18n';
+
 import { useRoute } from 'vue-router';
 
 import router from '../../router';
@@ -9,15 +12,17 @@ import { useUserPrefsStore } from '@/stores/userPreferences';
 import Guidelines from './Guidelines.vue';
 
 
+const { t } = useI18n();
+
 const route = useRoute();
 const userPrefsStore = useUserPrefsStore()
 
 const tabs = [
-    { name: 'Objectives and Context', html: 'Objectives<br>and Context', path: 'objectives' },
-    { name: 'Methodology', html: 'Methodology', path: 'methodology' },
-    { name: 'Key Factors, Constraints and Lessons Learned', html: 'Key Factors, Constraints<br>and Lessons Learned', path: 'key-factors' },
-    { name: 'Benefits and Validation', html: 'Benefits<br>and Validation', path: 'benefits' },
-    { name: 'Additional Resources', html: 'Additional Resources', path: 'additional-resources' }
+    { name: t('goodPractices.objectives.title'),path: 'objectives' },
+    { name: 'Methodology', path: 'methodology' },
+    { name: 'Key Factors, Constraints and Lessons Learned', path: 'key-factors' },
+    { name: 'Benefits and Validation', path: 'benefits' },
+    { name: 'Additional Resources', path: 'additional-resources' }
 ];
 
 const currentRouteIdx = computed(() => tabs.findIndex(tab => route.path.endsWith(tab.path)));
