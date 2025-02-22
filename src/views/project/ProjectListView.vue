@@ -120,10 +120,10 @@ async function showBestPractices(projectId: string) {
 
 const showNewInitiativeDialog = ref(false);
 
-async function createProject({ title, reportingLine, group }: { title: string, reportingLine: string, group: string }) {
+async function createProject({ title, reportingLine, group, language }: { title: string, reportingLine: string, group: string, language: string }) {
     showNewInitiativeDialog.value = false;
 
-    if (!title || !group || !reportingLine) {
+    if (!title || !group || !reportingLine || !language) {
         alert('Please fill in all fields');
         return;
     }
@@ -134,7 +134,7 @@ async function createProject({ title, reportingLine, group }: { title: string, r
     }
 
     try {
-        await projectStore.createProject(group, title, reportingLine, termsAndConditionAccepted.value);
+        await projectStore.createProject(group, title, reportingLine, termsAndConditionAccepted.value, language);
         router.push({ name: 'projectInfoEdit', params: { id: projectStore.id } });
     } catch (e) {
         alert('Error creating project');

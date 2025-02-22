@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
-// import { SUPPORT_LOCALES } from '@/lib/i18n';
-const SUPPORT_LOCALES = ['en']; // Keep this until other locales are ready
+import { SUPPORT_LOCALES } from '@/lib/i18n';
+
 
 const { locale } = useI18n();
-
-
 
 // get the router
 import { useRouter } from 'vue-router';
@@ -21,6 +19,7 @@ function forwardToLanguage(lang: string) {
     if (currentName) {
         router.push({ name: currentName, query: currentQuery, hash: currentHash, params: { locale: lang } });
     } else {
+        // fallback in case the current route has no name - all routes should have a name anyway
         router.push({ name: 'home', query: currentQuery, hash: currentHash, params: { locale: lang } });
     }
 }

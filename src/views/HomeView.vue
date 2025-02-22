@@ -417,7 +417,7 @@ onMounted(initMap);
                         tag="div"
                     >
                         <template #fermPlatform>
-                            <span class="font-semibold">{{ t('fermPlatform') }}</span>
+                            <span class="font-semibold">{{ t('home.fermPlatform') }}</span>
                         </template>
                         <template #handInHand>
                             <span class="whitespace-nowrap">{{ t('home.handInHand') }}</span>

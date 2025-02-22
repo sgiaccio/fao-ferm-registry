@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { nextTick } from 'vue';
+import { computed, nextTick } from 'vue';
+
+import { useI18n } from 'vue-i18n';
+
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { CheckIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue';
 
 
-withDefaults(defineProps<{
+const { t } = useI18n();
+
+const props = withDefaults(defineProps<{
     open: boolean
     type?: 'success' | 'error' | 'warning' | 'info'
     title?: string
@@ -20,10 +25,11 @@ withDefaults(defineProps<{
     okButtonText: 'OK',
     okButtonEnabled: true,
     cancelButtonEnabled: true,
-    cancelButtonText: 'Cancel'
 });
 
 const emit = defineEmits(['closed', 'cancel']); // TODO: add 'close' event
+
+const cancelButtonLabel = computed(() => props.cancelButtonText ?? t('edit.cancel'));
 
 // 2x closing is needed because of the 2x TransitionChild and 1 in TransitionRoot.
 // Setting after-leave in TransitionRoot only, causes it to be called three times. I don't know why.
@@ -146,7 +152,7 @@ function cancel() {
                                     :class="[cancelButtonEnabled ? 'text-gray-900 bg-white hover:bg-gray-50' : 'bg-gray-200 text-gray-500', 'mt-3 inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 sm:mt-0 sm:w-auto']"
                                     @click="cancel()"
                                     ref="cancelButtonRef"
-                                >{{ cancelButtonText }}</button>
+                                >{{ cancelButtonLabel }}</button>
                             </div>
                         </DialogPanel>
                     </TransitionChild>

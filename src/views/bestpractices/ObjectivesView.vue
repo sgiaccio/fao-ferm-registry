@@ -8,6 +8,7 @@ import TabTemplate from "../TabTemplate.vue"
 import TextFormGroup from "@/components/inputs/base/TextFormGroup.vue";
 import TextareaFormGroup from "@/components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "@/components/inputs/base/MultiSelectFormGroup.vue";
+import SelectFormGroup from "@/components/inputs/base/SelectFormGroup.vue";
 
 import type { MenuItem, RecursiveMenu } from "@/components/project/menus";
 
@@ -139,6 +140,13 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
     <TabTemplate :title="t('goodPractices.objectives.title')">
         <template #default>
             <template v-if="store.bestPractice">
+                <SelectFormGroup
+                    class="border-b-2 pb-6 mb-6"
+                    :edit="edit"
+                    v-model="store.bestPractice.language"
+                    :options="[{ value: 'en', label: 'English' }, { value: 'es', label: 'Español' }, { value: 'fr', label: 'Français' }, { value: 'pt', label: 'Português' }]"
+                    :label="$t('newProjectDialog.fields.language')"
+                />
                 <TextFormGroup
                     v-model="store.bestPractice.title"
                     :label="`1.1 ${t('goodPractices.inputs.title.label')}`"
@@ -216,5 +224,6 @@ watch(() => store.bestPracticeAreaIdxs, areas => {
             </template>
         </template>
     </TabTemplate>
+    <!-- <pre class="text-white">{{JSON.stringify(store.bestPractice, null, 2)}}</pre> -->
     <!-- <pre class="text-white">{{JSON.stringify(store.projectAreas, null, 2)}}</pre> -->
 </template>

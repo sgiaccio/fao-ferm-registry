@@ -11,9 +11,9 @@ export function getI18n() {
 export const SUPPORT_LOCALES = ['en', 'es', 'fr', 'pt'];
 const defaultLocale = 'en';
 
-function getNestedValue(obj: any, path: string) {
-    return path.split('.').reduce((acc, key) => acc && acc[key] ? acc[key] : null, obj);
-}
+// function getNestedValue(obj: any, path: string) {
+//     return path.split('.').reduce((acc, key) => acc && acc[key] ? acc[key] : null, obj);
+// }
 
 // function flatJsonResolver(obj: any, path: string) {
 //     const result = obj[path] || getNestedValue(obj, path);
@@ -105,7 +105,7 @@ function setI18nLanguage(locale: string) {
 
 async function loadLocaleMessages(locale: string) {
     try {
-        // load locale messages from Tolgee
+        // load locale messages from Tolgee (excluding menus)
         const fetchPromise = fetch(`https://cdn.tolg.ee/1f21497d5e2085ba6c2a858e2647bc02/${locale}.json`);
         const response = await fetchPromise;
         const messages = await response.json();
