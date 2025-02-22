@@ -1,14 +1,31 @@
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+</script>
+
 <template>
     <p class="pt-4">
-        <span class="font-bold">Realms</span> are the five major components of the biosphere that differ fundamentally in ecosystem organization and function: terrestrial, freshwater, marine, subterranean and atmospheric.
+        <i18n-t keypath="areaAndEcosystems.info.realms">
+            <template v-slot:realms>
+                <span class="font-bold">{{ t('areaAndEcosystems.info.realmsTitle') }}</span>
+            </template>
+        </i18n-t>
     </p>
     <p class="pt-4">
-        <span class="font-bold">Biomes</span> are components of a realm united by one or a few common major ecological drivers that regulate major ecosystem functions and ecological processes.
+        <i18n-t keypath="areaAndEcosystems.info.biomes">
+            <template v-slot:biomes>
+                <span class="font-bold">{{ t('areaAndEcosystems.info.biomesTitle') }}</span>
+            </template>
+        </i18n-t>
     </p>
     <p class="pt-4">
-        <span class="font-bold">Ecosystem functional groups</span> are a group of related ecosystems within a biome that share common ecological drivers promoting convergence of ecosystem properties that characterize the group.
+        <i18n-t keypath="areaAndEcosystems.info.ecosystemGroups">
+            <template v-slot:ecosystemGroups>
+                <span class="font-bold">{{ t('areaAndEcosystems.info.ecosystemGroupsTitle') }}</span>
+            </template>
+        </i18n-t>
     </p>
     <p class="pt-4">
-        If spatially explicit information about an area is provided and represents the entirety of the area under restoration (i.e. points or polygons of the areas are provided, the button “get biomes in this area” can be used to automatically generate a map overlay to indicate potential biomes that may be under restoration in the area. The user will need to review the automatically selected biomes and ensure that the biomes selected are truly those under restoration. If only tabular data of an area is provided, we kindly ask you to select the corresponding ecosystems using biomes of the IUCN Global Ecosystem Typology 2.0 (Keith et al., 2022).
+        {{ t('areaAndEcosystems.info.spatialInfo') }}
     </p>
 </template>

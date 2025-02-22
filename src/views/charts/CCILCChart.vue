@@ -7,11 +7,15 @@ import {
     addMissingEMClasses
 } from '@/lib/util';
 
+import { useI18n } from 'vue-i18n';
+
 
 defineProps<{
     area: any;
     isActive: boolean;
 }>();
+
+const { t } = useI18n();
 
 const referenceYearStart = 2011;
 const referenceYearEnd = 2020;
@@ -32,7 +36,7 @@ function processData(stats: any) {
     // Prepare x-axis data, including the reference period label
     const xData = [
         // '{line1|Reference period}\n{line2|(2011-2020)}',
-        `Reference\n${referenceYearStart}-${referenceYearEnd}`,
+        `${t('publicPagePreview.charts.reference')}\n${referenceYearStart}-${referenceYearEnd}`,
         ...getEMStatsYears(yearsOnwards),
     ];
 
@@ -53,7 +57,7 @@ function processData(stats: any) {
         :area="area"
         statisticType="CCILC"
         :processData="processData"
-        title="CCI Land Cover Change"
+        :title="t('publicPagePreview.charts.ccilc')"
         :isActive="isActive"
         :getLegendFromStats="true"
         unit="ha"

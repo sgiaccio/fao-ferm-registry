@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed, onBeforeMount } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { useRoute } from 'vue-router'
 
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
@@ -36,6 +38,8 @@ import NewProjectDialog from '@/views/project/NewProjectDialog.vue';
 import ConfirmModal from '@/views/ConfirmModal.vue';
 import ActionsMenu from './ActionsMenu.vue';
 
+
+const { t } = useI18n();
 
 const fermGroupId = import.meta.env.VITE_GEF_GROUP_ID;
 
@@ -98,7 +102,7 @@ watch([selectedGroup, selectedCountry, selectedGefCycle], ([group, country, gefC
             q: encodeURIComponent(query.toString())
         }
     });
-    
+
     // delete the query from the url if all filters are empty
     if (!group && !country && !gefCycle) {
         router.replace({
@@ -116,10 +120,10 @@ async function showBestPractices(projectId: string) {
 
 const showNewInitiativeDialog = ref(false);
 
-async function createProject({ title, reportingLine, group }: { title: string, reportingLine: string, group: string }) {
+async function createProject({ title, reportingLine, group, language }: { title: string, reportingLine: string, group: string, language: string }) {
     showNewInitiativeDialog.value = false;
 
-    if (!title || !group || !reportingLine) {
+    if (!title || !group || !reportingLine || !language) {
         alert('Please fill in all fields');
         return;
     }
@@ -130,7 +134,7 @@ async function createProject({ title, reportingLine, group }: { title: string, r
     }
 
     try {
-        await projectStore.createProject(group, title, reportingLine, termsAndConditionAccepted.value);
+        await projectStore.createProject(group, title, reportingLine, termsAndConditionAccepted.value, language);
         router.push({ name: 'projectInfoEdit', params: { id: projectStore.id } });
     } catch (e) {
         alert('Error creating project');
@@ -190,47 +194,77 @@ function resetFilters() {
     <!-- Terms and conditions dialog -->
     <ConfirmModal
         :open="showTermsAndConditions"
-        title="Terms and Conditions for Adding an Initiative to the FERM Registry"
-        ok-button-text="Accept"
-        cancel-button-text="Reject"
+        :title="t('projects.termsAndConditions.title')"
+        :ok-button-text="t('projects.termsAndConditions.accept')"
+        :cancel-button-text="t('projects.termsAndConditions.decline')"
         :ok-button-enabled=true
         :onConfirm="acceptTermsAndConditions"
         @closed="checkTermsAndConditionsAndShowDialog"
         @cancel="rejectTermsAndConditions"
     >
-        <!-- <h1 class="font-akrobat text-xl font-bold ">Terms and Conditions for Adding a Project/Initiative to the FERM Registry</h1> -->
         <div class="mt-3 max-w-xl text-sm text-gray-500 text-left">
-            <p>By adding your initiative to the Framework for Ecosystem Restoration Monitoring (FERM) Registry, you
-                agree to abide by the following terms and conditions:</p>
+            <p>
+                <!-- By adding your initiative to the Framework for Ecosystem Restoration Monitoring (FERM) Registry, you
+                agree to abide by the following terms and conditions: -->
+                {{ t('projects.termsAndConditions.description') }}
+            </p>
             <ul class="mt-3">
-                <li><span class="font-bold">Ownership and Responsibility:</span>
-                    You affirm that you are authorized to represent the institution associated with the initiative, and
-                    that you hold all necessary rights to share information pertaining to the initiative.
+                <li>
+                    <span class="font-bold">
+                        <!-- Ownership and Responsibility: -->
+                        {{ t('projects.termsAndConditions.ownership') }}
+                    </span>
+                    <!-- You affirm that you are authorized to represent the institution associated with the initiative, and that you hold all necessary rights to share information pertaining to the initiative. -->
+                    {{ t('projects.termsAndConditions.ownershipDescription') }}
                 </li>
-                <li class="mt-2"><span class="font-bold">Accuracy of Information:</span>
-                    You affirm that all information provided to the FERM Registry is accurate, complete, and up-to-date.
-                    You agree to promptly update any information should changes occur.
+                <li class="mt-2">
+                    <span class="font-bold">
+                        <!-- Accuracy of Information: -->
+                        {{ t('projects.termsAndConditions.accuracy') }}
+                    </span>
+                    <!-- You affirm that all information provided to the FERM Registry is accurate, complete, and up-to-date. You agree to promptly update any information should changes occur. -->
+                    {{ t('projects.termsAndConditions.accuracyDescription') }}
                 </li>
-                <li class="mt-2"><span class="font-bold">Data Sharing:</span>
-                    You understand that the initiative data will be publicly available and shared with other FERM users.
-                    The data may be used for monitoring restoration activities, research purposes, informing policy
-                    decisions, and furthering the cause of ecosystem restoration.
+                <li class="mt-2">
+                    <span class="font-bold">
+                        <!-- Data Sharing: -->
+                        {{ t('projects.termsAndConditions.dataSharing') }}
+                    </span>
+                    <!-- You understand that the initiative data will be publicly available and shared with other FERM users. The data may be used for monitoring restoration activities, research purposes, informing policy decisions, and furthering the cause of ecosystem restoration. -->
+                    {{ t('projects.termsAndConditions.dataSharingDescription') }}
                 </li>
-                <li class="mt-2"><span class="font-bold">Privacy:</span>
-                    All personal data provided will be processed in accordance with our Privacy Policy. We will take
-                    appropriate measures to ensure your personal data remains secure.
+                <li class="mt-2">
+                    <span class="font-bold">
+                        <!-- Privacy: -->
+                        {{ t('projects.termsAndConditions.privacy') }}
+                    </span>
+                    <!-- All personal data provided will be processed in accordance with our Privacy Policy. We will take appropriate measures to ensure your personal data remains secure. -->
+                    {{ t('projects.termsAndConditions.privacyDescription') }}
                 </li>
-                <li class="mt-2"><span class="font-bold">Compliance with Laws:</span>
-                    You agree to comply with all applicable local, national, and international laws and regulations
-                    pertaining to environmental conservation and data sharing.
+                <li class="mt-2">
+                    <span class="font-bold">
+                        <!-- Compliance with Laws: -->
+                        {{ t('projects.termsAndConditions.compliance') }}
+                    </span>
+                    <!-- You agree to comply with all applicable local, national, and international laws and regulations pertaining to environmental conservation and data sharing. -->
+                    {{ t('projects.termsAndConditions.complianceDescription') }}
                 </li>
             </ul>
-            <p class="mt-3">By clicking "Accept", you agree to these terms and conditions.</p>
-
-            <p class="mt-3">For any further questions regarding these terms, please contact us at <a
-                    class="font-bold underline"
-                    href="mailto:ferm-support@fao.org"
-                >ferm-support@fao.org</a>.</p>
+            <p class="mt-3">
+                {{ t('projects.termsAndConditions.acceptance') }}
+            </p>
+            <i18n-t
+                keypath="projects.termsAndConditions.contact"
+                tag="p"
+                class="mt-3"
+            >
+                <template #email>
+                    <a
+                        class="font-bold underline"
+                        href="mailto:ferm-support@fao.org"
+                    >ferm-support@fao.org</a>
+                </template>
+            </i18n-t>
         </div>
     </ConfirmModal>
 
@@ -243,9 +277,12 @@ function resetFilters() {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
             <h1 class="mt-12 font-akrobat text-4xl text-gray-800 mb-8 font-extrabold uppercase">
-                Initiatives</h1>
+                {{ t('projects.title') }}
+            </h1>
 
-            <p>Restoration projects, programs, and initiatives at all spatial scales, from individual sites to large landscapes and seascapes, play a vital role in achieving ambitious global goals for sustaining life on Earth. The FERM registry allows for consistent and transparent monitoring, reporting, and sharing information on restoration initiatives and good practices. The information published in the FERM Registry will be used to officially report on areas under restoration during the United Nations Decade on Ecosystem Restoration and towards the data collection for the Convention on Biological Diversity Post-2020 Global Biodiversity Framework Target 2.</p>
+            <p>
+                {{ t('projects.description') }}
+            </p>
             <!-- If the user is not an admin and not part of any group, show a message -->
             <div
                 v-if="!(authStore.isAdmin || Object.keys(authStore.userGroups).length)"
@@ -264,7 +301,7 @@ function resetFilters() {
                         class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                         @click="() => router.push({ name: 'newOrganization' })"
                     >
-                        Join or create institution
+                        {{ t('projects.joinOrCreateInstitution') }}
                     </button>
                     <!-- Create new initiative -->
                     <button
@@ -273,7 +310,7 @@ function resetFilters() {
                         class="ml-auto inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         @click="showTermsAndConditions = true"
                     >
-                        Create new initiative
+                        {{ t('projects.createNewInitiative') }}
                     </button>
                 </div>
                 <!-- Search -->
@@ -289,7 +326,9 @@ function resetFilters() {
                             v-model="selectedCountry"
                             :nullable="true"
                         >
-                            <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-700">Filter by country</ComboboxLabel>
+                            <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-700">
+                                {{ t('projects.filterByCountry') }}
+                            </ComboboxLabel>
                             <div class="relative mt-2">
                                 <ComboboxInput
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -341,7 +380,9 @@ function resetFilters() {
                             v-model="selectedGroup"
                             :nullable=true
                         >
-                            <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-700">Filter by institution</ComboboxLabel>
+                            <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-700">
+                                {{ t('projects.filterByInstitution') }}
+                            </ComboboxLabel>
                             <div class="relative mt-2">
                                 <ComboboxInput
                                     class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -415,17 +456,11 @@ function resetFilters() {
                             </RadioGroup>
                         </div>
                     </div>
-                    <!-- <div v-if="selectedGroup === fermGroupId">
-                        <SmallCardsFormGroup
-                            v-model="selectedGefCycle"
-                            :options="menusStore.gefCycles"
-                            :edit="true"
-                        />
-                    </div> -->
                 </div>
 
                 <template v-if="projectStore.projects && projectStore.projects.length">
-                    <div class="text-md font-bold text-center mt-2 mb-2 text-gray-700">{{ projectStore.projects.length }} of {{ projectStore.nProjectsFound }} initiatives
+                    <div class="text-md font-bold text-center mt-2 mb-2 text-gray-700">
+                        {{ t('projects.initiativesFound', { count: projectStore.projects.length, total: projectStore.nProjectsFound }) }}
                     </div>
 
                     <div class="mt-8 overflow-hidden_ bg-gray-50 shadow sm:rounded-md">
@@ -442,14 +477,14 @@ function resetFilters() {
                                         <div>
                                             <div class="flex items-center justify-between">
                                                 <label
-                                                    :title="project.data.project?.title || 'No title'"
+                                                    :title="project.data.project?.title || t('projects.noTitle')"
                                                     class="truncate"
                                                 >
                                                     <router-link
                                                         :to="{ name: 'projectInfo', params: { id: project.id } }"
                                                         :class="[project.data.project?.title ? 'text-ferm-blue-dark-800' : 'italic text-gray-400', 'text-sm font-medium hover:text-indigo-500 project-link']"
                                                     >
-                                                        {{ project.data.project?.title || 'No title' }}
+                                                        {{ project.data.project?.title || t('projects.noTitle') }}
                                                     </router-link>
                                                 </label>
                                             </div>
@@ -470,7 +505,8 @@ function resetFilters() {
                                                                 class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
                                                                 aria-hidden="true"
                                                             />
-                                                            Public
+                                                            <!-- Public -->
+                                                            {{ t('projects.status.public') }}
                                                         </template>
                                                         <template v-if="projectUtils.getStatus(project) === 'draft'">
                                                             <Cog6ToothIcon
@@ -479,10 +515,10 @@ function resetFilters() {
                                                                 aria-hidden="true"
                                                             />
                                                             <template v-if="project.data.publishedVersion">
-                                                                New revision
+                                                                {{ t('projects.status.newRevision') }}
                                                             </template>
                                                             <template v-else>
-                                                                Draft
+                                                                {{ t('projects.status.draft') }}
                                                             </template>
                                                         </template>
                                                         <template v-if="projectUtils.getStatus(project) === 'submitted'">
@@ -490,7 +526,7 @@ function resetFilters() {
                                                                 class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
                                                                 aria-hidden="true"
                                                             />
-                                                            Under review
+                                                            {{ t('projects.status.underReview') }}
                                                         </template>
                                                     </p>
                                                     <!-- Best practices menu -->
@@ -504,10 +540,9 @@ function resetFilters() {
                                                                 @click="showBestPractices(project.id)"
                                                                 class="flex items-center rounded-full  text-gray-500 hover:text-gray-600 focus:outline-none"
                                                             >
-                                                                <span class="text-gray-600">{{ project.data.bestPracticesCount
-                                                                    }} good
-                                                                    practice{{ project.data.bestPracticesCount === 1 ? '' : 's'
-                                                                    }}</span>
+                                                                <span class="text-gray-600">
+                                                                    {{ t('projects.bestPracticesCount', { n: project.data.bestPracticesCount }) }}
+                                                                </span>
                                                                 <ChevronDownIcon
                                                                     class="-mr-1 ml-2 h-5 w-5"
                                                                     aria-hidden="true"
@@ -554,7 +589,7 @@ function resetFilters() {
                                                                                     />
                                                                                 </div>
                                                                                 <div class="truncate">
-                                                                                    {{ bp.data.title || 'No title' }}
+                                                                                    {{ bp.data.title || t('projects.noTitle') }}
                                                                                 </div>
                                                                             </div>
                                                                         </router-link>
@@ -578,7 +613,7 @@ function resetFilters() {
                                                             type="button"
                                                             class="inline-flex items-center text-sm font-normal text-ferm-blue-dark-700"
                                                         >
-                                                            Add good practice
+                                                            {{ t('projects.addGoodPractice') }}
                                                         </router-link>
                                                     </div>
                                                 </div>
@@ -589,7 +624,7 @@ function resetFilters() {
                                                         aria-hidden="true"
                                                     /> -->
                                                     <p>
-                                                        Date modified:
+                                                        {{ t('projects.dateModified') }}
                                                         {{ ' ' }}
                                                         <time :datetime="fbTimestampToString(project.data['updateTime'])">
                                                             {{ fbTimestampToString(project.data['updateTime']) }}
@@ -620,7 +655,7 @@ function resetFilters() {
                             </div>
                             <div class="mt-3 text-center sm:mt-5">
                                 <h3 class="text-lg leading-6 font-medium text-gray-900">
-                                    No initiatives found
+                                    {{ t('projects.noInitiativesFound') }}
                                 </h3>
                                 <div class="mt-4">
                                     <button
@@ -628,9 +663,8 @@ function resetFilters() {
                                         class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-ferm-blue-dark-700 hover:bg-ferm-blue-dark-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         @click="resetFilters"
                                     >
-                                        Reset filters
+                                        {{ t('projects.resetFilters') }}
                                     </button>
-
                                 </div>
                             </div>
                         </div>
@@ -642,20 +676,22 @@ function resetFilters() {
                 <div
                     v-if="projectStore.projects.length > 10"
                     class="text-md font-bold text-center mb-4 text-gray-700"
-                >{{ projectStore.projects.length }} of
-                    {{ projectStore.nProjectsFound }} initiatives
+                >
+                    {{ t('projects.initiativesFound', { count: projectStore.projects.length, total: projectStore.nProjectsFound }) }}
                 </div>
                 <button
                     v-if="!projectStore.isLastPage && !projectStore.loadingNext"
                     @click="projectStore.fetchNextProjects(undefined, undefined, { group: selectedGroup, country: selectedCountry, gefCycle: selectedGefCycle })"
                     class="rounded-md bg-ferm-blue-dark-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ferm-blue-dark-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ferm-blue-dark-500"
                 >
-                    Load more
+                    {{ t('projects.loadMore') }}
                 </button>
                 <template
                     v-if="projectStore.loadingNext"
                     class="text-gray-500 text-lg"
-                >Loading...
+                >
+                    <!-- Loading... -->
+                    {{ t('projects.loading') }}
                 </template>
             </div>
         </div>

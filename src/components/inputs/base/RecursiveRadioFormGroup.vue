@@ -39,7 +39,7 @@ function valueChanged(value: string) {
                         @update:modelValue="valueChanged"
                         :searchable="searchable"
                         :expandable="expandable" />
-        <template v-slot:info
+        <template #info
                   v-if="$slots.info">
             <slot name="info" />
         </template>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onBeforeMount } from 'vue';
 
+import { getProjectPublicBestPractices } from '@/firebase/functions';
+
 import ResultPanel from './ResultPanel.vue';
 
 
@@ -8,14 +10,14 @@ const props = defineProps<{
     projectId: string
 }>();
 
-const bestPracticesTitles = ref([]);
-const bestPracticesIds = ref([]);
+const bestPracticesTitles = ref<string[]>([]);
+const bestPracticesIds = ref<string[]>([]);
 
 const loading = ref(true);
 const loadError = ref(false);
 
 function checkResourceWithIframe(url: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const iframe = document.createElement('iframe');
         iframe.src = url;
         iframe.style.display = 'none'; // Hide the iframe
@@ -38,15 +40,13 @@ function checkResourceWithIframe(url: string): Promise<boolean> {
 onBeforeMount(async () => {
     if (!props.projectId) return;
 
-    // fetch data from this URL https://data.apps.fao.org/fao-ferm/initiative/<projectId>
     try {
-        const response = await fetch(`https://data.apps.fao.org/fao-ferm/initiative/${props.projectId}`);
-        const data = await response.json();
+        const publicBestPractices: any = await getProjectPublicBestPractices(props.projectId);
+        const allIds = publicBestPractices.map((practice: any) => practice.id);
+        const allTitles = publicBestPractices.map((practice: any) => practice.title);
 
-        const allIds = data.best_practices_ids;
-        const allTitles = data.best_practices_titles;
 
-        // for each id, fetch the practice and add it to the list if it's available (returns 200). This is a workaround to filter out practices that are not available. Will improve later
+        // for each id, fetch the practice and add it to the list if it's available (returns 200). This is a workaround to filter out practices that are not available - publishing on the search engine might take 24 hours. Will improve later
         const filteredIds_ = await Promise.all(allIds.map(async (id: string) => {
             const url = `https://ferm-search.fao.org/practices/${id}`;
             return await checkResourceWithIframe(url) ? id : null;

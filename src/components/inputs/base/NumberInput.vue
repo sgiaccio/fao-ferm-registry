@@ -22,5 +22,5 @@ function onInput(event: Event) {
         class="block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 focus:ring-0 rounded-md"
         @input="onInput">
     <div v-else-if="modelValue !== undefined && modelValue !== null">{{ modelValue }}</div>
-    <div v-else class="italic text-gray-400">Not available</div>
+    <div v-else class="italic text-gray-400">{{ $t('notAvailable') }}</div>
 </template>

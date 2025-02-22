@@ -7,11 +7,15 @@ import {
     addMissingEMClasses
 } from '@/lib/util';
 
+import { useI18n } from 'vue-i18n';
+
 
 defineProps<{
     area: any;
     isActive: boolean;
 }>();
+
+const { t } = useI18n();
 
 const referenceYearStart = 2011;
 const referenceYearEnd = 2020;
@@ -30,7 +34,7 @@ function processData(stats: any) {
 
     // Prepare x-axis data, including the reference period label
     const xData = [
-        `Reference\n${referenceYearStart}-${referenceYearEnd}`,
+        `${t('publicPagePreview.charts.reference')}\n${referenceYearStart}-${referenceYearEnd}`,
         ...getEMStatsYears(yearsOnwards),
     ];
 
@@ -50,7 +54,7 @@ function processData(stats: any) {
         :area="area"
         statisticType="MODIS_COMBINED_LC"
         :processData="processData"
-        title="Land Cover - MODIS Combined"
+        :title="t('publicPagePreview.charts.lcm')"
         :isActive="isActive"
         type="line"
         :getLegendFromStats="true"

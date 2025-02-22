@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
 import { useBestPracticesStore } from "../../stores/bestpractices";
 
 import TabTemplate from "../TabTemplate.vue";
@@ -16,6 +18,8 @@ withDefaults(
     },
 );
 
+const { t } = useI18n();
+
 // type AdditionalResources = {
 //     links?: string,
 //     details?: string,
@@ -30,31 +34,31 @@ const yesNo = [
 </script>
 
 <template>
-    <TabTemplate title="Additional Resources">
+    <TabTemplate :title="$t('goodPractices.additionalResources.title')">
         <template #default>
             <template v-if="bpStore.bestPractice">
                 <TextareaFormGroup
                     v-model="bpStore.bestPractice.links"
-                    label="5.1 Links"
-                    description="Please provide links to pictures, testimonials or references from local stakeholders, videos, scientific articles and publications, outreach materials, websites and/or social media pages (Facebook, YouTube, Instagram etc.) related to the implementation and impacts of the good practice."
+                    :label="`5.1 ${t('goodPractices.inputs.links.label')}`"
+                    :description="t('goodPractices.inputs.links.description')"
                     :edit="edit"
                 />
                 <SelectFormGroup
                     v-model="bpStore.bestPractice.details"
                     :options="yesNo"
-                    label="5.2 Additional information on costs and benefits"
                     :required="true"
-                    description="Are you interested in providing more details regarding the cost and benefits of the good practice? If so, you will be contacted by the FAO's Team on Economics of Ecosystem Restoration (TEER)."
+                    :label="`5.2 ${t('goodPractices.inputs.additionalInformationCostsBenefits.label')}`"
+                    :description="t('goodPractices.inputs.additionalInformationCostsBenefits.description')"
                     :edit="edit"
                 />
                 <TextareaFormGroup
                     v-model="bpStore.bestPractice.additionalComments"
-                    label="5.3 Additional comments"
-                    description="Feel free to share any additional information regarding the practice."
+                    :label="`5.3 ${t('goodPractices.inputs.additionalComments.label')}`"
+                    :description="t('goodPractices.inputs.additionalComments.description')"
                     :edit="edit"
                 />
                 <BpImageUploadFormGroup
-                    label="5.4 Please upload a picture of the practice"
+                    :label="`5.4 ${t('goodPractices.inputs.image.label')}`"
                     bucket-url="gs://fao-ferm-goodpractices"
                     :bpId="bpStore.id!"
                     :edit="edit"

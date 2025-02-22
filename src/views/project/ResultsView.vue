@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeMount, onUnmounted, computed } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { useRoute } from 'vue-router'
 
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
@@ -37,6 +39,8 @@ withDefaults(defineProps<{
 }>(), {
     edit: true
 });
+
+const { t } = useI18n();
 
 const userPrefsStore = useUserPrefsStore();
 
@@ -216,7 +220,7 @@ function otherChartSize() {
         buttonText="Close"
     >
         <div class="text-left text-sm space-y-3">
-            <p>
+            <!-- <p>
                 The preview tab provides a comprehensive summary of the initiative's key features, including basic information about the initiative, the biomes and ecosystems involved, the areas committed to and currently under restoration, the restoration activities undertaken, progress on key indicators, and a selection of spatial datasets useful for monitoring restoration progress, all described in more detail in the <a
                     href="/docs/ferm_user_guide_draft.pdf"
                     target="_blank"
@@ -228,6 +232,25 @@ function otherChartSize() {
             </p>
             <p>
                 This section also offers a preview of the content that will be visible in the search engine once the initiative is published.
+            </p> -->
+            <p>
+                <i18n-t keypath="publicPagePreview.description.intro">
+                    <template v-slot:fermGuidance>
+                        <a
+                            href="/docs/ferm_user_guide_draft.pdf"
+                            target="_blank"
+                            class="underline text-blue-700"
+                        >
+                            {{ t('publicPagePreview.description.fermGuidance') }}
+                        </a>
+                    </template>
+                </i18n-t>
+            </p>
+            <p>
+                {{ t('publicPagePreview.description.details') }}
+            </p>
+            <p>
+                {{ t('publicPagePreview.description.searchPreview') }}
             </p>
         </div>
     </AlertModal>
@@ -259,11 +282,8 @@ function otherChartSize() {
                             </div>
 
                             <EcosystemsPanel :areas="[{ dummy: selectedArea }]" />
-
                             <ActivitiesPanel :areas="[{ dummy: selectedArea }]" />
-
                             <IndicatorsPanel :areas="[{ dummy: selectedArea }]" />
-
                             <AreasCharts
                                 :areas="[{ dummy: selectedArea }]"
                                 @zoomToArea="zoomToArea"
@@ -307,8 +327,6 @@ function otherChartSize() {
                                         />
                                         <span class="ml-2">{{ c.name }}</span>
                                     </div>
-
-
                                 </div>
                             </div>
 
@@ -411,7 +429,9 @@ function otherChartSize() {
                                 <div class="border-gray-100">
                                     <dl class="divide-y divide-gray-100">
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Description</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                {{ t('publicPagePreview.resultPanel.description') }}
+                                            </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.description">
                                                     <template v-if="project.project.description.length > 250">
@@ -432,7 +452,9 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Timeframe</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                {{ $t('publicPagePreview.resultPanel.timeframe') }}
+                                            </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ timeframe }}</dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
@@ -448,7 +470,9 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Restoration types</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                {{ $t('publicPagePreview.resultPanel.restorationTypes') }}
+                                            </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.restorationTypes?.length > 0">
                                                     {{ project.project.restorationTypes.map(type => getRecursiveMenuItem(menus.restorationTypes, type)?.label).join(', ') }}
@@ -460,7 +484,9 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Tenure statuses</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                {{ $t('publicPagePreview.resultPanel.tenureStatuses') }}
+                                            </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.tenureStatuses?.length > 0">
                                                     {{ project.project.tenureStatuses.map(status => getRecursiveMenuItem(menus.tenureStatuses, status)?.label).join(', ') }}
@@ -472,7 +498,9 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Website</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                {{ $t('publicPagePreview.resultPanel.website') }}
+                                            </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 hover:text-gray-900">
                                                 <a
                                                     v-if="project.project.website"
@@ -487,7 +515,9 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Keywords</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">
+                                                {{ $t('publicPagePreview.resultPanel.keywords') }}
+                                            </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.keywords?.length > 0">
                                                     {{ project.project.keywords.join(', ') }}
@@ -510,7 +540,6 @@ function otherChartSize() {
                                 :areas="projectAreas"
                                 @zoomToArea="zoomToArea"
                             />
-
                             <ChartsSwiper
                                 v-if="projectAreas.length === 1 && Object.values(projectAreas[0])[0].uuid"
                                 :area="Object.values(projectAreas[0])[0]"

@@ -17,14 +17,17 @@ withDefaults(defineProps<{
         <TextFormGroup
             :edit="edit"
             v-model="modelValue.individualName"
-            label="Individual name"></TextFormGroup>
+            :label="$t('inputs.pointOfContact.individualName')"
+        />
         <TextFormGroup
             :edit="edit"
             v-model="modelValue.email"
-            label="Email"></TextFormGroup>
+            :label="$t('inputs.pointOfContact.email')"
+        />
         <TextFormGroup
             :edit="edit"
             v-model="modelValue.organization"
-            label="Organization"></TextFormGroup>
+            :label="$t('inputs.pointOfContact.organization')"
+        />
     </div>
 </template>

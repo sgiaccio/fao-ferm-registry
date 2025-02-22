@@ -1,0 +1,1342 @@
+{
+  "objectives": [
+    {
+      "value": 1,
+      "label": "objectives.1"
+    },
+    {
+      "value": 2,
+      "label": "objectives.2"
+    },
+    {
+      "value": 3,
+      "label": "objectives.3"
+    },
+    {
+      "value": 4,
+      "label": "objectives.4"
+    },
+    {
+      "value": 5,
+      "label": "objectives.5"
+    },
+    {
+      "value": 6,
+      "label": "objectives.6"
+    },
+    {
+      "value": 7,
+      "label": "objectives.7"
+    },
+    {
+      "value": 8,
+      "label": "objectives.8"
+    },
+    {
+      "value": 9,
+      "label": "objectives.9"
+    },
+    {
+      "value": 10,
+      "label": "objectives.10"
+    },
+    {
+      "value": 11,
+      "label": "objectives.11"
+    },
+    {
+      "value": 0,
+      "label": "objectives.0"
+    }
+  ],
+  "ecosystems": [
+    {
+      "value": 1,
+      "label": "ecosystems.1"
+    },
+    {
+      "value": 2,
+      "label": "ecosystems.2"
+    },
+    {
+      "value": 3,
+      "label": "ecosystems.3"
+    },
+    {
+      "value": 4,
+      "label": "ecosystems.4"
+    },
+    {
+      "value": 5,
+      "label": "ecosystems.5"
+    },
+    {
+      "value": 6,
+      "label": "ecosystems.6"
+    },
+    {
+      "value": 7,
+      "label": "ecosystems.7"
+    },
+    {
+      "value": 8,
+      "label": "ecosystems.8"
+    }
+  ],
+  "agencyTypes": [
+    {
+      "value": 1,
+      "label": "agencyTypes.1"
+    },
+    {
+      "value": 2,
+      "label": "agencyTypes.2"
+    },
+    {
+      "value": 3,
+      "label": "agencyTypes.3"
+    },
+    {
+      "value": 4,
+      "label": "agencyTypes.4"
+    },
+    {
+      "value": 5,
+      "label": "agencyTypes.5"
+    },
+    {
+      "value": 6,
+      "label": "agencyTypes.6"
+    },
+    {
+      "value": 7,
+      "label": "agencyTypes.7"
+    },
+    {
+      "value": 0,
+      "label": "agencyTypes.0"
+    }
+  ],
+  "agencyRoles": [
+    {
+      "value": 1,
+      "label": "agencyRoles.1"
+    },
+    {
+      "value": 2,
+      "label": "agencyRoles.2"
+    }
+  ],
+  "drivers": [
+    {
+      "value": 1,
+      "label": "drivers.1"
+    },
+    {
+      "value": 2,
+      "label": "drivers.2"
+    },
+    {
+      "value": 3,
+      "label": "drivers.3"
+    },
+    {
+      "value": 4,
+      "label": "drivers.4"
+    },
+    {
+      "value": 5,
+      "label": "drivers.5"
+    },
+    {
+      "value": 6,
+      "label": "drivers.6"
+    },
+    {
+      "value": 7,
+      "label": "drivers.7"
+    },
+    {
+      "value": 8,
+      "label": "drivers.8"
+    },
+    {
+      "value": 9,
+      "label": "drivers.9"
+    },
+    {
+      "value": 10,
+      "label": "drivers.10"
+    },
+    {
+      "value": 11,
+      "label": "drivers.11"
+    },
+    {
+      "value": 12,
+      "label": "drivers.12"
+    },
+    {
+      "value": 13,
+      "label": "drivers.13"
+    },
+    {
+      "value": 14,
+      "label": "drivers.14"
+    },
+    {
+      "value": 15,
+      "label": "drivers.15"
+    },
+    {
+      "value": 0,
+      "label": "drivers.0"
+    }
+  ],
+  "engagement": [
+    {
+      "value": 1,
+      "label": "engagement.1"
+    },
+    {
+      "value": 2,
+      "label": "engagement.2"
+    },
+    {
+      "value": 3,
+      "label": "engagement.3"
+    },
+    {
+      "value": 4,
+      "label": "engagement.4"
+    },
+    {
+      "value": 5,
+      "label": "engagement.5"
+    },
+    {
+      "value": 6,
+      "label": "engagement.6"
+    },
+    {
+      "value": 7,
+      "label": "engagement.7"
+    },
+    {
+      "value": 8,
+      "label": "engagement.8"
+    },
+    {
+      "value": 9,
+      "label": "engagement.9"
+    },
+    {
+      "value": 10,
+      "label": "engagement.10"
+    },
+    {
+      "value": 11,
+      "label": "engagement.11"
+    },
+    {
+      "value": 12,
+      "label": "engagement.12"
+    },
+    {
+      "value": 13,
+      "label": "engagement.13"
+    },
+    {
+      "value": 14,
+      "label": "engagement.14"
+    },
+    {
+      "value": 15,
+      "label": "engagement.15"
+    },
+    {
+      "value": 16,
+      "label": "engagement.16"
+    },
+    {
+      "value": 17,
+      "label": "engagement.17"
+    },
+    {
+      "value": 0,
+      "label": "engagement.0"
+    }
+  ],
+  "knowledgeTypes": [
+    {
+      "value": 1,
+      "dangerousHtmlLabel": "knowledgeTypes.1",
+      "templates": {
+        "link": "<a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_35704</a>"
+      }
+    },
+    {
+      "value": 2,
+      "label": "knowledgeTypes.2"
+    },
+    {
+      "value": 3,
+      "label": "knowledgeTypes.3"
+    },
+    {
+      "value": 4,
+      "dangerousHtmlLabel": "knowledgeTypes.4",
+      "templates": {
+        "link": "<a target=\"_blank\" class=\"text-blue-700 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400\" href=\"https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a\">https://agrovoc.fao.org/browse/agrovoc/en/page/c_2bd4073a</a>"
+      }
+    },
+    {
+      "value": 0,
+      "label": "knowledgeTypes.0"
+    }
+  ],
+  "scale": [
+    {
+      "value": 1,
+      "label": "scale.1"
+    },
+    {
+      "value": 2,
+      "label": "scale.2"
+    },
+    {
+      "value": 3,
+      "label": "scale.3"
+    },
+    {
+      "value": 4,
+      "label": "scale.4"
+    },
+    {
+      "value": 5,
+      "label": "scale.5"
+    }
+  ],
+  "replicability": [
+    {
+      "value": 1,
+      "label": "replicability.1"
+    },
+    {
+      "value": 2,
+      "label": "replicability.2"
+    },
+    {
+      "value": 3,
+      "label": "replicability.3"
+    },
+    {
+      "value": 4,
+      "label": "replicability.4"
+    }
+  ],
+  "keyFactors": [
+    {
+      "value": 1,
+      "label": "keyFactors.1"
+    },
+    {
+      "value": 2,
+      "label": "keyFactors.2"
+    },
+    {
+      "value": 3,
+      "label": "keyFactors.3"
+    },
+    {
+      "value": 4,
+      "label": "keyFactors.4"
+    },
+    {
+      "value": 5,
+      "label": "keyFactors.5"
+    },
+    {
+      "value": 6,
+      "label": "keyFactors.6"
+    },
+    {
+      "value": 7,
+      "label": "keyFactors.7"
+    },
+    {
+      "value": 8,
+      "label": "keyFactors.8"
+    },
+    {
+      "value": 9,
+      "label": "keyFactors.9"
+    },
+    {
+      "value": 10,
+      "label": "keyFactors.10"
+    },
+    {
+      "value": 11,
+      "label": "keyFactors.11"
+    },
+    {
+      "value": 12,
+      "label": "keyFactors.12"
+    },
+    {
+      "value": 13,
+      "label": "keyFactors.13"
+    },
+    {
+      "value": 14,
+      "label": "keyFactors.14"
+    }
+  ],
+  "outcomes": [
+    {
+      "value": 1,
+      "label": "outcomes.1"
+    },
+    {
+      "value": 2,
+      "label": "outcomes.2"
+    },
+    {
+      "value": 3,
+      "label": "outcomes.3"
+    },
+    {
+      "value": 4,
+      "label": "outcomes.4"
+    },
+    {
+      "value": 5,
+      "label": "outcomes.5"
+    },
+    {
+      "value": 6,
+      "label": "outcomes.6"
+    },
+    {
+      "value": 7,
+      "label": "outcomes.7"
+    },
+    {
+      "value": 8,
+      "label": "outcomes.8"
+    },
+    {
+      "value": 9,
+      "label": "outcomes.9"
+    },
+    {
+      "value": 10,
+      "label": "outcomes.10"
+    },
+    {
+      "value": 12,
+      "label": "outcomes.12"
+    },
+    {
+      "value": 13,
+      "label": "outcomes.13"
+    },
+    {
+      "value": 14,
+      "label": "outcomes.14"
+    },
+    {
+      "value": 15,
+      "label": "outcomes.15"
+    },
+    {
+      "value": 16,
+      "label": "outcomes.16"
+    },
+    {
+      "value": 17,
+      "label": "outcomes.17"
+    },
+    {
+      "value": 18,
+      "label": "outcomes.18"
+    },
+    {
+      "value": 19,
+      "label": "outcomes.19"
+    },
+    {
+      "value": 0,
+      "label": "outcomes.0"
+    }
+  ],
+  "activities": [
+    {
+      "items": [
+        {
+          "value": 1000,
+          "items": [
+            {
+              "value": 1,
+              "label": "activities.Biophysical.1000.1"
+            },
+            {
+              "value": 2,
+              "label": "activities.Biophysical.1000.2"
+            },
+            {
+              "value": 3,
+              "label": "activities.Biophysical.1000.3"
+            },
+            {
+              "value": 4,
+              "label": "activities.Biophysical.1000.4"
+            },
+            {
+              "value": 5,
+              "label": "activities.Biophysical.1000.5"
+            },
+            {
+              "value": 6,
+              "label": "activities.Biophysical.1000.6"
+            },
+            {
+              "value": 7,
+              "label": "activities.Biophysical.1000.7"
+            }
+          ],
+          "label": "activities.Biophysical.1000"
+        },
+        {
+          "value": 1001,
+          "items": [
+            {
+              "value": 8,
+              "label": "activities.Biophysical.1001.8"
+            },
+            {
+              "value": 9,
+              "label": "activities.Biophysical.1001.9"
+            }
+          ],
+          "label": "activities.Biophysical.1001"
+        },
+        {
+          "value": 1002,
+          "items": [
+            {
+              "value": 10,
+              "label": "activities.Biophysical.1002.10"
+            },
+            {
+              "value": 11,
+              "label": "activities.Biophysical.1002.11"
+            },
+            {
+              "value": 12,
+              "label": "activities.Biophysical.1002.12"
+            },
+            {
+              "value": 13,
+              "label": "activities.Biophysical.1002.13"
+            }
+          ],
+          "label": "activities.Biophysical.1002"
+        },
+        {
+          "value": 1003,
+          "items": [
+            {
+              "value": 14,
+              "label": "activities.Biophysical.1003.14"
+            },
+            {
+              "value": 15,
+              "label": "activities.Biophysical.1003.15"
+            },
+            {
+              "value": 16,
+              "label": "activities.Biophysical.1003.16"
+            },
+            {
+              "value": 17,
+              "label": "activities.Biophysical.1003.17"
+            },
+            {
+              "value": 18,
+              "label": "activities.Biophysical.1003.18"
+            },
+            {
+              "value": 19,
+              "label": "activities.Biophysical.1003.19"
+            },
+            {
+              "value": 20,
+              "label": "activities.Biophysical.1003.20"
+            },
+            {
+              "value": 21,
+              "label": "activities.Biophysical.1003.21"
+            }
+          ],
+          "label": "activities.Biophysical.1003"
+        },
+        {
+          "value": 1004,
+          "items": [
+            {
+              "value": 22,
+              "label": "activities.Biophysical.1004.22"
+            },
+            {
+              "value": 23,
+              "label": "activities.Biophysical.1004.23"
+            },
+            {
+              "value": 24,
+              "label": "activities.Biophysical.1004.24"
+            },
+            {
+              "value": 25,
+              "label": "activities.Biophysical.1004.25"
+            },
+            {
+              "value": 26,
+              "label": "activities.Biophysical.1004.26"
+            },
+            {
+              "value": 27,
+              "label": "activities.Biophysical.1004.27"
+            },
+            {
+              "value": 28,
+              "label": "activities.Biophysical.1004.28"
+            },
+            {
+              "value": 29,
+              "label": "activities.Biophysical.1004.29"
+            }
+          ],
+          "label": "activities.Biophysical.1004"
+        }
+      ],
+      "label": "activities.Biophysical"
+    },
+    {
+      "items": [
+        {
+          "value": 1005,
+          "items": [
+            {
+              "value": 30,
+              "label": "activities.Enabling.1005.30"
+            },
+            {
+              "value": 31,
+              "label": "activities.Enabling.1005.31"
+            },
+            {
+              "value": 32,
+              "label": "activities.Enabling.1005.32"
+            },
+            {
+              "value": 33,
+              "label": "activities.Enabling.1005.33"
+            },
+            {
+              "value": 34,
+              "label": "activities.Enabling.1005.34"
+            },
+            {
+              "value": 35,
+              "label": "activities.Enabling.1005.35"
+            },
+            {
+              "value": 36,
+              "label": "activities.Enabling.1005.36"
+            }
+          ],
+          "label": "activities.Enabling.1005"
+        },
+        {
+          "value": 1006,
+          "items": [
+            {
+              "value": 37,
+              "label": "activities.Enabling.1006.37"
+            },
+            {
+              "value": 38,
+              "label": "activities.Enabling.1006.38"
+            },
+            {
+              "value": 39,
+              "label": "activities.Enabling.1006.39"
+            },
+            {
+              "value": 40,
+              "label": "activities.Enabling.1006.40"
+            },
+            {
+              "value": 41,
+              "label": "activities.Enabling.1006.41"
+            }
+          ],
+          "label": "activities.Enabling.1006"
+        },
+        {
+          "value": 1007,
+          "items": [
+            {
+              "value": 42,
+              "label": "activities.Enabling.1007.42"
+            },
+            {
+              "value": 43,
+              "label": "activities.Enabling.1007.43"
+            },
+            {
+              "value": 44,
+              "label": "activities.Enabling.1007.44"
+            },
+            {
+              "value": 45,
+              "label": "activities.Enabling.1007.45"
+            }
+          ],
+          "label": "activities.Enabling.1007"
+        },
+        {
+          "value": 1008,
+          "items": [
+            {
+              "value": 46,
+              "label": "activities.Enabling.1008.46"
+            },
+            {
+              "value": 47,
+              "label": "activities.Enabling.1008.47"
+            },
+            {
+              "value": 48,
+              "label": "activities.Enabling.1008.48"
+            },
+            {
+              "value": 49,
+              "label": "activities.Enabling.1008.49"
+            },
+            {
+              "value": 50,
+              "label": "activities.Enabling.1008.50"
+            }
+          ],
+          "label": "activities.Enabling.1008"
+        }
+      ],
+      "label": "activities.Enabling"
+    }
+  ],
+  "achieved": [
+    {
+      "value": 1,
+      "label": "achieved.1"
+    },
+    {
+      "value": 3,
+      "label": "achieved.3"
+    },
+    {
+      "value": 2,
+      "label": "achieved.2"
+    }
+  ],
+  "iucnEcosystems": [
+    {
+      "items": [
+        {
+          "value": "T1",
+          "label": "iucnEcosystems.T_Terrestrial_realm.T1"
+        },
+        {
+          "value": "T2",
+          "label": "iucnEcosystems.T_Terrestrial_realm.T2"
+        },
+        {
+          "value": "T3",
+          "label": "iucnEcosystems.T_Terrestrial_realm.T3"
+        },
+        {
+          "value": "T4",
+          "label": "iucnEcosystems.T_Terrestrial_realm.T4"
+        },
+        {
+          "value": "T5",
+          "label": "iucnEcosystems.T_Terrestrial_realm.T5"
+        },
+        {
+          "value": "T6",
+          "label": "iucnEcosystems.T_Terrestrial_realm.T6"
+        },
+        {
+          "value": "T7",
+          "label": "iucnEcosystems.T_Terrestrial_realm.T7"
+        }
+      ],
+      "label": "iucnEcosystems.T_Terrestrial_realm"
+    },
+    {
+      "items": [
+        {
+          "value": "M1",
+          "label": "iucnEcosystems.M_Marine_realm.M1"
+        },
+        {
+          "value": "M2",
+          "label": "iucnEcosystems.M_Marine_realm.M2"
+        },
+        {
+          "value": "M3",
+          "label": "iucnEcosystems.M_Marine_realm.M3"
+        },
+        {
+          "value": "M4",
+          "label": "iucnEcosystems.M_Marine_realm.M4"
+        }
+      ],
+      "label": "iucnEcosystems.M_Marine_realm"
+    },
+    {
+      "items": [
+        {
+          "value": "F1",
+          "label": "iucnEcosystems.F_Freshwater_realm.F1"
+        },
+        {
+          "value": "F2",
+          "label": "iucnEcosystems.F_Freshwater_realm.F2"
+        },
+        {
+          "value": "F3",
+          "label": "iucnEcosystems.F_Freshwater_realm.F3"
+        }
+      ],
+      "label": "iucnEcosystems.F_Freshwater_realm"
+    },
+    {
+      "items": [
+        {
+          "value": "S1",
+          "label": "iucnEcosystems.S_Subterranean_realm.S1"
+        },
+        {
+          "value": "S2",
+          "label": "iucnEcosystems.S_Subterranean_realm.S2"
+        }
+      ],
+      "label": "iucnEcosystems.S_Subterranean_realm"
+    },
+    {
+      "items": [
+        {
+          "value": "MT1",
+          "label": "iucnEcosystems.MT_Marine_Terrestrial_realm.MT1"
+        },
+        {
+          "value": "MT2",
+          "label": "iucnEcosystems.MT_Marine_Terrestrial_realm.MT2"
+        },
+        {
+          "value": "MT3",
+          "label": "iucnEcosystems.MT_Marine_Terrestrial_realm.MT3"
+        }
+      ],
+      "label": "iucnEcosystems.MT_Marine_Terrestrial_realm"
+    },
+    {
+      "items": [
+        {
+          "value": "SF1",
+          "label": "iucnEcosystems.SF_Subterranean_Freshwater_realm.SF1"
+        },
+        {
+          "value": "SF2",
+          "label": "iucnEcosystems.SF_Subterranean_Freshwater_realm.SF2"
+        }
+      ],
+      "label": "iucnEcosystems.SF_Subterranean_Freshwater_realm"
+    },
+    {
+      "items": [
+        {
+          "value": "FM1",
+          "label": "iucnEcosystems.FM_Freshwater_Marine_realm.FM1"
+        }
+      ],
+      "label": "iucnEcosystems.FM_Freshwater_Marine_realm"
+    },
+    {
+      "items": [
+        {
+          "value": "MFT1",
+          "label": "iucnEcosystems.MFT_Marine_Freshwater_Terrestrial_realm.MFT1"
+        }
+      ],
+      "label": "iucnEcosystems.MFT_Marine_Freshwater_Terrestrial_realm"
+    },
+    {
+      "items": [
+        {
+          "value": "SM1",
+          "label": "iucnEcosystems.SM_Subterranean_Marine_realm.SM1"
+        }
+      ],
+      "label": "iucnEcosystems.SM_Subterranean_Marine_realm"
+    },
+    {
+      "items": [
+        {
+          "value": "TF1",
+          "label": "iucnEcosystems.TF_Terrestrial_Freshwater_realm.TF1"
+        }
+      ],
+      "label": "iucnEcosystems.TF_Terrestrial_Freshwater_realm"
+    }
+  ],
+  "restorationTypes": [
+    {
+      "value": 1,
+      "info": "<p>Ecological restoration is a type of ecosystem restoration. According to CBD (2016), it is defined as: \"The process of managing or assisting the recovery of an ecosystem that has been degraded, damaged or destroyed as a means of sustaining ecosystem resilience and conserving biodiversity.\"</p><p>The Society for Ecological Restoration (SER) defines ecological restoration as: \"The process of assisting the recovery of an ecosystem that has been degraded, damaged, or destroyed. (Ecosystem restoration is sometimes used inter-changeably with ecological restoration, but ecological restoration always addresses biodiversity conservation and ecological integrity, whereas some approaches to ecosystem restoration may focus solely on the delivery of ecosystem services.)\" (Gann et al., 2019).</p><p>The CBD Secretariat and SER have provided a glossary to help distinguish different versions of restoration and explain how they intersect (CBD Secretariat and SER, 2019). </p><p>References: <br>CBD Secretariat and SER. (2019). A companion to the Short-Term Action Plan on Ecosystem Restoration - Resources, cases studies, and biodiversity considerations in the context of restoration science and practice. Montreal, Canada.CMS. (2020). UNEP/CMS/Resolution 12.26 (Rev.COP13). Available at: CDB 2016. <a href=\"https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf\" target=\"_blank\">https://www.cbd.int/doc/decisions/cop-13/cop-13-dec-05-en.pdf</a></p><p>Gann, G.D., McDonald, T., Walder, B., Aronson, J., Nelson, C.R., Jonson J., &hellip; & Dixon, K.W. (2019). International principles and standards for the practice of ecological restoration. Restoration Ecology. 27 (S1): S1-S46., 27(S1), S1-S46.</p>",
+      "label": "restorationTypes.1"
+    },
+    {
+      "value": 2,
+      "info": "<p>The Society for Ecological Restoration (SER) defines rehabilitation as: \"Management actions that aim to reinstate a level of ecosystem functioning on degraded sites, where the goal is renewed and ongoing provision of ecosystem services rather than the biodiversity and integrity of a designated native reference ecosystem\" (Gann et al., 2019).</p><p>Rehabilitation is a type of ecosystem restoration. Ecosystem rehabilitation is focused on restoring and improving functions within transformed ecosystems, while ecological restoration is focused on restoration to a natural state.</p><p>References:<br>Gann, G.D., McDonald, T., Walder, B., Aronson, J., Nelson, C.R., Jonson J., &hellip; & Dixon, K.W. (2019). International principles and standards for the practice of ecological restoration. Restoration Ecology. 27 (S1): S1-S46., 27(S1), S1-S46.</p>",
+      "label": "restorationTypes.2"
+    }
+  ],
+  "tenureStatuses": [
+    {
+      "value": 1,
+      "label": "tenureStatuses.1"
+    },
+    {
+      "value": 2,
+      "label": "tenureStatuses.2"
+    },
+    {
+      "value": 3,
+      "label": "tenureStatuses.3"
+    },
+    {
+      "value": 4,
+      "label": "tenureStatuses.4"
+    },
+    {
+      "value": 5,
+      "label": "tenureStatuses.5"
+    },
+    {
+      "value": 6,
+      "label": "tenureStatuses.6"
+    },
+    {
+      "value": 7,
+      "label": "tenureStatuses.7"
+    }
+  ],
+  "gefIndicators": [
+    {
+      "items": [
+        {
+          "items": [
+            {
+              "value": "GEF1.1",
+              "label": "gefIndicators.1.Component_Sub_Indicators.GEF1_1"
+            },
+            {
+              "value": "GEF1.2",
+              "label": "gefIndicators.1.Component_Sub_Indicators.GEF1_2"
+            }
+          ],
+          "label": "gefIndicators.1.Component_Sub_Indicators"
+        }
+      ],
+      "label": "gefIndicators.1"
+    },
+    {
+      "items": [
+        {
+          "items": [
+            {
+              "value": "GEF2.1",
+              "label": "gefIndicators.2.Component_Sub_Indicators.GEF2_1"
+            },
+            {
+              "value": "GEF2.2",
+              "label": "gefIndicators.2.Component_Sub_Indicators.GEF2_2"
+            }
+          ],
+          "label": "gefIndicators.2.Component_Sub_Indicators"
+        }
+      ],
+      "label": "gefIndicators.2"
+    },
+    {
+      "items": [
+        {
+          "items": [
+            {
+              "value": "GEF3.1",
+              "label": "gefIndicators.3.Component_Sub_Indicators.GEF3_1"
+            },
+            {
+              "value": "GEF3.2",
+              "label": "gefIndicators.3.Component_Sub_Indicators.GEF3_2"
+            },
+            {
+              "value": "GEF3.3",
+              "label": "gefIndicators.3.Component_Sub_Indicators.GEF3_3"
+            },
+            {
+              "value": "GEF3.4",
+              "label": "gefIndicators.3.Component_Sub_Indicators.GEF3_4"
+            }
+          ],
+          "label": "gefIndicators.3.Component_Sub_Indicators"
+        }
+      ],
+      "label": "gefIndicators.3"
+    },
+    {
+      "items": [
+        {
+          "items": [
+            {
+              "value": "GEF4.1",
+              "label": "gefIndicators.4.Component_Sub_Indicators.GEF4_1"
+            },
+            {
+              "value": "GEF4.2",
+              "label": "gefIndicators.4.Component_Sub_Indicators.GEF4_2"
+            },
+            {
+              "value": "GEF4.3",
+              "label": "gefIndicators.4.Component_Sub_Indicators.GEF4_3"
+            },
+            {
+              "value": "GEF4.4",
+              "label": "gefIndicators.4.Component_Sub_Indicators.GEF4_4"
+            }
+          ],
+          "label": "gefIndicators.4.Component_Sub_Indicators"
+        }
+      ],
+      "label": "gefIndicators.4"
+    },
+    {
+      "value": "GEF5",
+      "label": "gefIndicators.GEF5"
+    },
+    {
+      "value": "GEF2LDCF",
+      "label": "gefIndicators.GEF2LDCF"
+    }
+  ],
+  "gefCycles": [
+    {
+      "value": 6,
+      "label": "gefCycles.6"
+    },
+    {
+      "value": 7,
+      "label": "gefCycles.7"
+    },
+    {
+      "value": 8,
+      "label": "gefCycles.8"
+    }
+  ],
+  "gefFocalAreas": [
+    {
+      "value": 1,
+      "label": "gefFocalAreas.1"
+    },
+    {
+      "value": 2,
+      "label": "gefFocalAreas.2"
+    },
+    {
+      "value": 3,
+      "label": "gefFocalAreas.3"
+    },
+    {
+      "value": 4,
+      "label": "gefFocalAreas.4"
+    },
+    {
+      "value": 5,
+      "label": "gefFocalAreas.5"
+    }
+  ],
+  "gefInvestmentTypes": [
+    {
+      "value": "project",
+      "label": "gefInvestmentTypes.project"
+    },
+    {
+      "value": "program",
+      "label": "gefInvestmentTypes.program"
+    }
+  ],
+  "gef6Programs": [
+    {
+      "value": "6.1",
+      "label": "gef6Programs.6_1"
+    }
+  ],
+  "gef7Programs": [
+    {
+      "value": "7.1",
+      "label": "gef7Programs.7_1"
+    },
+    {
+      "value": "7.2",
+      "label": "gef7Programs.7_2"
+    },
+    {
+      "value": "7.3",
+      "label": "gef7Programs.7_3"
+    }
+  ],
+  "gef8Programs": [
+    {
+      "value": 8.1,
+      "label": "gef8Programs.8_1"
+    },
+    {
+      "value": 8.2,
+      "label": "gef8Programs.8_2"
+    },
+    {
+      "value": 8.3,
+      "label": "gef8Programs.8_3"
+    },
+    {
+      "value": 8.4,
+      "label": "gef8Programs.8_4"
+    }
+  ],
+  "boolean": [
+    {
+      "value": 0,
+      "label": "boolean.0"
+    },
+    {
+      "value": 1,
+      "label": "boolean.1"
+    }
+  ],
+  "restorationStatuses": [
+    {
+      "value": 1,
+      "label": "restorationStatuses.1"
+    },
+    {
+      "value": 2,
+      "label": "restorationStatuses.2"
+    },
+    {
+      "value": 3,
+      "label": "restorationStatuses.3"
+    }
+  ],
+  "units": [
+    {
+      "value": "ha",
+      "label": "units.ha"
+    },
+    {
+      "value": "km2",
+      "label": "units.km2"
+    },
+    {
+      "value": "km",
+      "label": "units.km"
+    }
+  ],
+  "gefImplementingAgencies": [
+    {
+      "value": 1,
+      "label": "gefImplementingAgencies.1"
+    },
+    {
+      "value": 2,
+      "label": "gefImplementingAgencies.2"
+    },
+    {
+      "value": 3,
+      "label": "gefImplementingAgencies.3"
+    },
+    {
+      "value": 4,
+      "label": "gefImplementingAgencies.4"
+    },
+    {
+      "value": 5,
+      "label": "gefImplementingAgencies.5"
+    },
+    {
+      "value": 6,
+      "label": "gefImplementingAgencies.6"
+    },
+    {
+      "value": 7,
+      "label": "gefImplementingAgencies.7"
+    },
+    {
+      "value": 8,
+      "label": "gefImplementingAgencies.8"
+    },
+    {
+      "value": 9,
+      "label": "gefImplementingAgencies.9"
+    },
+    {
+      "value": 10,
+      "label": "gefImplementingAgencies.10"
+    },
+    {
+      "value": 11,
+      "label": "gefImplementingAgencies.11"
+    },
+    {
+      "value": 12,
+      "label": "gefImplementingAgencies.12"
+    },
+    {
+      "value": 13,
+      "label": "gefImplementingAgencies.13"
+    },
+    {
+      "value": 14,
+      "label": "gefImplementingAgencies.14"
+    },
+    {
+      "value": 15,
+      "label": "gefImplementingAgencies.15"
+    },
+    {
+      "value": 16,
+      "label": "gefImplementingAgencies.16"
+    },
+    {
+      "value": 17,
+      "label": "gefImplementingAgencies.17"
+    },
+    {
+      "value": 18,
+      "label": "gefImplementingAgencies.18"
+    },
+    {
+      "value": 19,
+      "label": "gefImplementingAgencies.19"
+    },
+    {
+      "value": 20,
+      "label": "gefImplementingAgencies.20"
+    },
+    {
+      "value": 21,
+      "label": "gefImplementingAgencies.21"
+    }
+  ],
+  "projectObjectives": [
+    {
+      "value": 1,
+      "label": "projectObjectives.1"
+    },
+    {
+      "value": 2,
+      "label": "projectObjectives.2"
+    },
+    {
+      "value": 3,
+      "label": "projectObjectives.3"
+    },
+    {
+      "value": 4,
+      "label": "projectObjectives.4"
+    }
+  ],
+  "contributionToSdg": [
+    {
+      "value": 1,
+      "label": "contributionToSdg.1"
+    },
+    {
+      "value": 2,
+      "label": "contributionToSdg.2"
+    },
+    {
+      "value": 3,
+      "label": "contributionToSdg.3"
+    },
+    {
+      "value": 4,
+      "label": "contributionToSdg.4"
+    },
+    {
+      "value": 5,
+      "label": "contributionToSdg.5"
+    },
+    {
+      "value": 6,
+      "label": "contributionToSdg.6"
+    },
+    {
+      "value": 7,
+      "label": "contributionToSdg.7"
+    },
+    {
+      "value": 8,
+      "label": "contributionToSdg.8"
+    },
+    {
+      "value": 9,
+      "label": "contributionToSdg.9"
+    },
+    {
+      "value": 10,
+      "label": "contributionToSdg.10"
+    },
+    {
+      "value": 11,
+      "label": "contributionToSdg.11"
+    },
+    {
+      "value": 12,
+      "label": "contributionToSdg.12"
+    },
+    {
+      "value": 13,
+      "label": "contributionToSdg.13"
+    },
+    {
+      "value": 14,
+      "label": "contributionToSdg.14"
+    },
+    {
+      "value": 15,
+      "label": "contributionToSdg.15"
+    },
+    {
+      "value": 16,
+      "label": "contributionToSdg.16"
+    },
+    {
+      "value": 17,
+      "label": "contributionToSdg.17"
+    }
+  ]
+}

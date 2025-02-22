@@ -1,5 +1,8 @@
 const functions = require("firebase-functions");
 
+const { db } = require("./util");
+
+
 exports.updateBpIdFieldOnWrite = functions.firestore
     .document('registry/{document}/bestPractices/{bestPracticeId}')
     .onWrite((change, context) => {
@@ -20,4 +23,20 @@ exports.updateBpIdFieldOnWrite = functions.firestore
 
         // Update the 'id' field with the document ID
         return docRef.update({ id: docId });
+    });
+
+
+exports.getProjectPublicBestPractices = functions
+    .region('europe-west3')
+    .https
+    .onCall(async ({ projectId }, _context) => {
+        const bestPracticeRef = db.collection('registry').doc(projectId).collection('bestPractices');
+        // look for the best practices that have status == 'published'
+        const query = bestPracticeRef.where('status', '==', 'published');
+        const snapshot = await query.get();
+
+        return snapshot.docs.map(doc => ({
+            id: doc.id,
+            title: doc.data().title
+        }));
     });

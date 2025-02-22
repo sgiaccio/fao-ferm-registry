@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { sortedGoalIndicators, getGoalColor, groupByGoal, GoalIndicator } from '@/lib/auroraIndicators';
 import { getSortedIndicatorsAndMonitoring } from '@/lib/util';
 
@@ -11,6 +13,8 @@ const props = defineProps({
     modelValue: { type: null, default: undefined },
     edit: { type: Boolean, default: true },
 });
+
+const { t } = useI18n();
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -95,7 +99,9 @@ function nSelectedByGoal(goal: string) {
 
 <template>
     <div class="border-2 border-gray-300 rounded-md px-4 py-4 bg-gray-50">
-        <h1 class="font-bold text-gray-700 text-lg pb-3">Project indicators</h1>
+        <h1 class="font-bold text-gray-700 text-lg pb-3">
+            {{ t('inputs.indicatorsList.title') }}
+        </h1>
         <!-- summary of the selected indicators -->
         <div v-if="modelValue"
              class="flex flex-col mb-4 gap-y-1 text-xs font-bold text-white">
@@ -119,7 +125,7 @@ function nSelectedByGoal(goal: string) {
         </div>
         <div v-else
              class="-mt-2 mb-2 text-gray-500 italic">
-            No indicators selected for this area
+            {{ t('inputs.indicatorsList.noIndicators') }}
         </div>
 
         <div v-if="edit"
@@ -131,7 +137,9 @@ function nSelectedByGoal(goal: string) {
                                   class="inline w-5 h-5 cursor-pointer self-center" />
                 <ChevronDownIcon v-if="showAreaGoals"
                                  class="inline w-5 h-5 cursor-pointer self-center" />
-                <div class="flex-grow self-center ">Add project indicators</div>
+                <div class="flex-grow self-center ">
+                    {{ t('inputs.indicatorsList.addIndicators') }}
+                </div>
             </div>
             <template v-if="showAreaGoals">
                 <div v-for="( goal, j ) in  groupByGoal(sortedGoalIndicators)"

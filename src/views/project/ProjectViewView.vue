@@ -2,6 +2,8 @@
 import { onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
 
+import { useI18n } from 'vue-i18n';
+
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/20/solid';
 
 import { useProjectStore } from '@/stores/project';
@@ -14,6 +16,8 @@ defineProps<{
     first: boolean,
     last: boolean
 }>();
+
+const { t } = useI18n();
 
 const store = useProjectStore();
 
@@ -37,7 +41,7 @@ onBeforeMount(async () => {
                     class="-ml-1.5 h-5 w-5"
                     aria-hidden="true"
                 />
-                Previous
+                {{ t('view.previous') }}
             </button>
         </div>
         <div class="shrink">
@@ -47,7 +51,7 @@ onBeforeMount(async () => {
                 type="button"
                 :class="[last ? 'bg-gray-300 text-gray-400' : 'bg-indigo-600 hover:bg-indigo-700 text-white', 'inline-flex items-center gap-x-1.5 rounded-md py-2 px-3.5 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus:ring-indigo-500']"
             >
-                Next
+                {{ t('view.next') }}
                 <ArrowRightIcon
                     class="-mr-1.5 h-5 w-5"
                     aria-hidden="true"

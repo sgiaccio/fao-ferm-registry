@@ -1076,6 +1076,7 @@ exports.importFromGround = areas.importFromGround;
  * **********************************************/
 const goodPractices = require("./goodPractices");
 exports.updateBpIdFieldOnWrite = goodPractices.updateBpIdFieldOnWrite;
+exports.getProjectPublicBestPractices = goodPractices.getProjectPublicBestPractices;
 
 
 /************************************************

@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
 import { filterByLabel } from '@/components/project/menus';
 import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
 import { computed, ref, watch, nextTick, onMounted } from 'vue';
 
 import { XCircleIcon } from '@heroicons/vue/20/solid';
+
 
 const props = withDefaults(defineProps<{
     uid?: string,
@@ -21,6 +24,8 @@ const props = withDefaults(defineProps<{
     showSelection: true,
     searchable: true,
 });
+
+const { t } = useI18n();
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -133,8 +138,12 @@ watch(() => props.modelValue, (newValue, oldValue) => {
                 class="ml-2 text-gray-600"
                 v-if="!props.modelValue?.length"
             >
-                <template v-if="edit">Please select from the list below</template>
-                <template v-else>None selected</template>
+                <template v-if="edit">
+                    {{ t('inputs.recursiveMenu.pleaseSelect') }}
+                </template>
+                <template v-else>
+                    {{ $t('inputs.noneSelected') }}
+                </template>
             </div>
             <div
                 v-for="value in (props.modelValue || []).sort(sortCheckedValuesByLabel)"
@@ -159,7 +168,7 @@ watch(() => props.modelValue, (newValue, oldValue) => {
             v-if="!level && edit && searchable"
             type="text"
             class="w-80 text-sm font-bold text-gray-600 rounded-full border-2 border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mb-2 mt-2"
-            placeholder="Search"
+            :placeholder="t('inputs.recursiveMenu.search')"
             v-model="searchString"
         />
         <template v-if="edit">

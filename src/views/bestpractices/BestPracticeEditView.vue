@@ -2,6 +2,8 @@
 import { onBeforeMount, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 
+import { useI18n } from 'vue-i18n';
+
 import router from '@/router';
 
 import { useBestPracticesStore } from '@/stores/bestpractices';
@@ -10,6 +12,8 @@ import { ArrowRightCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/
 
 import { onBeforeRouteLeave } from 'vue-router';
 
+
+const { t } = useI18n();
 
 const props = defineProps<{
     previous: () => void,
@@ -46,7 +50,8 @@ onBeforeRouteLeave((to, from) => {
     if (!store.bestPractice) return true
 
     const answer = window.confirm(
-        'Do you really want to leave? you have unsaved changes!'
+        // 'Do you really want to leave? you have unsaved changes!'
+        t('edit.confirmLeave')
     )
     if (!answer) return false
 })
@@ -85,7 +90,7 @@ function cancel() {
                     class="-ml-0.5 h-5 w-5"
                     aria-hidden="true"
                 />
-                Save and Exit
+                {{ t('edit.saveAndExit') }}
             </button>
         </div>
         <div class="shrink">
@@ -99,7 +104,7 @@ function cancel() {
                     class="-ml-0.5 h-5 w-5"
                     aria-hidden="true"
                 />
-                Save and Next
+                {{ t('edit.saveAndNext') }}
             </button>
         </div>
         <div class="grow relative flex flex-row">
@@ -109,7 +114,7 @@ function cancel() {
                 type="button"
                 class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-                Cancel
+                {{ t('edit.cancel') }}
             </button>
         </div>
     </div>
@@ -117,18 +122,7 @@ function cancel() {
     <router-view
         v-if="store.bestPractice"
         :edit="true"
-    ></router-view>
-
-    <!-- TODO, important - but what? -->
-    <!-- <router-view v-slot="{ Component, route }"
-                                                             v-if="store.bestPractice">
-                                                    <keep-alive include="BestPracticeObjectivesView">
-                                                        <component :is="Component"
-                                                                   :key="route.path" />
-                                                    </keep-alive>
-                                                </router-view> -->
-    <!-- buttons -->
-
+    />
     <div class="w-full pb-8 flex gap-x-6">
         <div class="shrink">
             <button
@@ -140,7 +134,7 @@ function cancel() {
                     class="-ml-0.5 h-5 w-5"
                     aria-hidden="true"
                 />
-                Save and Exit
+                {{ t('edit.saveAndExit') }}
             </button>
         </div>
         <div
@@ -156,7 +150,7 @@ function cancel() {
                     class="-ml-0.5 h-5 w-5"
                     aria-hidden="true"
                 />
-                Save and Next
+                {{ t('edit.saveAndNext') }}
             </button>
         </div>
         <div class="grow relative flex flex-row">
@@ -166,7 +160,7 @@ function cancel() {
                 type="button"
                 class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-                Cancel
+                {{ t('edit.cancel') }}
             </button>
         </div>
     </div>

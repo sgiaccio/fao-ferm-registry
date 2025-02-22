@@ -2,7 +2,6 @@ import { query, serverTimestamp, where, and, or, collection, doc, getDocs, setDo
 import { db } from './index';
 import { snakeToCamel } from '@/lib/util';
 import type { Menu, RecursiveMenu } from '@/components/project/menus';
-import { useAuthStore } from '@/stores/auth';
 
 import { getGroupsWhereEditor } from '@/lib/util';
 

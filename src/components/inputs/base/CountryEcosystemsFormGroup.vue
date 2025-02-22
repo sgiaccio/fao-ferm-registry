@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { watch, ref, computed } from "vue";
 
+import { useI18n } from "vue-i18n";
+
 import baseProps from "../formGroupProps"
 
 // import trangle mark to indicate that the value is required
@@ -12,6 +14,8 @@ import { useMenusStore } from '@/stores/menus';
 
 import { useGaul } from '@/hooks/useGaul';
 
+
+const { t } = useI18n();
 
 const { getCountryNameByIso2 } = useGaul();
 
@@ -52,7 +56,8 @@ const errorMessages = computed(() => {
 
     if (totalPercentage < 99.99 || totalPercentage > 100.01) {
         // return [`The total percentage must be 100. It is currently ${totalPercentage.toFixed(2)}`];
-        return [`The total percentage should equal 100%, but it currently sums to ${totalPercentage.toFixed(2)}%.`];
+        // return [`The total percentage should equal 100%, but it currently sums to ${totalPercentage.toFixed(2)}%.`];
+        return [t('areaAndEcosystems.areaByEcosystem.validation.percentageCheck', { totalPercentage: totalPercentage.toFixed(2) })];
     }
 });
 
@@ -174,9 +179,19 @@ function calculateSum(values: any[]) {
 <template>
     <template v-if="countries && countries.length && ecosystems && ecosystems.length">
         <div class="flex flex-row items-center justify-between mb-2">
-            <h2 class="text-2xl font-semibold">Area by {{ countries?.length > 1 ? 'country and' : '' }} ecosystem</h2>
+            <h2 class="text-2xl font-semibold">
+                <!-- Area by
+                {{ countries?.length > 1 ? 'country and' : '' }} ecosystem -->
+                <i18n-t keypath="areaAndEcosystems.areaByEcosystem.title">
+                    <template v-slot:country v-if="countries?.length > 1">
+                        {{ t('areaAndEcosystems.areaByEcosystem.countryAnd') }}
+                    </template>
+                </i18n-t>
+            </h2>
             <div class="flex flex-row items-center gap-x-2">
-                <div class="font-medium">Total percentage: {{ Math.round(calculateSum(percentValues)) }}% ({{ Math.round(calculateSum(areaValues)) }}/{{ totalArea }})</div>
+                <div class="font-medium">
+                    {{ t('areaAndEcosystems.areaByEcosystem.totalPercentage') }}
+                    {{ Math.round(calculateSum(percentValues)) }}% ({{ Math.round(calculateSum(areaValues)) }}/{{ totalArea }})</div>
             </div>
         </div>
 
@@ -229,7 +244,10 @@ function calculateSum(values: any[]) {
                                     </div>
                                 </div>
                                 <div class="flex flex-row items-center gap-x-2">
-                                    <div class="text-nowrap text-white text-xs font-medium">Area [{{ areaUnits }}]</div>
+                                    <div class="text-nowrap text-white text-xs font-medium">
+                                        {{ t('inputs.areaSurface') }}
+                                        [{{ areaUnits }}]
+                                    </div>
                                     <input
                                         v-if="edit"
                                         type="number"

@@ -38,7 +38,7 @@ function valueChanged(value: string) {
                        :showSelection="showSelection"
                        @update:modelValue="valueChanged"
                        :searchable="searchable" />
-        <template v-slot:info
+        <template #info
                   v-if="$slots.info">
             <slot name="info" />
         </template>

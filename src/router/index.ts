@@ -1,10 +1,9 @@
-// import { useAuthStore } from "../stores/auth"
-// import { useUserPrefsStore } from "../stores/userPreferences"
-// import { useMenusStore } from "../stores/menus"
-
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router';
 import { useLoadingStore } from '../stores/loading';
 
+import { getI18n, setLocale, SUPPORT_LOCALES } from '@/lib/i18n';
+
+import { useMenusStore } from '../stores/menus';
 
 
 // Initiatives tabs are used both for editing and viewing projects, so define them once here
@@ -38,11 +37,11 @@ const projectTabs = [{
     name: 'projectMonitoring',
     component: () => import('../views/project/MonitoringView.vue')
 },
-// {
-//     path: 'preview',
-//     name: 'projectResults',
-//     component: () => import('../views/project/ResultsView.vue')
-// }
+    // {
+    //     path: 'preview',
+    //     name: 'projectResults',
+    //     component: () => import('../views/project/ResultsView.vue')
+    // }
 ];
 
 // Good Practices tabs are used both for editing and viewing projects, so define them once here
@@ -73,41 +72,55 @@ const bestPracticeTabs = [{
     meta: { dataPath: 'additionalResources' }
 }];
 
+const localesStr = `${SUPPORT_LOCALES.join('|')}`;
+
 const router = createRouter({
-    scrollBehavior(to, from, _savedPosition) {
-        // always scroll to top
-        // return {
-        //     top: 0,
-        //     behavior: 'smooth'
-        // }
-        // scroll on top if the query doesn't contain modal=preview
-        if (!from.query.modal && !to.query.modal) {
-            return { top: 0, behavior: 'smooth' }
+    scrollBehavior(to, from, savedPosition) {
+        // If this was triggered by browser navigation (Back / Forward), and the browser saved a scroll position, restore it.
+        if (savedPosition) {
+            return savedPosition
+        }
+
+        // If we are only changing locales (i.e., from the same route in a different locale), do NOT scroll — just keep the current scroll position.
+        if (from.params.locale !== to.params.locale) {
+            return {}
+        }
+
+        // If either the old route OR the new route includes a `modal` query param, skip auto-scroll. We assume a modal is open or transitioning.
+        if (from.query.modal || to.query.modal) {
+            return {}
+        }
+
+        // Otherwise, scroll to the top, smoothly.
+        return {
+            top: 0,
+            behavior: 'smooth'
         }
     },
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: "/",
-            name: "home",
+            path: `/:locale(${localesStr})?`,
+            name: 'home',
             component: () => import('../views/HomeView.vue'),
             meta: { public: true }
         }, {
-            path: "/registration",
-            name: "registration",
+            // path: '/:locale?/registration',
+            path: `/:locale(${localesStr})?/registration`,
+            name: 'registration',
             component: () => import('../views/UserRegistrationView.vue')
         },
 
         // Authentication and registration
         {
-            path: "/login",
-            name: "login",
+            path: `/:locale(${localesStr})?/login`,
+            name: 'login',
             component: () => import('../views/LoginView.vue'),
             meta: { public: true }
         },
         {
-            path: "/search",
-            name: "search",
+            path: `/:locale(${localesStr})?/search`,
+            name: 'search',
             redirect: { name: 'searchInitiatives' },
             meta: { public: true },
             children: [
@@ -136,23 +149,23 @@ const router = createRouter({
             ]
         },
         // {
-        //     path: "/search/initiatives",
-        //     name: "searchInitiatives",
+        //     path: '/search/initiatives',
+        //     name: 'searchInitiatives',
         //     component: () => import('../views/search/SearchView.vue'),
         //     props: { type: 'initiatives' },
         //     meta: { public: true }
         // },
         // {
-        //     path: "/search/goodPractices",
-        //     name: "searchGoodPractices",
+        //     path: '/search/goodPractices',
+        //     name: 'searchGoodPractices',
         //     component: () => import('../views/search/SearchView.vue'),
         //     props: { type: 'goodPractices' },
         //     meta: { public: true }
         // },
         // Administration
         {
-            path: "/admin",
-            name: "admin",
+            path: `/:locale(${localesStr})?/admin`,
+            name: 'admin',
             component: () => import('../views/admin/AdminView.vue'),
             children: [
                 {
@@ -164,29 +177,29 @@ const router = createRouter({
                     name: 'groups',
                     component: () => import('../views/admin/GroupListView.vue')
                 }, {
-                    path: "submittedInitiatives",
-                    name: "submittedInitiatives",
+                    path: 'submittedInitiatives',
+                    name: 'submittedInitiatives',
                     component: () => import('../views/admin/SubmittedInitiativesView.vue')
                 }, {
-                    path: "groupAssignments",
-                    name: "groupAssignments",
+                    path: 'groupAssignments',
+                    name: 'groupAssignments',
                     component: () => import('../views/admin/GroupAssignmentRequests.vue')
                 }, {
-                    path: "newGroups",
-                    name: "newGroups",
+                    path: 'newGroups',
+                    name: 'newGroups',
                     component: () => import('../views/admin/NewGroupRequestsView.vue')
                 }, {
-                    path: "appState",
-                    name: "appState",
+                    path: 'appState',
+                    name: 'appState',
                     component: () => import('../views/admin/AppState.vue')
                 }, {
-                    path: "qc",
-                    name: "qc",
+                    path: 'qc',
+                    name: 'qc',
                     component: () => import('../views/admin/Qc.vue')
                 }
             ]
         }, {
-            path: '/registry',
+            path: `/:locale(${localesStr})?/registry`,
             name: 'registry',
             component: () => import('../views/RegistryView.vue'),
 
@@ -266,7 +279,7 @@ const router = createRouter({
                 }
             ]
         }, {
-            path: '/support',
+            path: `/:locale(${localesStr})?/support`,
             name: 'support',
             component: () => import('../views/SupportView.vue'),
             meta: { public: true }
@@ -279,6 +292,22 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
+    let paramsLocale =
+        (to.params.locale as string)?.slice(0, 2).toLowerCase() ||
+        navigator.language.slice(0, 2).toLowerCase();
+
+    if (!SUPPORT_LOCALES.includes(paramsLocale)) {
+        // get the default locale from i18n
+        const defaultLocale = getI18n().global.fallbackLocale.value;
+        if (to.name) {
+            return { name: to.name, params: { ...to.params, locale: defaultLocale }, query: to.query, hash: to.hash };
+        } else {
+            // fallback in case the route name is not defined - each route should have a name anyway
+            return { name: 'home', params: { locale: defaultLocale }, query: to.query, hash: to.hash };
+        }
+    }
+    await setLocale(paramsLocale);
+
     const loadingStore = useLoadingStore();
 
     if (to.matched.every(record => record.meta.public)) {
@@ -348,10 +377,7 @@ router.afterEach((to) => {
 });
 
 async function _loadMenus() {
-    // dynamically load the menus store to save bandwidth
-    const { useMenusStore } = await import('../stores/menus');
     const menusStore = useMenusStore();
-
     if (!menusStore.loaded) {
         await menusStore.fetchMenus();
     }

@@ -2,6 +2,8 @@
 import { onBeforeMount, onUnmounted, watch } from 'vue';
 import { onBeforeRouteLeave, useRoute } from 'vue-router';
 
+import { useI18n } from 'vue-i18n';
+
 import { storeToRefs } from 'pinia';
 
 import { ArrowRightCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/20/solid';
@@ -14,6 +16,8 @@ import { useAuroraStore } from '@/stores/aurora';
 import { useCustomAlert } from '@/hooks/useCustomAlert';
 import { GoalIndicator, type CustomIndicator } from '@/lib/auroraIndicators';
 
+
+const { t } = useI18n();
 
 const props = defineProps<{
     previous: () => void,
@@ -51,7 +55,7 @@ onBeforeMount(async () => {
     if (route.query.importAurora === 'true' && auroraStore.customIndicators && auroraStore.goalIndicators) {
         await importAuroraIndicators();
     }
-    
+
     // watch([loaded, project], () => {
     //     projectChanged.value = true;
     // }, { deep: true });
@@ -69,7 +73,7 @@ onBeforeRouteLeave((to, from) => {
     if (!store.loaded) return true;
 
     const answer = window.confirm(
-        'Do you really want to leave? you have unsaved changes!'
+        t('edit.confirmLeave')
     );
     if (!answer) return false;
 });
@@ -179,7 +183,7 @@ async function importAuroraIndicators() {
                     class="-ml-0.5 h-5 w-5"
                     aria-hidden="true"
                 />
-                Save and Exit
+                {{ t('edit.saveAndExit') }}
             </button>
         </div>
         <div class="shrink">
@@ -193,7 +197,7 @@ async function importAuroraIndicators() {
                     class="-ml-0.5 h-5 w-5"
                     aria-hidden="true"
                 />
-                Save and Next
+                {{ t('edit.saveAndNext') }}
             </button>
         </div>
         <div class="grow relative flex flex-row">
@@ -203,7 +207,7 @@ async function importAuroraIndicators() {
                 type="button"
                 class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-                Cancel
+                {{ t('edit.cancel') }}
             </button>
         </div>
     </div>
@@ -223,7 +227,7 @@ async function importAuroraIndicators() {
                     class="-ml-0.5 h-5 w-5"
                     aria-hidden="true"
                 />
-                Save and Exit
+                {{ t('edit.saveAndExit') }}
             </button>
         </div>
         <div class="shrink">
@@ -237,7 +241,7 @@ async function importAuroraIndicators() {
                     class="-ml-0.5 h-5 w-5"
                     aria-hidden="true"
                 />
-                Save and Next
+                {{ t('edit.saveAndNext') }}
             </button>
         </div>
         <div class="grow relative flex flex-row">
@@ -247,7 +251,7 @@ async function importAuroraIndicators() {
                 type="button"
                 class="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-                Cancel
+                {{ t('edit.cancel') }}
             </button>
         </div>
         <!-- <button

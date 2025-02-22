@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch, inject } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import { ListBulletIcon, ExclamationTriangleIcon, CheckCircleIcon } from '@heroicons/vue/20/solid';
 
 import ButtonWait from '@/components/ButtonWait.vue';
@@ -13,6 +15,7 @@ import { getPolygonZonalStats } from '@/firebase/functions';
 
 import { groupBiomesByRealm, getRealmLabel, getRealmColor, getRealmBorderColor } from '@/lib/util';
 
+
 const props = withDefaults(defineProps<{
     edit?: boolean,
     area: any
@@ -21,6 +24,8 @@ const props = withDefaults(defineProps<{
 }>(), {
     edit: true
 });
+
+const { t } = useI18n();
 
 const menus = useMenusStore().menus;
 
@@ -87,7 +92,7 @@ async function getAreaBiomeStats() {
     const areaValue = props.area;
     try {
         // check if there are already ecosystems for that area
-        if (!areaValue.ecosystems?.length || confirm('Are you sure you want to overwrite the existing biomes?')) {
+        if (!areaValue.ecosystems?.length || confirm(t('areaAndEcosystems.areaEcosystems.confirmOverwrite'))) {
             areaBiomesLoadingStatus.value = 'loading';
             const newBiomes = await getBiomeStats(areaValue);
             areaValue.ecosystems = newBiomes;
@@ -168,7 +173,10 @@ function handleAfterLeave(el: any) {
         <!-- class="border-2 px-3 py-2 rounded-lg border-gray-300"> -->
         <!-- <div class="flex flex-row my-3"> -->
         <div class="flex flex-col md:flex-row md:items-center gap-x-4">
-            <div class="flex-1 font-bold text-lg">IUCN Global Ecosystem Typology 2.0 - Biomes</div>
+            <div class="flex-1 font-bold text-lg">
+                <!-- IUCN Global Ecosystem Typology 2.0 - Biomes -->
+                {{ t('areaAndEcosystems.areaEcosystems.title') }}
+            </div>
             <div
                 v-if="edit"
                 class="flex flex-row shrink mt-3 md:mt-0"
@@ -196,7 +204,8 @@ function handleAfterLeave(el: any) {
                         class="-ml-0.5 h-5 w-5 text-green-600"
                         aria-hidden="true"
                     />
-                    Get biomes in this area
+                    <!-- Get biomes in this area -->
+                    {{ t('areaAndEcosystems.areaEcosystems.getBiomes') }}
                 </button>
                 <button
                     v-if="index === 0 && nAreas > 1"
@@ -205,7 +214,7 @@ function handleAfterLeave(el: any) {
                     :class="[!area.ecosystems?.length ? 'bg-gray-100 text-gray-400' : 'bg-ferm-blue-dark-100 hover:bg-ferm-blue-dark-200 text-gray-900', 'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 ml-4']"
                     @click="applyToAll"
                 >
-                    Apply to all
+                    {{ t('edit.applyToAll') }}
                 </button>
             </div>
         </div>
@@ -260,15 +269,6 @@ function handleAfterLeave(el: any) {
             :showSelection="false"
         />
     </div>
-    <!-- <div v-else-if="edit"
-         class="text-red-600 font-bold text-lg pb-4 mt-6">Please enter at least one area in the
-        <router-link class="text-blue-400 underline hover:text-blue-600"
-                     :to="{ path: 'area' }">Area tab
-        </router-link>
-    </div>
-    <div v-else>
-        <div class="text-lg italic mt-6 text-gray-600">None selected</div>
-    </div> -->
 </template>
 
 

@@ -69,5 +69,5 @@ const showValidation = computed(() => !!errorMessages.value.length && focusedOut
         <p v-if="showValidation" v-for="message in errorMessages" class="mt-2 text-sm text-red-600" id="email-error">{{message}}</p>
     </template>
     <div v-else-if="modelValue">{{modelValue}}</div>
-    <div v-else class="italic text-gray-400">Not available</div>
+    <div v-else class="italic text-gray-400">{{ $t('notAvailable') }}</div>
 </template>
