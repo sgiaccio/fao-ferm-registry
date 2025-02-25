@@ -49,19 +49,48 @@ const queryGoodPractices = [
     {
         name: 'Degradation Drivers',
         queryName: 'drivers',
-        queryValues: ['Cultural and social drivers', 'Ecological and environmental drivers', 'Economic drivers']
+        // queryValues: ['Cultural and social drivers', 'Ecological and environmental drivers', 'Economic drivers']
+        queryValues: [
+            { value: 'culturalAndSocialDrivers', label: 'Cultural and social drivers' },
+            { value: 'ecologicalAndEnvironmentalDrivers', label: 'Ecological and environmental drivers' },
+            { value: 'economicDrivers', label: 'Economic drivers' }
+        ]
     }, {
         name: 'Ecosystem',
         queryName: 'ecosystems',
-        queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas']
+        // queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas']
+        queryValues: [
+            { value: 'farmlands', label: 'Farmlands' },
+            { value: 'forests', label: 'Forests' },
+            { value: 'freshwaters', label: 'Freshwaters' },
+            { value: 'grasslands', label: 'Grasslands, Shrublands and Savannahs' },
+            { value: 'mountains', label: 'Mountains' },
+            { value: 'oceans', label: 'Oceans and coasts' },
+            { value: 'peatlands', label: 'Peatlands' },
+            { value: 'urban', label: 'Urban areas' }
+        ]
     }, {
         name: 'Region',
         queryName: 'regions',
-        queryValues: ['Africa', 'Asia and the Pacific', 'Europe', 'Latin America and the Caribbean', 'North America', 'West Asia']
+        // queryValues: ['Africa', 'Asia and the Pacific', 'Europe', 'Latin America and the Caribbean', 'North America', 'West Asia']
+        queryValues: [
+            { value: 'africa', label: 'Africa' },
+            { value: 'asia', label: 'Asia and the Pacific' },
+            { value: 'europe', label: 'Europe' },
+            { value: 'latinAmerica', label: 'Latin America and the Caribbean' },
+            { value: 'northAmerica', label: 'North America' },
+            { value: 'westAsia', label: 'West Asia' }
+        ]
     }, {
         name: 'Source',
         queryName: 'source',
-        queryValues: ['FERM', 'GoProFor', 'Panorama', 'WoCat']
+        // queryValues: ['FERM', 'GoProFor', 'Panorama', 'WoCat']
+        queryValues: [
+            { value: 'ferm', label: 'FERM' },
+            { value: 'goProFor', label: 'GoProFor' },
+            { value: 'panorama', label: 'Panorama' },
+            { value: 'woCat', label: 'WoCat' }
+        ]
     },
 ]
 
@@ -69,36 +98,74 @@ const queryInitiatives = [
     {
         name: 'Ecosystem',
         queryName: 'ecosystems',
-        queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas', 'Not Available']
+        // queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas', 'Not Available']
+        queryValues: [
+            { value: 'farmlands', label: 'Farmlands' },
+            { value: 'forests', label: 'Forests' },
+            { value: 'freshwaters', label: 'Freshwaters' },
+            { value: 'grasslands', label: 'Grasslands, Shrublands and Savannahs' },
+            { value: 'mountains', label: 'Mountains' },
+            { value: 'oceans', label: 'Oceans and coasts' },
+            { value: 'peatlands', label: 'Peatlands' },
+            { value: 'urban', label: 'Urban areas' },
+            { value: 'notAvailable', label: 'Not Available' }
+        ]
     }, {
         name: 'Region',
         queryName: 'regions',
-        queryValues: ['Africa', 'Asia and the Pacific', 'Europe', 'Latin America and the Caribbean', 'North America', 'West Asia']
+        // queryValues: ['Africa', 'Asia and the Pacific', 'Europe', 'Latin America and the Caribbean', 'North America', 'West Asia']
+        queryValues: [
+            { value: 'africa', label: 'Africa' },
+            { value: 'asia', label: 'Asia and the Pacific' },
+            { value: 'europe', label: 'Europe' },
+            { value: 'latinAmerica', label: 'Latin America and the Caribbean' },
+            { value: 'northAmerica', label: 'North America' },
+            { value: 'westAsia', label: 'West Asia' }
+        ]
     }, {
         name: 'Source',
         queryName: 'source',
-        queryValues: ['FERM', 'GEF', 'RESULT Asia-Pacific', 'Nature Commitments', 'Restoration Resource Center', 'Brazilian Restoration and Reforestation Observatory']
+        // queryValues: ['FERM', 'GEF', 'RESULT Asia-Pacific', 'Nature Commitments', 'Restoration Resource Center', 'Brazilian Restoration and Reforestation Observatory']
+        queryValues: [
+            { value: 'ferm', label: 'FERM' },
+            { value: 'gef', label: 'GEF' },
+            { value: 'resultAsiaPacific', label: 'RESULT Asia-Pacific' },
+            { value: 'natureCommitments', label: 'Nature Commitments' },
+            { value: 'restorationResourceCenter', label: 'Restoration Resource Center' },
+            { value: 'brazilianRestorationAndReforestationObservatory', label: 'Brazilian Restoration and Reforestation Observatory' }
+        ]
     }, {
         name: 'Restoration Type',
         queryName: 'restoration_types',
-        queryValues: ['Ecological restoration', 'Rehabilitation', 'Other']
+        // queryValues: ['Ecological restoration', 'Rehabilitation', 'Other']
+        queryValues: [
+            { value: 'ecologicalRestoration', label: 'Ecological restoration' },
+            { value: 'rehabilitation', label: 'Rehabilitation' },
+            { value: 'other', label: 'Other' }
+        ]
     }, {
         name: 'Restoration Status',
         queryName: 'restoration_status',
-        queryValues: ['In preparation', 'In progress', 'Post-completion monitoring', 'Other']
+        // queryValues: ['In preparation', 'In progress', 'Post-completion monitoring', 'Other']
+        queryValues: [
+            { value: 'inPreparation', label: 'In preparation' },
+            { value: 'inProgress', label: 'In progress' },
+            { value: 'postCompletionMonitoring', label: 'Post-completion monitoring' },
+            { value: 'other', label: 'Other' }
+        ]
     },
 ]
 
 const searchTextGoodPractices = ref<string>('');
 const searchTextInitiatives = ref<string>('');
-const searchTermsGoodPractices = ref(Object.fromEntries(queryGoodPractices.map((q) => [q.queryName, []])));
+const searchTermsGoodPractices = ref(Object.fromEntries(queryGoodPractices.map(q => [q.queryName, []])));
 // const searchTermsInitiatives_ = ref(Object.fromEntries(queryInitiatives.map((q) => [q.queryName, []])));
 // initialize search terms for initiatives with the source gotten
 const searchTermsInitiatives = ref(
     Object.fromEntries(
-        queryInitiatives.map((q) => [
+        queryInitiatives.map(q => [
             q.queryName,
-            (q.queryName === 'source') && source ? [ source ] : []
+            (q.queryName === 'source') && source ? [source] : []
         ])
     )
 );

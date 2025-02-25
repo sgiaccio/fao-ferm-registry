@@ -100,7 +100,7 @@ function buildQuery() {
             table = 'vw_cse_en'
     }
 
-    const queryStart = `WITH data AS ( SELECT * FROM fao-maps-review.fao_cse.${table} ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data `
+    const queryStart = `WITH data AS (SELECT * FROM fao-maps-review.fao_cse.${table}), counted_data AS (SELECT *, COUNT(*) OVER() AS total_count FROM data `
 
     let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
         if (values.length === 0) return ''

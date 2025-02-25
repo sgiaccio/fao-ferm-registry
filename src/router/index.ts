@@ -145,6 +145,14 @@ const router = createRouter({
                     component: () => import('../views/search/SearchView.vue'),
                     props: { type: 'goodPractices' },
                     meta: { public: true }
+                }, {
+                    path: 'good-practices/:id',
+                    name: 'publicGoodPracticePage',
+                    beforeEnter: async (_to, _from) => {
+                        _loadMenus();
+                    },
+                    component: () => import('../views/search/bestPractice/BestPracticeView.vue'),
+                    meta: { public: true }
                 }
             ]
         },
