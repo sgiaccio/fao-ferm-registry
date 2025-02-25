@@ -100,14 +100,14 @@ function buildQuery() {
             table = 'vw_cse_en'
     }
 
-    const queryStart = `WITH data AS ( SELECT * FROM fao-maps-review.fao_cse.${table} ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data `
+    const queryStart = `WITH data AS ( SELECT * FROM fao-ferm2-review.best_practices.${table} ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data `
 
     let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
         if (values.length === 0) return ''
         if (key === 'source') {
             return `source IN UNNEST([${values.map((v) => `'${v}'`).join(', ')}])`
         } else {
-            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE ${key} IN (${values.map((v) => `'${v}'`).join(', ')}))`
+            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE LOWER(${key}) IN (${values.map((v: string) => `LOWER('${v}')`).join(', ')}))`
         }
     }).filter(Boolean)
 
@@ -123,6 +123,9 @@ function buildQuery() {
     }
 
     const queryEnd = `) SELECT * FROM counted_data LIMIT 30 OFFSET ${searchResults.value.length};`
+
+    console.log('queryStart', queryStart)
+    console.log('queryEnd', queryEnd)
     return queryStart + (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') + queryEnd
 }
 

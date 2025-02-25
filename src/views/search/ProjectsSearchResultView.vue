@@ -89,9 +89,9 @@ function buildQuery() {
     let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
         if (values.length === 0) return ''
         if (key === 'source' || key === 'restoration_status') {
-            return `${key} IN UNNEST([${values.map((v) => `'${v}'`).join(', ')}])`
+            return `LOWER(${key}) IN UNNEST([${values.map((v: string) => `'${v.toLowerCase()}'`).join(', ')}])`
         } else {
-            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE ${key} IN (${values.map((v) => `'${v}'`).join(', ')}))`
+            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE LOWER(${key}) IN (${values.map((v: string) => `'${v.toLowerCase()}'`).join(', ')}))`
         }
     }).filter(Boolean)
 
