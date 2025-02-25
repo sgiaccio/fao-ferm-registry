@@ -148,7 +148,10 @@ def _upload_to_bucket(project_id, temp_file, path, orig_filename, content_type):
         logger.error(traceback.format_exc())
     return dst_path
 
-def _handle_upload(request, tmp_dir, max_size=5 * 1000 * 1024):
+# define a constant for the maximum file size
+MAX_FILE_SIZE = 15 * 1000 * 1024  # 15 MB
+
+def _handle_upload(request, tmp_dir, max_size=MAX_FILE_SIZE):
     form_data = request.form.to_dict()
     project_id = form_data.get('project_id')
     path = form_data.get('path')
