@@ -67,7 +67,7 @@ const enablingActivities = computed(() => groupActivitiesByType().enablingActivi
             v-if="biophysicalActivities.length > 0"
             class="flex flex-col"
         >
-            <span class="font-semibold">Biophysical</span>
+            <span class="font-semibold">{{ t('activities.Biophysical') }}</span>
             <div
                 v-for="activity in biophysicalActivities"
                 :key="activity"
@@ -78,7 +78,7 @@ const enablingActivities = computed(() => groupActivitiesByType().enablingActivi
             v-if="enablingActivities.length > 0"
             class="mt-4 flex flex-col"
         >
-            <span class="font-semibold">Enabling</span>
+            <span class="font-semibold">{{ t('activities.Enabling') }}</span>
             <div
                 v-for="activity in enablingActivities"
                 :key="activity"

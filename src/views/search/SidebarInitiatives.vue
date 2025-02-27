@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
 import { CheckIcon } from '@heroicons/vue/20/solid';
 
@@ -19,6 +21,8 @@ const props = defineProps<{
     }[];
     searchTerms: any;
 }>();
+
+const { t } = useI18n();
 
 const countries = defineModel('countries');
 // const searchTerms = defineModel('searchTerms');
@@ -66,7 +70,7 @@ function toggleSearchTerm(queryName: string, value: string) {
                         v-else
                         class="h-5 w-5 text-gray-800"
                     />
-                    <span>{{ item.name }}</span>
+                    <span>{{ t(`publicSearch.initiatives.${item.queryName}.label`) }}</span>
                 </DisclosureButton>
                 <DisclosurePanel
                     as="ul"
@@ -80,7 +84,7 @@ function toggleSearchTerm(queryName: string, value: string) {
                         @click="() => toggleSearchTerm(item.queryName, label)"
                     >
                         <div class="flex flex-row items-center justify-between w-full">
-                            <span class="text-gray-700">{{ label }}</span>
+                            <span class="text-gray-700">{{ t(`publicSearch.initiatives.${item.queryName}.terms.${value}`) }}</span>
                             <CheckIcon
                                 :class="[searchTerms[item.queryName].includes(label) ? 'visible' : 'invisible', 'h-4 w-4 text-gray-800 mr-2 flex-shrink-0']"
                                 aria-hidden="true"

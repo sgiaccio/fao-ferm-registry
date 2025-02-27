@@ -3,6 +3,9 @@
     lang="ts"
 >
 import { computed, ref } from 'vue';
+
+import { useI18n } from 'vue-i18n';
+
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
 import { XMarkIcon } from '@heroicons/vue/16/solid';
 
@@ -19,12 +22,15 @@ import { Transition, TransitionGroup } from 'vue';
 
 import countries from './countries.json';
 
+
 // define a modelValue string prop
 defineProps<{
     modelValue: string[],
 }>();
 
 const emit = defineEmits(['update:modelValue']);
+
+const { t } = useI18n();
 
 const query = ref('');
 // const selectedCountries = ref([]);
@@ -47,13 +53,13 @@ function updateModelValue(value: string[]) {
         @update:modelValue="updateModelValue"
         v-slot="{ open }"
     >
-        <ComboboxLabel class="flex flex-row w-full font-bold uppercase text-gray-600 cursor-pointer items-center text-md leading-6">Countries</ComboboxLabel>
+        <ComboboxLabel class="flex flex-row w-full font-bold uppercase text-gray-600 cursor-pointer items-center text-md leading-6">{{ t('home.countries') }}</ComboboxLabel>
         <div class="relative mt-2">
             <ComboboxInput
                 class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 @change="query = $event.target.value"
                 :display-value="country => country?.name"
-                placeholder="Select countries"
+                :placeholder="t('publicSearch.selectCountries')"
             />
             <ComboboxButton class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                 <ChevronUpDownIcon

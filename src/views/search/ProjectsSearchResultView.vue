@@ -152,7 +152,21 @@ watch(() => props.searchTerms, (val) => {
         class="w-full flex justify-between mb-5 relative items-center"
         v-if="totalCount !== null"
     >
-        <div class="text-gray-700 font-medium_ tracking-wide text-lg">Showing <span class="font-bold">{{ searchResults.length }}</span> of <span class="font-bold">{{ totalCount }}</span> initiatives</div>
+        <i18n-t
+            class="text-gray-700 font-medium_ tracking-wide text-lg"
+            tag="div"
+            keypath="publicSearch.initiatives.resultsCount"
+            :count="totalCount"
+        >
+            <template #count>
+                <span class="font-bold">{{ searchResults.length }}</span>
+            </template>
+            <template #total>
+                <span class="font-bold">{{ totalCount }}</span>
+            </template>
+        </i18n-t>
+
+
         <!-- show as list or as grid -->
         <div class="flex justify-end items-center gap-x-2">
             <button
