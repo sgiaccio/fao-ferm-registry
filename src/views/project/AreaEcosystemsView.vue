@@ -13,7 +13,7 @@ import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 
 import { getPolygonZonalStats } from '@/firebase/functions';
 
-import { groupBiomesByRealm, getRealmLabel, getRealmColor, getRealmBorderColor } from '@/lib/util';
+import { groupBiomesByRealm, getRealmKey, getRealmColor, getRealmBorderColor } from '@/lib/util';
 
 
 const props = withDefaults(defineProps<{
@@ -235,7 +235,7 @@ function handleAfterLeave(el: any) {
                 class="basis-1/3 rounded-lg px-2 py-2 font-sm flex flex-col gap-y-2 border-2"
             >
 
-                <span class="text-xm font-medium text-white">{{ getRealmLabel(realm.realm) }}</span>
+                <span class="text-xm font-medium text-white">{{ t(getRealmKey(realm.realm)) }}</span>
                 <div class="flex flex-col gap-y-2">
                     <div
                         v-for="biome in (realm.biomes)"

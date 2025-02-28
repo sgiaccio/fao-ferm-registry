@@ -18,7 +18,7 @@ const route = useRoute();
 const userPrefsStore = useUserPrefsStore()
 
 const tabs = [
-    { name: t('goodPractices.objectives.title'),path: 'objectives' },
+    { name: t('goodPractices.objectives.title'), path: 'objectives' },
     { name: 'Methodology', path: 'methodology' },
     { name: 'Key Factors, Constraints and Lessons Learned', path: 'key-factors' },
     { name: 'Benefits and Validation', path: 'benefits' },
@@ -76,22 +76,28 @@ async function closeGuidelines(accepted: boolean) {
 <template>
     <!-- Guidelines and feedback links -->
     <Teleport to="#content-specific">
-        <div class="flex space-x-4 cursor-pointer"
-             @click="showGuidelines = true">
-            <span class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Guidelines</span>
+        <div
+            class="flex space-x-4 cursor-pointer"
+            @click="showGuidelines = true"
+        >
+            <span class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"> {{ t('guidelines.title') }}</span>
         </div>
         <div class="flex space-x-4">
-            <a target="_blank"
-               href="https://forms.office.com/Pages/ResponsePage.aspx?id=aMQ6Frir0ESB_dnbFeOvltHYPNSbGydEq11y7AZvREZUMFhUTUNaRlZYQzBYT0xGNVdBUkFET0pXQS4u"
-               class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                Feedback
+            <a
+                target="_blank"
+                href="https://forms.office.com/Pages/ResponsePage.aspx?id=aMQ6Frir0ESB_dnbFeOvltHYPNSbGydEq11y7AZvREZUMFhUTUNaRlZYQzBYT0xGNVdBUkFET0pXQS4u"
+                class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+            >
+                {{ t('common.feedback') }}
             </a>
         </div>
     </Teleport>
 
-    <guidelines :open="showGuidelines"
-                :consentAccepted="bpConsentAccepted"
-                @close="closeGuidelines" />
+    <guidelines
+        :open="showGuidelines"
+        :consentAccepted="bpConsentAccepted"
+        @close="closeGuidelines"
+    />
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto">
@@ -168,38 +174,53 @@ async function closeGuidelines(accepted: boolean) {
                                 </svg>
                             </div>
                         </template>
-                    </li>
-                </ol>
-            </nav> -->
+</li>
+</ol>
+</nav> -->
 
             <div class="mt-4 md:mt-6 mb-6 md:mb-8">
                 <div class="sm:hidden">
-                    <label for="tabs"
-                           class="sr-only">Select a tab</label>
+                    <label
+                        for="tabs"
+                        class="sr-only"
+                    >Select a tab</label>
                     <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-                    <select id="tabs"
-                            name="tabs"
-                            class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                        <option v-for="tab in tabs"
-                                :key="tab.name"
-                                :selected="route.path.endsWith(tab.path)">{{ tab.name }}</option>
+                    <select
+                        id="tabs"
+                        name="tabs"
+                        class="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    >
+                        <option
+                            v-for="tab in tabs"
+                            :key="tab.name"
+                            :selected="route.path.endsWith(tab.path)"
+                        >{{ tab.name }}</option>
                     </select>
                 </div>
                 <div class="hidden sm:block">
                     <div class="border-b border-gray-200">
-                        <nav class="-mb-px flex"
-                             aria-label="Tabs">
-                            <router-link v-for="tab in tabs"
-                                         :key="tab.name"
-                                         :to="tab.path"
-                                         :class="[route.path.endsWith(tab.path) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'w-1/4 border-b-2 py-4 px-1 text-center text-sm font-medium']"
-                                         :aria-current="route.path.endsWith(tab.path) ? 'page' : undefined">{{ tab.name }}</router-link>
+                        <nav
+                            class="-mb-px flex"
+                            aria-label="Tabs"
+                        >
+                            <router-link
+                                v-for="tab in tabs"
+                                :key="tab.name"
+                                :to="tab.path"
+                                :class="[route.path.endsWith(tab.path) ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'w-1/4 border-b-2 py-4 px-1 text-center text-sm font-medium']"
+                                :aria-current="route.path.endsWith(tab.path) ? 'page' : undefined"
+                            >{{ tab.name }}</router-link>
                         </nav>
                     </div>
                 </div>
             </div>
 
-            <router-view :previous="gotoPreviousTab" :next="gotoNextTab" :first="firstTab" :last="lastTab"/>
+            <router-view
+                :previous="gotoPreviousTab"
+                :next="gotoNextTab"
+                :first="firstTab"
+                :last="lastTab"
+            />
 
             <!-- <button class="absolute left-0 border hover:text-amber-800 text-amber-500 font-semibold border-gray-300 bg-gray-200 rounded py-2 px-3 transition ease-in-out duration-270 delay-50"
                     @click="toggleJson">JSON</button>

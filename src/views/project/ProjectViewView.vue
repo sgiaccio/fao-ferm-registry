@@ -63,7 +63,7 @@ onBeforeMount(async () => {
             <ActionsMenu
                 :project="{ id: store.id, data: store.project }"
                 :exclude-view-menu-item="true"
-                label="Actions"
+                :label="t('actionsMenu.button')"
             />
         </div>
     </div>

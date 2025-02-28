@@ -317,17 +317,17 @@ export function areaByGefIndicatorGroup(areas: any) {
     return Array.from(areabyIndicatorGroup);
 }
 
-export const realmColors = [
-    { value: 'T', label: 'Terrestrial realm', color: '#1f77b4', borderColor: '#0d4d8a' },
-    { value: 'M', label: 'Marine realm', color: '#ff7f0e', borderColor: '#cc6608' },
-    { value: 'F', label: 'Freshwater realm', color: '#2ca02c', borderColor: '#1e6a1e' },
-    { value: 'S', label: 'Subterranean realm', color: '#d62728', borderColor: '#9a1c1c' },
-    { value: 'MT', label: 'Marine-Terrestrial realm', color: '#9467bd', borderColor: '#6b4c8a' },
-    { value: 'SF', label: 'Subterranean-Freshwater realm', color: '#8c564b', borderColor: '#623c34' },
-    { value: 'FM', label: 'Freshwater-Marine realm', color: '#e377c2', borderColor: '#b25399' },
-    { value: 'MFT', label: 'Marine-Freshwater-Terrestrial realm', color: '#7f7f7f', borderColor: '#595959' },
-    { value: 'SM', label: 'Subterranean-Marine realm', color: '#bcbd22', borderColor: '#8a8c16' },
-    { value: 'TF', label: 'Terrestrial-Freshwater realm', color: '#17becf', borderColor: '#11a3ac' }
+const realmColors = [
+    { value: 'T', color: '#1f77b4', borderColor: '#0d4d8a', key: 'iucnEcosystems.T_Terrestrial_realm' },
+    { value: 'M', color: '#ff7f0e', borderColor: '#cc6608', key: 'iucnEcosystems.M_Marine_realm' },
+    { value: 'F', color: '#2ca02c', borderColor: '#1e6a1e', key: 'iucnEcosystems.F_Freshwater_realm' },
+    { value: 'S', color: '#d62728', borderColor: '#9a1c1c', key: 'iucnEcosystems.S_Subterranean_realm' },
+    { value: 'MT', color: '#9467bd', borderColor: '#6b4c8a', key: 'iucnEcosystems.MT_Marine_Terrestrial_realm' },
+    { value: 'SF', color: '#8c564b', borderColor: '#623c34', key: 'iucnEcosystems.SF_Subterranean_Freshwater_realm' },
+    { value: 'FM', color: '#e377c2', borderColor: '#b25399', key: 'iucnEcosystems.FM_Freshwater_Marine_realm' },
+    { value: 'MFT', color: '#7f7f7f', borderColor: '#595959', key: 'iucnEcosystems.MFT_Marine_Freshwater_Terrestrial_realm' },
+    { value: 'SM', color: '#bcbd22', borderColor: '#8a8c16', key: 'iucnEcosystems.SM_Subterranean_Marine_realm' },
+    { value: 'TF', color: '#17becf', borderColor: '#11a3ac', key: 'iucnEcosystems.TF_Terrestrial_Freshwater_realm' },
 ];
 
 export function getRealmColor(realm: string) {
@@ -343,8 +343,8 @@ export function getEcosystemColor(ecosystem: string) {
     return getRealmColor(realm);
 }
 
-export function getRealmLabel(realm: string) {
-    return realmColors.find(r => r.value === realm)?.label || '';
+export function getRealmKey(realm: string) {
+    return realmColors.find(r => r.value === realm)?.key;
 }
 
 export function getEMStatsYears(stats: any) {
