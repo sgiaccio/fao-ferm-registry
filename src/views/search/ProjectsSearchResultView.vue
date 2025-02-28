@@ -89,9 +89,9 @@ function buildQuery() {
     let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
         if (values.length === 0) return ''
         if (key === 'source' || key === 'restoration_status') {
-            return `${key} IN UNNEST([${values.map((v) => `'${v}'`).join(', ')}])`
+            return `LOWER(${key}) IN UNNEST([${values.map((v: string) => `'${v.toLowerCase()}'`).join(', ')}])`
         } else {
-            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE ${key} IN (${values.map((v) => `'${v}'`).join(', ')}))`
+            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE LOWER(${key}) IN (${values.map((v: string) => `'${v.toLowerCase()}'`).join(', ')}))`
         }
     }).filter(Boolean)
 
@@ -152,7 +152,21 @@ watch(() => props.searchTerms, (val) => {
         class="w-full flex justify-between mb-5 relative items-center"
         v-if="totalCount !== null"
     >
-        <div class="text-gray-700 font-medium_ tracking-wide text-lg">Showing <span class="font-bold">{{ searchResults.length }}</span> of <span class="font-bold">{{ totalCount }}</span> initiatives</div>
+        <i18n-t
+            class="text-gray-700 font-medium_ tracking-wide text-lg"
+            tag="div"
+            keypath="publicSearch.initiatives.resultsCount"
+            :count="totalCount"
+        >
+            <template #count>
+                <span class="font-bold">{{ searchResults.length }}</span>
+            </template>
+            <template #total>
+                <span class="font-bold">{{ totalCount }}</span>
+            </template>
+        </i18n-t>
+
+
         <!-- show as list or as grid -->
         <div class="flex justify-end items-center gap-x-2">
             <button

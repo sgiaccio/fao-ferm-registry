@@ -9,7 +9,7 @@ import ResultPanel from './ResultPanel.vue';
 
 import { getAllSelectedItemsInAreas, getRecursiveMenuLabel } from '@/lib/util';
 
-import { groupBiomesByRealm, getRealmLabel } from '@/lib/util';
+import { groupBiomesByRealm, getRealmKey } from '@/lib/util';
 
 import terrestrial from '@/assets/iucn_realms/terrestrial.svg';
 import marine from '@/assets/iucn_realms/marine.svg';
@@ -98,12 +98,13 @@ const groupedBiomes = computed(() => {
                         >
                             <img
                                 :src="image"
-                                :alt="getRealmLabel(realm.realm)"
+                                :alt="t(getRealmKey(realm.realm))"
                                 class="w-8 h-8"
                             />
                         </div>
                         <div :class="getRealmImages(realm.realm).length === 2 ? 'ml-16' : getRealmImages(realm.realm).length === 3 ? 'ml-24' : 'ml-10'">
-                            {{ getRealmLabel(realm.realm) }}
+                            <!-- {{ getRealmLabel(realm.realm) }} -->
+                              {{ t(getRealmKey(realm.realm)) }}
                         </div>
                     </a>
                 </div>

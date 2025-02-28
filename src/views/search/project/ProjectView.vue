@@ -3,6 +3,8 @@ import { ref, onMounted, onBeforeMount, onUnmounted, computed, watch } from 'vue
 
 import { useRoute } from 'vue-router'
 
+import { useI18n } from 'vue-i18n';
+
 import { getPublicProject, getPublicProjectThumbnail } from '@/firebase/functions';
 
 import { useMenusStore } from '@/stores/menus';
@@ -36,6 +38,8 @@ withDefaults(defineProps<{
 }>(), {
     edit: true
 });
+
+const { t } = useI18n();
 
 const route = useRoute();
 const { menus } = useMenusStore();
@@ -703,7 +707,7 @@ function otherChartSize() {
                                 <div class="border-gray-100">
                                     <dl class="divide-y divide-gray-100">
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Description</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.description') }}</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.description">
                                                     <template v-if="project.project.description.length > 250">
@@ -724,11 +728,11 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Timeframe</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.timeframe') }}</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ timeframe }}</dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.restorationStatus') }}</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.restorationStatus">
                                                     {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
@@ -741,10 +745,10 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Restoration types</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.restorationTypes') }}</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.restorationTypes?.length > 0">
-                                                    {{ project.project.restorationTypes.map(type => getRecursiveMenuItem(menus.restorationTypes, type)?.label).join(', ') }}
+                                                    {{project.project.restorationTypes.map(type => getRecursiveMenuItem(menus.restorationTypes, type)?.label).join(', ')}}
                                                 </template>
                                                 <span
                                                     v-else
@@ -753,10 +757,10 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Tenure statuses</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.tenureStatuses') }}</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.tenureStatuses?.length > 0">
-                                                    {{ project.project.tenureStatuses.map(status => getRecursiveMenuItem(menus.tenureStatuses, status)?.label).join(', ') }}
+                                                    {{project.project.tenureStatuses.map(status => getRecursiveMenuItem(menus.tenureStatuses, status)?.label).join(', ')}}
                                                 </template>
                                                 <span
                                                     v-else
@@ -765,7 +769,7 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Website</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.website') }}</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 hover:text-gray-900">
                                                 <a
                                                     v-if="project.project.website"
@@ -780,7 +784,7 @@ function otherChartSize() {
                                             </dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Keywords</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.keywords') }}</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.keywords?.length > 0">
                                                     {{ project.project.keywords.join(', ') }}

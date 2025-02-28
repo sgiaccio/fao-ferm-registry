@@ -453,12 +453,12 @@ function otherChartSize() {
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">
-                                                {{ $t('publicPagePreview.resultPanel.timeframe') }}
+                                                {{ t('publicPagePreview.resultPanel.timeframe') }}
                                             </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ timeframe }}</dd>
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">Restoration status</dt>
+                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.restorationStatus') }}</dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.restorationStatus">
                                                     {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
@@ -471,7 +471,7 @@ function otherChartSize() {
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">
-                                                {{ $t('publicPagePreview.resultPanel.restorationTypes') }}
+                                                {{ t('publicPagePreview.resultPanel.restorationTypes') }}
                                             </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.restorationTypes?.length > 0">
@@ -485,7 +485,7 @@ function otherChartSize() {
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">
-                                                {{ $t('publicPagePreview.resultPanel.tenureStatuses') }}
+                                                {{ t('publicPagePreview.resultPanel.tenureStatuses') }}
                                             </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.tenureStatuses?.length > 0">
@@ -499,7 +499,7 @@ function otherChartSize() {
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">
-                                                {{ $t('publicPagePreview.resultPanel.website') }}
+                                                {{ t('publicPagePreview.resultPanel.website') }}
                                             </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 hover:text-gray-900">
                                                 <a
@@ -516,7 +516,7 @@ function otherChartSize() {
                                         </div>
                                         <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                             <dt class="text-sm font-medium leading-6 text-gray-900">
-                                                {{ $t('publicPagePreview.resultPanel.keywords') }}
+                                                {{ t('publicPagePreview.resultPanel.keywords') }}
                                             </dt>
                                             <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                                 <template v-if="project.project.keywords?.length > 0">

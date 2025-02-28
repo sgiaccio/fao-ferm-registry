@@ -1203,10 +1203,10 @@ exports.importFromGround = functions
 
         const { projectId, projectData } = await authorize(context, data);
 
-        const isAdmin = util.isGroupAdmin(context, project);
-        const isAuthorAndEditor = util.isGroupEditor(context, project) && project.created_by === context.auth.uid;
+        const isAdmin = isGroupAdmin(context, project);
+        const isAuthorAndEditor = isGroupEditor(context, project) && project.created_by === context.auth.uid;
         const isCollaborator = project.collaborators?.includes(context.auth.uid);
-        const authorized = util.isSuperAdmin(context) || isAdmin || isAuthorAndEditor || isCollaborator;
+        const authorized = isSuperAdmin(context) || isAdmin || isAuthorAndEditor || isCollaborator;
         if (!authorized) {
             throw new functions.https.HttpsError("permission-denied", "User is not a super admin, nor a group admin, nor a group editor and owner of the project, nor a collaborator of the project");
         }

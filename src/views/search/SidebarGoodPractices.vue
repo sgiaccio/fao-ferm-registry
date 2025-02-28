@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
 import { CheckIcon } from '@heroicons/vue/20/solid';
 
@@ -26,10 +28,13 @@ const props = defineProps<{
     query: {
         name: string;
         queryName: string;
-        queryValues: string[];
+        // queryValuesExample = { value: 'ecologicalRestoration', label: 'Ecological restoration' }, { value: 'rehabilitation', label: 'Rehabilitation' }]
+        queryValues: { value: string; label: string }[]
     }[];
     searchTerms: any;
 }>();
+
+const { t } = useI18n();
 
 const countries = defineModel('countries');
 // const searchTerms = defineModel('searchTerms');
@@ -78,7 +83,7 @@ function toggleSearchTerm(queryName: string, value: string) {
                         v-else
                         class="h-5 w-5 text-gray-800"
                     />
-                    <span>{{ item.name }}</span>
+                    <span>{{ t(`publicSearch.goodPractices.${item.queryName}.label`) }}</span>
                 </DisclosureButton>
                 <DisclosurePanel
                     as="ul"
@@ -86,15 +91,15 @@ function toggleSearchTerm(queryName: string, value: string) {
                     class="mx-2 mt-1 mb-2 space-y-1"
                 >
                     <li
-                        v-for="value in item.queryValues"
+                        v-for="{ value, label } in item.queryValues"
                         :key="value"
-                        :class="[searchTerms[item.queryName].includes(value) ? 'bg-blue-100' : '', 'flex flex-row justify-between text-sm cursor-pointer hover:bg-blue-100 rounded-full py-1 pl-3 items-center']"
-                        @click="() => toggleSearchTerm(item.queryName, value)"
+                        :class="[searchTerms[item.queryName].includes(label) ? 'bg-blue-100' : '', 'flex flex-row justify-between text-sm cursor-pointer hover:bg-blue-100 rounded-full py-1 pl-3 items-center']"
+                        @click="() => toggleSearchTerm(item.queryName, label)"
                     >
                         <div class="flex flex-row items-center justify-between w-full">
-                            <span class="text-gray-700">{{ value }}</span>
+                            <span class="text-gray-700">{{ t(`publicSearch.goodPractices.${item.queryName}.terms.${value}`) }}</span>
                             <CheckIcon
-                                :class="[searchTerms[item.queryName].includes(value) ? 'visible' : 'invisible', 'h-4 w-4 text-gray-800 mr-2 flex-shrink-0']"
+                                :class="[searchTerms[item.queryName].includes(label) ? 'visible' : 'invisible', 'h-4 w-4 text-gray-800 mr-2 flex-shrink-0']"
                                 aria-hidden="true"
                             />
                         </div>
@@ -102,10 +107,10 @@ function toggleSearchTerm(queryName: string, value: string) {
                 </DisclosurePanel>
             </Disclosure>
             <div class="pl-5 border-b-2 border-b-gray-100 pb-4">
-                <div class="flex flex-row w-full font-bold uppercase text-gray-600 cursor-pointer items-center text-md leading-6 pb-2">Language</div>
+                <div class="flex flex-row w-full font-bold uppercase text-gray-600 cursor-pointer items-center text-md leading-6 pb-2">{{ t('publicSearch.language') }}</div>
                 <SelectInput
                     v-model="language"
-                    :options="[{ label: 'English', value: 'en' }, { label: 'French', value: 'fr' }, { label: 'Spanish', value: 'es' }]"
+                    :options="[{ label: t('common.english'), value: 'en' }, { label: t('common.french'), value: 'fr' }, { label: t('common.spanish'), value: 'es' }]"
                     :edit="true"
                     :placeholder="null"
                 />

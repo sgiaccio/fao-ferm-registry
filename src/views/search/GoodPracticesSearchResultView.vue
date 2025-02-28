@@ -100,14 +100,14 @@ function buildQuery() {
             table = 'vw_cse_en'
     }
 
-    const queryStart = `WITH data AS ( SELECT * FROM fao-maps-review.fao_cse.${table} ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data `
+    const queryStart = `WITH data AS ( SELECT * FROM fao-ferm2-review.best_practices.${table} ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data `
 
     let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
         if (values.length === 0) return ''
         if (key === 'source') {
             return `source IN UNNEST([${values.map((v) => `'${v}'`).join(', ')}])`
         } else {
-            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE ${key} IN (${values.map((v) => `'${v}'`).join(', ')}))`
+            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE LOWER(${key}) IN (${values.map((v: string) => `LOWER('${v}')`).join(', ')}))`
         }
     }).filter(Boolean)
 
@@ -123,6 +123,9 @@ function buildQuery() {
     }
 
     const queryEnd = `) SELECT * FROM counted_data LIMIT 30 OFFSET ${searchResults.value.length};`
+
+    console.log('queryStart', queryStart)
+    console.log('queryEnd', queryEnd)
     return queryStart + (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') + queryEnd
 }
 
@@ -153,7 +156,20 @@ async function loadMore() {
         class="w-full flex justify-between mb-5 relative items-center"
         v-if="totalCount !== null"
     >
-        <div class="text-gray-700 font-medium_ tracking-wide text-lg">Showing <span class="font-bold">{{ searchResults.length }}</span> of <span class="font-bold">{{ totalCount }}</span> good practices</div>
+        <i18n-t
+            class="text-gray-700 font-medium_ tracking-wide text-lg"
+            tag="div"
+            keypath="publicSearch.goodPractices.resultsCount"
+            :count="totalCount"
+        >
+            <template #count>
+                <span class="font-bold">{{ searchResults.length }}</span>
+            </template>
+            <template #total>
+                <span class="font-bold">{{ totalCount }}</span>
+            </template>
+        </i18n-t>
+
         <!-- show as list or as grid -->
         <div class="flex justify-end items-center gap-x-2">
             <button

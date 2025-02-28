@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
+import { useI18n } from 'vue-i18n';
+
 import router from '@/router';
 
 // import WavyDivider from '@/views/WavyDivider.vue';
@@ -21,6 +23,8 @@ import SidebarGoodPractices from './SidebarGoodPractices.vue'
 import SidebarInitiatives from './SidebarInitiatives.vue'
 import GoodPracticesSearchResultView from './GoodPracticesSearchResultView.vue'
 import ProjectsSearchResultView from './ProjectsSearchResultView.vue'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
+
 
 const props = withDefaults(defineProps<{
     type: 'initiatives' | 'goodPractices'
@@ -28,6 +32,8 @@ const props = withDefaults(defineProps<{
 }>(), {
     type: 'initiatives'
 });
+
+const { t } = useI18n();
 
 const sidebarOpen = ref(false)
 const aboutOpen = ref(false)
@@ -47,58 +53,116 @@ watch(() => props.type, type => {
 
 const queryGoodPractices = [
     {
-        name: 'Degradation Drivers',
         queryName: 'drivers',
-        queryValues: ['Cultural and social drivers', 'Ecological and environmental drivers', 'Economic drivers']
+        // queryValues: ['Cultural and social drivers', 'Ecological and environmental drivers', 'Economic drivers']
+        queryValues: [
+            { value: 'culturalAndSocialDrivers', label: 'Cultural and social drivers' },
+            { value: 'ecologicalAndEnvironmentalDrivers', label: 'Ecological and environmental drivers' },
+            { value: 'economicDrivers', label: 'Economic drivers' }
+        ]
     }, {
-        name: 'Ecosystem',
         queryName: 'ecosystems',
-        queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas']
+        // queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas']
+        queryValues: [
+            { value: 'farmlands', label: 'Farmlands' },
+            { value: 'forests', label: 'Forests' },
+            { value: 'freshwaters', label: 'Freshwaters' },
+            { value: 'grasslands', label: 'Grasslands, Shrublands and Savannahs' },
+            { value: 'mountains', label: 'Mountains' },
+            { value: 'oceans', label: 'Oceans and coasts' },
+            { value: 'peatlands', label: 'Peatlands' },
+            { value: 'urban', label: 'Urban areas' }
+        ]
     }, {
-        name: 'Region',
         queryName: 'regions',
-        queryValues: ['Africa', 'Asia and the Pacific', 'Europe', 'Latin America and the Caribbean', 'North America', 'West Asia']
+        // queryValues: ['Africa', 'Asia and the Pacific', 'Europe', 'Latin America and the Caribbean', 'North America', 'West Asia']
+        queryValues: [
+            { value: 'africa', label: 'Africa' },
+            { value: 'asia', label: 'Asia and the Pacific' },
+            { value: 'europe', label: 'Europe' },
+            { value: 'latinAmerica', label: 'Latin America and the Caribbean' },
+            { value: 'northAmerica', label: 'North America' },
+            { value: 'westAsia', label: 'West Asia' }
+        ]
     }, {
-        name: 'Source',
         queryName: 'source',
-        queryValues: ['FERM', 'GoProFor', 'Panorama', 'WoCat']
+        // queryValues: ['FERM', 'GoProFor', 'Panorama', 'WoCat']
+        queryValues: [
+            { value: 'ferm', label: 'FERM' },
+            { value: 'goProFor', label: 'GoProFor' },
+            { value: 'panorama', label: 'Panorama' },
+            { value: 'woCat', label: 'WoCat' }
+        ]
     },
 ]
 
 const queryInitiatives = [
     {
-        name: 'Ecosystem',
         queryName: 'ecosystems',
-        queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas', 'Not Available']
+        // queryValues: ['Farmlands', 'Forests', 'Freshwaters', 'Grasslands, Shrublands and Savannahs', 'Mountains', 'Oceans and coasts', 'Peatlands', 'Urban areas', 'Not Available']
+        queryValues: [
+            { value: 'farmlands', label: 'Farmlands' },
+            { value: 'forests', label: 'Forests' },
+            { value: 'freshwaters', label: 'Freshwaters' },
+            { value: 'grasslands', label: 'Grasslands, Shrublands and Savannahs' },
+            { value: 'mountains', label: 'Mountains' },
+            { value: 'oceans', label: 'Oceans and coasts' },
+            { value: 'peatlands', label: 'Peatlands' },
+            { value: 'urban', label: 'Urban areas' },
+            { value: 'notAvailable', label: 'Not Available' }
+        ]
     }, {
-        name: 'Region',
         queryName: 'regions',
-        queryValues: ['Africa', 'Asia and the Pacific', 'Europe', 'Latin America and the Caribbean', 'North America', 'West Asia']
+        // queryValues: ['Africa', 'Asia and the Pacific', 'Europe', 'Latin America and the Caribbean', 'North America', 'West Asia']
+        queryValues: [
+            { value: 'africa', label: 'Africa' },
+            { value: 'asia', label: 'Asia and the Pacific' },
+            { value: 'europe', label: 'Europe' },
+            { value: 'latinAmerica', label: 'Latin America and the Caribbean' },
+            { value: 'northAmerica', label: 'North America' },
+            { value: 'westAsia', label: 'West Asia' }
+        ]
     }, {
-        name: 'Source',
         queryName: 'source',
-        queryValues: ['FERM', 'GEF', 'RESULT Asia-Pacific', 'Nature Commitments', 'Restoration Resource Center', 'Brazilian Restoration and Reforestation Observatory']
+        // queryValues: ['FERM', 'GEF', 'RESULT Asia-Pacific', 'Nature Commitments', 'Restoration Resource Center', 'Brazilian Restoration and Reforestation Observatory']
+        queryValues: [
+            { value: 'ferm', label: 'FERM' },
+            { value: 'gef', label: 'GEF' },
+            { value: 'resultAsiaPacific', label: 'RESULT Asia-Pacific' },
+            { value: 'natureCommitments', label: 'Nature Commitments' },
+            { value: 'restorationResourceCenter', label: 'Restoration Resource Center' },
+            { value: 'brazilianRestorationAndReforestationObservatory', label: 'Brazilian Restoration and Reforestation Observatory' }
+        ]
     }, {
-        name: 'Restoration Type',
         queryName: 'restoration_types',
-        queryValues: ['Ecological restoration', 'Rehabilitation', 'Other']
+        // queryValues: ['Ecological restoration', 'Rehabilitation', 'Other']
+        queryValues: [
+            { value: 'ecologicalRestoration', label: 'Ecological restoration' },
+            { value: 'rehabilitation', label: 'Rehabilitation' },
+            { value: 'other', label: 'Other' }
+        ]
     }, {
-        name: 'Restoration Status',
         queryName: 'restoration_status',
-        queryValues: ['In preparation', 'In progress', 'Post-completion monitoring', 'Other']
+        // queryValues: ['In preparation', 'In progress', 'Post-completion monitoring', 'Other']
+        queryValues: [
+            { value: 'inPreparation', label: 'In preparation' },
+            { value: 'inProgress', label: 'In progress' },
+            { value: 'postCompletionMonitoring', label: 'Post-completion monitoring' },
+            { value: 'other', label: 'Other' }
+        ]
     },
 ]
 
 const searchTextGoodPractices = ref<string>('');
 const searchTextInitiatives = ref<string>('');
-const searchTermsGoodPractices = ref(Object.fromEntries(queryGoodPractices.map((q) => [q.queryName, []])));
+const searchTermsGoodPractices = ref(Object.fromEntries(queryGoodPractices.map(q => [q.queryName, []])));
 // const searchTermsInitiatives_ = ref(Object.fromEntries(queryInitiatives.map((q) => [q.queryName, []])));
 // initialize search terms for initiatives with the source gotten
 const searchTermsInitiatives = ref(
     Object.fromEntries(
-        queryInitiatives.map((q) => [
+        queryInitiatives.map(q => [
             q.queryName,
-            (q.queryName === 'source') && source ? [ source ] : []
+            (q.queryName === 'source') && source ? [source] : []
         ])
     )
 );
@@ -295,17 +359,21 @@ const language = ref<'en' | 'es' | 'fr'>('en');
                             </a>
                         </div>
                     </div>
-                    <div
-                        v-if="whatToSearch === 'goodPractices'"
-                        class="absolute top-3 right-3"
-                    >
+                    <div class="absolute top-3 right-3 flex flex-col sm:flex-row gap-x-6">
                         <button
+                            v-if="whatToSearch === 'goodPractices'"
                             @click="aboutOpen = true"
-                            class="font-akrobat font-bold uppercase text-lg tracking-wide text-white/90 text-shadow-sm shadow-black"
-                        >About</button>
+                            class="font-bold uppercase text-lg_ tracking-wide text-white/90 text-shadow-sm shadow-black"
+                        >{{ t('publicSearch.about.button') }}</button>
+                        <LanguageSwitcher />
                     </div>
                 </div>
-                <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-3xl md:text-4xl lg:text-5xl uppercase shadow-black text-shadow-sm mb-6 sm:mb-8">Framework for Ecosystem<br>Restoration Monitoring</div>
+                <div class="relative w-full text-center font-akrobat font-bold text-gray-50 text-3xl md:text-4xl lg:text-5xl uppercase shadow-black text-shadow-sm mb-6 sm:mb-8">
+                    {{ t('fermRegistryLong1') }}
+                    <br>
+                    {{ t('fermRegistryLong2') }}
+
+                </div>
             </div>
         </div>
     </header>
@@ -379,7 +447,7 @@ const language = ref<'en' | 'es' | 'fr'>('en');
                                     <SidebarInitiatives
                                         v-else
                                         :query="queryInitiatives"
-                                        v-model:searchTerms="searchTermsGoodPractices"
+                                        v-model:searchTerms="searchTermsInitiatives"
                                         v-model:countries="countriesInitiatives"
                                     />
                                 </div>
@@ -462,45 +530,14 @@ const language = ref<'en' | 'es' | 'fr'>('en');
                                         <button
                                             type="button"
                                             @click="router.push({ name: 'searchInitiatives' })"
-                                            :class="['relative inline-flex items-center rounded-l-md px-3 py-2 text-sm font-semibold text-gray-900 border-t border-l border-b focus:z-10_', whatToSearch === 'initiatives' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50']"
-                                        >Initiatives</button>
-                                        <!-- <button
-                                            type="button"
-                                            class="relative -ml-px inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
-                                        >Months</button> -->
+                                            :class="['relative inline-flex items-center rounded-l-md px-3 py-2 text-sm font-semibold text-gray-900 border-t border-l border-b capitalize-first-letter', whatToSearch === 'initiatives' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50']"
+                                        >{{ t('common.initiatives') }}</button>
                                         <button
                                             @click="router.push({ name: 'searchGoodPractices' })"
                                             type="button"
-                                            :class="['relative -ml-px inline-flex items-center rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 border-t border-r border-b focus:z-10_', whatToSearch === 'goodPractices' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50']"
-                                        >Good practices</button>
+                                            :class="['relative -ml-px inline-flex items-center rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 border-t border-r border-b capitalize-first-letter', whatToSearch === 'goodPractices' ? 'bg-blue-500 text-white border-blue-500' : 'bg-white border-gray-300 hover:bg-gray-50']"
+                                        >{{ t('common.goodPractices') }}</button>
                                     </span>
-
-                                    <!-- <RadioGroup
-                                        v-model="whatToSearch"
-                                        class="mt-2"
-                                    >
-                                        <RadioGroupLabel class="sr-only">Choose a memory option</RadioGroupLabel>
-                                        <div class="grid grid-cols-2 gap-3">
-                                            <RadioGroupOption
-                                                as="template"
-                                                value="initiatives"
-                                                v-slot="{ active, checked }"
-                                            >
-                                                <div :class="['cursor-pointer focus:outline-none', active ? 'ring-2 ring-indigo-600 ring-offset-2' : '', whatToSearch === 'initiatives' ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50', 'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold sm:flex-1']">
-                                                    <RadioGroupLabel as="span">Initiatives</RadioGroupLabel>
-                                                </div>
-                                            </RadioGroupOption>
-                                            <RadioGroupOption
-                                                as="template"
-                                                value="goodPractices"
-                                                v-slot="{ active, checked }"
-                                            >
-                                                <div :class="['cursor-pointer focus:outline-none', active ? 'ring-2 ring-indigo-600 ring-offset-2' : '', whatToSearch === 'goodPractices' ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'ring-1 ring-inset ring-gray-300 bg-white text-gray-900 hover:bg-gray-50', 'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold sm:flex-1']">
-                                                    <RadioGroupLabel as="span">Good practices</RadioGroupLabel>
-                                                </div>
-                                            </RadioGroupOption>
-                                        </div>
-                                    </RadioGroup> -->
                                 </div>
                             </div>
                         </div>
@@ -540,5 +577,13 @@ const language = ref<'en' | 'es' | 'fr'>('en');
 .v-enter-from,
 .v-leave-to {
     height: 0;
+}
+
+.capitalize-first-letter {
+    display: block;
+}
+
+.capitalize-first-letter::first-letter {
+    text-transform: capitalize
 }
 </style>

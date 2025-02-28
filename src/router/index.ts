@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useLoadingStore } from '../stores/loading';
 
-import { getI18n, setLocale, SUPPORT_LOCALES } from '@/lib/i18n';
+import { getI18n, t, setLocale, SUPPORT_LOCALES } from '@/lib/i18n';
 
 import { useMenusStore } from '../stores/menus';
 
@@ -103,7 +103,7 @@ const router = createRouter({
             path: `/:locale(${localesStr})?`,
             name: 'home',
             component: () => import('../views/HomeView.vue'),
-            meta: { public: true }
+            meta: { public: true, title: 'FERM Homepage' }
         }, {
             // path: '/:locale?/registration',
             path: `/:locale(${localesStr})?/registration`,
@@ -144,6 +144,14 @@ const router = createRouter({
                     name: 'searchGoodPractices',
                     component: () => import('../views/search/SearchView.vue'),
                     props: { type: 'goodPractices' },
+                    meta: { public: true }
+                }, {
+                    path: 'good-practices/:id',
+                    name: 'publicGoodPracticePage',
+                    beforeEnter: async (_to, _from) => {
+                        _loadMenus();
+                    },
+                    component: () => import('../views/search/bestPractice/BestPracticeView.vue'),
                     meta: { public: true }
                 }
             ]
@@ -291,6 +299,10 @@ const router = createRouter({
     ],
 });
 
+function setTitle(title: string) {
+    document.title = title || t('fermRegistry');
+}
+
 router.beforeEach(async (to) => {
     let paramsLocale =
         (to.params.locale as string)?.slice(0, 2).toLowerCase() ||
@@ -307,6 +319,8 @@ router.beforeEach(async (to) => {
         }
     }
     await setLocale(paramsLocale);
+
+    setTitle(to.meta?.title as string);
 
     const loadingStore = useLoadingStore();
 

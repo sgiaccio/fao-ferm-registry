@@ -21,7 +21,7 @@ function changeSource(event, source) {
     <div
         v-if="previewImage"
         class="aspect-square overflow-hidden flex"
-        :style="`background-image: url(${previewImage}); background-position: center;background-size: contain;background-repeat: no-repeat;`"
+        :style="`background-image: url(${previewImage}); background-position: center;background-size: cover;background-repeat: no-repeat;`"
     >
         <div
             v-if="title"

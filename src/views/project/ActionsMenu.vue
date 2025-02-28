@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import router from '@/router';
 import { useRoute } from 'vue-router';
 
@@ -54,9 +56,12 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits(['done']);
 
+const { t } = useI18n();
+
 const route = useRoute();
 
 const projectStore = useProjectStore();
+
 
 async function print(projectId: string) {
     const routeData = router.resolve({ name: 'printInitiative', params: { id: projectId } });
@@ -105,7 +110,7 @@ function cancelReject() {
 }
 
 async function deleteProject(projectId: string) {
-    if (confirm('Are you sure you want to delete this initiative? You will releted the related areas.')) {
+    if (confirm(t('actionsMenu.deleteConfirm'))) {
         return projectStore.deleteProject(projectId);
     }
 }
@@ -224,27 +229,38 @@ async function _importFromGround() {
     >
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Are you sure you want to submit the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span> for review? Please note that by
-                    proceeding:</p>
+                <i18n-t
+                    keypath="actionsMenu.submitConfirm"
+                    tag="p"
+                >
+                    <template #title>{{ project.data.project?.title }}</template>
+                </i18n-t>
                 <ol class="mt-2 list-decimal list-inside">
-                    <li>An email will be sent to your institution administrators for review They will have the authority to or reject your initiative.
+                    <li>
+                        {{ t('actionsMenu.submitConfirmList1') }}
                     </li>
-                    <li class="mt-1">You will not be able to make further edits to the initiative once it's submitted
-                        for review.
+                    <li class="mt-1">
+                        {{ t('actionsMenu.submitConfirmList2') }}
                     </li>
                 </ol>
-                <p class="mt-2">Please review your submission thoroughly to ensure all information is accurate and complete before proceeding. Do you wish to proceed?"</p>
+                <p class="mt-2">
+                    {{ t('actionsMenu.submitProceed') }}
+                </p>
             </div>
         </template>
         <template #success>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Your initiative has been submitted for review. An email will be sent to your institution administrators for review. They will have the authority to either accept or reject your initiative.
+                <p>
+                    {{ t('actionsMenu.submitSuccess') }}
                 </p>
             </div>
         </template>
         <template #error>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>There was an error submitting your initiative. Please try again later.</p>
+                <p>
+                    <!-- There was an error submitting your initiative. Please try again later. -->
+                    {{ t('actionsMenu.submitError') }}
+                </p>
             </div>
         </template>
     </TwoStagesDialog>
@@ -259,19 +275,27 @@ async function _importFromGround() {
     >
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>
-                    Are you sure you want to publish the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?
-                </p>
+                <vue-i18n-t
+                    keypath="actionsMenu.publishConfirm"
+                    tag="p"
+                >
+                    <template #title>{{ project.data.project?.title }}</template>
+                </vue-i18n-t>
             </div>
         </template>
         <template #success>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Your initiative has been published. It is now visible to the public.</p>
+                <p>
+                    {{ t('actionsMenu.publishSuccess') }}
+                </p>
             </div>
         </template>
         <template #error>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>There was an error publishing your initiative. Please try again later.</p>
+                <p>
+                    <!-- There was an error publishing your initiative. Please try again later. -->
+                    {{ t('actionsMenu.publishError') }}
+                </p>
             </div>
         </template>
     </TwoStagesDialog>
@@ -289,26 +313,36 @@ async function _importFromGround() {
     >
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Are you sure you want to reject the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?
-                </p>
-                <p>If you proceed, please provide constructive feedback to the author regarding the rejection.
+                <i18n-t
+                    keypath="actionsMenu.rejectConfirm"
+                    tag="p"
+                >
+                    <template #title>{{ project.data.project?.title }}</template>
+                </i18n-t>
+                <p>
+                    {{ t('actionsMenu.rejectProceed') }}
                     <textarea
                         v-model="rejectReason"
                         rows="4"
                         class="mt-2 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        placeholder="Feedback to the author"
+                        :placeholder="t('actionsMenu.rejectReasonPlaceholder')"
                     ></textarea>
                 </p>
             </div>
         </template>
         <template #success>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>The initiative has been rejected. The submitter will be notified.</p>
+                <p>
+                    {{ t('actionsMenu.rejectSuccess') }}
+                </p>
             </div>
         </template>
         <template #error>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>There was an error rejecting the initiative. Please try again later.</p>
+                <p>
+                    <!-- There was an error rejecting the initiative. Please try again later. -->
+                    {{ t('actionsMenu.rejectError') }}
+                </p>
             </div>
         </template>
     </TwoStagesDialog>
@@ -325,18 +359,29 @@ async function _importFromGround() {
     >
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>Are you sure you want to create a new revision of the initiative <span class="font-bold">'{{ project.data.project?.title }}'</span>?</p>
-                <p class="mt-2">This will make the initiative editable again. The public version will remain unchanged.</p>
+                <i18n-t
+                    keypath="actionsMenu.createNewVersionConfirm"
+                    tag="p"
+                >
+                    <template #title>{{ project.data.project?.title }}</template>
+                </i18n-t>
+                <p class="mt-2">
+                    {{ t('actionsMenu.createNewVersionExplanation') }}
+                </p>
             </div>
         </template>
         <template #success>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>A new revision of the initiative has been created. It's now possible to edit the initiative again.</p>
+                <p>
+                    {{ t('actionsMenu.createNewVersionSuccess') }}
+                </p>
             </div>
         </template>
         <template #error>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <p>There was an error creating a new revision of the initiative. Please try again later.</p>
+                <p>
+                    {{ t('actionsMenu.createNewVersionError') }}
+                </p>
             </div>
         </template>
     </TwoStagesDialog>
@@ -348,7 +393,7 @@ async function _importFromGround() {
     >
         <div>
             <menu-button :class="[label ? 'inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ml-6' : 'flex items-center rounded-full text-gray-400 hover:text-gray-600 focus:outline-none']">
-                <span class="sr-only">Actions</span>
+                <span class="sr-only">{{ t('actionsMenu.button') }}</span>
                 <EllipsisVerticalIcon
                     v-if="!label"
                     class="h-5 w-5"
@@ -389,7 +434,7 @@ async function _importFromGround() {
                                 class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
                             />
-                            View
+                            {{ t('actionsMenu.view') }}
                         </router-link>
                     </menu-item>
                     <menu-item v-slot="{ active }">
@@ -401,7 +446,7 @@ async function _importFromGround() {
                                 class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
                             />
-                            Print
+                            {{ t('actionsMenu.print') }}
                         </span>
                     </menu-item>
                 </div>
@@ -421,7 +466,7 @@ async function _importFromGround() {
                                 class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
                             />
-                            Edit
+                            {{ t('actionsMenu.edit') }}
                         </div>
                     </menu-item>
                     <menu-item
@@ -451,7 +496,7 @@ async function _importFromGround() {
                                 class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
                             />
-                            Submit for review
+                            {{ t('actionsMenu.submit') }}
                         </div>
                     </menu-item>
                     <menu-item
@@ -466,7 +511,7 @@ async function _importFromGround() {
                                 class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
                             />
-                            Start New Revision
+                            {{ t('actionsMenu.createNewVersion') }}
                         </div>
                     </menu-item>
                     <menu-item
@@ -481,7 +526,7 @@ async function _importFromGround() {
                                 class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
                             />
-                            Publish
+                            {{ t('actionsMenu.publish') }}
                         </div>
                     </menu-item>
 
@@ -497,7 +542,7 @@ async function _importFromGround() {
                                 class="inline mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
                             />
-                            Reject
+                            {{ t('actionsMenu.reject') }}
                         </div>
                     </menu-item>
                 </div>
@@ -514,7 +559,7 @@ async function _importFromGround() {
                                 class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
                                 aria-hidden="true"
                             />
-                            Add Good Practice
+                            {{ t('actionsMenu.addBestPractice') }}
                         </router-link>
                     </menu-item>
                 </div>
@@ -584,7 +629,7 @@ async function _importFromGround() {
                                 class="mr-3 h-5 w-5 text-ferm-red-dark group-hover:text-ferm-red-light"
                                 aria-hidden="true"
                             />
-                            Delete
+                            {{ t('common.delete') }}
                         </span>
                     </menu-item>
                 </div>

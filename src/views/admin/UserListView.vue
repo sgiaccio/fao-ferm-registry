@@ -2,6 +2,8 @@
 import type { User } from 'firebase/auth';
 import { httpsCallable } from "firebase/functions";
 
+import { useI18n } from 'vue-i18n';
+
 import { ref, onMounted, watch } from 'vue';
 
 import {
@@ -23,7 +25,7 @@ import TabTemplate from '../TabTemplate.vue'
 import { useAuthStore } from '@/stores/auth';
 import { fetchAllGroupNames } from '@/firebase/firestore';
 
-
+const { t } = useI18n();
 const authStore = useAuthStore();
 
 const users = ref();
