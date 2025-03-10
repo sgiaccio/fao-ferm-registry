@@ -1203,9 +1203,9 @@ exports.importFromGround = functions
 
         const { projectId, projectData } = await authorize(context, data);
 
-        const isAdmin = isGroupAdmin(context, project);
-        const isAuthorAndEditor = isGroupEditor(context, project) && project.created_by === context.auth.uid;
-        const isCollaborator = project.collaborators?.includes(context.auth.uid);
+        const isAdmin = isGroupAdmin(context, projectData);
+        const isAuthorAndEditor = isGroupEditor(context, projectData) && projectData.created_by === context.auth.uid;
+        const isCollaborator = projectData.collaborators?.includes(context.auth.uid);
         const authorized = isSuperAdmin(context) || isAdmin || isAuthorAndEditor || isCollaborator;
         if (!authorized) {
             throw new functions.https.HttpsError("permission-denied", "User is not a super admin, nor a group admin, nor a group editor and owner of the project, nor a collaborator of the project");
@@ -1232,12 +1232,16 @@ exports.importFromGround = functions
         let areas;
         try {
             areas = await response.json();
-            if (!Array.isArray(areas) || areas.length === 0) {
-                throw new Error("Invalid or empty data received from Ground.");
+            if (!Array.isArray(areas)) {
+                throw new Error("Invalid data format from Ground.");
+            }
+            if (!areas.length) {
+                console.warn("No areas found in Ground data.");
+                throw new Error("No areas found in Ground data.");
             }
         } catch (error) {
             console.error("Error parsing Ground data:", error);
-            throw new functions.https.HttpsError("internal", "Invalid data format received.");
+            throw new functions.https.HttpsError("internal", error.message || "Error parsing data from Ground.");
         }
 
         const batch = db.batch();

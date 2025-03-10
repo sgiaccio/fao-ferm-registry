@@ -203,7 +203,7 @@ const router = createRouter({
                 }, {
                     path: 'qc',
                     name: 'qc',
-                    component: () => import('../views/admin/Qc.vue')
+                    component: () => import('../views/admin/QC.vue')
                 }
             ]
         }, {

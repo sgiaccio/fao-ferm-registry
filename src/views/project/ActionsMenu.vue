@@ -145,7 +145,9 @@ function newVersionCreated() {
 
 async function _exportToGround() {
     let groundSurveyId;
-    const id = toast.loading("Exporting to Ground...");
+    const id = toast.loading("Exporting to Ground...", {
+        position: "top-right"
+    });
 
     try {
         // Attempt to export
@@ -187,7 +189,9 @@ function goToGround() {
 }
 
 async function _importFromGround() {
-    const id = toast.loading("Importing from Ground...");
+    const id = toast.loading("Importing from Ground...", {
+        position: "top-right"
+    });
 
     if (!projectStore.id) {
         throw new Error("Project ID is missing");
@@ -203,6 +207,7 @@ async function _importFromGround() {
             autoClose: 3000,
             closeOnClick: true,
             closeButton: true
+
         });
     } catch (e) {
         console.error("Error in Ground import process:", e);
