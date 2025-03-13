@@ -1064,6 +1064,8 @@ exports.getProjectAreas = areas.getProjectAreas;
 exports.getAllProjectAreasGeoJson = areas.getAllProjectAreasGeoJson;
 exports.getSavedProjectAreasGeoJson = areas.getSavedProjectAreasGeoJson;
 exports.getSavedProjectAdminAreasGeoJson = areas.getSavedProjectAdminAreasGeoJson;
+exports.getAllPublicAreasGeoJson = areas.getAllPublicAreasGeoJson;
+
 
 /************************************************
  *

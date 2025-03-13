@@ -1147,3 +1147,205 @@ async function getAggregatedPolygons(projectId, areas) {
         throw error;
     }
 }
+
+async function getAllAdminAreasGeoJson(publicProjectsSnapshot, client) {
+    // Collect all admin areas from all projects
+    const allAdminAreas = [];
+    for (const projectDoc of publicProjectsSnapshot.docs) {
+        const projectId = projectDoc.id;
+        const areas = await getAreasByProjectId(true, projectId);
+        const areasWithoutUuids = getAreasWithoutUuids(areas);
+        if (areasWithoutUuids.length) {
+            areasWithoutUuids.forEach(area => {
+                area.projectId = projectId;
+            });
+            allAdminAreas.push(...areasWithoutUuids);
+        }
+    }
+
+    if (!allAdminAreas.length) {
+        return [];
+    }
+
+    // Build a single query using UNION ALL
+    const queryParts = [];
+    const queryParams = [];
+    let paramCount = 1;
+
+    for (const area of allAdminAreas) {
+        const areaData = Object.values(area)[0];
+
+        if (areaData.admin2) {
+            queryParts.push(`SELECT ST_AsGeoJSON(geom) as geojson, adm2_name as name FROM g2015_2014_2 WHERE adm2_code = $${paramCount}`);
+            queryParams.push(areaData.admin2);
+        } else if (areaData.admin1) {
+           queryParts.push(`SELECT ST_AsGeoJSON(geom) as geojson, adm1_name as name FROM g2015_2014_1 WHERE adm1_code = $${paramCount}`);
+            queryParams.push(areaData.admin1);
+        } else if (areaData.admin0) {
+            queryParts.push(`SELECT ST_AsGeoJSON(geom_simple) as geojson, adm0_name as name FROM gaul_0 WHERE adm0_code = $${paramCount}`);
+            queryParams.push(areaData.admin0);
+        } else {
+            continue;
+        }
+        paramCount++;
+    }
+
+    const query = queryParts.join(' UNION ALL ');
+    const result = await client.query(query, queryParams);
+
+    return result.rows.map((row, i) => ({
+        type: 'Feature',
+        geometry: JSON.parse(row.geojson),
+        properties: {
+            name: allAdminAreas[i].siteName || row.name,
+            areaObject: Object.values(allAdminAreas[i])[0],
+            areaType: 'admin',
+            projectId: allAdminAreas[i].projectId
+        }
+    }));
+}
+
+exports.getAllPublicAreasGeoJson = functions
+    .region('europe-west3')
+    .runWith({
+        timeoutSeconds: 540,
+        memory: '1GB'
+    })
+    .https
+    .onRequest(async (req, res) => {
+        let client;
+        try {
+            // Get all public projects
+            const publicProjectsSnapshot = await publicProjectsCollection.get();
+
+            if (publicProjectsSnapshot.empty) {
+                return res.status(200).json({
+                    type: 'FeatureCollection',
+                    features: []
+                });
+            }
+
+            // First pass: collect all polygon areas and project versions
+            const allPolygonAreas = [];
+            const projectVersions = new Map();
+
+            for (const projectDoc of publicProjectsSnapshot.docs) {
+                const projectId = projectDoc.id;
+                const projectData = projectDoc.data();
+                const version = projectData.publishedVersion;
+                projectVersions.set(projectId, version);
+
+                // Get polygon areas
+                const areasDoc = await publicProjectsCollection.doc(projectId).collection('publicAreas').get();
+                if (!areasDoc.empty) {
+                    const areas = areasDoc.docs.map(doc => doc.data());
+                    const areasWithUuids = getAreasWithUuids(areas);
+                    if (areasWithUuids.length) {
+                        // Add projectId to each area for later reference
+                        areasWithUuids.forEach(area => {
+                            area.projectId = projectId;
+                        });
+                        allPolygonAreas.push(...areasWithUuids);
+                    }
+                }
+            }
+
+            // Get all polygon areas in one query
+            let polygonFeatures = [];
+
+            client = await getDatabaseClient({
+                user: dbUser.value(),
+                host: dbHost.value(),
+                database: dbDatabase.value(),
+                password: dbPassword.value()
+            });
+
+            if (allPolygonAreas.length > 0) {
+                const areaUuids = allPolygonAreas.map(a => Object.values(a)[0].uuid);
+                const areaNames = allPolygonAreas.map((a, i) => Object.values(a)[0].siteName || `Area ${i + 1}`);
+                const areaJsons = allPolygonAreas.map(a => JSON.stringify(Object.values(a)[0]));
+                const projectIds = allPolygonAreas.map(a => a.projectId);
+
+                const areaValues = areaUuids.map((_uuid, i) =>
+                    `($${i + 1}::uuid, $${i + 1 + areaUuids.length}::text, $${i + 1 + areaUuids.length * 2}::jsonb, $${i + 1 + areaUuids.length * 3}::text)`).join(", ");
+
+                const query = `
+                    WITH area_names AS (
+                        SELECT * FROM (VALUES ${areaValues}) AS t (area_uuid, name, json, project_id)
+                    ),
+                    geoms AS (
+                        SELECT
+                            ST_Collect(ST_CollectionExtract(geom::geometry)) AS collected_geom,
+                            pa.area_uuid,
+                            an.name AS name,
+                            an.json AS json,
+                            an.project_id
+                        FROM
+                            project_areas pa
+                            JOIN area_names an ON pa.area_uuid = an.area_uuid::uuid
+                        WHERE
+                            pa.area_uuid = ANY($${areaUuids.length * 4 + 1}::uuid[])
+                        GROUP BY pa.area_uuid, an.name, an.json, an.project_id
+                    ),
+                    processed_geoms AS (
+                        SELECT
+                            ST_AsGeoJSON(ST_CollectionExtract(collected_geom)) AS geojson,
+                            ST_PointOnSurface(ST_MakeValid(collected_geom)) AS pointOnSurface,
+                            area_uuid,
+                            name,
+                            json,
+                            project_id
+                        FROM geoms
+                    )
+                    SELECT
+                        json_build_object(
+                            'type', 'Feature',
+                            'geometry', geojson::json,
+                            'properties', json_build_object(
+                                'uuid', area_uuid,
+                                'name', name,
+                                'areaObject', json,
+                                'pointOnSurface', ARRAY[
+                                    ST_Y(pointOnSurface),
+                                    ST_X(pointOnSurface)
+                                ],
+                                'areaType', 'uploaded',
+                                'projectId', project_id
+                            )
+                        ) AS feature
+                    FROM processed_geoms;`;
+
+                const values = [...areaUuids, ...areaNames, ...areaJsons, ...projectIds, areaUuids];
+                const result = await client.query(query, values);
+
+                if (result?.rows?.length) {
+                    polygonFeatures = result.rows.map(row => row.feature);
+                }
+            }
+
+            // Get all admin areas in a single query
+            const adminFeatures = await getAllAdminAreasGeoJson(publicProjectsSnapshot, client);
+
+            // Return combined FeatureCollection
+            return res.status(200).json({
+                type: 'FeatureCollection',
+                name: {
+                    en: 'All FERM Restoration sites',
+                    fr: 'Tous les espaces de restauration FERM',
+                    pt: 'Todas as áreas de restauração FERM',
+                    es: 'Todas las áreas de restauración FERM'
+                },
+                features: [...polygonFeatures, ...adminFeatures]
+            });
+        }
+
+        catch (error) {
+            console.error('Error getting public areas:', error);
+            return res.status(500).json({
+                error: 'Internal server error',
+                message: error.message
+            });
+        } finally {
+            client.release();
+        }
+    });
