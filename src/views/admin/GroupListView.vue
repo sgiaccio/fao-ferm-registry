@@ -161,24 +161,7 @@ async function addGroup() {
                                            class="appearance-none rounded-lg relative block w-full px-6 py-3 border-2 border-gray-400 placeholder-gray-500 text-gray-900 focus:outline-none focus:z-10 sm:text-lg"
                                            placeholder="Full name"
                                            v-model="name">
-                                </div> <!-- empty state -->
-                                <!-- <div class="mt-2"
-                                             v-if="!editGroup.users.length">
-                                            This group has no users - id = {{ editGroup.id }}
-                                        </div> -->
-
-                                <!-- <template v-else>
-                                            <div class="mt-2">
-                                                <p class="text-base text-gray-700">
-                                                    Users in this group:
-                                                </p>
-                                            </div>
-                                            <ul>
-                                                <li v-for="user in editGroup.users">
-                                                    {{ user.displayName || user.email }}
-                                                </li>
-                                            </ul>
-                                        </template> -->
+                                </div> 
                             </div>
                             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                 <button type="button"
@@ -243,11 +226,19 @@ async function addGroup() {
                                             Users in this group:
                                         </p>
                                     </div>
-                                    <ul>
-                                        <li v-for="user in showGroup.users">
-                                            {{ user.displayName}} - {{ user.email }}
-                                        </li>
-                                    </ul>
+                                    <table>
+                                        <tr v-for="user in showGroup.users">
+                                            <td>
+                                                {{ user.displayName}}
+                                            </td>
+                                            <td>
+                                                {{ user.email }}
+                                            </td>
+                                            <td>
+                                                {{  user.customClaims.privileges[showGroup.id] }}
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </template>
                             </div>
                             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

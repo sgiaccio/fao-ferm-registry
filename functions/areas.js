@@ -1,4 +1,4 @@
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
 
 const admin = require("firebase-admin");
 const { getStorage } = require('firebase-admin/storage');
@@ -927,18 +927,29 @@ exports.exportToGround = functions
             throw new functions.https.HttpsError("internal", "No users found");
         }
 
+        // get the owner
         const owner = users.find(u => u.uid === projectData.created_by);
         if (!owner) {
             throw new functions.https.HttpsError("internal", "Owner not found");
         }
 
-        const collectors = users.filter(u => u.uid !== projectData.created_by);
+        const otherUsers = users.filter(u => u.uid !== projectData.created_by);
 
+        // get all the users that are editors of the group
+        const admins = otherUsers.filter(u => u.customClaims.privileges[projectData.group] === 'admin');
+
+        // get project collaborators
+        const collaborators = otherUsers.filter(u => projectData.collaborators.includes(u.uid));
+
+        const uniqueUsers = [...admins, ...collaborators].filter((user, index, self) =>
+            index === self.findIndex((t) => t.uid === user.uid)
+        );
+       
         const requestBody = {
             id: projectId,
             name: projectData.project.title || 'Untitled project',
             owner: owner.email,
-            collectors: collectors.map(c => c.email),
+            collectors: uniqueUsers.map(u => u.email),
         };
 
         const response = await fetch('https://ground.openforis.org/importFerm', {
@@ -1262,31 +1273,53 @@ exports.importFromGround = functions
                     continue;
                 }
 
-                const uuid = crypto.randomUUID();
+                // First try to find existing polygon
+                const findQuery = `
+                    SELECT area_uuid 
+                    FROM project_areas 
+                    WHERE project_id = $1 
+                    AND ST_Equals(geom, ST_SetSRID(ST_GeomFromGeoJSON($2), 4326))`;
+                const findResult = await client.query(findQuery, [projectId, JSON.stringify(area.geometry)]);
+
+                let uuid;
+                if (findResult.rows.length) {
+                    // Polygon exists - use existing UUID
+                    uuid = findResult.rows[0].area_uuid;
+                } else {
+                    // New polygon - create new UUID and insert
+                    uuid = crypto.randomUUID();
+                    const insertQuery = `
+                        INSERT INTO project_areas (project_id, area_uuid, geom, source)
+                        VALUES ($1, $2, ST_SetSRID(ST_GeomFromGeoJSON($3), 4326), $4)`;
+                    await client.query(insertQuery, [projectId, uuid, JSON.stringify(area.geometry), 'ground']);
+                }
+
                 const areaData = {
                     ground: {
                         uuid,
-                        // Ground doesn't have a id field, so we had to put the ecosystem id into the Ground label
                         ecosystems: (area.ecosystems || []).filter(e => !!e).map(e => e.split(' ')[0]),
                     }
                 };
 
-                // Firestore batch update
-                const areaDocRef = areasCollection.doc(projectId);
-                batch.update(areaDocRef, {
-                    areas: admin.firestore.FieldValue.arrayUnion(areaData)
-                });
+                // Get current areas array
+                const areasDoc = await areasCollection.doc(projectId).get();
+                const currentAreas = areasDoc.data()?.areas || [];
 
-                // PostgreSQL insert
-                const query = `INSERT INTO project_areas (project_id, area_uuid, geom, source) 
-                           VALUES ($1, $2, ST_SetSRID(ST_GeomFromGeoJSON($3), 4326), $4)`;
-                const values = [projectId, uuid, JSON.stringify(area.geometry), 'ground'];
-                await client.query(query, values);
+                // Find and update or add area
+                const areaIndex = currentAreas.findIndex(a => a.ground?.uuid === uuid);
+                if (areaIndex >= 0) {
+                    currentAreas[areaIndex].ground.ecosystems = areaData.ground.ecosystems;
+                    batch.update(areasCollection.doc(projectId), { areas: currentAreas });
+                } else {
+                    batch.update(areasCollection.doc(projectId), {
+                        areas: admin.firestore.FieldValue.arrayUnion(areaData)
+                    });
+                }
             }
 
             // Commit Firestore batch and PostgreSQL transaction
-            await batch.commit();
             await client.query('COMMIT');
+            await batch.commit();
             console.log("Successfully imported areas from Ground.");
 
             return { success: true, message: "Successfully imported Ground survey data." };
