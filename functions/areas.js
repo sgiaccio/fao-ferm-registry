@@ -17,6 +17,9 @@ const { gaul2iso } = require("./gaul2iso");
 
 const { isSuperAdmin, isGroupAdmin, isGroupEditor, isCollaborator, registryCollection } = require("./util");
 
+const crypto = require('node:crypto');
+
+
 // Secrets api is not working, so we are using config instead for now
 // const earthMapApiKey = defineSecret('EARTHMAP_API_KEY');
 // const dbUser = defineSecret('DB_USER');
@@ -29,10 +32,27 @@ const dbHost = defineString('DB_HOST');
 const dbDatabase = defineString('DB_DATABASE');
 const dbPassword = defineString('DB_PASSWORD');
 
-const crypto = require('node:crypto');
+const getDbConfig = () => {
+    if (process.env.FUNCTIONS_EMULATOR) {
+        // Local development/testing
+        return {
+            user: process.env.DB_USER,
+            host: process.env.DB_HOST,
+            database: process.env.DB_DATABASE,
+            password: process.env.DB_PASSWORD
+        };
+    } else {
+        // Production environment
+        return {
+            user: dbUser.value(),
+            host: dbHost.value(),
+            database: dbDatabase.value(),
+            password: dbPassword.value()
+        };
+    }
+};
 
-
-let pool;
+// let pool;
 
 /**
  * Returns a PostgreSQL connection pool based on the provided secrets.
@@ -42,17 +62,27 @@ let pool;
  * @param {Object} secrets - Contains user, host, database, and password properties for the database connection.
  * @returns {Pool} A connection pool for PostgreSQL.
  */
-function getDatabasePool(secrets) {
-    if (!pool) {
-        pool = new Pool({
-            user: secrets.user,
-            host: secrets.host,
-            database: secrets.database,
-            password: secrets.password
-        });
+// function getDatabasePool(secrets) {
+//     if (!pool) {
+//         pool = new Pool({
+//             user: secrets.user,
+//             host: secrets.host,
+//             database: secrets.database,
+//             password: secrets.password
+//         });
+//     }
+//     return pool;
+// }
+
+const getDatabasePool = (() => {
+    let pool;
+    return function (secrets) {
+        if (!pool) {
+            pool = new Pool(secrets);
+        }
+        return pool;
     }
-    return pool;
-}
+})();
 
 async function getDatabaseClient(secrets) {
     try {
@@ -944,7 +974,7 @@ exports.exportToGround = functions
         const uniqueUsers = [...admins, ...collaborators].filter((user, index, self) =>
             index === self.findIndex((t) => t.uid === user.uid)
         );
-       
+
         const requestBody = {
             id: projectId,
             name: projectData.project.title || 'Untitled project',
@@ -1243,6 +1273,7 @@ exports.importFromGround = functions
         let areas;
         try {
             areas = await response.json();
+
             if (!Array.isArray(areas)) {
                 throw new Error("Invalid data format from Ground.");
             }
@@ -1255,16 +1286,15 @@ exports.importFromGround = functions
             throw new functions.https.HttpsError("internal", error.message || "Error parsing data from Ground.");
         }
 
-        const batch = db.batch();
-        const client = await getDatabaseClient({
-            user: dbUser.value(),
-            host: dbHost.value(),
-            database: dbDatabase.value(),
-            password: dbPassword.value()
-        });
+        const batch = db.batch(); // firestore batch
+        const secrets = getDbConfig();
+        const client = await getDatabaseClient(secrets); // postgres client
 
         try {
             // Start PostgreSQL transaction
+            let nAreasAdded = 0;
+            let nAreasUpdated = 0;
+
             await client.query('BEGIN');
 
             for (const area of areas) {
@@ -1273,12 +1303,12 @@ exports.importFromGround = functions
                     continue;
                 }
 
-                // First try to find existing polygon
+                // First check if the polygon exists
                 const findQuery = `
                     SELECT area_uuid 
                     FROM project_areas 
-                    WHERE project_id = $1 
-                    AND ST_Equals(geom, ST_SetSRID(ST_GeomFromGeoJSON($2), 4326))`;
+                    WHERE project_id = $1
+                    AND ST_Equals(geom::geometry, ST_SetSRID(ST_GeomFromGeoJSON($2), 4326)::geometry)`;
                 const findResult = await client.query(findQuery, [projectId, JSON.stringify(area.geometry)]);
 
                 let uuid;
@@ -1310,10 +1340,12 @@ exports.importFromGround = functions
                 if (areaIndex >= 0) {
                     currentAreas[areaIndex].ground.ecosystems = areaData.ground.ecosystems;
                     batch.update(areasCollection.doc(projectId), { areas: currentAreas });
+                    nAreasUpdated++;
                 } else {
                     batch.update(areasCollection.doc(projectId), {
                         areas: admin.firestore.FieldValue.arrayUnion(areaData)
                     });
+                    nAreasAdded++;
                 }
             }
 
@@ -1322,14 +1354,14 @@ exports.importFromGround = functions
             await batch.commit();
             console.log("Successfully imported areas from Ground.");
 
-            return { success: true, message: "Successfully imported Ground survey data." };
-
+            // return { success: true, message: `Successfully imported ${areas.length} areas from Ground.` };
+            return { success: true, nAreasAdded, nAreasUpdated };
         } catch (error) {
             console.error("Error during import transaction:", error);
 
             // Rollback PostgreSQL transaction
             await client.query('ROLLBACK');
-
+            console.error("Error during import transaction:", error);
             throw new functions.https.HttpsError("internal", "Error importing data. Changes were rolled back.");
         } finally {
             client.release();

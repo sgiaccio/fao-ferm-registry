@@ -7,7 +7,8 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "mocha --reporter spec"
+    "test_": "mocha --reporter spec",
+    "test": "mocha --timeout 10000 --reporter ./test/reporter.js test/**/*.test.js"
   },
   "engines": {
     "node": "18"
@@ -22,6 +23,7 @@
     "pg": "^8.11.1"
   },
   "devDependencies": {
+    "dotenv": "^16.4.7",
     "firebase-functions-test": "^3.1.0",
     "mocha": "^10.2.0"
   },

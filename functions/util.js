@@ -3,14 +3,28 @@ const firestore = require("@google-cloud/firestore");
 // const functions = require("firebase-functions");
 
 // Initialize admin SDK
-admin.initializeApp();
+// admin.initializeApp();
+
+if (!admin.apps.length) {
+    if (process.env.FUNCTIONS_EMULATOR) {
+        admin.initializeApp({
+            projectId: 'fao-ferm'
+        });
+        // Point to emulator
+        // admin.firestore().settings({
+        //     host: 'localhost:8080',
+        //     ssl: false
+        // });
+    } else {
+        admin.initializeApp();
+    }
+}
 
 const db = admin.firestore();
 const usersCollection = db.collection("users");
 const groupsCollection = db.collection("groups");
 const registryCollection = db.collection("registry");
 const publicProjectsCollection = db.collection("publicProjects");
-// const bestPracticesCollection = db.collection("bestPractices");
 const assignmentRequestsCollection = db.collection("assignementRequests"); // Typo in the name
 const newGroupRequestsCollection = db.collection("newGroupRequests");
 const mailCollection = db.collection("mail");
@@ -261,7 +275,7 @@ exports = module.exports = {
     applicationStateCollection,
     firestore: admin.firestore,
     gcFirestore: firestore,
-    
+
     findAsync,
 
     GROUP_ROLES,

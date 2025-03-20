@@ -464,3 +464,7 @@ export function addMissingEMClasses(stats: any, startYear: number) {
     years.sort((a: any, b: any) => a.year - b.year);
     return years;
 }
+
+// export function getAreaObj(area) {
+//     const areaObj = Object.values(area)[0];
+// }
