@@ -12,7 +12,6 @@ import { useMenusStore } from '@/stores/menus';
 
 import TabTemplate from '../TabTemplate.vue';
 
-import MultiInput from '@/components/inputs/MultiInput.vue';
 import MapInput from '@/components/inputs/base/MapInput.vue';
 import AdminArea from '@/components/inputs/AdminArea.vue';
 import MapUpload from '@/components/inputs/base/MapUpload.vue';
@@ -33,6 +32,7 @@ import { getMenuSelectedLabel } from '@/components/project/menus';
 
 import { getGaulLevel0 } from '@/firebase/firestore';
 
+import AreasManager from '@/components/project/AreasManager.vue';
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -56,55 +56,55 @@ function getCountryName(iso2: string) {
     return country?.label || null;
 }
 
-const multiInputComponents = {
-    adminArea: {
-        component: AdminArea,
-        newData: {},
-        addItemLabel: computed(() => t('inputs.aoi.addAdminArea')),
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    },
-    draw: {
-        component: MapInput,
-        newData: {},
-        addItemLabel: computed(() => t('inputs.aoi.drawPolygon')),
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    },
-    upload: {
-        component: MapUpload,
-        newData: {},
-        addItemLabel: computed(() => t('inputs.aoi.uploadShapefile')),
-        addDialog: ShapefileUploadDialog,
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    },
-    uploadKml: {
-        component: MapUpload,
-        newData: {},
-        addItemLabel: computed(() => t('inputs.aoi.uploadGeoJson')),
-        addDialog: KmlKmzUploadDialog,
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    },
-    ground: {
-        component: MapInput,
-        newData: {},
-        addItemLabel: 'Draw polygon',
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    },
-};
+// const multiInputComponents = {
+//     adminArea: {
+//         component: AdminArea,
+//         newData: {},
+//         addItemLabel: computed(() => t('inputs.aoi.addAdminArea')),
+//         calculatedProps: [
+//             { key: 'index', f: (area: any, i: number) => i },
+//             { key: 'nAreas', f: (areas: any) => areas.length }
+//         ],
+//     },
+//     draw: {
+//         component: MapInput,
+//         newData: {},
+//         addItemLabel: computed(() => t('inputs.aoi.drawPolygon')),
+//         calculatedProps: [
+//             { key: 'index', f: (area: any, i: number) => i },
+//             { key: 'nAreas', f: (areas: any) => areas.length }
+//         ],
+//     },
+//     upload: {
+//         component: MapUpload,
+//         newData: {},
+//         addItemLabel: computed(() => t('inputs.aoi.uploadShapefile')),
+//         addDialog: ShapefileUploadDialog,
+//         calculatedProps: [
+//             { key: 'index', f: (area: any, i: number) => i },
+//             { key: 'nAreas', f: (areas: any) => areas.length }
+//         ],
+//     },
+//     uploadKml: {
+//         component: MapUpload,
+//         newData: {},
+//         addItemLabel: computed(() => t('inputs.aoi.uploadGeoJson')),
+//         addDialog: KmlKmzUploadDialog,
+//         calculatedProps: [
+//             { key: 'index', f: (area: any, i: number) => i },
+//             { key: 'nAreas', f: (areas: any) => areas.length }
+//         ],
+//     },
+//     ground: {
+//         component: MapInput,
+//         newData: {},
+//         addItemLabel: 'Draw polygon',
+//         calculatedProps: [
+//             { key: 'index', f: (area: any, i: number) => i },
+//             { key: 'nAreas', f: (areas: any) => areas.length }
+//         ],
+//     },
+// };
 
 const paAndTraditionalTerritoriesComponent = {
     component: paAndTraditionalTerritories,
@@ -207,6 +207,10 @@ const uniqueEcosystems = computed(() => {
     });
     return [...ecosystems];
 });
+
+const nShow = ref(25);
+const hasMorePages = computed(() => nShow.value && nShow.value < store.projectAreas.length);
+const selectedInputType = ref('adminArea');
 </script>
 
 <template>
@@ -340,14 +344,11 @@ const uniqueEcosystems = computed(() => {
                     </div>
                 </div>
 
-                <MultiInput
-                    :edit="edit"
-                    :numbering="(n, v) => numbering(n, v)"
-                    :input-components="multiInputComponents"
+                <AreasManager
                     v-model="store.projectAreas"
-                    :paging-size="25"
-                    :delete-confirm-message="t('inputs.aoi.deleteAreaConfirm')"
+                    :edit="edit"
                 />
+
                 <button
                     v-if="store.projectAreas.length > 0 && edit"
                     @click="() => { showDeleteAreasConfirm = true }"

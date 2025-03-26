@@ -30,13 +30,13 @@ if (!getApps().length) {
     functionsEuropeWest3 = getFunctions(app, 'europe-west3');
     storage = getStorage(app);
 
-    if (process.env.NODE_ENV === 'development') {
-        connectFirestoreEmulator(db, 'localhost', 8080);
-        connectAuthEmulator(auth, 'http://localhost:9099');
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-        connectFunctionsEmulator(functionsEuropeWest3, 'localhost', 5001);
-        connectStorageEmulator(storage, 'localhost', 9199);
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //     connectFirestoreEmulator(db, 'localhost', 8080);
+    //     connectAuthEmulator(auth, 'http://localhost:9099');
+    //     connectFunctionsEmulator(functions, 'localhost', 5001);
+    //     connectFunctionsEmulator(functionsEuropeWest3, 'localhost', 5001);
+    //     connectStorageEmulator(storage, 'localhost', 9199);
+    // }
 }
 
 export { auth, db, functions, functionsEuropeWest3, storage };
