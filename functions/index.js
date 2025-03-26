@@ -1135,3 +1135,12 @@ exports.makeCoverPhoto = storage.makeCoverPhoto;
  * **********************************************/
 const qc = require("./qc");
 exports.qcGef = qc.qcGef;
+
+
+/************************************************
+ * 
+ * REPORTING
+ * 
+ * **********************************************/
+// const reporting = require("./reporting");
+// exports.generateInitiativeReport = reporting.generateInitiativeReport;

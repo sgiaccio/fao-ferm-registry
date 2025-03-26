@@ -15,6 +15,7 @@ const firebaseConfig = {
 
 let auth: Auth, db: Firestore;
 let functions: Functions;
+let functionsEuropeWest3: Functions;
 let storage: FirebaseStorage;
 
 // Initialize Firebase
@@ -26,14 +27,16 @@ if (!getApps().length) {
 
     auth = getAuth(app);
     functions = getFunctions(app);
+    functionsEuropeWest3 = getFunctions(app, 'europe-west3');
     storage = getStorage(app);
 
     if (process.env.NODE_ENV === 'development') {
         connectFirestoreEmulator(db, 'localhost', 8080);
         connectAuthEmulator(auth, 'http://localhost:9099');
         connectFunctionsEmulator(functions, 'localhost', 5001);
+        connectFunctionsEmulator(functionsEuropeWest3, 'localhost', 5001);
         connectStorageEmulator(storage, 'localhost', 9199);
     }
 }
 
-export { auth, db, functions, storage };
+export { auth, db, functions, functionsEuropeWest3, storage };

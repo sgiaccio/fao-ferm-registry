@@ -8,7 +8,8 @@ export function getI18n() {
     return i18n;
 }
 
-export const SUPPORT_LOCALES = ['en', 'es'];
+export const SUPPORT_LOCALES = ['en', 'es', 'fr', 'pt'];
+
 const defaultLocale = 'en';
 
 // function getNestedValue(obj: any, path: string) {
