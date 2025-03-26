@@ -1,4 +1,4 @@
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 const { Firestore } = require("firebase-admin/firestore");
 
@@ -1131,3 +1131,12 @@ exports.makeCoverPhoto = storage.makeCoverPhoto;
  * **********************************************/
 const qc = require("./qc");
 exports.qcGef = qc.qcGef;
+
+
+/************************************************
+ * 
+ * REPORTING
+ * 
+ * **********************************************/
+// const reporting = require("./reporting");
+// exports.generateInitiativeReport = reporting.generateInitiativeReport;

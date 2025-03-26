@@ -1,6 +1,6 @@
 const util = require("./util");
 
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
 
 
 const beginDate = new Date("2024-04-16");

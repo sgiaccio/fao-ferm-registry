@@ -1,7 +1,9 @@
-import { getApp } from "firebase/app";
+// import { getApp } from "firebase/app";
 import { httpsCallable, getFunctions } from "firebase/functions";
 
 import { functions } from ".";
+
+import { functionsEuropeWest3 } from "@/firebase";
 
 
 export async function getMyGroupsAssigmentRequests() {
@@ -139,15 +141,13 @@ export async function saveProjectCollaborators(projectId: string, collaboratorsU
 }
 
 export async function getProjectAreas(projectId: string, getPublic = false) {
-    const functions = getFunctions(getApp(), 'europe-west3');
-    const getProjectAreas = httpsCallable(functions, 'getSavedProjectAreasGeoJson');
+    const getProjectAreas = httpsCallable(functionsEuropeWest3, 'getSavedProjectAreasGeoJson');
     const result = await getProjectAreas({ projectId, public: getPublic});
     return result.data;
 }
 
 export async function getProjectAdminAreas(projectId: string, getPublic = false) {
-    const functions = getFunctions(getApp(), 'europe-west3');
-    const getAdminProjectAreas = httpsCallable(functions, 'getSavedProjectAdminAreasGeoJson');
+    const getAdminProjectAreas = httpsCallable(functionsEuropeWest3, 'getSavedProjectAdminAreasGeoJson');
     const result = await getAdminProjectAreas({ projectId, public: getPublic });
     return result.data;
 }
@@ -167,8 +167,7 @@ export async function makeCoverPhoto(projectId: string, filePath: string) {
 }
 
 export async function getAllProjectAreasGeoJson(projectId: string, uuids: string[]) {
-    const functions = getFunctions(getApp(), 'europe-west3');
-    const getAllProjectAreasGeoJson = httpsCallable(functions, 'getAllProjectAreasGeoJson');
+    const getAllProjectAreasGeoJson = httpsCallable(functionsEuropeWest3, 'getAllProjectAreasGeoJson');
     const result = await getAllProjectAreasGeoJson({ projectId, uuids });
     return result.data;
 }
@@ -204,8 +203,7 @@ export async function getPublicProjectThumbnail(projectId: string) {
 }
 
 export async function getProjectPublicBestPractices(projectId: string) {
-    const functions = getFunctions(getApp(), 'europe-west3');
-    const getProjectPublicBestPractices = httpsCallable(functions, 'getProjectPublicBestPractices');
+    const getProjectPublicBestPractices = httpsCallable(functionsEuropeWest3, 'getProjectPublicBestPractices');
     const result = await getProjectPublicBestPractices({ projectId });
     return result.data;
 }
@@ -214,5 +212,11 @@ export async function gefQc() {
     const functions = getFunctions();
     const qcGef = httpsCallable(functions, 'qcGef');
     const result = await qcGef();
+    return result.data;
+}
+
+export async function generateInitiativeReport(sinceDate: string, toDate: string) {
+    const getReport = httpsCallable(functionsEuropeWest3, 'generateInitiativeReport');
+    const result = await getReport({ sinceDate, toDate });
     return result.data;
 }

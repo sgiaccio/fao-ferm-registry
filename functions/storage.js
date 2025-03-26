@@ -1,4 +1,4 @@
-const functions = require("firebase-functions");
+const functions = require("firebase-functions/v1");
 const { getStorage } = require('firebase-admin/storage');
 const util = require("./util");
 
