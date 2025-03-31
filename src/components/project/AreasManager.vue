@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, type ComputedRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { TrashIcon } from '@heroicons/vue/20/solid';
 import AdminArea from '@/components/inputs/AdminArea.vue';
@@ -8,18 +8,36 @@ import MapUpload from '@/components/inputs/base/MapUpload.vue';
 import ShapefileUploadDialog from '@/views/project/ShapefileUploadDialog.vue';
 import KmlKmzUploadDialog from '@/views/project/KmlKmzUploadDialog.vue';
 
+import UpdateAreaMenu from '@/components/inputs/UpdateAreaMenu.vue';
+
+
 const { t } = useI18n();
 
+type AreaType = 'adminArea' | 'draw' | 'upload' | 'uploadKml';
+
+type Area = Partial<Record<AreaType, any>>;
+
 const props = defineProps<{
-    modelValue: any[];
+    modelValue: Area[];
     edit?: boolean;
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: any[]): void;
+    (e: 'update:modelValue', value: Area[]): void;
 }>();
 
-const multiInputComponents = {
+type ComponentConfig = {
+    component: any;
+    newData: Record<string, any>;
+    addItemLabel: string | ComputedRef<string>;
+    addDialog?: any;
+    calculatedProps: Array<{
+        key: string;
+        f: (area: any, i: number) => any;
+    }>;
+};
+
+const multiInputComponents: Record<AreaType, ComponentConfig> = {
     adminArea: {
         component: AdminArea,
         newData: {},
@@ -58,20 +76,11 @@ const multiInputComponents = {
             { key: 'nAreas', f: (areas: any) => areas.length }
         ],
     },
-    ground: {
-        component: MapInput,
-        newData: {},
-        addItemLabel: 'Draw polygon',
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    },
 };
 
 const nShow = ref(25);
 const hasMorePages = computed(() => nShow.value && nShow.value < props.modelValue.length);
-const selectedInputType = ref('adminArea');
+const selectedInputType = ref<AreaType>('adminArea');
 
 // Add dialog state
 const showShapefileDialog = ref(false);
@@ -110,8 +119,8 @@ function addArea() {
     emit('update:modelValue', [...props.modelValue, newArea]);
 }
 
-function getAreaType(area: any) {
-    return Object.keys(area)[0];
+function getAreaType(area: Area): AreaType {
+    return Object.keys(area)[0] as AreaType;
 }
 
 function numbering(i: number, v: any) {
@@ -131,12 +140,22 @@ function numbering(i: number, v: any) {
     }
 }
 
-function changeType(i: number, type: string) {
-    const newArea = {};
-    newArea[type] = multiInputComponents[type].newData;
+function changeType(i: number, type: AreaType) {
+    const newArea = { [type]: multiInputComponents[type].newData } as Area;
     const newValue = [...props.modelValue];
     newValue[i] = newArea;
     emit('update:modelValue', newValue);
+}
+
+function handleAreaUpdate(i: number, data: { type?: AreaType } & Record<string, any>) {
+    if (data.type) {
+        changeType(i, data.type);
+    } else {
+        // Handle other updates (like uploads)
+        const newValue = [...props.modelValue];
+        newValue[i] = data as Area;
+        emit('update:modelValue', newValue);
+    }
 }
 </script>
 
@@ -157,13 +176,16 @@ function changeType(i: number, type: string) {
                 :index="i"
                 :nAreas="modelValue.length"
             />
-            <!-- change type -->
-            <button
-                type="button"
-                @click="changeType(i, 'adminArea')"
-            >
-                Change type
-            </button>
+            <UpdateAreaMenu
+                v-if="edit"
+                :components="multiInputComponents"
+                :area="area"
+                :edit="edit"
+                :index="i"
+                :nAreas="modelValue.length"
+                :project="null"
+                @done="(data) => handleAreaUpdate(i, data)"
+            />
             <div
                 v-if="edit"
                 class="w-full text-orange-600 text-right hover:text-orange-500"
@@ -186,7 +208,7 @@ function changeType(i: number, type: string) {
                 :key="type"
                 type="button"
                 @click="() => {
-                    selectedInputType = type;
+                    selectedInputType = type as AreaType;
                     if (type === 'upload') {
                         showShapefileDialog = true;
                     } else if (type === 'uploadKml') {
@@ -197,7 +219,7 @@ function changeType(i: number, type: string) {
                 }"
                 class="inline-flex items-center px-2.5 py-1.5 border border-indigo-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-                {{ typeof component.addItemLabel === 'function' ? component.addItemLabel() : component.addItemLabel }}
+                {{ typeof component.addItemLabel === 'string' ? component.addItemLabel : component.addItemLabel.value }}
             </button>
         </div>
 
