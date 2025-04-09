@@ -14,26 +14,6 @@ import Vue3Toasity, { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
 
-// const i18nConfig: any = {
-//     locale: 'fr',
-//     fallbackLocale: 'en',
-//     messages,
-//     legacy: false,
-//     globalInjection: true,
-// };
-
-// if (process.env.NODE_ENV === 'development') {
-//     console.log('Development mode');
-//     i18nConfig.postTranslation = (str: any, key: string) => {
-//         if (typeof str === 'string') {
-//             return str ? `${str} (i18n)` : key;
-//         }
-//         return str;
-//     }
-// }
-
-// const i18n = createI18n(i18nConfig);
-
 // (async () => {
 const app = createApp(App);
 app.use(createPinia());

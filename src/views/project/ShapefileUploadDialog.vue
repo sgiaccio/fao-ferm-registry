@@ -21,8 +21,10 @@ import FileUploadFormGroup from '@/components/inputs/base/FileUploadFormGroup.vu
 
 const props = withDefaults(defineProps<{
     open?: boolean
+    dissolveOnly?: boolean
 }>(), {
-    open: true
+    open: true,
+    dissolveOnly: false
 });
 
 const emit = defineEmits(['cancel', 'done']);
@@ -33,9 +35,9 @@ const authStore = useAuthStore();
 const projectStore = useProjectStore();
 
 const selectedFile = ref<File | null>(null);
-const dissolve = ref(true);
+const dissolve = ref(true)
 
-const uploadStatus = ref<'idle' | 'uploading' | 'uploaded'>();
+const uploadStatus = ref<'idle' | 'uploading' | 'uploaded'>('idle');
 
 function setSelectedFile(files: FileList) {
     selectedFile.value = files[0];
@@ -125,7 +127,7 @@ async function uploadFile() {
     const formData = new FormData();
     formData.append('project_id', projectStore.id!);
     formData.append('file', selectedFile.value, selectedFile.value.name);
-    formData.append('dissolve', 'false');
+    formData.append('dissolve', dissolve.value ? 'true' : 'false');
 
     return fetch(
         '/loadShapefile',
@@ -189,7 +191,10 @@ function cancel() {
 }
 
 watch(() => props.open, open => {
-    if (open) uploadStatus.value = 'idle';
+    if (open) {
+        alert('open')
+        uploadStatus.value = 'idle';
+    }
     getAreaName.value = false;
     getAreaId.value = false;
     areaNameField.value = null;
@@ -248,20 +253,6 @@ const areaIdField = ref<String | null>(null);
                                         {{ t('inputs.aoi.uploadShapefile') }}
                                     </DialogTitle>
                                     <div>
-                                        <!-- <div class="text-xs mt-3 text-gray-800 font-light">
-                                            <p class="mb-2">Please upload a <span class="font-semibold">zip file</span> containing
-                                                the <span class="font-semibold text-blue-500">.shp, .shx,
-                                                    .dbf</span>, and .<span class="font-semibold text-blue-500">prj</span> files.
-                                            </p>
-                                            <p class="mb-2">The shapefile can contain one or many <span class="font-semibold">points</span>, <span class="font-semibold">polygons</span>, or <span class="font-semibold">multipolygons</span>.
-                                            </p>
-                                            <!- - <p class="mb-2">For each feature on the shapefile, one area will be
-                                                added to the registry.
-                                            </p> - ->
-                                            <p class="mb-4">If possible, the shapefile should be in <span class="font-semibold">geographic projection</span>
-                                                (latitude/longitude). If not, the system will try to reproject it.
-                                            </p>
-                                        </div> -->
                                         <div class="text-xs mt-3 text-gray-800 font-light">
                                             <p class="mb-2">
                                                 <i18n-t keypath="inputs.aoi.shapefileUpload.instruction1">
@@ -325,119 +316,121 @@ const areaIdField = ref<String | null>(null);
                                 v-if="rows"
                                 class="mx-6"
                             >
-                                <div class="mb-3">
-                                    <div class="flex items-start">
-                                        <div class="flex h-5 items-center">
-                                            <input
-                                                id="dissolve"
-                                                aria-describedby="comments-description"
-                                                name="comments"
-                                                type="checkbox"
-                                                v-model="dissolve"
-                                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            />
-                                        </div>
-                                        <div class="ml-3 text-sm">
-                                            <label
-                                                for="dissolve"
-                                                class="font-medium text-gray-700"
-                                            >Dissolve features</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div
-                                    class="text-red-500 mb-3"
-                                    v-if="!dissolve && rows.length <= 50"
-                                >
-                                    <p class="text-sm text-red-600 italic px-3 py-2 bg-red-50 shadow rounded">Please note that <span class="font-bold underline underline-offset-2">{{ rows.length }} areas will be added to the initiative</span> &mdash; one for each feature in the shapefile.</p>
-                                </div>
-                                <div
-                                    v-if="!dissolve && rows.length > 50"
-                                    class="rounded-md bg-yellow-50 p-4"
-                                >
-                                    <div class="flex">
-                                        <div class="flex-shrink-0">
-                                            <ExclamationTriangleIcon
-                                                class="h-5 w-5 text-yellow-400"
-                                                aria-hidden="true"
-                                            />
-                                        </div>
-                                        <div class="ml-3">
-                                            <h3 class="text-sm font-medium text-yellow-800">Too many features</h3>
-                                            <div class="mt-2 text-sm text-yellow-700">
-                                                <p>It's not possible to import a shapefile with more than 50 features at once. Please dissolve the features or reduce the number of features in the shapefile.</p>
+                                <template v-if="!dissolveOnly">
+                                    <div class="mb-3">
+                                        <div class="flex items-start">
+                                            <div class="flex h-5 items-center">
+                                                <input
+                                                    id="dissolve"
+                                                    aria-describedby="comments-description"
+                                                    name="comments"
+                                                    type="checkbox"
+                                                    v-model="dissolve"
+                                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                />
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label
+                                                    for="dissolve"
+                                                    class="font-medium text-gray-700"
+                                                >Dissolve features</label>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                    <div
+                                        class="text-red-500 mb-3"
+                                        v-if="!dissolve && rows.length <= 50"
+                                    >
+                                        <p class="text-sm text-red-600 italic px-3 py-2 bg-red-50 shadow rounded">Please note that <span class="font-bold underline underline-offset-2">{{ rows.length }} areas will be added to the initiative</span> &mdash; one for each feature in the shapefile.</p>
+                                    </div>
+                                    <div
+                                        v-if="!dissolve && rows.length > 50"
+                                        class="rounded-md bg-yellow-50 p-4"
+                                    >
+                                        <div class="flex">
+                                            <div class="flex-shrink-0">
+                                                <ExclamationTriangleIcon
+                                                    class="h-5 w-5 text-yellow-400"
+                                                    aria-hidden="true"
+                                                />
+                                            </div>
+                                            <div class="ml-3">
+                                                <h3 class="text-sm font-medium text-yellow-800">Too many features</h3>
+                                                <div class="mt-2 text-sm text-yellow-700">
+                                                    <p>It's not possible to import a shapefile with more than 50 features at once. Please dissolve the features or reduce the number of features in the shapefile.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <!-- <div
+                                    <!-- <div
                                     class="text-redd-500 mb-3"
                                     v-if="!dissolve && rows.length > 50"
                                 >
                                     <p class="text-sm text-red-600 italic px-3 py-2 bg-red-50 shadow rounded">It's not possible to add more than 50 areas at once. Please dissolve the features or reduce the number of features in the shapefile.</p>
                                 </div> -->
-                                <template v-if="!dissolve && rows.length < 50">
-                                    <div>
-                                        <div class="flex items-start">
-                                            <div class="flex h-5 items-center">
-                                                <input
-                                                    id="areaName"
-                                                    aria-describedby="comments-description"
-                                                    name="areaName"
-                                                    type="checkbox"
-                                                    v-model="getAreaName"
-                                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                                />
+                                    <template v-if="!dissolve && rows.length < 50">
+                                        <div>
+                                            <div class="flex items-start">
+                                                <div class="flex h-5 items-center">
+                                                    <input
+                                                        id="areaName"
+                                                        aria-describedby="comments-description"
+                                                        name="areaName"
+                                                        type="checkbox"
+                                                        v-model="getAreaName"
+                                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                    />
+                                                </div>
+                                                <div class="ml-3 text-sm">
+                                                    <label
+                                                        for="areaName"
+                                                        class="font-medium text-gray-700"
+                                                    >Get area name from attribute</label>
+                                                </div>
                                             </div>
-                                            <div class="ml-3 text-sm">
-                                                <label
-                                                    for="areaName"
-                                                    class="font-medium text-gray-700"
-                                                >Get area name from attribute</label>
-                                            </div>
+                                            <select
+                                                id="areaNameSelect"
+                                                name="areaNameSelect"
+                                                :disabled="!getAreaName"
+                                                v-model="areaNameField"
+                                                :class="[getAreaName ? '' : 'bg-gray-200 text-gray-500', 'mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm']"
+                                            >
+                                                <option v-for="h in header">{{ h }}</option>
+                                            </select>
                                         </div>
-                                        <select
-                                            id="areaNameSelect"
-                                            name="areaNameSelect"
-                                            :disabled="!getAreaName"
-                                            v-model="areaNameField"
-                                            :class="[getAreaName ? '' : 'bg-gray-200 text-gray-500', 'mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm']"
-                                        >
-                                            <option v-for="h in header">{{ h }}</option>
-                                        </select>
-                                    </div>
 
-                                    <div>
-                                        <div class="flex items-start mt-6">
-                                            <div class="flex h-5 items-center">
-                                                <input
-                                                    id="areaId"
-                                                    aria-describedby="comments-description"
-                                                    name="comments"
-                                                    type="checkbox"
-                                                    v-model="getAreaId"
-                                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                                />
+                                        <div>
+                                            <div class="flex items-start mt-6">
+                                                <div class="flex h-5 items-center">
+                                                    <input
+                                                        id="areaId"
+                                                        aria-describedby="comments-description"
+                                                        name="comments"
+                                                        type="checkbox"
+                                                        v-model="getAreaId"
+                                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                    />
+                                                </div>
+                                                <div class="ml-3 text-sm">
+                                                    <label
+                                                        for="areaId"
+                                                        class="font-medium text-gray-700"
+                                                    >Get area ID from
+                                                        attribute</label>
+                                                </div>
                                             </div>
-                                            <div class="ml-3 text-sm">
-                                                <label
-                                                    for="areaId"
-                                                    class="font-medium text-gray-700"
-                                                >Get area ID from
-                                                    attribute</label>
-                                            </div>
+                                            <select
+                                                id="areaIdSelect"
+                                                name="areaIdSelect"
+                                                :disabled="!getAreaId"
+                                                v-model="areaIdField"
+                                                :class="[getAreaId ? '' : 'bg-gray-200 text-gray-500', 'mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm']"
+                                            >
+                                                <option v-for="h in header">{{ h }}</option>
+                                            </select>
                                         </div>
-                                        <select
-                                            id="areaIdSelect"
-                                            name="areaIdSelect"
-                                            :disabled="!getAreaId"
-                                            v-model="areaIdField"
-                                            :class="[getAreaId ? '' : 'bg-gray-200 text-gray-500', 'mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm']"
-                                        >
-                                            <option v-for="h in header">{{ h }}</option>
-                                        </select>
-                                    </div>
+                                    </template>
                                 </template>
                                 <div class="text-center font-bold text-base mt-6 mb-2">{{ rows.length }}
                                     feature{{ rows.length > 1 ? 's' : '' }} found:

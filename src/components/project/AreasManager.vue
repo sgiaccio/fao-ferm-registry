@@ -140,22 +140,22 @@ function numbering(i: number, v: any) {
     }
 }
 
-function changeType(i: number, type: AreaType) {
-    const newArea = { [type]: multiInputComponents[type].newData } as Area;
-    const newValue = [...props.modelValue];
-    newValue[i] = newArea;
-    emit('update:modelValue', newValue);
-}
+// function changeType(i: number, type: AreaType) {
+//     // const newArea = { [type]: multiInputComponents[type].newData } as Area;
+//     // const newValue = [...props.modelValue];
+//     // newValue[i] = newArea;
+//     // emit('update:modelValue', newValue);
+//     const newValue = [...props.modelValue];
+//     newValue[i] = { [type]: multiInputComponents[type].newData } as Area;
+//     // emit('update:modelValue', newValue);
+//     return newValue;
+// }
 
-function handleAreaUpdate(i: number, data: { type?: AreaType } & Record<string, any>) {
-    if (data.type) {
-        changeType(i, data.type);
-    } else {
-        // Handle other updates (like uploads)
-        const newValue = [...props.modelValue];
-        newValue[i] = data as Area;
-        emit('update:modelValue', newValue);
-    }
+function handleAreaUpdate(i: number, area: Area) {
+    debugger;
+    const newValue = [...props.modelValue];
+    newValue[i] = area
+    emit('update:modelValue', newValue);
 }
 </script>
 
@@ -252,4 +252,4 @@ function handleAreaUpdate(i: number, data: { type?: AreaType } & Record<string, 
         @close="() => showKmlDialog = false"
         @upload="handleKmlUpload"
     />
-</template> 
+</template>

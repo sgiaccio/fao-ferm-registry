@@ -465,6 +465,19 @@ export function addMissingEMClasses(stats: any, startYear: number) {
     return years;
 }
 
-// export function getAreaObj(area) {
-//     const areaObj = Object.values(area)[0];
-// }
+export function getAreaObj(area: any) {
+    if (!area || typeof area !== 'object') {
+        throw new Error('Invalid area object provided');
+    }
+
+    const values = Object.values(area);
+    if (values.length === 0) {
+        throw new Error('Empty area object provided');
+    }
+
+    if (values.length > 1) {
+        console.warn('Area object has multiple values, using first value');
+    }
+
+    return values[0];
+}
