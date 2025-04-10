@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import { useI18n } from 'vue-i18n';
 
@@ -42,13 +42,6 @@ function deleteAdminAreaInfo(area: any) {
     return areaCopy;
 }
 
-function deleteUuid(area: any) {
-    const areaCopy = { ...area };
-    delete areaCopy.uuid;
-
-    return areaCopy;
-}
-
 function doneUploadingShapefile(areas: any) {
     if (areas.length > 1) {
         console.error('multiple areas', areas);
@@ -81,7 +74,7 @@ function doneUploadingKml(areas: any) {
         //     }
         // });ea });
         emit('done', {
-            kml: {
+            uploadKml: {
                 ...area,
                 uuid: areas[0].uuid,
             }
@@ -99,6 +92,8 @@ function changeToDraw() {
     delete area.uuid;
     emit('done', { draw: area });
 }
+
+const areaType = computed(() => Object.keys(props.area)[0]);
 </script>
 
 <template>
@@ -125,8 +120,11 @@ function changeToDraw() {
             leave-from-class="transform opacity-100 scale-100"
             leave-to-class="transform opacity-0 scale-95"
         >
-            <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-righ rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <menu-item v-slot="{ active }">
+            <MenuItems class="absolute left-5 bottom-10 z-10 mt-2 w-56 origin-top-righ rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <menu-item 
+                    v-if="areaType !== 'adminArea'"
+                    v-slot="{ active }"
+                >
                     <span
                         @click="() => emit('done', { type: 'adminArea' })"
                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"
@@ -134,7 +132,10 @@ function changeToDraw() {
                         Admin area
                     </span>
                 </menu-item>
-                <menu-item v-slot="{ active }">
+                <menu-item 
+                    v-if_="areaType !== 'draw'"
+                    v-slot="{ active }"
+                >
                     <span
                         @click="changeToDraw"
                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"
@@ -142,7 +143,10 @@ function changeToDraw() {
                         Draw polygon
                     </span>
                 </menu-item>
-                <menu-item v-slot="{ active }">
+                <menu-item 
+                    v-if="areaType !== 'upload'"
+                    v-slot="{ active }"
+                >
                     <span
                         @click="() => { shapefileUploadDialogOpen = true }"
                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"
@@ -150,7 +154,10 @@ function changeToDraw() {
                         Upload shapefile
                     </span>
                 </menu-item>
-                <menu-item v-slot="{ active }">
+                <menu-item 
+                    v-if="areaType !== 'uploadKml'"
+                    v-slot="{ active }"
+                >
                     <span
                         @click="() => { kmlUploadDialogOpen = true }"
                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"

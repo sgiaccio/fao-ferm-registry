@@ -339,7 +339,8 @@ def _handle_upload(request, tmp_dir):
     form_data = request.form.to_dict()
     project_id = form_data.get('project_id')
     dissolveStr = form_data.get('dissolve')
-    dissolve = dissolveStr.lower() == 'false' if dissolveStr else True
+    # dissolve = dissolveStr.lower() == 'false' if dissolveStr else True
+    dissolve = dissolveStr.lower() == 'true'
 
     if not project_id:
         raise BadRequest("Missing project_id")

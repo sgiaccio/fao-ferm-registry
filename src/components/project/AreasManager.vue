@@ -152,7 +152,6 @@ function numbering(i: number, v: any) {
 // }
 
 function handleAreaUpdate(i: number, area: Area) {
-    debugger;
     const newValue = [...props.modelValue];
     newValue[i] = area
     emit('update:modelValue', newValue);

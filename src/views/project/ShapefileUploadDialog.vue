@@ -192,7 +192,6 @@ function cancel() {
 
 watch(() => props.open, open => {
     if (open) {
-        alert('open')
         uploadStatus.value = 'idle';
     }
     getAreaName.value = false;
