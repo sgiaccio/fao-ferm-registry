@@ -34,43 +34,6 @@ const actionCodeSettings = {
     handleCodeInApp: true,
 };
 
-//   auth.onAuthStateChanged(async user => {
-//     if (user === null) {
-//         //
-//     } else {
-//         debugger;
-//         // this.user = user;
-//         // TODO repetition
-//         const idToken = await user.getIdTokenResult();
-//         if (idToken) {
-//             // this.isAdmin = idToken.claims.admin as unknown as boolean,
-//             // this.privileges = idToken.claims.privileges || {}
-//         }
-
-//         await router.isReady();
-//         if (router.currentRoute.value.path === "/login") {
-//             // router.push(this.returnUrl); // TODO
-//         }
-
-//         // get user groups
-//         // const groupIds = Object.keys(this.privileges);
-
-//         const groupsCollection = collection(db, 'groups');
-//         const setUserGroups = getDocs(query(groupsCollection, where(documentId(), 'in', groupIds)))
-//             .then(groups => {
-//                 // this.userGroups = groups
-//                 // this.userGroups = groups.docs.reduce((prev, current) =>
-//                 //     ({ ...prev, [current.id]: current.data().name }), {});
-//             });
-
-//         // TODO fetch user preferences in parallel
-
-//         await setUserGroups
-//         // TODO await for user pref
-//     }
-//     // this.authLoaded = true;
-// });
-
 export const useAuthStore = defineStore({
     id: "auth",
     state: () => ({
@@ -90,7 +53,6 @@ export const useAuthStore = defineStore({
             window.localStorage.setItem('emailForSignIn', email);
         },
         async logout() {
-            // const auth = getAuth();
             await signOut(auth);
 
             this.user = null;
@@ -104,7 +66,7 @@ export const useAuthStore = defineStore({
         },
         async setUserData(user: User | null) {
             if (user === null) {
-                // console.debug('User is null');
+                console.error('User is null');
             } else {
                 this.user = user;
                 this.uid = user.uid;
@@ -117,12 +79,6 @@ export const useAuthStore = defineStore({
 
                     this.isGroupAdmin = Object.values(this.privileges).some((priv: any) => priv === 'admin');
                 }
-
-                // await router.isReady();
-                // if (router.currentRoute.value.path === "/login") {
-                //     this.authLoaded = true;
-                //     router.push(this.returnUrl);
-                // }
 
                 // Get user group names
                 const groupIds = Object.keys(this.privileges);
@@ -142,9 +98,6 @@ export const useAuthStore = defineStore({
             this.authLoaded = true;
         },
         async fetchUser() {
-            // const auth = getAuth();
-            // auth.onAuthStateChanged(async user => { this.setUserData(user); });
-
             if (isSignInWithEmailLink(auth, window.location.href)) {
                 // Additional state parameters can also be passed via URL.
                 // This can be used to continue the user's intended action before triggering
@@ -182,7 +135,7 @@ export const useAuthStore = defineStore({
                         // await this.setUserData(result.user);
                     }).catch(error => {
                         alert('Some error occurred: ' + error.code);
-                        // Some error occurred, you can inspect the code: error.code
+                        console.error(error);
                         // Common errors could be invalid email and invalid or expired OTPs.
                     });
             }
@@ -203,27 +156,13 @@ export const useAuthStore = defineStore({
             return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
         },
 
-        // async fetchPublicGroups() {
-        //     // hide private groups - for now private groups are only used to hide them from the list of the groups proposed for the user to join
-        //     const groupsCollection = collection(db, 'groups');
-        //     const groups = await getDocs(query(groupsCollection, where('private', '==', false)));
-        //     // Create an object with group id as key and group name as value
-        //     return groups.docs.reduce((prev, current) => ({ ...prev, [current.id]: current.data().name }), {});
-        // },
-
-
         async signInWithGoogle() {
             await signInWithPopup(auth, provider);
-
-            // This is a repetition from main.ts
-            // It is needed because we are using a popup so the page is not laaded again
-            // Will find a better way to do this
             await this.fetchUser();
             await router.isReady();
-            // if (router.currentRoute.value.path === "/login") {
+
             this.authLoaded = true;
             await router.push(this.returnUrl);
-            // }
         },
 
         async signUp(email: string, fullName: string) {

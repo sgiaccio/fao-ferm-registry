@@ -45,35 +45,19 @@ initialize_app()
 
 
 # To deploy:
-# gcloud functions deploy load_shapefile_multiple --region=${REGION} \
+# gcloud functions deploy [function_name] --region=[region] \
 #     --source=./ --runtime=python39 \
 #     --stage-bucket=fao-ferm-functions-staging \
 #     --trigger-http --allow-unauthenticated \
-#     --set-env-vars DB_USER=foo,DB_PASS=bar,DB_NAME=boo,INSTANCE_UNIX_SOCKET=vaf
-#
-# gcloud functions deploy get_area_json --region=${REGION} \
-#     --source=./ --runtime=python39 \
-#     --stage-bucket=fao-ferm-functions-staging \
-#     --trigger-http --allow-unauthenticated \
-#     --set-env-vars DB_USER=foo,DB_PASS=bar,DB_NAME=boo,INSTANCE_UNIX_SOCKET=vaf
-#
-# gcloud functions deploy load_area_json --region=${REGION} \
-#     --source=./ --runtime=python39 \
-#     --stage-bucket=fao-ferm-functions-staging \
-#     --trigger-http --allow-unauthenticated \
-#     --set-env-vars DB_USER=foo,DB_PASS=bar,DB_NAME=boo,INSTANCE_UNIX_SOCKET=vaf
-#
-# gcloud functions deploy load_kml_kmz --region=europe-west3 \
-#     --source=./ --runtime=python39 \
-#     --stage-bucket=fao-ferm-functions-staging \
-#     --trigger-http --allow-unauthenticated \
-#     --set-env-vars DB_USER=foo,DB_PASS=bar,DB_NAME=boo,INSTANCE_UNIX_SOCKET=vaf
-
+#     --no-gen2 \
+#     --env-vars-file=env.yaml
 
 
 # TODO use Google secrets
 db_user = 'ferm_registry'
-db_pass = '***REMOVED***'
+db_pass = os.environ.get('DB_PASS')
+if not db_pass:
+    raise ValueError("DB_PASS environment variable is not set")
 db_name = 'ferm_registry'
 unix_socket_path = '/cloudsql/fao-ferm:europe-west4:fao-ferm-postgres'
 dst_bucket = 'ferm_file_transfer'
