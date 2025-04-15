@@ -1,4 +1,3 @@
-// import { getApp } from "firebase/app";
 import { httpsCallable, getFunctions } from "firebase/functions";
 
 import { functions } from ".";
@@ -203,15 +202,13 @@ export async function getPublicProjectThumbnail(projectId: string) {
 }
 
 export async function exportToGround(projectId: string) {
-    const functions = getFunctions(getApp(), 'europe-west3');
-    const exportToGround = httpsCallable(functions, 'exportToGround');
+    const exportToGround = httpsCallable(functionsEuropeWest3, 'exportToGround');
     const result = await exportToGround({ projectId });
     return result.data;
 }
 
 export async function importFromGround(projectId: string) {
-    const functions = getFunctions(getApp(), 'europe-west3');
-    const importFromGround = httpsCallable(functions, 'importFromGround');
+    const importFromGround = httpsCallable(functionsEuropeWest3, 'importFromGround');
     const result = await importFromGround({ projectId });
     return result.data;
 }

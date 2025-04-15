@@ -13,7 +13,7 @@ import UpdateAreaMenu from '@/components/inputs/UpdateAreaMenu.vue';
 
 const { t } = useI18n();
 
-type AreaType = 'adminArea' | 'draw' | 'upload' | 'uploadKml';
+type AreaType = 'adminArea' | 'draw' | 'upload' | 'uploadKml' | 'ground';
 
 type Area = Partial<Record<AreaType, any>>;
 
@@ -76,6 +76,11 @@ const multiInputComponents: Record<AreaType, ComponentConfig> = {
             { key: 'nAreas', f: (areas: any) => areas.length }
         ],
     },
+    ground: {
+        component: MapInput,
+        newData: {},
+        addItemLabel: computed(() => t('inputs.aoi.uploadGround')),
+    },
 };
 
 const nShow = ref(25);
@@ -135,21 +140,12 @@ function numbering(i: number, v: any) {
         return `${localizedArea} ${value.shapeId || i + 1}`;
     } else if (key === 'uploadKml') {
         return `${localizedArea} ${i + 1}`;
+    } else if (key === 'ground') {
+        return `${localizedArea} ${i + 1} - Google Ground`;
     } else {
         return `Unknown area type: ${key}`;
     }
 }
-
-// function changeType(i: number, type: AreaType) {
-//     // const newArea = { [type]: multiInputComponents[type].newData } as Area;
-//     // const newValue = [...props.modelValue];
-//     // newValue[i] = newArea;
-//     // emit('update:modelValue', newValue);
-//     const newValue = [...props.modelValue];
-//     newValue[i] = { [type]: multiInputComponents[type].newData } as Area;
-//     // emit('update:modelValue', newValue);
-//     return newValue;
-// }
 
 function handleAreaUpdate(i: number, area: Area) {
     const newValue = [...props.modelValue];

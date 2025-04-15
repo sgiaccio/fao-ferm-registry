@@ -280,12 +280,12 @@ async function _importFromGround() {
     >
         <template #confirm>
             <div class="mt-3 max-w-xl text-sm text-gray-500">
-                <vue-i18n-t
+                <i18n-t
                     keypath="actionsMenu.publishConfirm"
                     tag="p"
                 >
                     <template #title>{{ project.data.project?.title }}</template>
-                </vue-i18n-t>
+                </i18n-t>
             </div>
         </template>
         <template #success>
