@@ -14,6 +14,8 @@ import VectorSource from 'ol/source/Vector';
 import { GeoJSON } from 'ol/format';
 import 'ol/ol.css';
 
+import { toast } from 'vue3-toastify'
+
 import { useAuthStore } from '@/stores/auth';
 import { useProjectStore } from '@/stores/project';
 import { useMenusStore } from '@/stores/menus';
@@ -60,7 +62,7 @@ const mapRoot = ref(null);
 
 const style = new Style({
     fill: new Fill({
-        color: 'rgba(0,0,0,0)' // Transparent fill
+        color: 'rgba(0, 0, 0, 0)' // Transparent fill
     }),
     stroke: new Stroke({
         color: '#ffcc33',
@@ -148,11 +150,19 @@ async function postGeoJson() {
             const uuidsArr: string[] = JSON.parse(uuids);
             uploadStatus.value = 'uploaded';
             emit('update:modelValue', { ...props.modelValue, uuid: uuidsArr[0] });
-            alert(`Area uploaded with UUID ${uuidsArr[0]}\n\nPlease remember to click "Save and close" otherwise the data will be lost.`);
-
+            toast.success(`Area uploaded\nPlease remember to click "Save and close", otherwise the data will be lost.`,
+                {
+                    autoClose: false,
+                    position: 'top-right',
+                }
+            );
             projectStore.updateCountries();
-        }).catch(_error => {
-            alert('Error uploading the JSON file');
+        }).catch(error => {
+            toast.error('Error uploading the JSON file', {
+                autoClose: false,
+                position: 'top-right',
+            });
+            console.error('Error uploading the JSON file', error);
             uploadStatus.value = 'idle';
         });
 }
@@ -276,7 +286,7 @@ function fetchPolygonArea() {
             'Authorization': `Bearer ${authStore.user.accessToken}`
         }
     }).then(response => response.json()).then(area => {
-        emit('update:modelValue', { ...props.modelValue, area: parseInt((1e-4 * area)) });
+        emit('update:modelValue', { ...props.modelValue, area: 1e-4 * area });
     });
 }
 

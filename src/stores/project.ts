@@ -21,6 +21,8 @@ import { defineStore } from 'pinia';
 
 import { db } from '../firebase';
 
+import { toast } from 'vue3-toastify';
+
 import {
     setsContainSameValues,
     snakeToCamel,
@@ -387,7 +389,10 @@ export const useProjectStore = defineStore('', () => {
     }
 
     async function updateCountries() {
-        alert('Please wait while the list of countries is updated. This may take a few seconds.');
+        const toastId = toast.loading("Please wait while the list of countries is updated. This may take a few seconds.", {
+            position: "top-right"
+        });
+
         try {
             const intersectingCountries = await _getPolygonsIso2Codes(projectAreas.value);
             const adminAreasIsoCodes = await _getAdminAreasIso2Codes(projectAreas.value);
@@ -396,11 +401,24 @@ export const useProjectStore = defineStore('', () => {
             const newIso2Codes = new Set([...intersectingCountries, ...adminAreasIsoCodes]);
 
             if (!setsContainSameValues(oldIso2Codes, newIso2Codes)) {
-                alert('The list of countries has changed. Please review it in the Areas & Ecosystems tab before saving.');
+                toast.update(toastId, {
+                    type: 'success',
+                    render: 'The list of countries has changed. Please review it in the Areas & Ecosystems tab before saving.',
+                    isLoading: false,
+                    // autoClose: 3000,
+                    closeOnClick: true,
+                    closeButton: true
+                });
                 project.value.project.countries = [...newIso2Codes];
             }
         } catch (e) {
-            alert('Error getting the new new list of countries');
+            toast.update(toastId, {
+                type: 'error',
+                render: 'Error getting the new new list of countries',
+                isLoading: false,
+                closeOnClick: true,
+                closeButton: true
+            });
         }
     }
 
@@ -411,11 +429,20 @@ export const useProjectStore = defineStore('', () => {
             const newIso2Codes = new Set([...oldIso2Codes, ...adminAreasIsoCodes]);
 
             if (!setsContainSameValues(oldIso2Codes, newIso2Codes)) {
-                alert('The list of countries has changed. Please review it in the Areas & Ecosystems tab before saving.');
+                toast.success('The list of countries has changed. Please review it in the Areas & Ecosystems tab before saving.', {
+                    position: "top-right",
+                    closeOnClick: true,
+                    closeButton: true
+                });
                 project.value.project.countries = [...newIso2Codes];
             }
         } catch (e) {
-            alert('Error getting the new new list of countries');
+            toast.error('Error getting the new new list of countries', {
+                position: "top-right",
+                autoClose: false,
+                closeOnClick: true,
+                closeButton: true
+            });
         }
     }
 
