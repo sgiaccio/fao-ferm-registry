@@ -6,14 +6,12 @@ import { useI18n } from 'vue-i18n';
 import View from 'ol/View';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
-
 import BingMaps from 'ol/source/BingMaps.js';
 import { Draw, Modify, Snap } from 'ol/interaction';
 import { Style, Fill, Stroke, Circle } from 'ol/style.js';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { GeoJSON } from 'ol/format';
-
 import 'ol/ol.css';
 
 import { useAuthStore } from '@/stores/auth';
@@ -29,6 +27,7 @@ import NumberInput from '@/components/inputs/base/NumberInput.vue';
 
 import { getMenuSelectedLabel } from '@/components/project/menus';
 import MultiPolygon from 'ol/geom/MultiPolygon';
+import Polygon from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 
 
@@ -87,13 +86,6 @@ const drawStyle = {
     'stroke-width': 2
 };
 
-const vectorSource = new VectorSource();
-const vectorLayer = new VectorLayer({ source: vectorSource, style });
-
-// function getGeoJson() {
-//     const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
-//     return geoJSON.writeFeatures(multiPolygon.getPolygons());
-// }
 
 function getGeoJson() {
     const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
@@ -107,20 +99,29 @@ function getGeoJson() {
 
 const areaUploaded = computed(() => !!props.modelValue?.uuid);
 
-const drawInteraction = new Draw({
-    source: vectorSource,
-    type: 'Polygon',
-    style: drawStyle
-});
-
 var multiPolygon = new MultiPolygon([]);
+const drawVectorSource = new VectorSource();
+const drawInteraction = new Draw({ source: drawVectorSource, type: 'Polygon', style: drawStyle });
+const modifyInteraction = new Modify({ source: drawVectorSource, style: drawStyle });
+const snapInteraction = new Snap({ source: drawVectorSource });
 drawInteraction.on('drawend', e => {
-    const poly = e.feature.getGeometry();
+    const poly = e.feature.getGeometry() as Polygon;
     multiPolygon.appendPolygon(poly);
 });
 
-const modifyInteraction = new Modify({ source: vectorSource, style: drawStyle });
-const snapInteraction = new Snap({ source: vectorSource });
+function addInteractions() {
+    m.addInteraction(drawInteraction);
+    m.addInteraction(modifyInteraction);
+    m.addInteraction(snapInteraction);
+}
+
+function removeInteractions() {
+    m.removeInteraction(drawInteraction);
+    m.removeInteraction(modifyInteraction);
+    m.removeInteraction(snapInteraction);
+}
+
+const drawVectorLayer = new VectorLayer({ source: drawVectorSource, style });
 
 async function postGeoJson() {
     if (areaUploaded.value) return;
@@ -171,12 +172,15 @@ async function fetchGeoJson() {
 let m: Map;
 let observer: IntersectionObserver;
 
+let vectorSource: VectorSource;
+let vectorLayer: VectorLayer<Feature>;
+
 onMounted(async () => {
     if (!mapRoot.value) return;
 
     m = new Map({
         target: mapRoot.value,
-        layers: [vectorLayer],
+        // layers: [vectorLayer],
         view: new View({
             zoom: 0,
             center: [0, 0],
@@ -184,23 +188,23 @@ onMounted(async () => {
         })
     });
 
+    m.addLayer(drawVectorLayer);
     if (!areaUploaded.value && props.edit) {
-        m.addInteraction(drawInteraction);
-        m.addInteraction(modifyInteraction);
-        m.addInteraction(snapInteraction);
+        addInteractions();
     } else {
         try {
             const geoJson = await fetchGeoJson();
             const olGeoJsonObj = new GeoJSON({ dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
-            const source = new VectorSource({ features: olGeoJsonObj.readFeatures(geoJson) });
-            m.removeLayer(vectorLayer);
-            m.addLayer(new VectorLayer({ source, style }));
-            m.getView().fit(source.getExtent());
+            vectorSource = new VectorSource({ features: olGeoJsonObj.readFeatures(geoJson) });
+            vectorLayer = new VectorLayer({ source: vectorSource, style });
+            m.addLayer(vectorLayer);
+            m.getView().fit(vectorSource.getExtent());
         } catch (error) {
             console.error('Error fetching GeoJSON', error);
         }
     }
 
+    // observer to detect when the map is visible. Used to load the map only when it is visible
     observer = new IntersectionObserver(
         ([entry]) => {
             if (!mapRoot.value) return;
@@ -242,17 +246,24 @@ function handleIntersection() {
 
 watch(areaUploaded, (uploaded) => {
     if (uploaded && props.edit) {
-        m.removeInteraction(drawInteraction);
-        m.removeInteraction(modifyInteraction);
-        m.removeInteraction(snapInteraction);
+        removeInteractions();
 
         if (!props.modelValue.area) {
             fetchPolygonArea();
         }
     } else {
-        m.addInteraction(drawInteraction);
-        m.addInteraction(modifyInteraction);
-        m.addInteraction(snapInteraction);
+        multiPolygon = new MultiPolygon([]);
+        if (vectorSource) {
+            vectorSource.clear();
+        }
+        if (vectorLayer) {
+            m.removeLayer(vectorLayer);
+        }
+        if (drawVectorSource) {
+            drawVectorSource.clear();
+        }
+
+        addInteractions();
     }
 });
 
@@ -271,7 +282,7 @@ function fetchPolygonArea() {
 
 function clear() {
     multiPolygon = new MultiPolygon([]);
-    vectorSource.clear();
+    drawVectorSource.clear();
 }
 </script>
 

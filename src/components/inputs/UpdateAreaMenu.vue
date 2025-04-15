@@ -63,16 +63,6 @@ function doneUploadingKml(areas: any) {
     const area = deleteAdminAreaInfo(getAreaObj(props.area));
 
     if (areas.length === 1) {
-        // emit('done', {
-        //     type: 'uploadKml',
-        //     area: {
-        //         ...area,
-        //         uuid: areas[0].uuid,
-        //         area: areas[0].area,
-        //         siteName: areas[0].siteName || area.siteName,
-        //         shapeId: areas[0].shapeId
-        //     }
-        // });ea });
         emit('done', {
             uploadKml: {
                 ...area,
@@ -87,13 +77,26 @@ function doneUploadingKml(areas: any) {
     kmlUploadDialogOpen.value = false;
 }
 
+const areaType = computed(() => Object.keys(props.area)[0]);
+
+
+function prepareAreaForTypeChange(area: any) {
+    const areaObj = getAreaObj(area);
+    const ret = deleteAdminAreaInfo(areaObj);
+    delete ret.uuid;
+    return ret;
+}
+
 function changeToDraw() {
-    const area = deleteAdminAreaInfo(getAreaObj(props.area));
-    delete area.uuid;
+    const area = prepareAreaForTypeChange(props.area);
     emit('done', { draw: area });
 }
 
-const areaType = computed(() => Object.keys(props.area)[0]);
+function changeToAdminArea() {
+    const area = prepareAreaForTypeChange(props.area);
+    emit('done', { adminArea: area });
+}
+
 </script>
 
 <template>
@@ -121,21 +124,18 @@ const areaType = computed(() => Object.keys(props.area)[0]);
             leave-to-class="transform opacity-0 scale-95"
         >
             <MenuItems class="absolute left-5 bottom-10 z-10 mt-2 w-56 origin-top-righ rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <menu-item 
+                <menu-item
                     v-if="areaType !== 'adminArea'"
                     v-slot="{ active }"
                 >
                     <span
-                        @click="() => emit('done', { type: 'adminArea' })"
+                        @click="changeToAdminArea"
                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"
                     >
                         Admin area
                     </span>
                 </menu-item>
-                <menu-item 
-                    v-if_="areaType !== 'draw'"
-                    v-slot="{ active }"
-                >
+                <menu-item v-slot="{ active }">
                     <span
                         @click="changeToDraw"
                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"
@@ -143,10 +143,7 @@ const areaType = computed(() => Object.keys(props.area)[0]);
                         Draw polygon
                     </span>
                 </menu-item>
-                <menu-item 
-                    v-if="areaType !== 'upload'"
-                    v-slot="{ active }"
-                >
+                <menu-item v-slot="{ active }">
                     <span
                         @click="() => { shapefileUploadDialogOpen = true }"
                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"
@@ -154,10 +151,7 @@ const areaType = computed(() => Object.keys(props.area)[0]);
                         Upload shapefile
                     </span>
                 </menu-item>
-                <menu-item 
-                    v-if="areaType !== 'uploadKml'"
-                    v-slot="{ active }"
-                >
+                <menu-item v-slot="{ active }">
                     <span
                         @click="() => { kmlUploadDialogOpen = true }"
                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm cursor-pointer']"

@@ -12,11 +12,11 @@ import { useMenusStore } from '@/stores/menus';
 
 import TabTemplate from '../TabTemplate.vue';
 
-import MapInput from '@/components/inputs/base/MapInput.vue';
-import AdminArea from '@/components/inputs/AdminArea.vue';
-import MapUpload from '@/components/inputs/base/MapUpload.vue';
-import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
-import KmlKmzUploadDialog from './KmlKmzUploadDialog.vue';
+// import MapInput from '@/components/inputs/base/MapInput.vue';
+// import AdminArea from '@/components/inputs/AdminArea.vue';
+// import MapUpload from '@/components/inputs/base/MapUpload.vue';
+// import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
+// import KmlKmzUploadDialog from './KmlKmzUploadDialog.vue';
 import FormGroup from '@/components/inputs/FormGroup.vue';
 import NumberInput from '@/components/inputs/base/NumberInput.vue';
 import SelectInput from '@/components/inputs/base/SelectInput.vue';
@@ -33,6 +33,7 @@ import { getMenuSelectedLabel } from '@/components/project/menus';
 import { getGaulLevel0 } from '@/firebase/firestore';
 
 import AreasManager from '@/components/project/AreasManager.vue';
+
 
 withDefaults(defineProps<{
     edit?: boolean
@@ -208,9 +209,9 @@ const uniqueEcosystems = computed(() => {
     return [...ecosystems];
 });
 
-const nShow = ref(25);
-const hasMorePages = computed(() => nShow.value && nShow.value < store.projectAreas.length);
-const selectedInputType = ref('adminArea');
+// const nShow = ref(25);
+// const hasMorePages = computed(() => nShow.value && nShow.value < store.projectAreas.length);
+// const selectedInputType = ref('adminArea');
 </script>
 
 <template>

@@ -43,7 +43,7 @@ const multiInputComponents: Record<AreaType, ComponentConfig> = {
         newData: {},
         addItemLabel: computed(() => t('inputs.aoi.addAdminArea')),
         calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
+            { key: 'index', f: (_area, i) => i },
             { key: 'nAreas', f: (areas: any) => areas.length }
         ],
     },
@@ -52,7 +52,7 @@ const multiInputComponents: Record<AreaType, ComponentConfig> = {
         newData: {},
         addItemLabel: computed(() => t('inputs.aoi.drawPolygon')),
         calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
+            { key: 'index', f: (_area, i) => i },
             { key: 'nAreas', f: (areas: any) => areas.length }
         ],
     },
@@ -62,7 +62,7 @@ const multiInputComponents: Record<AreaType, ComponentConfig> = {
         addItemLabel: computed(() => t('inputs.aoi.uploadShapefile')),
         addDialog: ShapefileUploadDialog,
         calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
+            { key: 'index', f: (_area, i) => i },
             { key: 'nAreas', f: (areas: any) => areas.length }
         ],
     },
@@ -72,7 +72,7 @@ const multiInputComponents: Record<AreaType, ComponentConfig> = {
         addItemLabel: computed(() => t('inputs.aoi.uploadGeoJson')),
         addDialog: KmlKmzUploadDialog,
         calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
+            { key: 'index', f: (_area, i) => i },
             { key: 'nAreas', f: (areas: any) => areas.length }
         ],
     },
@@ -155,6 +155,20 @@ function handleAreaUpdate(i: number, area: Area) {
     const newValue = [...props.modelValue];
     newValue[i] = area
     emit('update:modelValue', newValue);
+}
+
+function closeAllDialogs() {
+    showShapefileDialog.value = false;
+    showKmlDialog.value = false;
+}
+
+function addItemFromDialog(type: string, dataArr: any) {
+    const newValues = dataArr.map(d => ({ [type]: d }));
+    const tempProp = props.modelValue ? [...props.modelValue, ...newValues] : newValues
+
+    emit('update:modelValue', tempProp);
+
+    closeAllDialogs();
 }
 </script>
 
@@ -242,13 +256,13 @@ function handleAreaUpdate(i: number, area: Area) {
     <ShapefileUploadDialog
         v-if="showShapefileDialog"
         :open="showShapefileDialog"
-        @close="() => showShapefileDialog = false"
+        @done="addItemFromDialog('upload', $event)"
         @upload="handleShapefileUpload"
     />
     <KmlKmzUploadDialog
         v-if="showKmlDialog"
         :open="showKmlDialog"
-        @close="() => showKmlDialog = false"
+        @done="addItemFromDialog('uploadKml', $event)"
         @upload="handleKmlUpload"
     />
 </template>

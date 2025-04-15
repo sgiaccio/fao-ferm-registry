@@ -16,6 +16,9 @@ export default defineConfig({
     }
   },
   envDir: './env',
+  build: {
+    sourcemap: true
+  }
 })
 
 // import { fileURLToPath, URL } from "node:url";

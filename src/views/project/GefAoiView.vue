@@ -13,12 +13,12 @@ import { useAuthStore } from '@/stores/auth';
 
 import TabTemplate from '../TabTemplate.vue';
 
-import MultiInput from '../../components/inputs/MultiInput.vue';
-import MapInput from '../../components/inputs/base/MapInput.vue';
-import AdminArea from '../../components/inputs/AdminArea.vue';
-import MapUpload from '../../components/inputs/base/MapUpload.vue';
-import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
-import KmlKmzUploadDialog from './KmlKmzUploadDialog.vue';
+// import MultiInput from '../../components/inputs/MultiInput.vue';
+// import MapInput from '../../components/inputs/base/MapInput.vue';
+// import AdminArea from '../../components/inputs/AdminArea.vue';
+// import MapUpload from '../../components/inputs/base/MapUpload.vue';
+// import ShapefileUploadDialog from './ShapefileUploadDialog.vue';
+// import KmlKmzUploadDialog from './KmlKmzUploadDialog.vue';
 import FormGroup from '../../components/inputs/FormGroup.vue';
 import NumberInput from '../../components/inputs/base/NumberInput.vue';
 import FileUploadFormGroup2 from '@/components/inputs/base/FileUploadFormGroup2.vue';
@@ -36,6 +36,8 @@ import ConfirmModal from '@/views/ConfirmModal.vue';
 import { roundToPrecisionAsString } from '@/lib/util';
 
 import { getGaulLevel0 } from '@/firebase/firestore';
+
+import AreasManager from '@/components/project/AreasManager.vue';
 
 
 withDefaults(defineProps<{
@@ -60,46 +62,46 @@ function getCountryName(iso2: string) {
     return country?.label || null;
 }
 
-const multiInputComponents = {
-    adminArea: {
-        component: AdminArea,
-        newData: {},
-        addItemLabel: computed(() => t('inputs.aoi.addAdminArea')),
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    },
-    draw: {
-        component: MapInput,
-        newData: {},
-        addItemLabel: computed(() => t('inputs.aoi.drawPolygon')),
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    },
-    upload: {
-        component: MapUpload,
-        newData: {},
-        addItemLabel: computed(() => t('inputs.aoi.uploadShapefile')),
-        addDialog: ShapefileUploadDialog,
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    },
-    uploadKml: {
-        component: MapUpload,
-        newData: {},
-        addItemLabel: computed(() => t('inputs.aoi.uploadGeoJson')),
-        addDialog: KmlKmzUploadDialog,
-        calculatedProps: [
-            { key: 'index', f: (area: any, i: number) => i },
-            { key: 'nAreas', f: (areas: any) => areas.length }
-        ],
-    }
-};
+// const multiInputComponents = {
+//     adminArea: {
+//         component: AdminArea,
+//         newData: {},
+//         addItemLabel: computed(() => t('inputs.aoi.addAdminArea')),
+//         calculatedProps: [
+//             { key: 'index', f: (area: any, i: number) => i },
+//             { key: 'nAreas', f: (areas: any) => areas.length }
+//         ],
+//     },
+//     draw: {
+//         component: MapInput,
+//         newData: {},
+//         addItemLabel: computed(() => t('inputs.aoi.drawPolygon')),
+//         calculatedProps: [
+//             { key: 'index', f: (area: any, i: number) => i },
+//             { key: 'nAreas', f: (areas: any) => areas.length }
+//         ],
+//     },
+//     upload: {
+//         component: MapUpload,
+//         newData: {},
+//         addItemLabel: computed(() => t('inputs.aoi.uploadShapefile')),
+//         addDialog: ShapefileUploadDialog,
+//         calculatedProps: [
+//             { key: 'index', f: (area: any, i: number) => i },
+//             { key: 'nAreas', f: (areas: any) => areas.length }
+//         ],
+//     },
+//     uploadKml: {
+//         component: MapUpload,
+//         newData: {},
+//         addItemLabel: computed(() => t('inputs.aoi.uploadGeoJson')),
+//         addDialog: KmlKmzUploadDialog,
+//         calculatedProps: [
+//             { key: 'index', f: (area: any, i: number) => i },
+//             { key: 'nAreas', f: (areas: any) => areas.length }
+//         ],
+//     }
+// };
 
 const paAndTraditionalTerritoriesComponent = {
     component: paAndTraditionalTerritories,
@@ -136,7 +138,7 @@ function numbering(i: number, v: any) {
     }
 }
 
-const showDisclaimer = ref(false);
+// const showDisclaimer = ref(false);
 
 const showDeleteAreasConfirm = ref(false);
 
@@ -535,14 +537,20 @@ const uniqueEcosystems = computed(() => {
                     </div>
                 </div>
 
-                <MultiInput
+                <!-- <MultiInput
                     :edit="edit"
                     :numbering="(n, v) => numbering(n, v)"
                     :input-components="multiInputComponents"
                     v-model="store.projectAreas"
                     :paging-size="25"
                     delete-confirm-message="Are you sure you want to delete this area? The related characteristics, activities and ecosystems will also be deleted."
+                /> -->
+
+                <AreasManager
+                    v-model="store.projectAreas"
+                    :edit="edit"
                 />
+
                 <button
                     v-if="store.projectAreas.length > 0 && edit"
                     @click="() => { showDeleteAreasConfirm = true }"
