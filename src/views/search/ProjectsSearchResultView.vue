@@ -21,7 +21,7 @@ import { XMarkIcon } from '@heroicons/vue/24/outline'
 const props = defineProps<{
     searchText: string
     searchTerms: any
-    countries: []
+    countries: string[]
 }>();
 
 const resultsAsiaPopup = ref(false);

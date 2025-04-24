@@ -19,7 +19,7 @@ import Thumbnail from './Thumbnail.vue'
 const props = defineProps<{
     searchText: string
     searchTerms: any
-    countries: []
+    countries: string[]
     language: string
 }>();
 
@@ -124,8 +124,6 @@ function buildQuery() {
 
     const queryEnd = `) SELECT * FROM counted_data LIMIT 30 OFFSET ${searchResults.value.length};`
 
-    console.log('queryStart', queryStart)
-    console.log('queryEnd', queryEnd)
     return queryStart + (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') + queryEnd
 }
 

@@ -55,7 +55,8 @@ export function setupI18n(defaultOptions: any = {
     if (process.env.NODE_ENV === 'development') {
         options.postTranslation = (str: any, key: string) => {
             if (typeof str === 'string') {
-                return str ? `${str} (i18n)` : key;
+                // return str ? `${str} (i18n)` : key;
+                return str ? `${str}` : key;
             }
             return str;
         }

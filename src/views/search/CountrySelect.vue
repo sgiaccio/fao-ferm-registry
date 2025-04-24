@@ -18,8 +18,6 @@ import {
     ComboboxOptions,
 } from '@headlessui/vue';
 
-import { Transition, TransitionGroup } from 'vue';
-
 import countries from './countries.json';
 
 

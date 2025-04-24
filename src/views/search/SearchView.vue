@@ -170,6 +170,62 @@ const searchTermsInitiatives = ref(
 const countriesBestPractices = ref([]);
 const countriesInitiatives = ref([]);
 const language = ref<'en' | 'es' | 'fr'>('en');
+
+// This is needed because some values are stored in different languages in the database.
+const labelTranslations = {
+    'en': {
+        drivers: {
+            culturalAndSocialDrivers: 'Cultural and social drivers',
+            ecologicalAndEnvironmentalDrivers: 'Ecological and environmental drivers',
+            economicDrivers: 'Economic drivers'
+        },
+        ecosystems: {
+            farmlands: 'Farmlands',
+            forests: 'Forests',
+            freshwaters: 'Freshwaters',
+            grasslands: 'Grasslands, Shrublands and Savannahs',
+            mountains: 'Mountains',
+            oceans: 'Oceans and coasts',
+            peatlands: 'Peatlands',
+            urban: 'Urban areas'
+        },
+    },
+    'es': {
+        drivers: {
+            culturalAndSocialDrivers: 'Factores culturales y sociales',
+            ecologicalAndEnvironmentalDrivers: 'Factores ecológicos y medioambientales',
+            economicDrivers: 'Factores económicos'
+        },
+        ecosystems: {
+            farmlands: 'Tierras agrícolas',
+            forests: 'Bosques',
+            freshwaters: 'Agua dulce',
+            grasslands: 'Pastizales, matorrales y sabanas',
+            mountains: 'Montañas',
+            oceans: 'Océanos y costas',
+            peatlands: 'Turberas',
+            urban: 'Zonas urbanas'
+        },
+    },
+    'fr': {
+        drivers: {
+            culturalAndSocialDrivers: 'Facteurs culturels et sociaux',
+            ecologicalAndEnvironmentalDrivers: 'Facteurs écologiques et environnementaux',
+            economicDrivers: 'Facteurs économiques'
+        },
+        ecosystems: {
+            farmlands: 'Terres agricoles',
+            forests: 'Forêts',
+            freshwaters: 'Eaux douces',
+            grasslands: 'Prairies, terrains arbustifs et savanes',
+            mountains: 'Montagnes',
+            oceans: 'Océans et côtes',
+            peatlands: 'Tourbières',
+            urban: 'Zones urbaines'
+        },
+    }
+}
+
 </script>
 
 <template>
@@ -443,6 +499,7 @@ const language = ref<'en' | 'es' | 'fr'>('en');
                                         v-model:searchTerms="searchTermsGoodPractices"
                                         v-model:countries="countriesBestPractices"
                                         v-model:language="language"
+                                        :labelTranslations="labelTranslations"
                                     />
                                     <SidebarInitiatives
                                         v-else
@@ -464,6 +521,7 @@ const language = ref<'en' | 'es' | 'fr'>('en');
                     v-model:searchTerms="searchTermsGoodPractices"
                     v-model:countries="countriesBestPractices"
                     v-model:language="language"
+                    :labelTranslations="labelTranslations"
                 />
                 <SidebarInitiatives
                     v-else

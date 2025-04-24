@@ -15,7 +15,6 @@ import CountrySelect from './CountrySelect.vue'
 
 const props = defineProps<{
     query: {
-        name: string;
         queryName: string;
         queryValues: { value: string; label: string }[]
     }[];
@@ -27,25 +26,25 @@ const { t } = useI18n();
 const countries = defineModel('countries');
 // const searchTerms = defineModel('searchTerms');
 
-const emit = defineEmits(['update:searchTerms'])
+const emit = defineEmits(['update:searchTerms']);
 
 function toggleSearchTerm(queryName: string, value: string) {
-    const current = props.searchTerms[queryName]
+    const current = props.searchTerms[queryName];
     if (current.includes(value)) {
+        // Remove the value from the array
         emit('update:searchTerms', {
             ...props.searchTerms,
-            [queryName]: current.filter((v) => v !== value)
+            [queryName]: current.filter((v: string) => v !== value)
         })
         // searchTerms[queryName] = current.filter((v) => v !== value)
     } else {
+        // Add the value to the array
         emit('update:searchTerms', {
             ...props.searchTerms,
             [queryName]: [...current, value]
-        })
-        // searchTerms[queryName] = [...current, value]
+        });
     }
 }
-
 </script>
 
 <template>

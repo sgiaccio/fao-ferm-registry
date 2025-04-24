@@ -5,19 +5,9 @@ import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
 import { CheckIcon } from '@heroicons/vue/20/solid';
 
 import {
-    // Dialog,
-    // DialogPanel,
-
     Disclosure,
     DisclosureButton,
     DisclosurePanel,
-    // TransitionRoot,
-    // TransitionChild,
-
-    // RadioGroup,
-    // RadioGroupLabel,
-    // RadioGroupDescription,
-    // RadioGroupOption
 } from '@headlessui/vue'
 
 import SelectInput from '@/components/inputs/base/SelectInput.vue';
@@ -26,36 +16,36 @@ import CountrySelect from './CountrySelect.vue'
 
 const props = defineProps<{
     query: {
-        name: string;
         queryName: string;
-        // queryValuesExample = { value: 'ecologicalRestoration', label: 'Ecological restoration' }, { value: 'rehabilitation', label: 'Rehabilitation' }]
         queryValues: { value: string; label: string }[]
-    }[];
-    searchTerms: any;
+    }[]
+    labelTranslations: { [key: string]: { [key: string]: { [key: string]: string } } }
+    searchTerms: any,
 }>();
 
 const { t } = useI18n();
 
-const countries = defineModel('countries');
+const countries = defineModel<string[]>('countries', { required: true });
 // const searchTerms = defineModel('searchTerms');
-const language = defineModel<'en' | 'es' | 'fr'>('language');
+const language = defineModel<'en' | 'es' | 'fr'>('language', { required: true });
 
 const emit = defineEmits(['update:searchTerms'])
 
-function toggleSearchTerm(queryName: string, value: string) {
+function toggleSearchTerm(queryName: string, value: string, key: string) {
+    debugger;
     const current = props.searchTerms[queryName]
+    const translatedLabel = props.labelTranslations[language.value][queryName][key];
+    const term = translatedLabel || value;
     if (current.includes(value)) {
         emit('update:searchTerms', {
             ...props.searchTerms,
-            [queryName]: current.filter((v) => v !== value)
+            [queryName]: current.filter((v: string) => v !== term)
         })
-        // searchTerms[queryName] = current.filter((v) => v !== value)
     } else {
         emit('update:searchTerms', {
             ...props.searchTerms,
-            [queryName]: [...current, value]
+            [queryName]: [...current, term]
         })
-        // searchTerms[queryName] = [...current, value]
     }
 }
 
@@ -94,7 +84,7 @@ function toggleSearchTerm(queryName: string, value: string) {
                         v-for="{ value, label } in item.queryValues"
                         :key="value"
                         :class="[searchTerms[item.queryName].includes(label) ? 'bg-blue-100' : '', 'flex flex-row justify-between text-sm cursor-pointer hover:bg-blue-100 rounded-full py-1 pl-3 items-center']"
-                        @click="() => toggleSearchTerm(item.queryName, label)"
+                        @click="() => toggleSearchTerm(item.queryName, label, value)"
                     >
                         <div class="flex flex-row items-center justify-between w-full">
                             <span class="text-gray-700">{{ t(`publicSearch.goodPractices.${item.queryName}.terms.${value}`) }}</span>
