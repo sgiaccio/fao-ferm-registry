@@ -23,7 +23,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const countries = defineModel('countries');
+const countries = defineModel<{ ISO3: string, name: string }[]>('countries', { required: true });
 // const searchTerms = defineModel('searchTerms');
 
 const emit = defineEmits(['update:searchTerms']);

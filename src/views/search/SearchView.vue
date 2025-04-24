@@ -5,8 +5,6 @@ import { useI18n } from 'vue-i18n';
 
 import router from '@/router';
 
-// import WavyDivider from '@/views/WavyDivider.vue';
-
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 
 import { MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
@@ -167,8 +165,9 @@ const searchTermsInitiatives = ref(
     )
 );
 
-const countriesBestPractices = ref([]);
-const countriesInitiatives = ref([]);
+
+const countriesBestPractices = ref<{ ISO3: string, name: string }[]>([]);
+const countriesInitiatives = ref<{ ISO3: string, name: string }[]>([]);
 const language = ref<'en' | 'es' | 'fr'>('en');
 
 // This is needed because some values are stored in different languages in the database.

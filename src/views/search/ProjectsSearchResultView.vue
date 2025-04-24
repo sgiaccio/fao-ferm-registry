@@ -21,7 +21,7 @@ import { XMarkIcon } from '@heroicons/vue/24/outline'
 const props = defineProps<{
     searchText: string
     searchTerms: any
-    countries: string[]
+    countries: { ISO3: string, name: string }[]
 }>();
 
 const resultsAsiaPopup = ref(false);
@@ -400,65 +400,6 @@ watch(() => props.searchTerms, (val) => {
             </div>
         </Dialog>
     </TransitionRoot>
-
-    <!-- <TransitionRoot
-        as="template"
-        :show="showResultsAsiaInitialPopup"
-    >
-        <Dialog
-            as="div"
-            class="relative z-50"
-            @close="() => showResultsAsiaInitialPopup = false"
-        >
-            <TransitionChild
-                as="template"
-                enter="ease-out duration-300"
-                enter-from="opacity-0"
-                enter-to="opacity-100"
-                leave="ease-in duration-200"
-                leave-from="opacity-100"
-                leave-to="opacity-0"
-            >
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity w-screen" />
-            </TransitionChild>
-
-            <div class="fixed inset-0 z-10 overflow-y-auto">
-                <div class="flex min-h-full items-end justify-center text-center sm:items-center max-w-4xl mx-auto p-4">
-                    <TransitionChild
-                        as="template"
-                        enter="ease-out duration-300"
-                        enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        enter-to="opacity-100 translate-y-0 sm:scale-100"
-                        leave="ease-in duration-200"
-                        leave-from="opacity-100 translate-y-0 sm:scale-100"
-                        leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    >
-                        <DialogPanel class="relative transform text-left shadow-xl transition-all w-full m-12 h-[calc(100vh-6rem)]">
-                            <button
-                                @click="() => showResultsAsiaInitialPopup = false"
-                                class="absolute -top-4 -right-4 w-8 h-8 bg-white rounded-full shadow hover:bg-gray-100 focus:outline-none flex items-center justify-center z-10"
-                                aria-label="Close modal"
-                            >
-                                <XMarkIcon class="h-6 w-6 text-gray-500" />
-                            </button>
-                            <div class="h-full bg-slate-100 rounded-lg overflow-hidden">
-                                <p>
-                                    RESULT Asia-Pacific represents collective action by countries and partners to restore and sustainably manage a consolidated 100 million hectares of the region’s degraded landscapes; transforming them into productive, ecologically functional and resilient landscapes by 2030.
-                                </p>
-                                <p>
-                                    It enables the countries in the region to lead the achievement of their ambitious restoration targets with scaled-up interventions on priority landscapes, enhanced financing, sustained high-quality outcomes, and optimal benefits flowing to smallholders and local communities.
-                                </p>
-                                <p>
-                                    This Regional Programmatic Framework was designed in line with the Asia-Pacific Regional Strategy and Action Plan on Forest and Landscape Restoration (FLR) and the UN Decade on Ecosystem Restoration.
-                                </p>
-
-                            </div>
-                        </DialogPanel>
-                    </TransitionChild>
-                </div>
-            </div>
-        </Dialog>
-    </TransitionRoot> -->
 </template>
 
 <style scoped>

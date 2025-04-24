@@ -23,7 +23,7 @@ import countries from './countries.json';
 
 // define a modelValue string prop
 defineProps<{
-    modelValue: string[],
+    modelValue: { ISO3: string, name: string }[]
 }>();
 
 const emit = defineEmits(['update:modelValue']);

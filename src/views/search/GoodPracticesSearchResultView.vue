@@ -19,7 +19,7 @@ import Thumbnail from './Thumbnail.vue'
 const props = defineProps<{
     searchText: string
     searchTerms: any
-    countries: string[]
+    countries: { ISO3: string, name: string }[]
     language: string
 }>();
 

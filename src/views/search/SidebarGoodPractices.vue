@@ -25,16 +25,15 @@ const props = defineProps<{
 
 const { t } = useI18n();
 
-const countries = defineModel<string[]>('countries', { required: true });
+const countries = defineModel<{ ISO3: string, name: string }[]>('countries', { required: true });
 // const searchTerms = defineModel('searchTerms');
 const language = defineModel<'en' | 'es' | 'fr'>('language', { required: true });
 
 const emit = defineEmits(['update:searchTerms'])
 
 function toggleSearchTerm(queryName: string, value: string, key: string) {
-    debugger;
     const current = props.searchTerms[queryName]
-    const translatedLabel = props.labelTranslations[language.value][queryName][key];
+    const translatedLabel = props.labelTranslations?.[language.value]?.[queryName]?.[key];
     const term = translatedLabel || value;
     if (current.includes(value)) {
         emit('update:searchTerms', {
@@ -102,7 +101,6 @@ function toggleSearchTerm(queryName: string, value: string, key: string) {
                     v-model="language"
                     :options="[{ label: t('common.english'), value: 'en' }, { label: t('common.french'), value: 'fr' }, { label: t('common.spanish'), value: 'es' }]"
                     :edit="true"
-                    :placeholder="null"
                 />
             </div>
             <div class="pl-5">
