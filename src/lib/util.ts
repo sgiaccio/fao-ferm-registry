@@ -1,5 +1,5 @@
-import type { Menu, RecursiveMenuItem, RecursiveMenu } from '@/components/project/menus';
-import { sortedGoalIndicators } from './auroraIndicators';
+import type {Menu, MenuValue, RecursiveMenu, RecursiveMenuItem} from '@/components/project/menus';
+import {sortedGoalIndicators} from './auroraIndicators';
 
 
 export function fbTimestampToString(ts: any) {
@@ -48,7 +48,7 @@ export function camelToSnake(o: any) {
         newO = {};
         for (let origKey in o) {
             if (o.hasOwnProperty(origKey)) {
-                // The first character might be upper case
+                // The first character might be uppercase
                 let newKey = origKey.charAt(0).toLowerCase() + origKey.substring(1).replace(/[A-Z]/g, x => '-' + x[0].toLowerCase());
                 let value = o[origKey];
                 if (value instanceof Array || (value !== null && value.constructor === Object)) {
@@ -61,7 +61,7 @@ export function camelToSnake(o: any) {
     return newO;
 }
 
-export function getRecursiveMenuLabel(value: string | number, menu: RecursiveMenu): string {
+export function getRecursiveMenuLabel(value: MenuValue, menu: RecursiveMenu): string {
     const label = menu.find(i => i.value === value)?.label;
     if (label) return label;
     for (const i of menu) {
@@ -132,7 +132,7 @@ export function getSortedIndicatorsAndMonitoring(indicatorAndMonitoring: any) {
     const sorted = indicatorAndMonitoring.sort(rank);
 
     // group by goal
-    const grouped = sorted.reduce((acc: any, indicator: any) => {
+    return sorted.reduce((acc: any, indicator: any) => {
         const goal = indicator.indicator.rg_goal;
         if (!acc[goal]) {
             acc[goal] = {
@@ -143,8 +143,6 @@ export function getSortedIndicatorsAndMonitoring(indicatorAndMonitoring: any) {
         acc[goal].indicators.push(indicator);
         return acc;
     }, {});
-
-    return grouped;
 }
 
 export function setsContainSameValues<T>(set1: Set<T>, set2: Set<T>) {
@@ -200,15 +198,15 @@ export function debounce(func: Function, wait: number) {
             func.apply(context, args);
         }, wait);
     };
-};
+}
 
-export function getRecursiveMenuItem(menu: RecursiveMenu, value: string): RecursiveMenuItem | null {
+export function getRecursiveMenuItem(menu: RecursiveMenu, value: MenuValue): RecursiveMenuItem | null {
     for (const item of menu) {
         if (item.value === value) {
             return item;
         }
-        if ('items' in item) {
-            const found = getRecursiveMenuItem(item.items!, value);
+        if (item.items) {
+            const found = getRecursiveMenuItem(item.items, value);
             if (found) {
                 return found;
             }
@@ -232,19 +230,22 @@ export function flattenMenu(menu: RecursiveMenu): Menu {
 
 export function getAllSelectedItemsInAreas(areas: any, key: string, menu: RecursiveMenu) {
     if (areas.length === 0) return [];
-    const items = areas.reduce((acc: any, area: any) => {
+    const items: MenuValue[] = areas.reduce((acc: any, area: any) => {
         const areaObjValue: any = Object.values(area)[0];
         const areaItems = areaObjValue[key];
         return areaItems ? [...acc, ...areaItems] : acc;
     }, []);
     // remove duplicates
     const uniqueItems = [...new Set(items)];
-    return uniqueItems.map(i => getRecursiveMenuItem(menu, i)).map(i => i.value)
+    return uniqueItems
+        .map(i => getRecursiveMenuItem(menu, i))
+        .filter((item): item is RecursiveMenuItem => item !== null)
+        .map(i => i.value)
 }
 
-export function groupBiomesByRealm(biomes: any, realmsMenu: any) {
-    // Get the realm ids from the realms menu - the convention is that the realm id is the first word in the realm label
-    const realms = realmsMenu.map(realm => realm.label.split(' ')[0]);
+export function groupBiomesByRealm(biomes: any, realmsMenu: RecursiveMenu) {
+    // Get the realm ids from the realm menu - the convention is that the realm id is the first word in the realm label
+    const realms = realmsMenu.map(realm => realm.label?.split(' ')[0] ?? '').filter(Boolean);
 
     // sort biomes alphabetically - this will make biomes ordered alphabetically within realms
     const sortedBiomes = biomes.sort((a: string, b: string) => a.localeCompare(b));
@@ -264,11 +265,9 @@ export function groupBiomesByRealm(biomes: any, realmsMenu: any) {
         const biomesByRealmArr = Object.entries(biomesByRealm).map(([realm, biomes]) => ({ realm, biomes }));
 
         // Sort according to the order in the realms array
-        const sortedBiomesByRealmArr = biomesByRealmArr.sort((a, b) => {
+        return biomesByRealmArr.sort((a, b) => {
             return realms.findIndex(r => r === a.realm) > realms.findIndex(r => r === b.realm) ? 1 : -1;
         });
-
-        return sortedBiomesByRealmArr;
     } else {
         return [];
     }
@@ -310,11 +309,11 @@ export function areaByGefIndicator(areas: any) {
 
 export function areaByGefIndicatorGroup(areas: any) {
     const indicators = areaByGefIndicator(areas);
-    const areabyIndicatorGroup = indicators.reduce((prev, [id, area]) => {
+    const areaByIndicatorGroup = indicators.reduce((prev, [id, area]) => {
         const newId = id === 'GEF2LDCF' ? '2LDCF' : id.slice(3, 4);
         return prev.set(newId, (prev.get(newId) || 0) + area);
     }, new Map());
-    return Array.from(areabyIndicatorGroup);
+    return Array.from(areaByIndicatorGroup);
 }
 
 const realmColors = [
@@ -367,22 +366,6 @@ function accumulateAverage(totalYears: number) {
         }
     };
 }
-
-// export function createEchartValuesFromEMStats(stats: any) {
-//     return stats.reduce((acc: any, year: any) => {
-//         for (const data of year.data) {
-//             if (!acc.find((a: any) => a.class_name === data.class_name)) {
-//                 acc.push({
-//                     class_name: data.class_name,
-//                     values: [data.area_ha ?? 0],
-//                 });
-//             } else {
-//                 acc.find((a: any) => a.class_name === data.class_name).values.push(data.area_ha ?? 0);
-//             }
-//         }
-//         return acc;
-//     }, []);
-// }
 
 function createValuesFromStats(stats: any[], processFn: (values: any[], data: any) => void, initialValue: any = []) {
     return stats.reduce((acc: any[], year: any) => {

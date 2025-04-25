@@ -368,7 +368,7 @@ function newVersionCreated() {
                 </div>
                 <div
                     class="py-1"
-                    v-if="(!sections || sections.includes('edit') || sections.includes('publishing')) && (projectUtils.canEdit(project) || projectUtils.canAddBestPractice(project))"
+                    v-if="(!sections || sections.includes('edit') || sections.includes('publishing')) && (projectUtils.canEdit(project) || projectUtils.canAddBestPractice(project)) || projectUtils.canAddCollaborators(project)"
                 >
                     <menu-item
                         v-if="projectUtils.canEdit(project) && (!sections || sections.includes('edit'))"

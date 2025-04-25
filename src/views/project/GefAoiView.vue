@@ -109,10 +109,6 @@ const paAndTraditionalTerritoriesComponent = {
     },
     addItemLabel: 'Add admin area',
     labelFn: (_i, v) => countries.value.find(c => c.iso2 === v.id)?.label || 'Unknown country',
-    // calculatedProps: [
-    //     { key: 'country', f: (_: any, i: number) => store.project.project.countries[i] },
-    // ],
-    // has to be calculated props to be dynamic
     calculatedProps: [{ key: 'units', f: (_: any, i: number) => store.project.project.areaUnits }]
 };
 

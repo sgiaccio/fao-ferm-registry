@@ -95,7 +95,7 @@ export function canPublish(project) {
 
 export function canCreateVersion(project) {
     const authStore = useAuthStore();
-    return getStatus(project) === 'published' && (isOwner(project) || getPrivileges(project) === 'admin') || authStore.isAdmin;
+    return getStatus(project) === 'public' && (isOwner(project) || isCollaborator(project) || getPrivileges(project) === 'admin') || authStore.isAdmin;
 }
 
 export function canReject(project) {
