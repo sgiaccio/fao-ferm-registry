@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { ref, computed, type PropType } from 'vue'
-import type { MenuValue, RecursiveMenu } from '../../project/menus';
+import type {MenuValue, RecursiveMenu} from '@/types';
 
 
 const props = withDefaults(defineProps<{

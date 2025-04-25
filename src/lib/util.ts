@@ -1,5 +1,5 @@
-import type {Menu, MenuValue, RecursiveMenu, RecursiveMenuItem} from '@/components/project/menus';
 import {sortedGoalIndicators} from './auroraIndicators';
+import type {Menu, MenuValue, RecursiveMenu, RecursiveMenuItem} from '@/types';
 
 
 export function fbTimestampToString(ts: any) {

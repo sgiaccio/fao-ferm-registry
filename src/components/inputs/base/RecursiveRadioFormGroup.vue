@@ -6,7 +6,7 @@ import FormGroup from "../FormGroup.vue";
 
 import RecursiveRadio from "./RecursiveRadio.vue";
 
-import type { RecursiveMenu, MenuValue } from '../../project/menus'
+import type {MenuValue, RecursiveMenu} from '@/types';
 
 
 defineProps({

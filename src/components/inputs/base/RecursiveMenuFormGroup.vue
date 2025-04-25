@@ -6,7 +6,7 @@ import FormGroup from "../FormGroup.vue";
 
 import RecursiveMenu from "./RecursiveMenu.vue";
 
-import type { RecursiveMenu as RecursiveMenuType, MenuValue } from '../../project/menus'
+import type {MenuValue, RecursiveMenu as RecursiveMenuType} from '@/types';
 
 
 defineProps({

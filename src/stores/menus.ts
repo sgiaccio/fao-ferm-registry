@@ -1,12 +1,11 @@
 import { defineStore } from "pinia";
 
-import type { Menu } from "@/components/project/menus";
-
 import { t } from "@/lib/i18n";
 
 import keys from "@/assets/locales/menu_keys.json";
 
 import { getI18n } from '@/lib/i18n';
+import type {Menu} from '@/types';
 
 export const useMenusStore = defineStore({
     id: "edit",

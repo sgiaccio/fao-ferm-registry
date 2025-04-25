@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, type PropType } from "vue";
 
-import type { Menu } from '../../project/menus'
-
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
+import type {Menu} from '@/types';
 
 
 const props = defineProps({

@@ -5,7 +5,8 @@ import SelectFormGroup from "../base/SelectFormGroup.vue"
 // import { agencyTypes, agencyRoles } from "../../project/menus";
 
 import { useMenusStore } from '@/stores/menus';
-import type { Menu } from "@/components/project/menus";
+
+import type {Menu} from '@/types';
 
 
 const menus = useMenusStore().menus;

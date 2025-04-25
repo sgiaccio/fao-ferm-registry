@@ -6,7 +6,8 @@ import FormGroup from "../FormGroup.vue";
 
 import SelectInput from "./SelectInput.vue";
 
-import type { Menu } from '../../project/menus'
+
+import type {Menu} from '@/types';
 
 
 defineProps({

@@ -109,7 +109,7 @@ const paAndTraditionalTerritoriesComponent = {
     },
     addItemLabel: 'Add admin area',
     labelFn: (_i, v) => countries.value.find(c => c.iso2 === v.id)?.label || 'Unknown country',
-    calculatedProps: [{ key: 'units', f: (_: any, i: number) => store.project.project.areaUnits }]
+    calculatedProps: [{ key: 'units', f: (_: any, _i: number) => store.project.project.areaUnits }]
 };
 
 const showUploadInfoModal = ref(false);
@@ -146,7 +146,7 @@ function deleteCountry(i: number) {
 }
 
 const newCountry = ref('');
-function addCountry(event: Event) {
+function addCountry(_event: Event) {
     const country = newCountry.value;
     if (country) {
         const newCountries = new Set(store.project.project.countries).add(country);

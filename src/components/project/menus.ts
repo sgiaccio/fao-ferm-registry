@@ -1,18 +1,7 @@
-export type MenuValue = string | number
+import type {MenuValue, RecursiveMenu, RecursiveMenuItem} from '@/types';
 
 // export type MenuItem = { value: MenuValue, label?: string, dangerousHtmlLabel?: string }
 
-export type Menu = RecursiveMenu;
-export type MenuItem = RecursiveMenuItem;
-
-export interface RecursiveMenuItem {
-    label?: string
-    value?: MenuValue
-    items?: RecursiveMenu
-    dangerousHtmlLabel?: string
-}[];
-
-export type RecursiveMenu = Array<RecursiveMenuItem>;
 
 export function filterByLabel(data: RecursiveMenu, searchString: string): RecursiveMenu {
     // Initialize an empty array to hold the filtered results
