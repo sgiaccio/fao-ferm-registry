@@ -2,11 +2,11 @@
 import { useI18n } from 'vue-i18n';
 
 import { filterByLabel } from '@/components/project/menus';
-import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
 import { ref, computed } from 'vue';
 import AlertModal from '@/views/AlertModal.vue';
 
 import { InformationCircleIcon } from '@heroicons/vue/20/solid';
+import type {MenuValue, RecursiveMenu} from '@/types';
 
 
 const props = withDefaults(defineProps<{

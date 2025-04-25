@@ -6,7 +6,8 @@ import FormGroup from "../FormGroup.vue";
 
 import RadioInput from "./RadioInput.vue";
 
-import type { Menu } from '../../project/menus'
+
+import type {Menu} from '@/types';
 
 
 defineProps({

@@ -2,10 +2,10 @@
 import { useI18n } from 'vue-i18n';
 
 import { filterByLabel } from '@/components/project/menus';
-import type { MenuValue, RecursiveMenu } from '@/components/project/menus';
 import { computed, ref, watch, nextTick, onMounted } from 'vue';
 
 import { XCircleIcon } from '@heroicons/vue/20/solid';
+import type {MenuValue, RecursiveMenu} from '@/types';
 
 
 const props = withDefaults(defineProps<{

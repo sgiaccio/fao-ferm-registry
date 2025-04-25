@@ -10,10 +10,9 @@ import TextareaFormGroup from "@/components/inputs/base/TextareaFormGroup.vue";
 import MultiSelectFormGroup from "@/components/inputs/base/MultiSelectFormGroup.vue";
 import SelectFormGroup from "@/components/inputs/base/SelectFormGroup.vue";
 
-import type { MenuItem, RecursiveMenu } from "@/components/project/menus";
-
 import { useBestPracticesStore } from '@/stores/bestpractices';
 import { useMenusStore } from '@/stores/menus';
+import type {MenuItem, RecursiveMenu} from '@/types';
 
 
 withDefaults(defineProps<{

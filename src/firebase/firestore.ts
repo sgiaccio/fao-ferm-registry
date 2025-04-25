@@ -1,9 +1,9 @@
 import { query, serverTimestamp, where, and, or, collection, doc, getDocs, setDoc } from 'firebase/firestore/lite';
 import { db } from './index';
 import { snakeToCamel } from '@/lib/util';
-import type { Menu, RecursiveMenu } from '@/components/project/menus';
 
 import { getGroupsWhereEditor } from '@/lib/util';
+import type {Menu, RecursiveMenu} from '@/types';
 
 
 /**
@@ -34,7 +34,7 @@ export async function requestGroupAssignment(uid: string, groupId: string, reaso
 
 /**
  * Get the list of groups that the user has requested to be assigned to
- * @param userId
+ * @param uid
  */
 export async function getUserAssignmentRequests(uid: string) {
     const usersCollection = collection(db, 'assignementRequests');
@@ -44,16 +44,6 @@ export async function getUserAssignmentRequests(uid: string) {
 
     return requests;
 }
-
-// export async function submitNewGroup(formData: any) {
-//     const newGroupRequests = collection(db, 'newGroupRequests');
-//     const docRef = doc(newGroupRequests);
-//     await setDoc(docRef, {
-//         ...formData,
-//         private: false,
-//         createTime: serverTimestamp()
-//     });
-// }
 
 async function getGroups() {
     const groupsCollection = collection(db, 'groups');

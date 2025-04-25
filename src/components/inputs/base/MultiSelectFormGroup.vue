@@ -6,7 +6,7 @@ import FormGroup from '../FormGroup.vue'
 import MultiInput from '../MultiInput.vue'
 import TextInput from '../base/TextInput.vue'
 
-import type { Menu, MenuValue } from '../../project/menus'
+import type {Menu, MenuValue} from '@/types';
 
 const props = defineProps({
     ...baseProps,
