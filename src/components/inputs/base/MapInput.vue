@@ -6,14 +6,15 @@ import { useI18n } from 'vue-i18n';
 import View from 'ol/View';
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
-
+import VectorLayer from 'ol/layer/Vector';
+import Feature from 'ol/Feature';
+import Polygon from 'ol/geom/Polygon';
+import MultiPolygon from 'ol/geom/MultiPolygon';
+import VectorSource from 'ol/source/Vector';
 import BingMaps from 'ol/source/BingMaps.js';
 import { Draw, Modify, Snap } from 'ol/interaction';
-import { Style, Fill, Stroke, Circle } from 'ol/style.js';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
 import { GeoJSON } from 'ol/format';
-
+import { Style, Fill, Stroke, Circle } from 'ol/style.js';
 import 'ol/ol.css';
 
 import { useAuthStore } from '@/stores/auth';
@@ -23,31 +24,33 @@ import { useMenusStore } from '@/stores/menus';
 import TextInput from './TextInput.vue';
 
 import AreaEcosystemsView from '@/views/project/AreaEcosystemsView.vue';
-
-import { CalculatorIcon } from '@heroicons/vue/20/solid';
 import NumberInput from '@/components/inputs/base/NumberInput.vue';
 
 import { getMenuSelectedLabel } from '@/components/project/menus';
-import MultiPolygon from 'ol/geom/MultiPolygon';
-import Feature from 'ol/Feature';
 
+import { CalculatorIcon } from '@heroicons/vue/20/solid';
+
+
+interface AreaModel {
+    siteName: string,
+    uuid: string,
+    area: number,
+    activities: number[],
+    ecosystems: string[]
+}
 
 const props = withDefaults(defineProps<{
-    modelValue: {
-        siteName: string,
-        uuid: string,
-        area: number,
-        activities: number[],
-        ecosystems: string[],
-    }
+    modelValue: AreaModel
     edit?: boolean
-    index: number,
+    index: number
     nAreas: number
 }>(), {
     edit: true
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+    'update:modelValue': [value: AreaModel]
+}>();
 
 const { t } = useI18n();
 
@@ -90,11 +93,6 @@ const drawStyle = {
 const vectorSource = new VectorSource();
 const vectorLayer = new VectorLayer({ source: vectorSource, style });
 
-// function getGeoJson() {
-//     const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
-//     return geoJSON.writeFeatures(multiPolygon.getPolygons());
-// }
-
 function getGeoJson() {
     const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });
 
@@ -115,8 +113,12 @@ const drawInteraction = new Draw({
 
 var multiPolygon = new MultiPolygon([]);
 drawInteraction.on('drawend', e => {
-    const poly = e.feature.getGeometry();
-    multiPolygon.appendPolygon(poly);
+    const geometry = e.feature.getGeometry();
+    if (geometry instanceof Polygon) {
+        multiPolygon.appendPolygon(geometry);
+    } else {
+        console.warn('Drawn geometry is not a Polygon');
+    }
 });
 
 const modifyInteraction = new Modify({ source: vectorSource, style: drawStyle });
@@ -127,20 +129,19 @@ async function postGeoJson() {
 
     uploadStatus.value = 'uploading';
     const geoJson = getGeoJson();
-    fetch(
+    return fetch(
         '/loadAreaJson',
         {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${authStore.user.accessToken}`,
+                'Authorization': `Bearer ${await authStore.getIdToken()}`,
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             },
             body: `project_id=${projectStore.id}&geojson=${encodeURIComponent(geoJson)}`
-        }).then(response => {
+        }).then(async response => {
             if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(text);
-                });
+                let text = await response.text();
+                throw new Error(text);
             }
             return response.text();
         }).then(uuids => {
@@ -157,12 +158,11 @@ async function postGeoJson() {
 }
 
 async function fetchGeoJson() {
-    // return {};
     return fetch(
         `https://europe-west3-fao-ferm.cloudfunctions.net/get_area_json?area_uuid=${props.modelValue.uuid}&project_id=${projectStore.id}`, {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${authStore.user.accessToken}`
+            'Authorization': `Bearer ${await authStore.getIdToken()}`
         }
     }
     ).then(response => response.json());
@@ -256,16 +256,20 @@ watch(areaUploaded, (uploaded) => {
     }
 });
 
-function fetchPolygonArea() {
+async function fetchPolygonArea() {
     // Calls the get_polygon_area cloud function with area_uuid as argument and returns the area in hectares
-    fetch(
+    return fetch(
         `https://europe-west3-fao-ferm.cloudfunctions.net/get_polygon_area?area_uuid=${props.modelValue.uuid}&project_id=${projectStore.id}`, {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${authStore.user.accessToken}`
+            'Authorization': `Bearer ${await authStore.getIdToken()}`
         }
     }).then(response => response.json()).then(area => {
-        emit('update:modelValue', { ...props.modelValue, area: parseInt((1e-4 * area)) });
+        const areaValue = parseFloat((1e-4 * area).toFixed(2));
+        if (isNaN(areaValue) || areaValue < 0) {
+            throw new Error('Invalid area value received');
+        }
+        emit('update:modelValue', { ...props.modelValue, area: areaValue });
     });
 }
 
@@ -283,52 +287,48 @@ function clear() {
             id="mapRoot"
         />
         <div class="flex-1">
-            <fieldset>
-                <div class="md:mt-5 mb-5">
-                    <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
-                        {{ t('inputs.aoi.siteName') }}
-                    </legend>
-                    <div>
-                        <TextInput
-                            :edit="edit"
-                            v-model="modelValue.siteName"
-                        />
-                    </div>
+            <fieldset class="md:mt-5 mb-5">
+                <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
+                    {{ t('inputs.aoi.siteName') }}
+                </legend>
+                <div class="mt-2">
+                    <TextInput
+                        :edit="edit"
+                        v-model="modelValue.siteName"
+                    />
                 </div>
             </fieldset>
 
             <fieldset>
+                <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
+                    {{ `${t('inputs.areaSurface')} [${getMenuSelectedLabel(projectStore.project.project.areaUnits, menus.units)}]` }}
+                </legend>
                 <div>
-                    <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
-                        {{ `${t('inputs.areaSurface')} [${getMenuSelectedLabel(projectStore.project.project.areaUnits, menus.units)}]` }}
-                    </legend>
-                    <div>
-                        <template v-if="edit">
-                            <div class="mt-2 flex rounded-md">
-                                <div class="relative flex flex-1 items-stretch focus-within:z-10">
-                                    <NumberInput
-                                        v-model="modelValue.area"
-                                        :edit="edit"
-                                    />
-                                </div>
-                                <button
-                                    type="button"
-                                    @click="fetchPolygonArea()"
-                                    :disabled="!areaUploaded"
-                                    :class="[areaUploaded ? 'hover:bg-gray-50' : 'bg-gray-100 text-gray-500',
-                                        'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 ml-5']"
-                                >
-                                    <CalculatorIcon
-                                        class="-ml-0.5 h-5 w-5 text-gray-400"
-                                        aria-hidden="true"
-                                    />
-                                    <!-- Calculate area -->
-                                    {{ t('inputs.aoi.calculateArea') }}
-                                </button>
+                    <template v-if="edit">
+                        <div class="mt-2 flex rounded-md">
+                            <div class="relative flex flex-1 items-stretch focus-within:z-10">
+                                <NumberInput
+                                    v-model="modelValue.area"
+                                    :edit="edit"
+                                />
                             </div>
-                        </template>
-                        <div v-else>{{ modelValue.area }}</div>
-                    </div>
+                            <button
+                                type="button"
+                                @click="fetchPolygonArea()"
+                                :disabled="!areaUploaded"
+                                :class="[areaUploaded ? 'hover:bg-gray-50' : 'bg-gray-100 text-gray-500',
+                                    'relative inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 ml-5']"
+                            >
+                                <CalculatorIcon
+                                    class="-ml-0.5 h-5 w-5 text-gray-400"
+                                    aria-hidden="true"
+                                />
+                                <!-- Calculate area -->
+                                {{ t('inputs.aoi.calculateArea') }}
+                            </button>
+                        </div>
+                    </template>
+                    <div v-else>{{ modelValue.area }}</div>
                 </div>
             </fieldset>
         </div>
