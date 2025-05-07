@@ -46,7 +46,8 @@ exports.submitProject = functions.https.onCall(async ({ projectId }, context) =>
 
     const isAdmin = util.isGroupAdmin(context, project);
     const isAuthorAndEditor = util.isGroupEditor(context, project) && project.created_by === context.auth.uid;
-    const authorized = util.isSuperAdmin(context) || isAdmin || isAuthorAndEditor;
+    const isCollaborator = util.isCollaborator(context, project);
+    const authorized = util.isSuperAdmin(context) || isAdmin || isAuthorAndEditor || isCollaborator;
     if (!authorized) {
         throw new functions.https.HttpsError("permission-denied", "User is not a super admin, nor a group admin, nor a group editor and owner of the project");
     }

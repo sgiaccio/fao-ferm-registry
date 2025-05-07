@@ -75,7 +75,7 @@ export function canSubmit(project) {
     }
 
     // if the user is editor, he can submit the project if it is a draft and he is the owner
-    return level === 'editor' && isOwner(project);
+    return level === 'editor' && isOwner(project) || isCollaborator(project);
 }
 
 export function canPublish(project) {
