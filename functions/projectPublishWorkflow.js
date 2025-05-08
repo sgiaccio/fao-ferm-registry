@@ -172,9 +172,7 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
         // Parallelize requests for getting the owner email and all collaborator emails
         const emailPromises = [
             util.getUserEmail(ownerId),
-            ...(projectData.collaborators && projectData.collaborators.length > 0 
-                ? projectData.collaborators.map(id => util.getUserEmail(id))
-                : [])
+            ...(projectData.collaborators?.map(id => util.getUserEmail(id)) || [])
         ];
         
         // Wait for all email requests to complete
