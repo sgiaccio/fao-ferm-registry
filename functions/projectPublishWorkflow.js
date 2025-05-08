@@ -165,24 +165,39 @@ exports.publishAndVersionProject = functions.https.onCall(async ({ projectId }, 
     });
 
     try {
-        // send an email to the project author
-        console.log("Sending email to the project author");
+        // send an email to the project author with collaborators in CC
+        console.log("Sending email to the project author and collaborators");
         const ownerId = projectData.created_by;
 
-        // get displayName from the user in the authentication service
-        const ownerEmail = await util.getUserEmail(ownerId);
+        // Parallelize requests for getting the owner email and all collaborator emails
+        const emailPromises = [
+            util.getUserEmail(ownerId),
+            ...(projectData.collaborators && projectData.collaborators.length > 0 
+                ? projectData.collaborators.map(id => util.getUserEmail(id))
+                : [])
+        ];
+        
+        // Wait for all email requests to complete
+        const emailResults = await Promise.all(emailPromises);
+        
+        // First result is owner email
+        const ownerEmail = emailResults[0];
+        
+        // Remaining results are collaborator emails (filter out any null/undefined values)
+        const collaboratorEmails = emailResults.slice(1).filter(email => email);
+        
         if (ownerEmail) {
             const ownerName = await util.getUserDisplayName(ownerId) || ownerEmail;
             const groupName = await util.getGroupName(projectData.group);
-            const mailDoc = emailTemplates.initiativePublished([ownerEmail], groupName,
+            const mailDoc = emailTemplates.initiativePublished([ownerEmail], collaboratorEmails, groupName,
                 projectId, projectData.project.title, ownerName, new Date());
             await util.mailCollection.add(mailDoc);
-            console.log("Email sent to the project author");
+            console.log("Email sent to the project author with collaborators in CC");
         } else {
             console.log("User email not found");
         }
     } catch (error) {
-        console.log("Error sending email to the project author", error);
+        console.log("Error sending email to the project author and collaborators", error);
     }
 
     return { message: "Success! Project published.", version };

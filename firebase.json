@@ -1,6 +1,18 @@
 {
   "hosting": {
     "public": "dist",
+    "redirects": [
+      {
+        "source": "/initiatives",
+        "destination": "/registry/initiatives",
+        "type": 301
+      },
+      {
+        "source": "/initiatives/:path*",
+        "destination": "/registry/initiatives/:path",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "/loadAreaJson",
