@@ -17,10 +17,10 @@ import {
     TransitionChild,
 } from '@headlessui/vue'
 
-import SidebarGoodPractices from './SidebarGoodPractices.vue'
-import SidebarInitiatives from './SidebarInitiatives.vue'
-import GoodPracticesSearchResultView from './GoodPracticesSearchResultView.vue'
-import ProjectsSearchResultView from './ProjectsSearchResultView.vue'
+import SidebarGoodPractices from './bestPractice/SidebarGoodPractices.vue'
+import SidebarInitiatives from './project/SidebarInitiatives.vue'
+import GoodPracticesSearchResultView from './bestPractice/GoodPracticesSearchResultView.vue'
+import ProjectsSearchResultView from './project/ProjectsSearchResultView.vue'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 
 

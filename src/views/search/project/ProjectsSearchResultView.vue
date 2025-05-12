@@ -6,22 +6,21 @@ import {
     DialogPanel,
     TransitionRoot,
     TransitionChild,
-} from '@headlessui/vue'
+} from '@headlessui/vue';
 
-import { Squares2X2Icon, ListBulletIcon } from '@heroicons/vue/24/outline'
+import { Squares2X2Icon, ListBulletIcon } from '@heroicons/vue/24/outline';
 
-import { debounce, resilientFetch } from '@/lib/util'
+import { debounce, resilientFetch } from '@/lib/util';
 
-import Thumbnail from './Thumbnail.vue'
-import Detail from './Detail.vue'
+import Thumbnail from '../Thumbnail.vue';
+import Detail from '../Detail.vue';
 
-import { XMarkIcon } from '@heroicons/vue/24/outline'
-
+import { XMarkIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps<{
-    searchText: string
-    searchTerms: any
-    countries: { ISO3: string, name: string }[]
+    searchText: string;
+    searchTerms: any;
+    countries: { ISO3: string; name: string }[];
 }>();
 
 const resultsAsiaPopup = ref(false);
@@ -39,7 +38,8 @@ onBeforeUnmount(() => {
 function handleScroll() {
     if (isLoading.value || !hasMore.value) return;
 
-    const threshold = document.documentElement.scrollHeight - window.innerHeight - 100;
+    const threshold =
+        document.documentElement.scrollHeight - window.innerHeight - 100;
     if (window.scrollY >= threshold) {
         loadMore();
     }
@@ -56,59 +56,87 @@ function showDetail(result) {
 }
 
 const debouncedSearchText = ref('');
-watch(() => props.searchText, debounce((text: string) => {
-    debouncedSearchText.value = text
-}, 1000));
+watch(
+    () => props.searchText,
+    debounce((text: string) => {
+        debouncedSearchText.value = text;
+    }, 1000),
+);
 
 const debouncedSearchTerms = ref({});
-watch(() => props.searchTerms, debounce((val: {}) => {
-    debouncedSearchTerms.value = { ...val }
-}, 1000), { deep: true });
+watch(
+    () => props.searchTerms,
+    debounce((val: {}) => {
+        debouncedSearchTerms.value = { ...val };
+    }, 1000),
+    { deep: true },
+);
 
 const debouncedCountries = ref([]);
-watch(() => props.countries, debounce((val: []) => {
-    debouncedCountries.value = [...val]
-}, 1000), { deep: true });
+watch(
+    () => props.countries,
+    debounce((val: []) => {
+        debouncedCountries.value = [...val];
+    }, 1000),
+    { deep: true },
+);
 
 const isLoading = ref(false);
 const searchResults = ref<any>([]);
 const totalCount = ref(null);
 const hasMore = ref(true);
 
-watch([debouncedSearchTerms, debouncedSearchText, debouncedCountries], () => {
-    isLoading.value = true;
-    searchResults.value = [];
-    totalCount.value = null;
+watch(
+    [debouncedSearchTerms, debouncedSearchText, debouncedCountries],
+    () => {
+        isLoading.value = true;
+        searchResults.value = [];
+        totalCount.value = null;
 
-    loadMore();
-}, { deep: true });
+        loadMore();
+    },
+    { deep: true },
+);
 
 function buildQuery() {
-    const queryStart = 'WITH data AS ( SELECT * FROM fao-ferm2-review.initiatives.vw_cse ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data '
+    const queryStart =
+        'WITH data AS ( SELECT * FROM fao-ferm2-review.initiatives.vw_cse ), counted_data AS ( SELECT *, COUNT(*) OVER() AS total_count FROM data ';
 
-    let conditions = Object.entries(props.searchTerms).map(([key, values]) => {
-        if (values.length === 0) return ''
-        if (key === 'source' || key === 'restoration_status') {
-            return `LOWER(${key}) IN UNNEST([${values.map((v: string) => `'${v.toLowerCase()}'`).join(', ')}])`
-        } else {
-            return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE LOWER(${key}) IN (${values.map((v: string) => `'${v.toLowerCase()}'`).join(', ')}))`
-        }
-    }).filter(Boolean)
+    let conditions = Object.entries(props.searchTerms)
+        .map(([key, values]) => {
+            if (values.length === 0) return '';
+            if (key === 'source' || key === 'restoration_status') {
+                return `LOWER(${key}) IN UNNEST([${values.map((v: string) => `'${v.toLowerCase()}'`).join(', ')}])`;
+            } else {
+                return `EXISTS (SELECT 1 FROM UNNEST(${key}) AS ${key} WHERE LOWER(${key}) IN (${values.map((v: string) => `'${v.toLowerCase()}'`).join(', ')}))`;
+            }
+        })
+        .filter(Boolean);
 
     if (props.countries.length) {
-        const countryIso3Codes = props.countries.map(c => c.ISO3)
-        conditions.push(`EXISTS (SELECT 1 FROM UNNEST(country_codes_iso3) AS country WHERE country IN (${countryIso3Codes.map((v) => `'${v}'`).join(', ')}))`)
+        const countryIso3Codes = props.countries.map((c) => c.ISO3);
+        conditions.push(
+            `EXISTS (SELECT 1 FROM UNNEST(country_codes_iso3) AS country WHERE country IN (${countryIso3Codes.map((v) => `'${v}'`).join(', ')}))`,
+        );
     }
 
     if (props.searchText) {
         // escape single quotes and backslashes in the search text
-        let escapedSearchText = props.searchText.toLowerCase().replace(/['\\]/g, '\\$&');
-        conditions.push(`(LOWER(title) LIKE '%${escapedSearchText}%' OR EXISTS ( SELECT 1 FROM UNNEST(country_codes_iso3) AS country WHERE LOWER(country) LIKE '%${escapedSearchText}%' ))`);
+        let escapedSearchText = props.searchText
+            .toLowerCase()
+            .replace(/['\\]/g, '\\$&');
+        conditions.push(
+            `(LOWER(title) LIKE '%${escapedSearchText}%' OR EXISTS ( SELECT 1 FROM UNNEST(country_codes_iso3) AS country WHERE LOWER(country) LIKE '%${escapedSearchText}%' ))`,
+        );
     }
 
     const queryEnd = `) SELECT * FROM counted_data ORDER BY last_updated DESC LIMIT 30 OFFSET ${searchResults.value.length};`;
 
-    return queryStart + (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') + queryEnd
+    return (
+        queryStart +
+        (conditions.length ? ' WHERE ' + conditions.join(' AND ') : '') +
+        queryEnd
+    );
 }
 
 async function loadMore() {
@@ -138,13 +166,20 @@ function changeSource(event, source) {
 }
 
 //wath the searchTerms and if it contains source='RESULT Asia-Pacific', show a popup
-watch(() => props.searchTerms, (val) => {
-    if (val.source && val.source.includes('RESULT Asia-Pacific')
-        && !resultsAsiaPopupShown.value) {
-        resultsAsiaPopup.value = true
-        resultsAsiaPopupShown.value = true
-    }
-}, { deep: true, immediate: true });
+watch(
+    () => props.searchTerms,
+    (val) => {
+        if (
+            val.source &&
+            val.source.includes('RESULT Asia-Pacific') &&
+            !resultsAsiaPopupShown.value
+        ) {
+            resultsAsiaPopup.value = true;
+            resultsAsiaPopupShown.value = true;
+        }
+    },
+    { deep: true, immediate: true },
+);
 </script>
 
 <template>
@@ -166,33 +201,20 @@ watch(() => props.searchTerms, (val) => {
             </template>
         </i18n-t>
 
-
         <!-- show as list or as grid -->
         <div class="flex justify-end items-center gap-x-2">
             <button
-                class="border-2 border-gray-400 rounded-md text-gray-400 p-0.5  hover:bg-gray-50 transition-all duration-200"
+                class="border-2 border-gray-400 rounded-md text-gray-400 p-0.5 hover:bg-gray-50 transition-all duration-200"
                 @click="showAsList = !showAsList"
             >
-                <Squares2X2Icon
-                    v-if="!showAsList"
-                    class="h-6 w-6"
-                />
-                <ListBulletIcon
-                    v-else
-                    class="h-6 w-6"
-                />
+                <Squares2X2Icon v-if="!showAsList" class="h-6 w-6" />
+                <ListBulletIcon v-else class="h-6 w-6" />
             </button>
         </div>
     </div>
 
-    <TransitionRoot
-        as="template"
-        :show="isDetailsModalOpen"
-    >
-        <Dialog
-            @close="isDetailsModalOpen = false"
-            class="relative z-50"
-        >
+    <TransitionRoot as="template" :show="isDetailsModalOpen">
+        <Dialog @close="isDetailsModalOpen = false" class="relative z-50">
             <TransitionChild
                 as="template"
                 enter="ease-out duration-300"
@@ -202,10 +224,13 @@ watch(() => props.searchTerms, (val) => {
                 leave-from="opacity-100"
                 leave-to="opacity-0"
             >
-
-                <div class="fixed inset-0 bg-black/60 bg-opacity-75 transition-opacity w-screen" />
+                <div
+                    class="fixed inset-0 bg-black/60 bg-opacity-75 transition-opacity w-screen"
+                />
             </TransitionChild>
-            <div class="fixed inset-0 flex w-screen items-center justify-center p-4">
+            <div
+                class="fixed inset-0 flex w-screen items-center justify-center p-4"
+            >
                 <TransitionChild
                     as="template"
                     enter="ease-out duration-300"
@@ -215,8 +240,9 @@ watch(() => props.searchTerms, (val) => {
                     leave-from="opacity-100 translate-y-0 sm:scale-100"
                     leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
-
-                    <DialogPanel class="w-full max-w-4xl rounded-md bg-white overflow-hidden min-h-64 shadow-md flex flex-col">
+                    <DialogPanel
+                        class="w-full max-w-4xl rounded-md bg-white overflow-hidden min-h-64 shadow-md flex flex-col"
+                    >
                         <Detail
                             :title="currentResult.title"
                             :shortDescription="currentResult.description"
@@ -235,11 +261,7 @@ watch(() => props.searchTerms, (val) => {
         </Dialog>
     </TransitionRoot>
 
-
-    <div
-        v-if="!showAsList"
-        class="grid grid-cols-2 md:grid-cols-3 gap-4"
-    >
+    <div v-if="!showAsList" class="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div
             v-for="result in searchResults"
             :key="result.id"
@@ -262,10 +284,7 @@ watch(() => props.searchTerms, (val) => {
         </div>
     </div>
 
-    <div
-        v-else
-        class="grid grid-cols-1 gap-y-4 lg:gap-y-5"
-    >
+    <div v-else class="grid grid-cols-1 gap-y-4 lg:gap-y-5">
         <div
             v-for="result in searchResults"
             class="w-full max-w-4xl rounded-md bg-white overflow-hidden h-64 shadow-md flex flex-col border"
@@ -284,13 +303,10 @@ watch(() => props.searchTerms, (val) => {
             />
         </div>
     </div>
-    <div
-        v-if="isLoading"
-        class="flex justify-center items-center mt-10"
-    >
+    <div v-if="isLoading" class="flex justify-center items-center mt-10">
         <svg
             aria-hidden="true"
-            style="color: rgb(229 231 235);fill: #2563eb;"
+            style="color: rgb(229 231 235); fill: #2563eb"
             class="animate-spin h-10"
             viewBox="0 0 100 101"
             fill="none"
@@ -307,19 +323,8 @@ watch(() => props.searchTerms, (val) => {
         </svg>
     </div>
 
-
-
-
-
-
-    <TransitionRoot
-        as="template"
-        :show="resultsAsiaPopup"
-    >
-        <Dialog
-            class="relative z-50"
-            @close="() => resultsAsiaPopup = false"
-        >
+    <TransitionRoot as="template" :show="resultsAsiaPopup">
+        <Dialog class="relative z-50" @close="() => (resultsAsiaPopup = false)">
             <TransitionChild
                 as="template"
                 enter="ease-out duration-300"
@@ -333,7 +338,9 @@ watch(() => props.searchTerms, (val) => {
             </TransitionChild>
 
             <div class="fixed inset-0 z-50 w-screen overflow-y-auto">
-                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div
+                    class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+                >
                     <TransitionChild
                         as="template"
                         enter="ease-out duration-300"
@@ -343,8 +350,12 @@ watch(() => props.searchTerms, (val) => {
                         leave-from="opacity-100 translate-y-0 sm:scale-100"
                         leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                     >
-                        <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
-                            <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+                        <DialogPanel
+                            class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+                        >
+                            <div
+                                class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block"
+                            >
                                 <button
                                     type="button"
                                     class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -358,26 +369,58 @@ watch(() => props.searchTerms, (val) => {
                                 </button>
                             </div>
                             <div class="_sm:flex _sm:items-start">
-                                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                <div
+                                    class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left"
+                                >
                                     <!-- <DialogTitle
                                         as="h3"
                                         class="text-base font-semibold text-gray-900"
                                     >Deactivate account</DialogTitle> -->
                                     <div class="mt-2">
-                                        <img src="/resultasiaheader.png">
+                                        <img src="/resultasiaheader.png" />
 
-                                        <h1 class="text-6xl mt-6 font-semibold text-green-500 uppercase">RESULT Asia-Pacific</h1>
-                                        <p class="mt-3 text-base font-bold text-green-600">
-                                            In this section you can find Ecosystem Restoration projects ideas in Asia-Pacific prepared for funding in the context of the RESULT Asia-Pacific framework.
+                                        <h1
+                                            class="text-6xl mt-6 font-semibold text-green-500 uppercase"
+                                        >
+                                            RESULT Asia-Pacific
+                                        </h1>
+                                        <p
+                                            class="mt-3 text-base font-bold text-green-600"
+                                        >
+                                            In this section you can find
+                                            Ecosystem Restoration projects ideas
+                                            in Asia-Pacific prepared for funding
+                                            in the context of the RESULT
+                                            Asia-Pacific framework.
                                         </p>
                                         <p class="mt-3 text-base text-gray-700">
-                                            RESULT Asia-Pacific represents collective action by countries and partners to restore and sustainably manage a consolidated 100 million hectares of the region’s degraded landscapes; transforming them into productive, ecologically functional and resilient landscapes by 2030.
+                                            RESULT Asia-Pacific represents
+                                            collective action by countries and
+                                            partners to restore and sustainably
+                                            manage a consolidated 100 million
+                                            hectares of the region’s degraded
+                                            landscapes; transforming them into
+                                            productive, ecologically functional
+                                            and resilient landscapes by 2030.
                                         </p>
                                         <p class="mt-3 text-base text-gray-700">
-                                            It enables the countries in the region to lead the achievement of their ambitious restoration targets with scaled-up interventions on priority landscapes, enhanced financing, sustained high-quality outcomes, and optimal benefits flowing to smallholders and local communities.
+                                            It enables the countries in the
+                                            region to lead the achievement of
+                                            their ambitious restoration targets
+                                            with scaled-up interventions on
+                                            priority landscapes, enhanced
+                                            financing, sustained high-quality
+                                            outcomes, and optimal benefits
+                                            flowing to smallholders and local
+                                            communities.
                                         </p>
                                         <p class="mt-3 text-base text-gray-700">
-                                            This Regional Programmatic Framework was designed in line with the Asia-Pacific Regional Strategy and Action Plan on Forest and Landscape Restoration (FLR) and the UN Decade on Ecosystem Restoration.
+                                            This Regional Programmatic Framework
+                                            was designed in line with the
+                                            Asia-Pacific Regional Strategy and
+                                            Action Plan on Forest and Landscape
+                                            Restoration (FLR) and the UN Decade
+                                            on Ecosystem Restoration.
                                         </p>
                                     </div>
                                 </div>
