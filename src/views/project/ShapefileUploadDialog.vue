@@ -5,7 +5,13 @@ import { useI18n } from 'vue-i18n';
 
 import { toast } from 'vue3-toastify';
 
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
+import {
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+    TransitionChild,
+    TransitionRoot,
+} from '@headlessui/vue';
 
 import { useAuthStore } from '../../stores/auth';
 import { useProjectStore } from '../../stores/project';
@@ -18,12 +24,14 @@ import { DocumentIcon, ExclamationTriangleIcon } from '@heroicons/vue/20/solid';
 
 import FileUploadFormGroup from '@/components/inputs/base/FileUploadFormGroup.vue';
 
-
-const props = withDefaults(defineProps<{
-    open?: boolean
-}>(), {
-    open: true
-});
+const props = withDefaults(
+    defineProps<{
+        open?: boolean;
+    }>(),
+    {
+        open: true,
+    },
+);
 
 const emit = defineEmits(['cancel', 'done']);
 
@@ -54,7 +62,7 @@ async function parseDbfFromZip(f: File) {
         rows.value = null;
         selectedFile.value = null;
         dissolve.value = true;
-        throw Error('It doesn\'t seem to be a zip file');
+        throw Error("It doesn't seem to be a zip file");
     }
     let shpFile: string | null = null;
     zip.forEach((_, zipEntry) => {
@@ -68,13 +76,13 @@ async function parseDbfFromZip(f: File) {
     });
     let dbfFileName: string | null = null;
     if (shpFile === null) {
-        throw new Error('Zip file doesn\'t contain any shapefile');
+        throw new Error("Zip file doesn't contain any shapefile");
     }
 
     dbfFileName = (shpFile as string).replace(/shp$/, 'dbf');
 
     if (dbfFileName === null) {
-        throw new Error('Zip file doesn\'t contain any dbf file');
+        throw new Error("Zip file doesn't contain any dbf file");
     }
 
     // Read the dbf file
@@ -94,7 +102,9 @@ async function previewFile() {
             throw new Error('No features found in the shapefile');
         }
 
-        header.value = Object.keys(parsedDBF[0]).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+        header.value = Object.keys(parsedDBF[0]).sort((a, b) =>
+            a.localeCompare(b, undefined, { sensitivity: 'base' }),
+        );
         rows.value = parsedDBF;
         areaNameField.value = header.value[0];
         areaIdField.value = header.value[0];
@@ -103,7 +113,7 @@ async function previewFile() {
     }
 }
 
-watch(selectedFile, f => {
+watch(selectedFile, (f) => {
     if (f) {
         previewFile();
     }
@@ -125,54 +135,75 @@ async function uploadFile() {
     const formData = new FormData();
     formData.append('project_id', projectStore.id!);
     formData.append('file', selectedFile.value, selectedFile.value.name);
-    formData.append('dissolve', 'false');
+    formData.append('dissolve', '' + dissolve.value);
 
-    return fetch(
-        '/loadShapefile',
-        {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${authStore.user.accessToken}`
-            },
-            body: formData
-        }).then(response => {
+    return fetch('/loadShapefile', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${authStore.user.accessToken}`,
+        },
+        body: formData,
+    })
+        .then((response) => {
             if (!response.ok) {
-                return response.text().then(text => {
+                return response.text().then((text) => {
                     throw new Error(text);
                 });
             }
             return response.text();
-        }).then(async uuidsAndAreas => {
+        })
+        .then(async (uuidsAndAreas) => {
             const uuidsAndAreasParsed = JSON.parse(uuidsAndAreas);
-            const uuidsArr: string[] = uuidsAndAreasParsed.map(([uuid, _]: [string, any]) => uuid);
-            const areasArr: number[] = uuidsAndAreasParsed.map(([_, area]: [string, number]) => (area * 1e-4).toFixed(2));
+            const uuidsArr: string[] = uuidsAndAreasParsed.map(
+                ([uuid, _]: [string, any]) => uuid,
+            );
+            const areasArr: number[] = uuidsAndAreasParsed.map(
+                ([_, area]: [string, number]) => (area * 1e-4).toFixed(2),
+            );
 
             uploadStatus.value = 'uploaded';
-            emit('done', uuidsArr.map((uuid, i) => ({
-                siteName: getAreaName.value ? (rows.value!)[i][(areaNameField.value as string)] || undefined : undefined,
-                shapeId: getAreaId.value ? (rows.value!)[i][(areaIdField.value as string)] || undefined : undefined,
-                uuid: uuid,
-                area: areasArr[i],
-                activities: null
-            })));
+            emit(
+                'done',
+                uuidsArr.map((uuid, i) => ({
+                    siteName: getAreaName.value
+                        ? rows.value![i][areaNameField.value as string] ||
+                          undefined
+                        : undefined,
+                    shapeId: getAreaId.value
+                        ? rows.value![i][areaIdField.value as string] ||
+                          undefined
+                        : undefined,
+                    uuid: uuid,
+                    area: areasArr[i],
+                    activities: null,
+                })),
+            );
             selectedFile.value = null;
 
             // get the list of intersecting countries and put it in the store
             projectStore.updateCountries();
 
-            toast.success(`</p>${t('inputs.aoi.uploadSuccess', { fileCount: uuidsArr.length })}</p><p>${t('inputs.aoi.reminder')}</p>`, {
-                dangerouslyHTMLString: true,
-                position: 'top-right',
-                autoClose: false
-            });
-        }).catch(e => {
-            toast.error(`${t('inputs.aoi.uploadError', { error: e.message })}`, {
-                position: 'top-right',
-                autoClose: false
-            });
+            toast.success(
+                `</p>${t('inputs.aoi.uploadSuccess', { fileCount: uuidsArr.length })}</p><p>${t('inputs.aoi.reminder')}</p>`,
+                {
+                    dangerouslyHTMLString: true,
+                    position: 'top-right',
+                    autoClose: false,
+                },
+            );
+        })
+        .catch((e) => {
+            toast.error(
+                `${t('inputs.aoi.uploadError', { error: e.message })}`,
+                {
+                    position: 'top-right',
+                    autoClose: false,
+                },
+            );
             console.error(e);
             // uploadStatus.value = 'idle';
-        }).finally(() => {
+        })
+        .finally(() => {
             uploadStatus.value = 'idle';
         });
 }
@@ -188,17 +219,20 @@ function cancel() {
     dissolve.value = true;
 }
 
-watch(() => props.open, open => {
-    if (open) uploadStatus.value = 'idle';
-    getAreaName.value = false;
-    getAreaId.value = false;
-    areaNameField.value = null;
-    areaIdField.value = null;
-    header.value = null;
-    rows.value = null;
-    selectedFile.value = null;
-    dissolve.value = true;
-});
+watch(
+    () => props.open,
+    (open) => {
+        if (open) uploadStatus.value = 'idle';
+        getAreaName.value = false;
+        getAreaId.value = false;
+        areaNameField.value = null;
+        areaIdField.value = null;
+        header.value = null;
+        rows.value = null;
+        selectedFile.value = null;
+        dissolve.value = true;
+    },
+);
 
 const getAreaName = ref(false);
 const areaNameField = ref<String | null>(null);
@@ -207,14 +241,8 @@ const areaIdField = ref<String | null>(null);
 </script>
 
 <template>
-    <TransitionRoot
-        as="template"
-        :show="open"
-    >
-        <Dialog
-            as="div"
-            class="relative z-50"
-        >
+    <TransitionRoot as="template" :show="open">
+        <Dialog as="div" class="relative z-50">
             <TransitionChild
                 as="template"
                 enter="ease-out duration-300"
@@ -224,11 +252,15 @@ const areaIdField = ref<String | null>(null);
                 leave-from="opacity-100"
                 leave-to="opacity-0"
             >
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                <div
+                    class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                />
             </TransitionChild>
 
             <div class="fixed inset-0 z-10 overflow-y-auto">
-                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <div
+                    class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+                >
                     <TransitionChild
                         as="template"
                         enter="ease-out duration-300"
@@ -238,9 +270,13 @@ const areaIdField = ref<String | null>(null);
                         leave-from="opacity-100 translate-y-0 sm:scale-100"
                         leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                     >
-                        <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                        <DialogPanel
+                            class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+                        >
                             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <div class="mt-3 text-center sm:mt-0 sm:text-left">
+                                <div
+                                    class="mt-3 text-center sm:mt-0 sm:text-left"
+                                >
                                     <DialogTitle
                                         as="h3"
                                         class="text-lg font-medium leading-6 text-gray-900"
@@ -262,39 +298,76 @@ const areaIdField = ref<String | null>(null);
                                                 (latitude/longitude). If not, the system will try to reproject it.
                                             </p>
                                         </div> -->
-                                        <div class="text-xs mt-3 text-gray-800 font-light">
+                                        <div
+                                            class="text-xs mt-3 text-gray-800 font-light"
+                                        >
                                             <p class="mb-2">
-                                                <i18n-t keypath="inputs.aoi.shapefileUpload.instruction1">
+                                                <i18n-t
+                                                    keypath="inputs.aoi.shapefileUpload.instruction1"
+                                                >
                                                     <template #zipFile>
-                                                        <span class="font-semibold">
-                                                            {{ t('inputs.aoi.shapefileUpload.zipFile') }}
+                                                        <span
+                                                            class="font-semibold"
+                                                        >
+                                                            {{
+                                                                t(
+                                                                    'inputs.aoi.shapefileUpload.zipFile',
+                                                                )
+                                                            }}
                                                         </span>
                                                     </template>
-                                                    <template #shapefileExtensions>
-                                                        <span class="font-semibold text-blue-700">
-                                                            {{ $t('inputs.aoi.shapefileUpload.shapefileExtensions') }}
+                                                    <template
+                                                        #shapefileExtensions
+                                                    >
+                                                        <span
+                                                            class="font-semibold text-blue-700"
+                                                        >
+                                                            {{
+                                                                $t(
+                                                                    'inputs.aoi.shapefileUpload.shapefileExtensions',
+                                                                )
+                                                            }}
                                                         </span>
                                                     </template>
                                                 </i18n-t>
                                             </p>
                                             <p class="mb-2">
-                                                <i18n-t keypath="inputs.aoi.shapefileUpload.instruction2">
+                                                <i18n-t
+                                                    keypath="inputs.aoi.shapefileUpload.instruction2"
+                                                >
                                                     <template #geometryTypes>
-                                                        <span class="font-semibold">{{ t('inputs.aoi.shapefileUpload.geometryTypes') }}</span>
+                                                        <span
+                                                            class="font-semibold"
+                                                            >{{
+                                                                t(
+                                                                    'inputs.aoi.shapefileUpload.geometryTypes',
+                                                                )
+                                                            }}</span
+                                                        >
                                                     </template>
                                                 </i18n-t>
                                             </p>
                                             <p class="mb-4">
-                                                <i18n-t keypath="inputs.aoi.shapefileUpload.instruction3">
+                                                <i18n-t
+                                                    keypath="inputs.aoi.shapefileUpload.instruction3"
+                                                >
                                                     <template #projectionType>
-                                                        <span class="font-semibold">
-                                                            {{ t('inputs.aoi.shapefileUpload.projectionType') }}
+                                                        <span
+                                                            class="font-semibold"
+                                                        >
+                                                            {{
+                                                                t(
+                                                                    'inputs.aoi.shapefileUpload.projectionType',
+                                                                )
+                                                            }}
                                                         </span>
                                                     </template>
                                                 </i18n-t>
                                             </p>
                                         </div>
-                                        <div class="flex-grow focus-within:z-10">
+                                        <div
+                                            class="flex-grow focus-within:z-10"
+                                        >
                                             <FileUploadFormGroup
                                                 :multiple="false"
                                                 :edit="selectedFile === null"
@@ -302,11 +375,19 @@ const areaIdField = ref<String | null>(null);
                                                 accept=".zip"
                                                 class="w-full"
                                             >
-                                                <template v-if="selectedFile === null">
-                                                    {{ t('inputs.aoi.shapefileUpload.dropFile') }}
+                                                <template
+                                                    v-if="selectedFile === null"
+                                                >
+                                                    {{
+                                                        t(
+                                                            'inputs.aoi.shapefileUpload.dropFile',
+                                                        )
+                                                    }}
                                                 </template>
                                                 <template v-else>
-                                                    <DocumentIcon class="h-5 w-5 mr-1.5 text-gray-600" />
+                                                    <DocumentIcon
+                                                        class="h-5 w-5 mr-1.5 text-gray-600"
+                                                    />
                                                     {{ selectedFile.name }}
                                                 </template>
                                             </FileUploadFormGroup>
@@ -321,10 +402,7 @@ const areaIdField = ref<String | null>(null);
                                     </div>
                                 </div>
                             </div>
-                            <div
-                                v-if="rows"
-                                class="mx-6"
-                            >
+                            <div v-if="rows" class="mx-6">
                                 <div class="mb-3">
                                     <div class="flex items-start">
                                         <div class="flex h-5 items-center">
@@ -341,7 +419,8 @@ const areaIdField = ref<String | null>(null);
                                             <label
                                                 for="dissolve"
                                                 class="font-medium text-gray-700"
-                                            >Dissolve features</label>
+                                                >Dissolve features</label
+                                            >
                                         </div>
                                     </div>
                                 </div>
@@ -349,7 +428,18 @@ const areaIdField = ref<String | null>(null);
                                     class="text-red-500 mb-3"
                                     v-if="!dissolve && rows.length <= 50"
                                 >
-                                    <p class="text-sm text-red-600 italic px-3 py-2 bg-red-50 shadow rounded">Please note that <span class="font-bold underline underline-offset-2">{{ rows.length }} areas will be added to the initiative</span> &mdash; one for each feature in the shapefile.</p>
+                                    <p
+                                        class="text-sm text-red-600 italic px-3 py-2 bg-red-50 shadow rounded"
+                                    >
+                                        Please note that
+                                        <span
+                                            class="font-bold underline underline-offset-2"
+                                            >{{ rows.length }} areas will be
+                                            added to the initiative</span
+                                        >
+                                        &mdash; one for each feature in the
+                                        shapefile.
+                                    </p>
                                 </div>
                                 <div
                                     v-if="!dissolve && rows.length > 50"
@@ -363,9 +453,22 @@ const areaIdField = ref<String | null>(null);
                                             />
                                         </div>
                                         <div class="ml-3">
-                                            <h3 class="text-sm font-medium text-yellow-800">Too many features</h3>
-                                            <div class="mt-2 text-sm text-yellow-700">
-                                                <p>It's not possible to import a shapefile with more than 50 features at once. Please dissolve the features or reduce the number of features in the shapefile.</p>
+                                            <h3
+                                                class="text-sm font-medium text-yellow-800"
+                                            >
+                                                Too many features
+                                            </h3>
+                                            <div
+                                                class="mt-2 text-sm text-yellow-700"
+                                            >
+                                                <p>
+                                                    It's not possible to import
+                                                    a shapefile with more than
+                                                    50 features at once. Please
+                                                    dissolve the features or
+                                                    reduce the number of
+                                                    features in the shapefile.
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -394,7 +497,9 @@ const areaIdField = ref<String | null>(null);
                                                 <label
                                                     for="areaName"
                                                     class="font-medium text-gray-700"
-                                                >Get area name from attribute</label>
+                                                    >Get area name from
+                                                    attribute</label
+                                                >
                                             </div>
                                         </div>
                                         <select
@@ -402,9 +507,16 @@ const areaIdField = ref<String | null>(null);
                                             name="areaNameSelect"
                                             :disabled="!getAreaName"
                                             v-model="areaNameField"
-                                            :class="[getAreaName ? '' : 'bg-gray-200 text-gray-500', 'mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm']"
+                                            :class="[
+                                                getAreaName
+                                                    ? ''
+                                                    : 'bg-gray-200 text-gray-500',
+                                                'mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm',
+                                            ]"
                                         >
-                                            <option v-for="h in header">{{ h }}</option>
+                                            <option v-for="h in header">
+                                                {{ h }}
+                                            </option>
                                         </select>
                                     </div>
 
@@ -424,8 +536,9 @@ const areaIdField = ref<String | null>(null);
                                                 <label
                                                     for="areaId"
                                                     class="font-medium text-gray-700"
-                                                >Get area ID from
-                                                    attribute</label>
+                                                    >Get area ID from
+                                                    attribute</label
+                                                >
                                             </div>
                                         </div>
                                         <select
@@ -433,23 +546,40 @@ const areaIdField = ref<String | null>(null);
                                             name="areaIdSelect"
                                             :disabled="!getAreaId"
                                             v-model="areaIdField"
-                                            :class="[getAreaId ? '' : 'bg-gray-200 text-gray-500', 'mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm']"
+                                            :class="[
+                                                getAreaId
+                                                    ? ''
+                                                    : 'bg-gray-200 text-gray-500',
+                                                'mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm',
+                                            ]"
                                         >
-                                            <option v-for="h in header">{{ h }}</option>
+                                            <option v-for="h in header">
+                                                {{ h }}
+                                            </option>
                                         </select>
                                     </div>
                                 </template>
-                                <div class="text-center font-bold text-base mt-6 mb-2">{{ rows.length }}
-                                    feature{{ rows.length > 1 ? 's' : '' }} found:
+                                <div
+                                    class="text-center font-bold text-base mt-6 mb-2"
+                                >
+                                    {{ rows.length }} feature{{
+                                        rows.length > 1 ? 's' : ''
+                                    }}
+                                    found:
                                 </div>
-                                <div class="border-gray-300 rounded-md border overflow-hidden">
+                                <div
+                                    class="border-gray-300 rounded-md border overflow-hidden"
+                                >
                                     <div class="overflow-auto text-xs max-h-52">
-                                        <table class="divide-y divide-gray-300 w-full">
+                                        <table
+                                            class="divide-y divide-gray-300 w-full"
+                                        >
                                             <tr class="py-2">
                                                 <th
                                                     class="truncate max-w-[200px] px-2 py-1"
                                                     v-for="h in header"
-                                                >{{ h }}
+                                                >
+                                                    {{ h }}
                                                 </th>
                                             </tr>
                                             <tr v-for="row in rows">
@@ -464,14 +594,33 @@ const areaIdField = ref<String | null>(null);
                                     </div>
                                 </div>
                             </div>
-                            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                            <div
+                                class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"
+                            >
                                 <button
                                     @click="uploadFile()"
                                     type="button"
-                                    :disabled="!(uploadStatus === 'idle' && selectedFile && (dissolve || rows && rows.length <= 50))"
-                                    :class="[selectedFile && selectedFile && (dissolve || rows && rows.length <= 50) ? 'bg-blue-600 hover:bg-blue-700  focus:ring-blue-500 focus:ring-offset-2' : 'bg-gray-300 cursor-not-allowed', 'inline-flex w-full justify-center rounded-md border border-transparent  px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2  sm:ml-3 sm:w-auto sm:text-sm']"
+                                    :disabled="
+                                        !(
+                                            uploadStatus === 'idle' &&
+                                            selectedFile &&
+                                            (dissolve ||
+                                                (rows && rows.length <= 50))
+                                        )
+                                    "
+                                    :class="[
+                                        selectedFile &&
+                                        selectedFile &&
+                                        (dissolve ||
+                                            (rows && rows.length <= 50))
+                                            ? 'bg-blue-600 hover:bg-blue-700  focus:ring-blue-500 focus:ring-offset-2'
+                                            : 'bg-gray-300 cursor-not-allowed',
+                                        'inline-flex w-full justify-center rounded-md border border-transparent  px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2  sm:ml-3 sm:w-auto sm:text-sm',
+                                    ]"
                                 >
-                                    <span v-if="uploadStatus === 'idle'">Upload</span>
+                                    <span v-if="uploadStatus === 'idle'"
+                                        >Upload</span
+                                    >
                                     <span v-if="uploadStatus === 'uploading'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"

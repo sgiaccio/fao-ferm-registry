@@ -32,9 +32,12 @@ const users = ref();
 const allGroups = ref();
 
 async function refreshUsers() {
-    const f = authStore.isAdmin ? getAllUsers : getAdminGroupsUsers;
+    const fetchedUsers = authStore.isAdmin
+        ? await getAllUsers()
+        : await getAdminGroupsUsers();
+
     // Sort users by creation date
-    users.value = ((await f()) as any).users.sort((a: User, b: User) => {
+    users.value = (fetchedUsers as any).users.sort((a: User, b: User) => {
         try {
             const d1 = new Date(a.metadata.creationTime);
             const d2 = new Date(b.metadata.creationTime);
@@ -91,8 +94,6 @@ function refreshAvailableGroups(user) {
 
 async function edit(user: User) {
     // TODO: Get user's customClaims from FireBase
-
-    // console.log(JSON.stringify(user, null, 2));
 
     const isAdmin = authStore.isAdmin;
     let privileges = { ...(user.customClaims?.privileges || {}) };
