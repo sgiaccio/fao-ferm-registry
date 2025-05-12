@@ -32,6 +32,7 @@ import ConfirmModal from '@/views/ConfirmModal.vue';
 import { getMenuSelectedLabel } from '@/components/project/menus';
 
 import { getGaulLevel0 } from '@/firebase/firestore';
+import { getAreaType, getAreaValue } from "@/lib/areaUtil";
 
 
 withDefaults(defineProps<{
@@ -161,14 +162,9 @@ function addCountry(event: Event) {
     }
 }
 
-function getAreaType(area: any) {
-    return Object.keys(area)[0];
-}
-function getAreaValue(area: any) {
-    return area[getAreaType(area)];
-}
-
 provide('applyToAll', () => {
+    if (store.projectAreas.length < 2) return;
+
     // if (!confirm('Are you sure you want to apply this ecosystem to all areas? Your current selections will be overwritten.')) return;
     if (!confirm(t('areaAndEcosystems.alerts.applyEcosystemsToAll'))) {
         return;
@@ -180,9 +176,8 @@ provide('applyToAll', () => {
         return;
     }
     store.projectAreas.forEach((area, i) => {
-        const type = getAreaType(area);
         if (i > 0) {
-            area[type].ecosystems = [...ecosystems];
+            getAreaValue(area).ecosystems = [...ecosystems];
         }
     });
 });

@@ -36,6 +36,7 @@ import ConfirmModal from '@/views/ConfirmModal.vue';
 import { roundToPrecisionAsString } from '@/lib/util';
 
 import { getGaulLevel0 } from '@/firebase/firestore';
+import { getAreaValue } from "@/lib/areaUtil";
 
 
 withDefaults(defineProps<{
@@ -155,17 +156,12 @@ function addCountry(_event: Event) {
     }
 }
 
-function getAreaType(area: any) {
-    return Object.keys(area)[0];
-}
-function getAreaValue(area: any) {
-    return area[getAreaType(area)];
-}
-
 provide('applyToAll', () => {
     if (!confirm(t('areaAndEcosystems.alerts.applyEcosystemsToAll'))) {
         return;
     }
+
+    if (store.projectAreas.length < 2) return;
 
     const ecosystems = getAreaValue(store.projectAreas[0]).ecosystems;
     if (!ecosystems?.length) {
@@ -173,9 +169,8 @@ provide('applyToAll', () => {
         return;
     }
     store.projectAreas.forEach((area, i) => {
-        const type = getAreaType(area);
         if (i > 0) {
-            area[type].ecosystems = [...ecosystems];
+            getAreaValue(area).ecosystems = [...ecosystems];
         }
     });
 });

@@ -18,6 +18,7 @@ import IndicatorsList from './IndicatorsList.vue';
 import CustomIndicatorsList from './CustomIndicatorsList.vue';
 
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
+import { getAreaValue } from "@/lib/areaUtil";
 
 
 withDefaults(defineProps<{
@@ -34,13 +35,15 @@ const menus = useMenusStore().menus;
 function applyToAll() {
     if (!confirm('Are you sure you want to apply this indicator to all areas? Your current selections will be overwritten.')) return;
 
-    const areaValue: any = Object.values(store.projectAreas[0])[0];
+    if (store.projectAreas.length < 2) return;
+
+    const areaValue = getAreaValue(store.projectAreas[0]);
     const gefIndicator = areaValue.gefIndicator;
     const goalIndicators = areaValue.goalIndicators;
 
     store.projectAreas.forEach((area, i) => {
         if (i > 0) {
-            const areaToChange: any = Object.values(area)[0];
+            const areaToChange = getAreaValue(area);
             if (gefIndicator) {
                 areaToChange.gefIndicator = gefIndicator;
             }
@@ -53,7 +56,7 @@ function applyToAll() {
 
 // Delete restorationType and tenureStatus for GEF3 indicators. This should be done in the store, but will be done here for now.
 watch(() => store.projectAreas, areas => areas.forEach(area => {
-    const areaValue = Object.values(area)[0];
+    const areaValue = getAreaValue(area);
     if (!areaValue.gefIndicator?.startsWith('GEF3')) {
         delete areaValue.restorationType;
         delete areaValue.tenureStatus;
@@ -173,8 +176,8 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                                 {{ $t('areaAndEcosystems.area') }}
                                 {{ i + 1 }}<span
                                     class="text-black"
-                                    v-if="area[Object.keys(area)[0]].siteName"
-                                >: {{ area[Object.keys(area)[0]].siteName }}
+                                    v-if="getAreaValue(area).siteName"
+                                >: {{ getAreaValue(area).siteName }}
                                 </span>
                             </div>
                             <div v-if="edit">
@@ -190,12 +193,12 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                         </div>
 
                         <IndicatorsList
-                            v-model="area[Object.keys(area)[0]].goalIndicators"
+                            v-model="getAreaValue(area).goalIndicators"
                             :edit="edit"
                         />
 
                         <CustomIndicatorsList
-                            v-model="area[Object.keys(area)[0]].customIndicators"
+                            v-model="getAreaValue(area).customIndicators"
                             :edit="edit"
                             class="mt-4"
                         />
@@ -264,9 +267,8 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                                 {{ $t('areaAndEcosystems.area') }}
                                 {{ i + 1 }}<span
                                     class="text-black"
-                                    v-if="area[Object.keys(area)[0]].siteName"
-                                >: {{ area[Object.keys(area)[0]].siteName
-                                    }}</span>
+                                    v-if="getAreaValue(area)"
+                                >: {{ getAreaValue(area) }}</span>
                             </div>
                             <div v-if="edit">
                                 <button
@@ -284,7 +286,7 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                                 {{ $t('indicators.gef.indicators') }}
                             </h1>
                             <RecursiveRadio
-                                v-model="area[Object.keys(area)[0]].gefIndicator"
+                                v-model="getAreaValue(area).gefIndicator"
                                 :options="menus.gefIndicators"
                                 :edit="edit"
                             />
@@ -294,11 +296,11 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                                 {{ $t('indicators.gef.projectIndicators') }}
                             </h1>
                             <IndicatorsList
-                                v-model="area[Object.keys(area)[0]].goalIndicators"
+                                v-model="getAreaValue(area).goalIndicators"
                                 :edit="edit"
                             />
                             <CustomIndicatorsList
-                                v-model="area[Object.keys(area)[0]].customIndicators"
+                                v-model="getAreaValue(area).customIndicators"
                                 :edit="edit"
                                 class="mt-4 bg-red-50"
                             />

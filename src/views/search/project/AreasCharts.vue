@@ -12,6 +12,8 @@ import * as echarts from 'echarts/core';
 import { GridComponent } from 'echarts/components';
 import { BarChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
+import type { AreaObject } from "@/types";
+import { getAreaValue } from "@/lib/areaUtil";
 
 // import { MapPinIcon } from '@heroicons/vue/24/outline'
 
@@ -27,22 +29,22 @@ const modules = [Navigation];
 
 echarts.use([GridComponent, BarChart, CanvasRenderer]);
 
-function getAreasWithMonitoring(areas: any) {
+function getAreasWithMonitoring(areas: AreaObject[]) {
     return areas
-        .map((area: any) => Object.values(area)[0]).
-        filter((areaData: any) => {
-            if (!areaData) return false;
-            const { goalIndicators, customIndicators } = areaData;
+            .map(getAreaValue)
+            .filter(areaData => {
+                if (!areaData) return false;
+                const {goalIndicators, customIndicators} = areaData;
 
-            let flag = false;
-            if (goalIndicators) {
-                flag = goalIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
-            }
-            if (customIndicators) {
-                flag ||= customIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
-            }
-            return flag;
-        });
+                let flag = false;
+                if (goalIndicators) {
+                    flag = goalIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
+                }
+                if (customIndicators) {
+                    flag ||= customIndicators.some((indicator: any) => indicator.monitoring?.length > 0);
+                }
+                return flag;
+            });
 }
 
 const areasWithMonitoring = computed(() => {

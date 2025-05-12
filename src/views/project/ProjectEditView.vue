@@ -15,6 +15,7 @@ import { useAuroraStore } from '@/stores/aurora';
 
 import { useCustomAlert } from '@/hooks/useCustomAlert';
 import { GoalIndicator, type CustomIndicator } from '@/lib/auroraIndicators';
+import { getAreaValue } from "@/lib/areaUtil";
 
 
 const { t } = useI18n();
@@ -126,8 +127,8 @@ async function importAuroraIndicators() {
     };
 
     const projectAreas = store.projectAreas;
-    const areaObj: any = Object.values(projectAreas[0])[0];
-
+    // const areaObj: any = Object.values(projectAreas[0])[0];
+    const areaObj = getAreaValue(projectAreas[0]);
     const oldIndicators = (areaObj.goalIndicators || []) as { indicator: GoalIndicator, monitoring: any }[];
     const oldCustomIndicators = (areaObj.customIndicators || []) as { indicator: CustomIndicator, monitoring: any }[];
 

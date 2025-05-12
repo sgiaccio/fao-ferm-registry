@@ -32,6 +32,7 @@ import {
 } from '@/lib/util';
 
 import iso2codes from '@/assets/iso2codes.json';
+import { getAreaValue } from "@/lib/areaUtil";
 
 
 withDefaults(defineProps<{
@@ -541,8 +542,8 @@ function otherChartSize() {
                                 @zoomToArea="zoomToArea"
                             />
                             <ChartsSwiper
-                                v-if="projectAreas.length === 1 && Object.values(projectAreas[0])[0].uuid"
-                                :area="Object.values(projectAreas[0])[0]"
+                                v-if="projectAreas.length === 1 && getAreaValue(projectAreas[0]).uuid"
+                                :area="getAreaValue(projectAreas[0])"
                             />
                         </div>
                     </transition>

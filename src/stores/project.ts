@@ -33,6 +33,7 @@ import { GoalIndicator, rawGoalIndicators as _rawGoalIndicators } from '@/lib/au
 import { getIntersectingCountries } from '@/firebase/functions';
 
 import { getGaulLevel0 } from '@/firebase/firestore';
+import type { AreaObject } from "@/types";
 
 // import { validate } from '@/lib/validation/schema';
 
@@ -49,7 +50,7 @@ function gaul2iso(gaulLevel0: any[], gaulId: number) {
 export const useProjectStore = defineStore('', () => {
     const id = ref<string | null>(null);
     const project = ref<any>(null); // TODO type
-    const projectAreas = ref<any[]>([]); // TODO type
+    const projectAreas = ref<AreaObject[]>([]);
     const loaded = ref(false);
 
     // Projects search - todo move to a separate store

@@ -8,6 +8,7 @@ import TabTemplate from '../TabTemplate.vue';
 import RecursiveMenu from '@/components/inputs/base/RecursiveMenu.vue';
 import TextInput from '@/components/inputs/base/TextInput.vue';
 import { ref } from 'vue';
+import { getAreaValue } from "@/lib/areaUtil";
 
 
 withDefaults(defineProps<{
@@ -24,17 +25,16 @@ const menus = useMenusStore().menus;
 function applyToAll() {
     if (!confirm('Are you sure you want to apply this activity to all areas? Your current selections will be overwritten.')) return;
 
-    const key = Object.keys(store.projectAreas[0])[0];
-    const value = store.projectAreas[0][key];
+    if (store.projectAreas.length < 2) return;
+
+    const value = getAreaValue(store.projectAreas[0]);
     const activities = value.activities;
-    const restorationType = value.restorationType;
-    const tenureStatus = value.tenureStatus;
+
+    if (!activities) return;
     store.projectAreas.forEach((area, i) => {
         if (i > 0) {
-            const key2 = Object.keys(area)[0];
-            area[key2].restorationType = restorationType;
-            area[key2].tenureStatus = tenureStatus;
-            area[key2].activities = [...activities];
+            const areaValue = getAreaValue(area);
+            areaValue.activities = [...activities];
         }
     });
 }
@@ -104,8 +104,8 @@ function toggleOtherActivitiesInput(i: number) {
                             {{ t('areaAndEcosystems.area') }}
                             {{ i + 1 }}<span
                                 class="text-black"
-                                v-if="area[Object.keys(area)[0]].siteName"
-                            >: {{ area[Object.keys(area)[0]].siteName }}</span>
+                                v-if="getAreaValue(area).siteName"
+                            >: {{ getAreaValue(area).siteName }}</span>
                         </div>
                         <div v-if="edit">
                             <button
@@ -123,7 +123,7 @@ function toggleOtherActivitiesInput(i: number) {
                     </h1>
                     <RecursiveMenu
                         :edit="edit"
-                        v-model="area[Object.keys(area)[0]].activities"
+                        v-model="getAreaValue(area).activities"
                         :options="menus.activities"
                     />
 
@@ -156,16 +156,16 @@ function toggleOtherActivitiesInput(i: number) {
                             <TextInput
                                 :enabled="otherActivitiesInputEnabled[i]"
                                 :edit="edit"
-                                v-model="area[Object.keys(area)[0]].activitiesOther"
+                                v-model="getAreaValue(area).activitiesOther"
                             />
                         </div>
                     </div>
                     <div v-else>
                         <div
-                            v-if="area[Object.keys(area)[0]].activitiesOther"
+                            v-if="getAreaValue(area).activitiesOther"
                             class="text-sm mt-6 "
                         >
-                            <span class="font-bold text-gray-700">Other activities:</span> {{ area[Object.keys(area)[0]].activitiesOther }}
+                            <span class="font-bold text-gray-700">Other activities:</span> {{ getAreaValue(area).activitiesOther }}
                         </div>
                     </div>
                 </div>

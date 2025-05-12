@@ -1,6 +1,5 @@
-import { nextTick } from 'vue'
+import { nextTick } from 'vue';
 import { createI18n } from 'vue-i18n';
-
 
 let i18n: any;
 
@@ -12,19 +11,10 @@ export const SUPPORT_LOCALES = ['en', 'es', 'fr', 'pt'];
 
 const defaultLocale = 'en';
 
-// function getNestedValue(obj: any, path: string) {
-//     return path.split('.').reduce((acc, key) => acc && acc[key] ? acc[key] : null, obj);
-// }
-
-// function flatJsonResolver(obj: any, path: string) {
-//     const result = obj[path] || getNestedValue(obj, path);
-//     return result !== null && result !== undefined ? result : undefined;
-// }
-
 let loadingDefaultLocale = false;
 let defaultLocaleLoaded = false;
 
-export function setupI18n(defaultOptions: any = {
+let defaultOptionsValue = {
     locale: defaultLocale,
     fallbackLocale: defaultLocale,
     // messageResolver: flatJsonResolver,
@@ -38,19 +28,25 @@ export function setupI18n(defaultOptions: any = {
         if (!defaultLocaleLoaded && !loadingDefaultLocale) {
             loadingDefaultLocale = true;
             // Trigger the load of English messages in the background.
-            loadLocaleMessages(defaultLocale).then(() => {
-                defaultLocaleLoaded = true;
-                loadingDefaultLocale = false;
-                console.log(`English fallback messages loaded after missing key: ${key}`);
-            }).catch(err => {
-                console.error('Error loading fallback locale:', err);
-                loadingDefaultLocale = false;
-            });
+            loadLocaleMessages(defaultLocale)
+                .then(() => {
+                    defaultLocaleLoaded = true;
+                    loadingDefaultLocale = false;
+                    console.log(
+                        `English fallback messages loaded after missing key: ${key}`,
+                    );
+                })
+                .catch((err) => {
+                    console.error('Error loading fallback locale:', err);
+                    loadingDefaultLocale = false;
+                });
         }
         // Return the key or some fallback text synchronously
         return key;
-    }
-}) {
+    },
+};
+
+export function setupI18n(defaultOptions: any = defaultOptionsValue) {
     const options = { ...defaultOptions };
     if (process.env.NODE_ENV === 'development') {
         options.postTranslation = (str: any, key: string) => {
@@ -59,7 +55,7 @@ export function setupI18n(defaultOptions: any = {
                 return str ? `${str}` : key;
             }
             return str;
-        }
+        };
     }
 
     i18n = createI18n(options);
@@ -76,7 +72,6 @@ export function t(key: string, options?: any) {
     }
 }
 
-
 export async function setLocale(locale: string) {
     // use locale if paramsLocale is not in SUPPORT_LOCALES
     // if (!SUPPORT_LOCALES.includes(paramsLocale)) {
@@ -84,7 +79,8 @@ export async function setLocale(locale: string) {
     // }
 
     // check that the locale is already loaded - we don't use availableLocales because the locale is set before the messages are loaded
-    const localeLoaded = Object.keys(i18n.global.getLocaleMessage(locale)).length > 0;
+    const localeLoaded =
+        Object.keys(i18n.global.getLocaleMessage(locale)).length > 0;
     if (!localeLoaded) {
         await loadLocaleMessages(locale);
     }
@@ -108,7 +104,9 @@ function setI18nLanguage(locale: string) {
 async function loadLocaleMessages(locale: string) {
     try {
         // load locale messages from Tolgee (excluding menus)
-        const fetchPromise = fetch(`https://cdn.tolg.ee/1f21497d5e2085ba6c2a858e2647bc02/${locale}.json`);
+        const fetchPromise = fetch(
+            `https://cdn.tolg.ee/1f21497d5e2085ba6c2a858e2647bc02/${locale}.json`,
+        );
         const response = await fetchPromise;
         const messages = await response.json();
 

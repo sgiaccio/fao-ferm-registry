@@ -1,4 +1,16 @@
-import { getDocs, getDoc, collection, collectionGroup, doc, setDoc, query, where, serverTimestamp, writeBatch, FieldValue } from 'firebase/firestore/lite';
+import {
+    getDocs,
+    getDoc,
+    collection,
+    collectionGroup,
+    doc,
+    setDoc,
+    query,
+    where,
+    serverTimestamp,
+    writeBatch,
+    FieldValue,
+} from 'firebase/firestore/lite';
 import { defineStore } from 'pinia';
 
 import { db } from '../firebase';
@@ -14,7 +26,6 @@ interface BestPracticeForSave extends BestPractice {
     created_by?: string;
 }
 
-
 // const bestPracticesCollection = collection(db, 'bestPractices');
 
 // This function returns the reference to the bestPractices subcollection for a given projectId
@@ -22,14 +33,12 @@ function bestPracticesSubcollection(projectId: string) {
     return collection(db, `registry/${projectId}/bestPractices`);
 }
 const bestPracticesCollectionGroup = collectionGroup(db, 'bestPractices');
-const areaCollection = collection(db, "areas")
+const areaCollection = collection(db, 'areas');
 
 const authStore = useAuthStore();
 
 const newBestPractice = {
-    implementationSteps: [
-        { step: {} }
-    ]
+    implementationSteps: [{ step: {} }],
 };
 
 export const useAppStateStore = defineStore({
@@ -39,7 +48,7 @@ export const useAppStateStore = defineStore({
         bestPractice: null as BestPractice | null,
         projectId: null as string | null,
         projectAreas: null as any, // TODO use the ones in project store?
-        bestPracticeAreaIdxs: [] as number[]
+        bestPracticeAreaIdxs: [] as number[],
     }),
     actions: {
         resetBestPracticesState() {
@@ -78,11 +87,17 @@ export const useAppStateStore = defineStore({
                 bestPracticeGroupQuery = query(bestPracticesCollectionGroup);
             } else {
                 const userGroups = Object.keys(authStore.privileges);
-                bestPracticeGroupQuery = query(bestPracticesCollectionGroup, where('group', 'in', userGroups));
+                bestPracticeGroupQuery = query(
+                    bestPracticesCollectionGroup,
+                    where('group', 'in', userGroups),
+                );
             }
 
             const bestPracticeSnapshot = await getDocs(bestPracticeGroupQuery);
-            return bestPracticeSnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+            return bestPracticeSnapshot.docs.map((doc) => ({
+                id: doc.id,
+                data: doc.data(),
+            }));
         },
 
         // async fetchProjectBestPractices(projectId: string) {
@@ -93,7 +108,10 @@ export const useAppStateStore = defineStore({
         async fetchProjectBestPractices(projectId: string) {
             const q = query(bestPracticesSubcollection(projectId));
             const querySnapshot = await getDocs(q);
-            return querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+            return querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                data: doc.data(),
+            }));
         },
 
         // async fetch_(id: string) {
@@ -115,7 +133,10 @@ export const useAppStateStore = defineStore({
         //     }
         // },
         async fetch(projectId: string, bestPracticeId: string) {
-            const docRef = doc(bestPracticesSubcollection(projectId), bestPracticeId);
+            const docRef = doc(
+                bestPracticesSubcollection(projectId),
+                bestPracticeId,
+            );
             const docSnapshot = await getDoc(docRef);
             if (docSnapshot.exists()) {
                 this.bestPractice = docSnapshot.data() as BestPractice;
@@ -124,13 +145,19 @@ export const useAppStateStore = defineStore({
 
                 if (projectId) {
                     await this.fetchProjectAreas(projectId);
-                    this.bestPracticeAreaIdxs = this.projectAreas.map((area: any, index: number) => {
-                        const obj: any = Object.values(area)[0];
-                        return this.id && obj.bestPractices?.[this.id] ? index : null;
-                    }).filter((i: any) => i !== null);
+                    this.bestPracticeAreaIdxs = this.projectAreas
+                        .map((area: any, index: number) => {
+                            const obj: any = Object.values(area)[0];
+                            return this.id && obj.bestPractices?.[this.id]
+                                ? index
+                                : null;
+                        })
+                        .filter((i: any) => i !== null);
                 }
             } else {
-                console.error(`No document found with projectId ${projectId} and bestPracticeId ${bestPracticeId}`);
+                console.error(
+                    `No document found with projectId ${projectId} and bestPracticeId ${bestPracticeId}`,
+                );
             }
         },
 
@@ -141,12 +168,12 @@ export const useAppStateStore = defineStore({
 
         async save() {
             if (!this.projectId) {
-                console.error("No projectId set");
+                console.error('No projectId set');
                 return;
             }
 
             if (!this.bestPractice) {
-                console.error("No bestPractice set");
+                console.error('No bestPractice set');
                 return;
             }
 
@@ -160,13 +187,16 @@ export const useAppStateStore = defineStore({
                 let bpRef;
                 if (this.id) {
                     // it's an existing best practice
-                    bpRef = doc(bestPracticesSubcollection(this.projectId), this.id);
+                    bpRef = doc(
+                        bestPracticesSubcollection(this.projectId),
+                        this.id,
+                    );
                 } else {
                     // it's a new best practice
                     toBeSaved.created = serverTimestamp();
-                    toBeSaved.created_by = authStore.user.uid
+                    toBeSaved.created_by = authStore.user.uid;
                     const projectStore = useProjectStore();
-                    await projectStore.fetchProject(this.projectId)
+                    await projectStore.fetchProject(this.projectId);
 
                     // group is not needed anymore as it's in the parent document
                     // toBeSaved.group = projectStore.project.group;
@@ -177,7 +207,9 @@ export const useAppStateStore = defineStore({
                 batch.set(bpRef, toBeSaved);
 
                 // Add best practice ids to project areas - they are saved in a separate collection
-                const projectAreasCopy = JSON.parse(JSON.stringify(this.projectAreas));
+                const projectAreasCopy = JSON.parse(
+                    JSON.stringify(this.projectAreas),
+                );
                 projectAreasCopy.forEach((area: any, i: number) => {
                     const obj: any = Object.values(area)[0];
                     if (!obj) return;
@@ -198,7 +230,7 @@ export const useAppStateStore = defineStore({
                 await batch.commit();
             } catch (e) {
                 console.error(e);
-                alert("Error in saving best practice");
+                alert('Error in saving best practice');
             }
         },
 
@@ -223,7 +255,7 @@ export const useAppStateStore = defineStore({
 
         async submit(id: string) {
             if (!this.projectId) {
-                console.error("No projectId set");
+                console.error('No projectId set');
                 return;
             }
             const bpRef = doc(bestPracticesSubcollection(this.projectId), id);
@@ -232,18 +264,22 @@ export const useAppStateStore = defineStore({
 
         async canSetStatus(newStatus: 'draft' | 'submitted' | 'published') {
             if (!this.bestPractice) {
-                console.error("No bestPractice set");
+                console.error('No bestPractice set');
                 return false;
             }
 
             if (!this.projectId) {
-                console.error("No projectId set");
+                console.error('No projectId set');
                 return false;
             }
 
             // Global administrators can do whatever they want
             if (authStore.isAdmin) {
-                return newStatus === 'submitted' && (!this.bestPractice.status || this.bestPractice.status === 'draft');
+                return (
+                    newStatus === 'submitted' &&
+                    (!this.bestPractice.status ||
+                        this.bestPractice.status === 'draft')
+                );
                 // TODO add other conditions
             }
 
@@ -254,19 +290,30 @@ export const useAppStateStore = defineStore({
 
                 // Group administrators can do whatever they want in their group
                 if (level === 'admin') {
-                    return newStatus === 'submitted' && (!this.bestPractice.status || this.bestPractice.status === 'draft');
+                    return (
+                        newStatus === 'submitted' &&
+                        (!this.bestPractice.status ||
+                            this.bestPractice.status === 'draft')
+                    );
                     // TODO add other conditions
                 }
 
                 // Editors can only change from draft to submitted
-                if (level === 'editor' && projectStore.project.created_by === authStore.user!.uid) {
-                    return newStatus === 'submitted' && (!this.bestPractice.status || this.bestPractice.status === 'draft');
+                if (
+                    level === 'editor' &&
+                    projectStore.project.created_by === authStore.user!.uid
+                ) {
+                    return (
+                        newStatus === 'submitted' &&
+                        (!this.bestPractice.status ||
+                            this.bestPractice.status === 'draft')
+                    );
                     // TODO add other conditions
                 }
             } catch (e) {
-                alert("Error in checking privileges for this record");
+                alert('Error in checking privileges for this record');
             }
             return false;
-        }
-    }
+        },
+    },
 });

@@ -1,6 +1,6 @@
 import {sortedGoalIndicators} from './auroraIndicators';
-import type {Menu, MenuValue, RecursiveMenu, RecursiveMenuItem} from '@/types';
-
+import type { AreaDataKey, AreaObject, Menu, MenuValue, RecursiveMenu, RecursiveMenuItem } from '@/types';
+import { getAreaValue } from '@/lib/areaUtil';
 
 export function fbTimestampToString(ts: any) {
     return ts.toDate().toLocaleDateString('EN-US', {
@@ -228,12 +228,16 @@ export function flattenMenu(menu: RecursiveMenu): Menu {
     return result;
 }
 
-export function getAllSelectedItemsInAreas(areas: any, key: string, menu: RecursiveMenu) {
+export function getAllSelectedItemsInAreas(areas: AreaObject[], key: AreaDataKey, menu: RecursiveMenu) {
     if (areas.length === 0) return [];
-    const items: MenuValue[] = areas.reduce((acc: any, area: any) => {
-        const areaObjValue: any = Object.values(area)[0];
+    const items: MenuValue[] = areas.reduce((acc: any, area) => {
+        const areaObjValue = getAreaValue(area);
         const areaItems = areaObjValue[key];
-        return areaItems ? [...acc, ...areaItems] : acc;
+        return areaItems
+            ? (Array.isArray(areaItems)
+                ? [...acc, ...areaItems]
+                : [...acc, areaItems])
+            : acc;
     }, []);
     // remove duplicates
     const uniqueItems = [...new Set(items)];
@@ -278,12 +282,13 @@ export function getLastTargetArea(project: any) {
     return project.project?.targetAreaEvaluationPhase || project.project?.targetAreaReviewPhase || project.project?.targetAreaDesignPhase;
 }
 
-export function getPolygonsArea(areasObj: any) {
-    const getValue = (area: any) => Object.values(area)[0];
+export function getPolygonsArea(areasObj: AreaObject[]) {
+    // const getValue = (area: any) => Object.values(area)[0];
     try {
         const areas = areasObj
             // .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
-            .map((a: any) => +((getValue(a) as { area: number }).area || 0));
+            // .map((a: any) => +((getValue(a) as { area: number }).area || 0));
+            .map(a => +(getAreaValue(a).area || 0));
         return areas.reduce((a: number, b: number) => a + b, 0);
     } catch (e) {
         console.error('Error calculating polygons area', e);
@@ -291,13 +296,13 @@ export function getPolygonsArea(areasObj: any) {
     }
 }
 
-export function areaByGefIndicator(areas: any) {
+export function areaByGefIndicator(areas: AreaObject[]) {
     return Object.entries(
         areas.reduce((acc: { [indicator: string]: number }, area: any) => {
-            const { gefIndicator, area: areaValue } = Object.values(area)[0] as any;
+            const { gefIndicator, area: areaValue } = getAreaValue(area);
             return gefIndicator ? {
                 ...acc,
-                [gefIndicator]: (acc[gefIndicator] || 0) + (+areaValue || 0)
+                [gefIndicator]: (acc[gefIndicator] || 0) + +(areaValue || 0)
             } : acc;
         }, {}))
         .sort((a, b) => {

@@ -6,17 +6,19 @@ import { useI18n } from 'vue-i18n';
 import { getSortedIndicatorsAndMonitoring } from '@/lib/util';
 import { GoalIndicator, getGoalColor } from '@/lib/auroraIndicators';
 import ResultPanel from './ResultPanel.vue';
+import type { AreaObject } from "@/types";
+import { getAreaValue } from "@/lib/areaUtil";
 
 
 const props = defineProps<{
-    areas: any
+    areas: AreaObject[]
 }>();
 
 const { t } = useI18n();
 
 const areasWithIndicators = computed(() => props.areas
-    .map(area => Object.values(area)[0])
-    .filter((areaData: any) => areaData?.goalIndicators?.length > 0 || areaData?.customIndicators?.length > 0)
+    .map(getAreaValue)
+    .filter(areaData => (areaData?.goalIndicators ?? []).length > 0 || (areaData?.customIndicators ?? []).length > 0)
 );
 
 const goalIndicators = computed(() => areasWithIndicators.value

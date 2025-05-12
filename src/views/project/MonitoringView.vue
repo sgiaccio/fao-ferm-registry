@@ -13,6 +13,7 @@ import { TrashIcon } from '@heroicons/vue/20/solid';
 import { getGoalColor } from '@/lib/auroraIndicators';
 
 import { getSortedIndicatorsAndMonitoring } from '@/lib/util';
+import { getAreaValue } from "@/lib/areaUtil";
 
 
 const store = useProjectStore();
@@ -27,7 +28,7 @@ const { t } = useI18n();
 
 // Delete restorationType and tenureStatus for GEF3 indicators. This should be done in the store, but will be done here for now.
 watch(() => store.projectAreas, areas => areas.forEach(area => {
-    const areaValue = Object.values(area)[0];
+    const areaValue = getAreaValue(area);
     if (!areaValue.gefIndicator?.startsWith('GEF3')) {
         delete areaValue.restorationType;
         delete areaValue.tenureStatus;
@@ -65,14 +66,13 @@ function removeIndicator(monitoring, i: number) {
                             {{ t('areaAndEcosystems.area') }}
                             {{ i + 1 }}<span
                                 class="text-black"
-                                v-if="area[Object.keys(area)[0]].siteName"
-                            >: {{ area[Object.keys(area)[0]].siteName
-                                }}</span>
+                                v-if="getAreaValue(area).siteName"
+                            >: {{ getAreaValue(area).siteName }}</span>
                         </div>
                     </div>
                     <!-- Project indicators -->
                     <div
-                        v-for="goal in getSortedIndicatorsAndMonitoring(area[Object.keys(area)[0]].goalIndicators)"
+                        v-for="goal in getSortedIndicatorsAndMonitoring(getAreaValue(area).goalIndicators)"
                         class="text-xs mb-4"
                     >
                         <div
@@ -176,7 +176,7 @@ function removeIndicator(monitoring, i: number) {
                     <!-- Custom indicators -->
                     <div class="border rounded-md text-xs">
                         <div
-                            v-for="indicator in area[Object.keys(area)[0]].customIndicators || []"
+                            v-for="indicator in getAreaValue(area).customIndicators || []"
                             class="px-3 py-3 border-b last:border-b-0"
                         >
                             <div class="flex flex-row gap-x-3">
