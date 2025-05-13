@@ -18,14 +18,16 @@ import IndicatorsList from './IndicatorsList.vue';
 import CustomIndicatorsList from './CustomIndicatorsList.vue';
 
 import LabelFormGroup from '@/components/inputs/base/LabelFormGroup.vue';
-import { getAreaValue } from "@/lib/areaUtil";
+import { getAreaValue } from '@/lib/areaUtil';
 
-
-withDefaults(defineProps<{
-    edit?: boolean
-}>(), {
-    edit: true
-});
+withDefaults(
+    defineProps<{
+        edit?: boolean;
+    }>(),
+    {
+        edit: true,
+    },
+);
 
 const { t } = useI18n();
 
@@ -33,7 +35,12 @@ const store = useProjectStore();
 const menus = useMenusStore().menus;
 
 function applyToAll() {
-    if (!confirm('Are you sure you want to apply this indicator to all areas? Your current selections will be overwritten.')) return;
+    if (
+        !confirm(
+            'Are you sure you want to apply this indicator to all areas? Your current selections will be overwritten.',
+        )
+    )
+        return;
 
     if (store.projectAreas.length < 2) return;
 
@@ -48,52 +55,35 @@ function applyToAll() {
                 areaToChange.gefIndicator = gefIndicator;
             }
             if (goalIndicators && goalIndicators.length) {
-                areaToChange.goalIndicators = goalIndicators.map(i => ({ indicator: i.indicator.clone() }));
+                areaToChange.goalIndicators = goalIndicators.map((i) => ({
+                    indicator: i.indicator.clone(),
+                }));
             }
         }
     });
 }
 
 // Delete restorationType and tenureStatus for GEF3 indicators. This should be done in the store, but will be done here for now.
-watch(() => store.projectAreas, areas => areas.forEach(area => {
-    const areaValue = getAreaValue(area);
-    if (!areaValue.gefIndicator?.startsWith('GEF3')) {
-        delete areaValue.restorationType;
-        delete areaValue.tenureStatus;
-    }
-}), { deep: true });
+watch(
+    () => store.projectAreas,
+    (areas) =>
+        areas.forEach((area) => {
+            const areaValue = getAreaValue(area);
+            if (!areaValue.gefIndicator?.startsWith('GEF3')) {
+                delete areaValue.restorationType;
+                delete areaValue.tenureStatus;
+            }
+        }),
+    { deep: true },
+);
 
 ref(new Array(store.projectAreas.length).fill(new Map()));
-// function isSelected(area: any, indicator: any) {
-//     const indicators = Object.values(area)[0]?.goalIndicators;
-//     if (!indicators) return false;
-//     return indicators.some(i => {
-//         try {
-//             const t = new GoalIndicator(i.indicator);
-//             return t.equals(indicator);
-//         } catch (error) {
-//             console.error(error);
-//             return false;
-//         }
-//     });
-// }
 </script>
 
 <template>
     <TabTemplate :title="t('indicators.title')">
         <template #description>
             <template v-if="store.project.reportingLine === 'GEF'">
-                <!-- <p>
-                    Indicators are selected to monitor project progress. The methodology proposed to report and monitor the achievement of GEF commitments including restoration (in ha of land) in FERM is through GEF Core Indicators.
-                </p>
-                <p>
-                    Details on GEF Core Indicators can be found under this
-                    <a
-                        href="https://www.thegef.org/sites/default/files/documents/2022-09/Results_Framework_Guidelines_2022_06_30.pdf"
-                        target="_blank"
-                        class="text-blue-600 underline hover:text-blue-500"
-                    >link</a>.
-                </p> -->
                 <p>
                     {{ t('indicators.description.gef.intro') }}
                 </p>
@@ -141,10 +131,15 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                     {{ t('references') }}
                 </p>
                 <p class="pt-1">
-                    FAO and WRI. 2019. The Road to Restoration: A Guide to Identifying Priorities and Indicators for Monitoring Forest and Landscape Restoration. Rome, Washington, DC.
+                    FAO and WRI. 2019. The Road to Restoration: A Guide to
+                    Identifying Priorities and Indicators for Monitoring Forest
+                    and Landscape Restoration. Rome, Washington, DC.
                 </p>
                 <p class="pt-4">
-                    FAO and UNEP. 2022. Global indicators for monitoring ecosystem restoration — A contribution to the UN Decade on Ecosystem Restoration. Rome, FAO. <a
+                    FAO and UNEP. 2022. Global indicators for monitoring
+                    ecosystem restoration — A contribution to the UN Decade on
+                    Ecosystem Restoration. Rome, FAO.
+                    <a
                         href="https://doi.org/10.4060/cb9982en"
                         target="_blank"
                         class="text-ferm-blue-dark-700 underline hover:text-ferm-blue-dark-500"
@@ -155,10 +150,7 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
             </template>
         </template>
         <template #default>
-            <div
-                class="pt-8"
-                v-if="store.project.reportingLine !== 'GEF'"
-            >
+            <div class="pt-8" v-if="store.project.reportingLine !== 'GEF'">
                 <LabelFormGroup
                     :label="t('indicators.totalArea')"
                     :value="`${roundToPrecisionAsString(store.polygonsArea(), 2)} Ha`"
@@ -168,21 +160,26 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                     class="flex flex-col gap-y-4"
                 >
                     <div
-                        v-for="( area, i ) in store.projectAreas"
+                        v-for="(area, i) in store.projectAreas"
                         class="border-2 px-3 pt-2 pb-3 rounded-lg border-gray-300"
                     >
                         <div class="flex flex-row my-3">
-                            <div class="text-gray-500 text-lg font-bold mb-2 flex-grow">
+                            <div
+                                class="text-gray-500 text-lg font-bold mb-2 flex-grow"
+                            >
                                 {{ $t('areaAndEcosystems.area') }}
-                                {{ i + 1 }}<span
+                                {{ i + 1
+                                }}<span
                                     class="text-black"
                                     v-if="getAreaValue(area).siteName"
-                                >: {{ getAreaValue(area).siteName }}
+                                    >: {{ getAreaValue(area).siteName }}
                                 </span>
                             </div>
                             <div v-if="edit">
                                 <button
-                                    v-if="i === 0 && store.projectAreas.length > 1"
+                                    v-if="
+                                        i === 0 && store.projectAreas.length > 1
+                                    "
                                     type="button"
                                     class="rounded bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                     @click="applyToAll"
@@ -220,16 +217,14 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                     </template>
                 </i18n-t>
                 <div v-else>
-                    <div class="text-lg italic text-gray-600">{{ $t('inputs.noneSelected') }}</div>
+                    <div class="text-lg italic text-gray-600">
+                        {{ $t('inputs.noneSelected') }}
+                    </div>
                 </div>
             </div>
 
-
             <!-- GEF -->
-            <div
-                v-else
-                class="pt-8"
-            >
+            <div v-else class="pt-8">
                 <LabelFormGroup
                     :label="t('indicators.totalArea')"
                     :value="`${roundToPrecisionAsString(store.polygonsArea(), 2)} Ha`"
@@ -240,14 +235,26 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                     <!-- <h3 class="text-xl font-semibold leading-6 text-gray-900">Area by indicator</h3> -->
                     <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
                         <div
-                            v-for="[indicator, area] in store.areaByGefIndicator()"
+                            v-for="[
+                                indicator,
+                                area,
+                            ] in store.areaByGefIndicator()"
                             :key="indicator"
                             class="overflow-hidden rounded-lg bg-gray-100 px-4 py-5 shadow sm:p-6 flex flex-col"
                         >
-                            <dt class="flex-grow text-sm font-medium text-gray-500">
-                                {{ getRecursiveMenuLabel(indicator, menus.gefIndicators) }}
+                            <dt
+                                class="flex-grow text-sm font-medium text-gray-500"
+                            >
+                                {{
+                                    getRecursiveMenuLabel(
+                                        indicator,
+                                        menus.gefIndicators,
+                                    )
+                                }}
                             </dt>
-                            <dd class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">
+                            <dd
+                                class="mt-1 text-2xl font-semibold tracking-tight text-gray-900"
+                            >
                                 {{ area.toFixed(2) }} Ha
                             </dd>
                         </div>
@@ -259,20 +266,26 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                     class="flex flex-col gap-y-4"
                 >
                     <div
-                        v-for="(area, i) in store.projectAreas  "
+                        v-for="(area, i) in store.projectAreas"
                         class="border-2 rounded-lg border-gray-300 divide-y-2"
                     >
                         <div class="flex flex-row px-3 py-5">
-                            <div class="text-gray-500 text-lg font-bold flex-grow">
+                            <div
+                                class="text-gray-500 text-lg font-bold flex-grow"
+                            >
                                 {{ $t('areaAndEcosystems.area') }}
-                                {{ i + 1 }}<span
+                                {{ i + 1
+                                }}<span
                                     class="text-black"
-                                    v-if="getAreaValue(area)"
-                                >: {{ getAreaValue(area) }}</span>
+                                    v-if="getAreaValue(area).siteName"
+                                    >: {{ getAreaValue(area).siteName }}</span
+                                >
                             </div>
                             <div v-if="edit">
                                 <button
-                                    v-if="i === 0 && store.projectAreas.length > 1"
+                                    v-if="
+                                        i === 0 && store.projectAreas.length > 1
+                                    "
                                     type="button"
                                     class="rounded bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                     @click="applyToAll"
@@ -305,7 +318,6 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                                 class="mt-4 bg-red-50"
                             />
                         </div>
-
                     </div>
                 </div>
                 <i18n-t
@@ -324,7 +336,9 @@ ref(new Array(store.projectAreas.length).fill(new Map()));
                     </template>
                 </i18n-t>
                 <div v-else>
-                    <div class="text-lg italic text-gray-600">{{ $t('inputs.noneSelected') }}</div>
+                    <div class="text-lg italic text-gray-600">
+                        {{ $t('inputs.noneSelected') }}
+                    </div>
                 </div>
             </div>
         </template>
