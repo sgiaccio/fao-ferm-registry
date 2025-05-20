@@ -1,10 +1,9 @@
 // const { getStorage } = require('firebase-admin/storage');
-const functions = require("firebase-functions");
+const functions = require('firebase-functions');
 
-const util = require("./util");
+const util = require('./util');
 
 const { getIso2CountryName } = require('./gaul2iso');
-
 
 // async function checkUploadedDocs(projectId) {
 //     // check that there are documents in the default bucket under the documents "folder" (bucket don't really have folders)
@@ -57,9 +56,9 @@ _checkAllAreas = (areas, key) => {
         return false;
     }
 
-    const values = areas.map(area => getAreaValue(area)[key]);
-    return values.every(v => v?.length > 0);
-}
+    const values = areas.map((area) => getAreaValue(area)[key]);
+    return values.every((v) => v?.length > 0);
+};
 
 function getLastPhase(project) {
     if (project.project?.targetAreaEvaluationPhase) {
@@ -75,16 +74,19 @@ function getLastPhase(project) {
 }
 
 function getLastTargetArea(project) {
-    return project.project?.targetAreaDesignPhase || project.project?.targetAreaReviewPhase || project.project?.targetAreaEvaluationPhase;
+    return (
+        project.project?.targetAreaDesignPhase ||
+        project.project?.targetAreaReviewPhase ||
+        project.project?.targetAreaEvaluationPhase
+    );
 }
-
 
 function checkSpatial(areas) {
     if (areas.length === 0) {
         return 'bad';
     }
 
-    const uploadTypes = areas.map(area => Object.keys(area)[0]);
+    const uploadTypes = areas.map((area) => Object.keys(area)[0]);
     if (uploadTypes.includes('adminArea')) {
         return 'bad';
     }
@@ -98,35 +100,38 @@ function checkEcosystems(areas) {
 
 function checkRestorationStatus(project) {
     const status = project.project.restorationStatus;
-    return status ? menus.restorationStatuses.find(m => m.value === status).label : null;
+    return status
+        ? menus.restorationStatuses.find((m) => m.value === status).label
+        : null;
 }
 
 const menus = {
     restorationStatuses: [
-        { value: 1, label: "Design Phase" },
-        { value: 2, label: "Implementation Phase" },
-        { value: 3, label: "Monitoring Phase" }
+        { value: 1, label: 'Design Phase' },
+        { value: 2, label: 'Implementation Phase' },
+        { value: 3, label: 'Monitoring Phase' },
     ],
     restorationTypes: [
-        { value: 1, label: "Ecological restoration" },
-        { value: 2, label: "Rehabilitation" }
+        { value: 1, label: 'Ecological restoration' },
+        { value: 2, label: 'Rehabilitation' },
     ],
     projectObjectives: [
         { value: 1, label: 'Enhance biodiversity' },
         { value: 2, label: 'Enhance ecosystem functions and services' },
         { value: 3, label: 'Improve ecological integrity' },
         { value: 4, label: 'Improve connectivity' },
-    ]
+    ],
 };
 
 function getMultipleMenuValues(menu, values) {
     if (!values?.length) return null;
     return values
-        .map(value => {
-            const menuItem = menu.find(m => m.value === value);
+        .map((value) => {
+            const menuItem = menu.find((m) => m.value === value);
             return menuItem?.label;
         })
-        .filter(Boolean).join(', ');
+        .filter(Boolean)
+        .join(', ');
 }
 
 function checkRestorationType(project) {
@@ -145,18 +150,20 @@ function checkRestorationActivities(areas) {
 
 function checkLeadEntity(project) {
     const organizations = project.project.organizations;
-    return organizations?.length > 0
-        && organizations.some(o => {
+    return (
+        organizations?.length > 0 &&
+        organizations.some((o) => {
             const v = Object.values(o)[0];
             if (!v) return false;
             // check that the object is not empty
             return Object.keys(v).length > 0;
-        });
+        })
+    );
 }
 
 function checkTenureStatus(project) {
     const tenureStatuses = project.project.tenureStatuses;
-    return tenureStatuses?.length > 0
+    return tenureStatuses?.length > 0;
 }
 
 function checkGefCoreIndicators(areas) {
@@ -168,7 +175,7 @@ function checkProjectIndicatorsAndValues(areas) {
         return false;
     }
 
-    const indicatorsAndMonitoring = areas.map(area => {
+    const indicatorsAndMonitoring = areas.map((area) => {
         const areaValue = getAreaValue(area);
         const goalIndicators = areaValue.goalIndicators || [];
         const customIndicators = areaValue.customIndicators || [];
@@ -179,18 +186,23 @@ function checkProjectIndicatorsAndValues(areas) {
         return false;
     }
 
-    const allMonitoring = indicatorsAndMonitoring.map(areaIndicators =>
-        areaIndicators.map(indicator => indicator.monitoring || [])
+    const allMonitoring = indicatorsAndMonitoring.map((areaIndicators) =>
+        areaIndicators.map((indicator) => indicator.monitoring || []),
     );
 
-    const atLeastOneAreaWithoutIndicators = allMonitoring.some(areaMonitoring => areaMonitoring.length === 0);
+    const atLeastOneAreaWithoutIndicators = allMonitoring.some(
+        (areaMonitoring) => areaMonitoring.length === 0,
+    );
 
     if (atLeastOneAreaWithoutIndicators) {
         return false;
     }
 
-    const atLeastOneAreaWithoutIndicatorMonitoring = allMonitoring.some(areaMonitoring =>
-        areaMonitoring.some(indicatorMonitoring => indicatorMonitoring.length === 0)
+    const atLeastOneAreaWithoutIndicatorMonitoring = allMonitoring.some(
+        (areaMonitoring) =>
+            areaMonitoring.some(
+                (indicatorMonitoring) => indicatorMonitoring.length === 0,
+            ),
     );
 
     if (atLeastOneAreaWithoutIndicatorMonitoring) {
@@ -204,10 +216,11 @@ function checkProjectIndicatorsAndValues(areas) {
 //     return !!project.bestPracticesCount && project.bestPracticesCount > 0;
 // }
 
-
 function getPolygonsArea(areasObj) {
     try {
-        const areas = areasObj.map(a => getAreaValue(a)).map(a => +a.area || 0);
+        const areas = areasObj
+            .map((a) => getAreaValue(a))
+            .map((a) => +a.area || 0);
         return areas.reduce((a, b) => a + b, 0);
     } catch (e) {
         console.error('Error calculating polygons area', e);
@@ -224,7 +237,11 @@ function performQualityControl(projectAndAreas) {
     return {
         id: projectAndAreas.id,
         title: project.project.title || null,
-        countries: project.project.countries ? project.project.countries.map((iso => getIso2CountryName(iso) || iso)).join(', ') : null,
+        countries: project.project.countries
+            ? project.project.countries
+                  .map((iso) => getIso2CountryName(iso) || iso)
+                  .join(', ')
+            : null,
         totalAreaAchieved: getPolygonsArea(areas),
         gefProjectSymbol: project.project?.gefFaoSymbol || null,
         gefInvestmentType: project.project?.gefInvestmentType || null,
@@ -254,7 +271,9 @@ function performQualityControl(projectAndAreas) {
 
 async function getAllGefprojectsAndAreas() {
     // Retrieve all GEF projects
-    const projects = await util.registryCollection.where('reportingLine', '==', 'GEF').get();
+    const projects = await util.registryCollection
+        .where('reportingLine', '==', 'GEF')
+        .get();
 
     // if the query returns no results, return an empty array
     if (projects.empty) {
@@ -265,18 +284,18 @@ async function getAllGefprojectsAndAreas() {
 
     // Retrieve all areas related to the GEF projects
     const getPromises = [];
-    projects.forEach(project => {
+    projects.forEach((project) => {
         getPromises.push(util.areasCollection.doc(project.id).get());
     });
     const areas = await Promise.all(getPromises);
 
-    projects.forEach(project => {
+    projects.forEach((project) => {
         const projectData = project.data();
 
         // if area doesn't exist for the project, add an empty object
         // TODO
 
-        const areaData = areas.find(area => area.id === project.id).data();
+        const areaData = areas.find((area) => area.id === project.id).data();
         ret.push({
             id: project.id,
             project: projectData,
@@ -289,13 +308,16 @@ async function getAllGefprojectsAndAreas() {
 
 exports.qcGef = functions.https.onCall(async (_, context) => {
     if (!context.auth?.token?.admin) {
-        throw new functions.https.HttpsError('permission-denied', 'You must be an admin to invoke this function.');
+        throw new functions.https.HttpsError(
+            'permission-denied',
+            'You must be an admin to invoke this function.',
+        );
     }
 
     const projectsAndAreas = await getAllGefprojectsAndAreas();
 
     const results = [];
-    projectsAndAreas.forEach(project => {
+    projectsAndAreas.forEach((project) => {
         results.push(performQualityControl(project));
     });
 

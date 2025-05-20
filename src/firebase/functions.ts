@@ -1,10 +1,9 @@
 // import { getApp } from "firebase/app";
-import { httpsCallable, getFunctions } from "firebase/functions";
+import { httpsCallable, getFunctions } from 'firebase/functions';
 
-import { functions } from ".";
+import { functions } from '.';
 
-import { functionsEuropeWest3 } from "@/firebase";
-
+import { functionsEuropeWest3 } from '@/firebase';
 
 export async function getMyGroupsAssigmentRequests() {
     const f = httpsCallable(functions, 'getMyGroupsAssigmentRequests');
@@ -13,7 +12,10 @@ export async function getMyGroupsAssigmentRequests() {
     return result.data;
 }
 
-export async function handleGroupAssignmentRequest(requestId: string, newStatus: 'accepted' | 'rejected') {
+export async function handleGroupAssignmentRequest(
+    requestId: string,
+    newStatus: 'accepted' | 'rejected',
+) {
     const f = httpsCallable(functions, 'handleGroupAssignmentRequest');
     const result = await f({ requestId, status: newStatus });
 
@@ -41,7 +43,12 @@ export async function rejectNewGroupRequest(requestId: string) {
     return result.data;
 }
 
-export async function handleSupportRequest(firstName: string, lastName: string, email: string, message: string) {
+export async function handleSupportRequest(
+    firstName: string,
+    lastName: string,
+    email: string,
+    message: string,
+) {
     if (!firstName || !lastName || !email || !message) {
         throw new Error('Missing required fields');
     }
@@ -59,7 +66,10 @@ export async function getAllUsers() {
 
 export async function getAdminGroupsUsers() {
     const functions = getFunctions();
-    const listAdminGroupsUsers = httpsCallable(functions, 'listAdminGroupsUsers');
+    const listAdminGroupsUsers = httpsCallable(
+        functions,
+        'listAdminGroupsUsers',
+    );
     const result = await listAdminGroupsUsers();
     return result.data;
 }
@@ -93,9 +103,16 @@ export async function rejectProject(projectId: string, reason: string) {
     return result.data;
 }
 
-export async function getPolygonZonalStats(polygonId: string, stats: string, options: any = {}) {
+export async function getPolygonZonalStats(
+    polygonId: string,
+    stats: string,
+    options: any = {},
+) {
     const functions = getFunctions();
-    const getPolygonZonalStats = httpsCallable(functions, 'getPolygonZonalStats');
+    const getPolygonZonalStats = httpsCallable(
+        functions,
+        'getPolygonZonalStats',
+    );
     const result = await getPolygonZonalStats({ polygonId, stats, options });
     return result.data;
 }
@@ -107,9 +124,14 @@ export async function getPolygonZonalStats(polygonId: string, stats: string, opt
 //     return result.data;
 // }
 
-export async function getIntersectingCountries(uuids: string[]): Promise<Set<string>> {
+export async function getIntersectingCountries(
+    uuids: string[],
+): Promise<Set<string>> {
     const functions = getFunctions();
-    const callGetIntersectingCountries = httpsCallable(functions, 'getIntersectingCountries');
+    const callGetIntersectingCountries = httpsCallable(
+        functions,
+        'getIntersectingCountries',
+    );
 
     try {
         const result = await callGetIntersectingCountries({ uuids });
@@ -129,29 +151,46 @@ export async function getGroupEditors(groupId: string) {
 
 export async function addProjectCollaboator(projectId: string, uid: string) {
     const functions = getFunctions();
-    const addProjectCollaboator = httpsCallable(functions, 'addProjectCollaborator');
+    const addProjectCollaboator = httpsCallable(
+        functions,
+        'addProjectCollaborator',
+    );
     const result = await addProjectCollaboator({ projectId, uid });
     return result.data;
 }
 
-export async function saveProjectCollaborators(projectId: string, collaboratorsUids: string[]) {
+export async function saveProjectCollaborators(
+    projectId: string,
+    collaboratorsUids: string[],
+) {
     const functions = getFunctions();
-    const saveProjectCollaborators = httpsCallable(functions, 'saveProjectCollaborators');
+    const saveProjectCollaborators = httpsCallable(
+        functions,
+        'saveProjectCollaborators',
+    );
     return saveProjectCollaborators({ projectId, collaboratorsUids });
 }
 
 export async function getProjectAreas(projectId: string, getPublic = false) {
-    const getProjectAreas = httpsCallable(functionsEuropeWest3, 'getSavedProjectAreasGeoJson');
-    const result = await getProjectAreas({ projectId, public: getPublic});
+    const getProjectAreas = httpsCallable(
+        functionsEuropeWest3,
+        'getSavedProjectAreasGeoJson',
+    );
+    const result = await getProjectAreas({ projectId, public: getPublic });
     return result.data;
 }
 
-export async function getProjectAdminAreas(projectId: string, getPublic = false) {
-    const getAdminProjectAreas = httpsCallable(functionsEuropeWest3, 'getSavedProjectAdminAreasGeoJson');
+export async function getProjectAdminAreas(
+    projectId: string,
+    getPublic = false,
+) {
+    const getAdminProjectAreas = httpsCallable(
+        functionsEuropeWest3,
+        'getSavedProjectAdminAreasGeoJson',
+    );
     const result = await getAdminProjectAreas({ projectId, public: getPublic });
     return result.data;
 }
-
 
 export async function createNewProjectVersion(projectId: string) {
     const reviseProject = httpsCallable(functions, 'reviseProject');
@@ -166,8 +205,14 @@ export async function makeCoverPhoto(projectId: string, filePath: string) {
     return result.data;
 }
 
-export async function getAllProjectAreasGeoJson(projectId: string, uuids: string[]) {
-    const getAllProjectAreasGeoJson = httpsCallable(functionsEuropeWest3, 'getAllProjectAreasGeoJson');
+export async function getAllProjectAreasGeoJson(
+    projectId: string,
+    uuids: string[],
+) {
+    const getAllProjectAreasGeoJson = httpsCallable(
+        functionsEuropeWest3,
+        'getAllProjectAreasGeoJson',
+    );
     const result = await getAllProjectAreasGeoJson({ projectId, uuids });
     return result.data;
 }
@@ -187,12 +232,14 @@ export async function getPublicProject(projectId: string) {
 
 export async function getPublicProjectThumbnail(projectId: string) {
     if (!projectId) {
-        throw new Error("Missing projectId");
+        throw new Error('Missing projectId');
     }
 
     // const response = await fetch(`https://<your-region>-<your-project-id>.cloudfunctions.net/getPublicProjectThumbnail?projectId=${projectId}`);
 
-    const response = await fetch(`https://europe-west3-fao-ferm.cloudfunctions.net/getPublicProjectThumbnail?projectId=${projectId}`);
+    const response = await fetch(
+        `https://europe-west3-fao-ferm.cloudfunctions.net/getPublicProjectThumbnail?projectId=${projectId}`,
+    );
 
     if (!response.ok) {
         throw new Error(`Error fetching thumbnail: ${response.statusText}`);
@@ -203,7 +250,10 @@ export async function getPublicProjectThumbnail(projectId: string) {
 }
 
 export async function getProjectPublicBestPractices(projectId: string) {
-    const getProjectPublicBestPractices = httpsCallable(functionsEuropeWest3, 'getProjectPublicBestPractices');
+    const getProjectPublicBestPractices = httpsCallable(
+        functionsEuropeWest3,
+        'getProjectPublicBestPractices',
+    );
     const result = await getProjectPublicBestPractices({ projectId });
     return result.data;
 }
@@ -215,8 +265,23 @@ export async function gefQc() {
     return result.data;
 }
 
-export async function generateInitiativeReport(sinceDate: string, toDate: string) {
-    const getReport = httpsCallable(functionsEuropeWest3, 'generateInitiativeReport');
+export async function exportPublicPolygons() {
+    const exportPolygons = httpsCallable(
+        functionsEuropeWest3,
+        'exportPublicPolygons',
+    );
+    const result = await exportPolygons();
+    return result.data;
+}
+
+export async function generateInitiativeReport(
+    sinceDate: string,
+    toDate: string,
+) {
+    const getReport = httpsCallable(
+        functionsEuropeWest3,
+        'generateInitiativeReport',
+    );
     const result = await getReport({ sinceDate, toDate });
     return result.data;
 }

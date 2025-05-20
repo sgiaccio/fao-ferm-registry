@@ -1,11 +1,21 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth';
-import { initializeFirestore, Firestore, connectFirestoreEmulator } from 'firebase/firestore/lite';
-import { getFunctions, connectFunctionsEmulator, type Functions } from 'firebase/functions';
-import { getStorage, connectStorageEmulator, type FirebaseStorage } from 'firebase/storage';
-;
-
+import {
+    initializeFirestore,
+    Firestore,
+    connectFirestoreEmulator,
+} from 'firebase/firestore/lite';
+import {
+    getFunctions,
+    connectFunctionsEmulator,
+    type Functions,
+} from 'firebase/functions';
+import {
+    getStorage,
+    connectStorageEmulator,
+    type FirebaseStorage,
+} from 'firebase/storage';
 let auth: Auth, db: Firestore;
 let functions: Functions;
 let functionsEuropeWest3: Functions;
@@ -20,7 +30,7 @@ if (!getApps().length) {
         projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
         storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
         messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-        appId: import.meta.env.VITE_FIREBASE_APP_ID
+        appId: import.meta.env.VITE_FIREBASE_APP_ID,
     });
 
     // Only use analytics in production
@@ -28,7 +38,7 @@ if (!getApps().length) {
         analytics = getAnalytics(app);
     }
     db = initializeFirestore(app, {
-        ignoreUndefinedProperties: true
+        ignoreUndefinedProperties: true,
     });
 
     auth = getAuth(app);

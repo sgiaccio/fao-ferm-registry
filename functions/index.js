@@ -1408,3 +1408,11 @@ exports.qcGef = qc.qcGef;
  * **********************************************/
 // const reporting = require("./reporting");
 // exports.generateInitiativeReport = reporting.generateInitiativeReport;
+
+/************************************************
+ *
+ * EXPORT PUBLIC POLYGONS
+ *
+ * **********************************************/
+const exportPublicPolygons = require('./exportPublicPolygons');
+exports.exportPublicPolygons = exportPublicPolygons.exportPublicPolygons;

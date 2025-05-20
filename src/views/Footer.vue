@@ -3,7 +3,6 @@
 
 import { useI18n } from 'vue-i18n';
 
-
 const { t } = useI18n();
 
 const navigation = {
@@ -81,24 +80,36 @@ const navigation = {
     //         }),
     //     },
     // ],
-}
+};
 </script>
-  
+
 <template>
     <footer class="bg-white">
-        <div class="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
-            <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12"
-                 aria-label="Footer">
-                <div v-for="item in navigation.main"
-                     :key="item.name"
-                     class="pb-6">
-                    <a v-if="item.href"
-                       target="_blank"
-                       :href="item.href"
-                       class="text-sm leading-6 text-gray-600 hover:text-gray-900">{{ item.name }}</a>
-                    <router-link v-else-if="item.routeName"
-                       :to="{ name: item.routeName }"
-                       class="text-sm leading-6 text-gray-600 hover:text-gray-900">{{ item.name }}</router-link>
+        <div
+            class="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8"
+        >
+            <nav
+                class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12"
+                aria-label="Footer"
+            >
+                <div
+                    v-for="item in navigation.main"
+                    :key="item.name"
+                    class="pb-6"
+                >
+                    <a
+                        v-if="item.href"
+                        target="_blank"
+                        :href="item.href"
+                        class="text-sm leading-6 text-gray-600 hover:text-gray-900"
+                        >{{ item.name }}</a
+                    >
+                    <router-link
+                        v-else-if="item.routeName"
+                        :to="{ name: item.routeName }"
+                        class="text-sm leading-6 text-gray-600 hover:text-gray-900"
+                        >{{ item.name }}</router-link
+                    >
                 </div>
             </nav>
             <!-- <div class="mt-10 flex justify-center space-x-10">
@@ -116,5 +127,3 @@ const navigation = {
         </div>
     </footer>
 </template>
-  
-  
