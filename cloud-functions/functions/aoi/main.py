@@ -50,7 +50,7 @@ initialize_app()
 #     --stage-bucket=fao-ferm-functions-staging \
 #     --trigger-http --allow-unauthenticated \
 #     --no-gen2 \
-#     --env-vars-file=env.yaml
+#     --env-vars-file=.env.yaml
 
 
 # TODO use Google secrets
@@ -91,7 +91,7 @@ def authenticated(fn):
                 project_id = request.form['project_id']
             else:
                 project_id = request.args['project_id']
-            
+
             doc_ref = db.collection(u'registry').document(project_id)
             doc = doc_ref.get()
 
@@ -236,7 +236,7 @@ def upload_blob(bucket_name, source_file, destination_blob_name):
     # source_file_name = "local/path/to/file"
     # The ID of your GCS object
     # destination_blob_name = "storage-object-name"
-    
+
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
@@ -298,7 +298,7 @@ def _fetch_areas(project_id, uuids):
         conn = db_pool.getconn()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT area_uuid, ST_Area(ST_Union(ST_MakeValid(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)))) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s GROUP BY area_uuid", [tuple(uuids), str(project_id)])   
+        cursor.execute("SELECT area_uuid, ST_Area(ST_Union(ST_MakeValid(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)))) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s GROUP BY area_uuid", [tuple(uuids), str(project_id)])
         areas = cursor.fetchall()
         return areas;
     except Exception as e:
@@ -376,16 +376,16 @@ def get_polygon_area(request):
 
         # perform a query to get the poygons area that merges the features
         cursor.execute("""
-            SELECT ST_Area(ST_Union(ST_MakeValid(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)))) 
-            FROM project_areas 
+            SELECT ST_Area(ST_Union(ST_MakeValid(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933))))
+            FROM project_areas
             WHERE area_uuid = %s
         """, [str(area_uuid)])
 
-        # cursor.execute("SELECT area_uuid, ST_Area(ST_Union(ST_MakeValid(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)))) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s GROUP BY area_uuid", [tuple(uuids), str(project_id)])   
+        # cursor.execute("SELECT area_uuid, ST_Area(ST_Union(ST_MakeValid(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)))) AS area_sqm FROM project_areas WHERE area_uuid IN %s AND project_id = %s GROUP BY area_uuid", [tuple(uuids), str(project_id)])
 
         # This is the old query that didn't merge the features
         # cursor.execute("SELECT ST_Area(ST_Transform(ST_SetSRID(geom::geometry, 4326), 6933)) FROM project_areas WHERE area_uuid = %s", [str(area_uuid)])
-        
+
         area = round(cursor.fetchone()[0])
 
         return (str(area), 200, { 'Access-Control-Allow-Origin': '*' })
@@ -472,8 +472,8 @@ def get_area_json(request):
         # Collect polygons with the same area_uuid into a single geometry collection
         # use ST_CollectionExtract for comppatibiity with polygons created with previous versions of load functions
         cursor.execute("""
-            SELECT ST_AsGeoJSON(ST_Collect(ST_CollectionExtract(geom::geometry))) 
-            FROM project_areas 
+            SELECT ST_AsGeoJSON(ST_Collect(ST_CollectionExtract(geom::geometry)))
+            FROM project_areas
             WHERE area_uuid = %s AND project_id = %s
         """, [str(area_uuid), str(project_id)])
         area = cursor.fetchone()[0]

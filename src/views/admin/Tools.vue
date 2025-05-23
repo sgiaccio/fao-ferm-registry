@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, h } from 'vue';
 // import TabTemplate from '../TabTemplate.vue';
 import { gefQc, exportPublicPolygons } from '@/firebase/functions';
 import { toast } from 'vue3-toastify';
 
 const gefQcButtonEnabled = ref(true);
 const exportPolygonsButtonEnabled = ref(true);
+let polygonFileUrl = ref('');
+let polygonFileName = ref('');
+let polygonFeatureCount = ref(0);
 
 async function downloadGefQc() {
     gefQcButtonEnabled.value = false;
@@ -36,6 +39,65 @@ async function downloadGefQc() {
     gefQcButtonEnabled.value = true;
 }
 
+// Function to trigger download and remove toast
+function downloadPolygonFile(url: string, filename: string, toastId: string) {
+    // Create an anchor element to trigger the download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // Remove the toast after a short delay
+    setTimeout(() => {
+        toast.remove(toastId);
+    }, 1000);
+}
+
+// Create a toast content component using render function
+const ToastContent = (props: {
+    url: string;
+    filename: string;
+    features: number;
+    toastId: string;
+}) => {
+    return h(
+        'div',
+        { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+        [
+            h(
+                'div',
+                {},
+                `GeoJSON file with ${props.features} features is ready`,
+            ),
+            h('div', {}, [
+                h(
+                    'button',
+                    {
+                        style: {
+                            backgroundColor: '#4a90e2',
+                            color: 'white',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            border: 'none',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                        },
+                        onClick: () =>
+                            downloadPolygonFile(
+                                props.url,
+                                props.filename,
+                                props.toastId,
+                            ),
+                    },
+                    'Download GeoJSON',
+                ),
+            ]),
+        ],
+    );
+};
+
 async function downloadPublicPolygons() {
     exportPolygonsButtonEnabled.value = false;
 
@@ -46,18 +108,24 @@ async function downloadPublicPolygons() {
     try {
         const result = await exportPublicPolygons();
 
-        // Create a more styled download button within the toast
-        const message = `<div style="display: flex; flex-direction: column; gap: 8px;"><div>GeoJSON file with ${result.features} features is ready</div><div><a href="${result.downloadUrl}" download="${result.filename}" style="display: inline-block; background-color: #4a90e2; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-weight: bold;" onclick="setTimeout(() => toast.dismiss('${toastId}'), 1000)">Download GeoJSON</a></div></div>`;
+        // Store the result data in reactive refs
+        polygonFileUrl.value = result.downloadUrl;
+        polygonFileName.value = result.filename;
+        polygonFeatureCount.value = result.features;
 
         toast.update(toastId, {
-            render: message,
+            render: () =>
+                h(ToastContent, {
+                    url: result.downloadUrl,
+                    filename: result.filename,
+                    features: result.features,
+                    toastId: toastId,
+                }),
             type: toast.TYPE.SUCCESS,
             isLoading: false,
             autoClose: false,
             closeOnClick: false,
             closeButton: true,
-            // Allow HTML in the toast message
-            dangerouslyHTMLString: true,
         });
     } catch (error) {
         console.error('Error exporting polygons:', error);

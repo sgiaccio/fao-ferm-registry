@@ -44,3 +44,5 @@ private_scripts
 fao-ferm2-review-ad0074f38f58.json
 
 /public/world/
+
+.env.yaml

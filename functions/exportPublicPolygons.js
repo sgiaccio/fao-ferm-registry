@@ -7,7 +7,6 @@ const { validate } = require('uuid');
 const { getDatabaseClient } = require('./dbPool');
 const { isSuperAdmin } = require('./util');
 const axios = require('axios');
-const { Readable } = require('stream');
 
 // Config params instead of secrets
 const dbUser = defineString('DB_USER');
@@ -212,7 +211,8 @@ async function streamGeoJSONToStorage(
         const uploadStream = file.createWriteStream({
             metadata: {
                 contentType: 'application/geo+json',
-                contentDisposition: `attachment; filename="${filename}"`,
+                contentDisposition: `attachment; filename=${filename}`,
+                cacheControl: 'no-store, no-cache, must-revalidate, private',
             },
             resumable: true,
         });
@@ -228,7 +228,7 @@ async function streamGeoJSONToStorage(
             logger.info(`Successfully uploaded ${filename} to Cloud Storage`);
 
             // Use public URL for public bucket
-            const publicUrl = `https://storage.googleapis.com/${bucketName}/${filename}`;
+            const publicUrl = `https://storage.googleapis.com/${bucketName}/${encodeURIComponent(filename)}`;
 
             resolve({
                 success: true,
@@ -299,7 +299,6 @@ exports.exportPublicPolygons = onCall(
         region: 'europe-west3',
         timeoutSeconds: 540,
         memory: '512MiB',
-        // memory: '2GiB',
     },
     async (request) => {
         const { auth } = request;
@@ -373,27 +372,35 @@ exports.exportPublicPolygons = onCall(
                 );
 
                 // Create VALUES array for CTE
-                const valuesArray = validUuids.map(
-                    (uuid) => `('${uuid.toString()}'::uuid)`,
-                );
+                const valuesArray = validUuids.map((uuid) => {
+                    const version = uuidToProject.get(uuid).publishedVersion;
+                    return `('${uuid.toString()}'::uuid, ${version !== undefined ? version : 'NULL'})`;
+                });
                 const valuesClause = valuesArray.join(', ');
 
                 // Use CTE for better performance with large datasets
                 const query = `
-                    WITH uuid_list(uuid) AS (
+                    WITH uuid_list(uuid, version) AS (
                         VALUES ${valuesClause}
                     )
                     SELECT
-                        pa.area_uuid,
-                        pa.project_id,
-                        ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(pa.geom::geometry)))) AS geojson
+                        pav.area_uuid,
+                        pav.project_id,
+                        ST_AsGeoJSON(ST_CollectionExtract(ST_Collect(ST_CollectionExtract(pav.geom::geometry)))) AS geojson
                     FROM
-                        project_areas pa
+                        project_areas_versions pav
                     JOIN
-                        uuid_list ul ON pa.area_uuid = ul.uuid
+                        uuid_list ul ON pav.area_uuid = ul.uuid AND (
+                            (ul.version IS NOT NULL AND pav.version = ul.version) OR
+                            (ul.version IS NULL AND pav.version = (
+                                SELECT MAX(version)
+                                FROM project_areas_versions
+                                WHERE area_uuid = pav.area_uuid
+                            ))
+                        )
                     GROUP BY
-                        pa.area_uuid,
-                        pa.project_id
+                        pav.area_uuid,
+                        pav.project_id
                     `;
 
                 const chunkResult = await client.query(query);
@@ -450,52 +457,53 @@ exports.exportPublicPolygons = onCall(
  * @returns {Promise<{areaUuids: string[], uuidToProject: Map<string, Object>, uuidToArea: Map<string, Object>}>}
  */
 async function getAreas() {
-    const projectSnapshot = await firestore()
-        .collection('registry')
+    const publicProjectsSnapshot = await firestore()
+        .collection('publicProjects')
         // .limit(100)
         .get();
-    // const projectIds = projectSnapshot.docs.map(doc => doc.id);
-    const projects = projectSnapshot.docs;
+    // const projectIds = publicProjectsSnapshot.docs.map(doc => doc.id);
+    const projects = publicProjectsSnapshot.docs;
 
-    logger.info(`Found ${projects.length} projects in registry`);
+    logger.info(
+        `Found ${projects.length} projects in publicProjects collection`,
+    );
 
     const uuidToProject = new Map();
     const uuidToArea = new Map();
 
-    // Collect UUIDs from the areas collection
+    // Collect UUIDs from the publicAreas subcollection
     const areaUuids = [];
 
-    for (const project of projectSnapshot.docs) {
+    for (const project of publicProjectsSnapshot.docs) {
         const projectDoc = project.data();
         const projectId = project.id;
 
-        const areaDoc = await firestore()
-            .collection('areas')
+        // Log publishedVersion info
+        if (projectDoc.publishedVersion !== undefined) {
+            logger.info(
+                `Project ${projectId} has publishedVersion: ${projectDoc.publishedVersion}`,
+            );
+        } else {
+            logger.info(
+                `Project ${projectId} has no publishedVersion, will use latest version`,
+            );
+        }
+
+        const publicAreasSnapshot = await firestore()
+            .collection('publicProjects')
             .doc(projectId)
+            .collection('publicAreas')
             .get();
 
-        if (!areaDoc.exists) {
-            logger.info(`No area document found for project ${projectId}`);
-            continue;
-        }
-
-        const areaData = areaDoc.data();
-        if (!areaData) {
-            logger.info(`No area data found for project ${projectId}`);
-            continue;
-        }
-
-        if (!areaData.areas || !Array.isArray(areaData.areas)) {
-            logger.info(
-                `No areas array in area document for project ${projectId}`,
-            );
+        if (publicAreasSnapshot.empty) {
+            logger.info(`No public areas found for project ${projectId}`);
             continue;
         }
 
         // Extract UUIDs from the areas
-        for (const areaObj of areaData.areas) {
-            const area = Object.values(areaObj)[0]; // Get the first value from the area object
-
+        for (const areaDoc of publicAreasSnapshot.docs) {
+            const areaObj = areaDoc.data();
+            const area = Object.values(areaObj)[0];
             if (area && area.uuid) {
                 uuidToArea.set(area.uuid, area);
                 uuidToProject.set(area.uuid, projectDoc);
@@ -505,10 +513,13 @@ async function getAreas() {
     }
 
     if (areaUuids.length === 0) {
-        logger.info('No area UUIDs found');
-        throw new HttpsError('not-found', 'No area UUIDs found');
+        logger.info('No area UUIDs found in public projects');
+        throw new HttpsError(
+            'not-found',
+            'No area UUIDs found in public projects',
+        );
     }
 
-    logger.info(`Found ${areaUuids.length} area UUIDs`);
+    logger.info(`Found ${areaUuids.length} area UUIDs in public projects`);
     return { areaUuids, uuidToProject, uuidToArea };
 }
