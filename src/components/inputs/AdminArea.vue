@@ -227,13 +227,17 @@ const years = generateYearOptions(1950, 2050);
                 <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
                     {{ t('inputs.aoi.startingYear') }}
                 </legend>
-                <div class="mt-2 flex rounded-md max-w-36">
+                <div
+                    v-if="modelValue.startingYear || edit"
+                    class="mt-2 flex rounded-md max-w-36"
+                >
                     <SelectInput
                         :edit="edit"
                         v-model="modelValue.startingYear"
                         :options="years"
                     />
                 </div>
+                <div v-else>N/A</div>
             </div>
         </fieldset>
         <AreaEcosystemsView

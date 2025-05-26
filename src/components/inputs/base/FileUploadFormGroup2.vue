@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { uploadFiles, listProjectFiles, getFileAsBlob, deleteFile } from '@/firebase/storage';
+import {
+    uploadFiles,
+    listProjectFiles,
+    getFileAsBlob,
+    deleteFile,
+} from '@/firebase/storage';
 
 import { toast } from 'vue3-toastify';
 
@@ -11,7 +16,6 @@ import FormGroup from '../FormGroup.vue';
 
 import { TrashIcon, ArrowDownTrayIcon } from '@heroicons/vue/24/solid';
 
-
 const props = defineProps({
     ...baseProps,
     ...{
@@ -19,15 +23,19 @@ const props = defineProps({
         folder: { type: String, required: true },
         multiple: { type: Boolean, default: true },
         getAccessTokenFn: { type: Function, required: true },
-    }
+    },
 });
 
-const uploadedFiles = ref<{ name: string, path: string }[]>([]);
+const uploadedFiles = ref<{ name: string; path: string }[]>([]);
 
 async function getUploadedFiles() {
     try {
         const accessToken = await props.getAccessTokenFn();
-        uploadedFiles.value = await listProjectFiles(props.projectId, props.folder, accessToken);
+        uploadedFiles.value = await listProjectFiles(
+            props.projectId,
+            props.folder,
+            accessToken,
+        );
     } catch (error) {
         console.error(error);
         toast.error('Failed to load files: ' + error);
@@ -69,7 +77,14 @@ async function upload(files: FileList) {
                 isLoading: false,
             });
         };
-        await uploadFiles(props.projectId, props.folder, Array.from(files), accessToken, () => { }, onUploadComplete);
+        await uploadFiles(
+            props.projectId,
+            props.folder,
+            Array.from(files),
+            accessToken,
+            () => {},
+            onUploadComplete,
+        );
         await getUploadedFiles();
     } catch (error) {
         console.error('Upload failed:', error);
@@ -119,12 +134,13 @@ function notify(nFiles: number) {
     //     autoClose: true,
     // });
 
-    const toastId = toast.loading(`Uploading ${nFiles} file${nFiles > 1 ? 's' : ''}...`,
+    const toastId = toast.loading(
+        `Uploading ${nFiles} file${nFiles > 1 ? 's' : ''}...`,
         // { progress: 0, autoClose: true, type: toast.TYPE.DEFAULT }
     );
     console.log('toastId', toastId);
-    return toastId
-};
+    return toastId;
+}
 </script>
 
 <template>
@@ -146,10 +162,7 @@ function notify(nFiles: number) {
             v-if="uploadedFiles?.length"
             class="overflow-hidden bg-white shadow sm:rounded-md text-sm border max-h-36 overflow-y-auto"
         >
-            <ul
-                role="list"
-                class="divide-y divide-gray-200"
-            >
+            <ul role="list" class="divide-y divide-gray-200">
                 <li
                     v-for="file in uploadedFiles"
                     :key="file.name"
@@ -163,14 +176,20 @@ function notify(nFiles: number) {
                             :class="['cursor-pointer', edit ? 'mr-3' : '']"
                             @click="() => download(file.path, file.name)"
                         >
-                            <ArrowDownTrayIcon class="inline left-auto w-5 h-5 hover:text-ferm-blue-dark-800" />
+                            <ArrowDownTrayIcon
+                                class="inline left-auto w-5 h-5 hover:text-ferm-blue-dark-800"
+                            />
                         </div>
                         <div
                             v-if="edit"
                             class="cursor-pointer"
-                            @click="() => deleteFromStorage(file.name, file.path)"
+                            @click="
+                                () => deleteFromStorage(file.name, file.path)
+                            "
                         >
-                            <TrashIcon class="inline left-auto w-5 h-5 text-ferm-red-dark hover:text-ferm-red-light" />
+                            <TrashIcon
+                                class="inline left-auto w-5 h-5 text-ferm-red-dark hover:text-ferm-red-light"
+                            />
                         </div>
                     </div>
                 </li>
@@ -179,54 +198,7 @@ function notify(nFiles: number) {
         <div v-else-if="!edit">
             <p class="text-gray-400 italic">No files uploaded yet</p>
         </div>
-
-        <!-- <div v-if="edit && (multiple || uploadedFiles.length === 0)"
-             @dragover.prevent
-             @dragenter="dragEnter"
-             @dragleave="dragLeave"
-             @drop="handleDrop"
-             @click="openFileDialog"
-             class="w-full h-32 mb-6 border-2 border-dashed border-gray-400 flex items-center justify-center cursor-pointer font-bold text-center hover:bg-ferm-blue-dark-200 rounded-lg"
-             :class="isDragging ? 'bg-ferm-blue-dark-200' : ''">
-            Drop {{ uploadedFiles && uploadedFiles.length ? 'more' : '' }} file{{ multiple ? 's' : '' }} here or click to upload
-            <input ref="fileInput"
-                   type="file"
-                   :multiple="multiple"
-                   class="hidden"
-                   @change="handleFiles" />
-        </div>
-
-        <div v-if="uploadedFiles.length"
-             class="overflow-hidden bg-white shadow sm:rounded-md text-sm border max-h-36 overflow-y-auto">
-            <ul role="list"
-                class="divide-y divide-gray-200">
-                <li v-for="file in uploadedFiles"
-                    :key="file.name"
-                    class="px-3 py-2 sm:px-6">
-                    <div class="flex flex-row justify-between items-center">
-                        <div class="flex-grow">
-                            {{ file.name }}
-                        </div>
-                        <div :class="['cursor-pointer', edit ? 'mr-3' : '']"
-                             @click="() => download(file.path, file.name)">
-                            <ArrowDownTrayIcon class="inline left-auto w-5 h-5 hover:text-ferm-blue-dark-800" />
-                        </div>
-                        <div v-if="edit"
-                             class="cursor-pointer"
-                             @click="() => deleteFromStorage(file.name, file.path)">
-                            <TrashIcon class="inline left-auto w-5 h-5 text-ferm-red-dark hover:text-ferm-red-light" />
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div v-else-if="!edit">
-            <p class="text-gray-400 italic">No files uploaded yet</p>
-        </div> -->
-        <template
-            #info
-            v-if="$slots.info"
-        >
+        <template #info v-if="$slots.info">
             <slot name="info" />
         </template>
     </FormGroup>
