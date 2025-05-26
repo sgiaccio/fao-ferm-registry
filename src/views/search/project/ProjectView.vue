@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeMount, onUnmounted, computed, watch } from 'vue';
+import {
+    ref,
+    onMounted,
+    onBeforeMount,
+    onUnmounted,
+    computed,
+    watch,
+} from 'vue';
 
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router';
 
 import { useI18n } from 'vue-i18n';
 
-import { getPublicProject, getPublicProjectThumbnail } from '@/firebase/functions';
+import {
+    getPublicProject,
+    getPublicProjectThumbnail,
+} from '@/firebase/functions';
 
 import { useMenusStore } from '@/stores/menus';
 
@@ -25,19 +35,21 @@ import {
     getRecursiveMenuItem,
     getLastTargetArea,
     getPolygonsArea,
-    areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil
+    areaByGefIndicatorGroup as areaByGefIndicatorGroupUtil,
 } from '@/lib/util';
 
 import iso2codes from '@/assets/iso2codes.json';
 
-
 const mapPanel = ref<any>(null);
 
-withDefaults(defineProps<{
-    edit?: boolean
-}>(), {
-    edit: true
-});
+withDefaults(
+    defineProps<{
+        edit?: boolean;
+    }>(),
+    {
+        edit: true,
+    },
+);
 
 const { t } = useI18n();
 
@@ -48,31 +60,23 @@ const project = ref<any>(null);
 
 const areaByGefIndicatorGroup = ref<any[]>([]);
 
-// const indicatorGroupNames = [
-//     { value: 1, label: '1. Terrestrial protected areas created or under improved management for conservation and sustainable use' },
-//     { value: 2, label: '2. Marine protected areas created or under improved management for conservation and sustainable use' },
-//     { value: 3, label: '3. Area of land and ecosystems under restoration' },
-//     { value: 4, label: '4. Area of landscapes under improved practices' },
-//     { value: 5, label: '5. Area of marine habitat under improved practices to benefit biodiversity' },
-//     { value: '2LDCF', label: '2 (LDCF). Area of land managed for climate resilience' }
-// ];
-
 onBeforeMount(async () => {
     const [fetchedProject] = await Promise.all([
         getPublicProject(route.params.id as string),
-        // getGaulLevel0()
     ]);
     project.value = fetchedProject;
     // countries.value = fetchedCountries;
 
     if (fetchedProject.reportingLine === 'GEF') {
-        areaByGefIndicatorGroup.value = areaByGefIndicatorGroupUtil(fetchedProject.areas);
+        areaByGefIndicatorGroup.value = areaByGefIndicatorGroupUtil(
+            fetchedProject.areas,
+        );
     }
 });
 
 onUnmounted(() => {
     // Revoke all object URLs
-    uploadedFiles.value.forEach(file => {
+    uploadedFiles.value.forEach((file) => {
         if (file.imageUrl) {
             URL.revokeObjectURL(file.imageUrl);
         }
@@ -83,7 +87,9 @@ onUnmounted(() => {
     }
 });
 
-const uploadedFiles = ref<{ name: string, path: string, imageUrl?: string }[]>([]);
+const uploadedFiles = ref<{ name: string; path: string; imageUrl?: string }[]>(
+    [],
+);
 
 async function getThumbnail() {
     try {
@@ -94,53 +100,25 @@ async function getThumbnail() {
     }
 }
 
-let chartData: { value: number, name: string }[] = [];
+let chartData: { value: number; name: string }[] = [];
 const chartDiv = ref(null);
 watch([project, chartDiv], ([project, chartDiv]) => {
     if (!project || !chartDiv) return;
-
-    // if (project.reportingLine === 'GEF') {
-    //     chartData = areaByGefIndicator.map(([label, value]) => {
-    //         return {
-    //             value,
-    //             name: getRecursiveMenuLabel(label, menus.gefIndicators) || label
-    //         };
-    //     });
-    // } else {
     chartData = [
         {
             value: project.project?.areaUnderRestoration || 0,
-            name: 'Area under restoration'
-        }, {
-            value: project.project?.targetArea || 0 - (project.project?.areaUnderRestoration || 0), // TODO
-            name: 'Not achieved'
-        }
+            name: 'Area under restoration',
+        },
+        {
+            value:
+                project.project?.targetArea ||
+                0 - (project.project?.areaUnderRestoration || 0), // TODO
+            name: 'Not achieved',
+        },
     ];
-    // }
 
     initChart();
-    // GEF
-    // if (store.project?.reportingLine === 'GEF') {
-    //     initCICharts();
-    // }
 });
-
-
-
-// const chartData = areaByGefIndicator.map(([label, value]) => {
-//     return {
-//         value,
-//         name: label
-//     };
-// })
-
-// const totalArea = chartData.reduce((total, { value }) => total + value, 0);
-// if (totalArea < getLastTargetArea()) {
-//     chartData.push({
-//         value: getLastTargetArea() - totalArea,
-//         name: 'Not achieved'
-//     });
-// }
 
 import * as echarts from 'echarts/core';
 
@@ -152,47 +130,28 @@ import { PieChart } from 'echarts/charts';
 import {
     TooltipComponent,
     GridComponent,
-    LegendComponent
+    LegendComponent,
 } from 'echarts/components';
 
-import echartConfig from './echarts_config.json'
+import echartConfig from './echarts_config.json';
 echarts.registerTheme('dark', echartConfig);
 
-
-// Features like Universal Transition and Label Layout
-// import { LabelLayout, UniversalTransition } from 'echarts/features';
-
-// Import the Canvas renderer
-// Note that including the CanvasRenderer or SVGRenderer is a required step
 import { SVGRenderer } from 'echarts/renderers';
-
-// import type { GeoJSONObject } from 'ol/format/GeoJSON';
-// import { babelParse } from 'vue/compiler-sfc';
-// import { BackspaceIcon } from '@heroicons/vue/24/outline';
-// import { text } from 'd3';
 
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline';
 
 echarts.use([
     PieChart,
     BarChart,
-    // TitleComponent,
     TooltipComponent,
     GridComponent,
-    // DatasetComponent,
-    // TransformComponent,
-    // LabelLayout,
-    // UniversalTransition,
     SVGRenderer,
-    LegendComponent
+    LegendComponent,
 ]);
-
 
 const thumbnail = ref<string | null>(null);
 
 onMounted(async () => {
-    // await getUploadedFiles(); // TODO add getPublicUploadedFiles cloud function
-
     const imageUrl = await getThumbnail();
     if (!imageUrl) {
         console.error('Failed to load thumbnail:', imageUrl);
@@ -200,11 +159,6 @@ onMounted(async () => {
     }
     thumbnail.value = imageUrl;
 });
-
-// const numberFormatter = new Intl.NumberFormat('en-US', {
-//     style: 'decimal',
-//     maximumFractionDigits: 0
-// });
 
 async function initChart() {
     if (!chartDiv.value) return;
@@ -216,7 +170,7 @@ async function initChart() {
             {
                 type: 'pie',
                 data: chartData,
-            }
+            },
         ],
         backgroundColor: 'transparent',
     };
@@ -231,129 +185,23 @@ async function initChart() {
     });
 }
 
-// GEF
-// Core indicators charts
-// const ciChartDiv = ref(null);
-// const showCIChart = ref(true);
-// function initCICharts() {
-//     if (!ciChartDiv.value) return;
-
-//     // return if not GEF
-//     if (store.project?.reportingLine !== 'GEF') return;
-
-//     const achievedAreaByCoreIndicatorGroup = store.areaByGefIndicatorGroup();
-//     function findAchievedAreaByCoreIndicator(label: string) {
-//         return achievedAreaByCoreIndicatorGroup.find(([l, _]) => label === l)?.[1] || 0;
-//     }
-
-//     const achievedData = [
-//         findAchievedAreaByCoreIndicator('1'),
-//         findAchievedAreaByCoreIndicator('2'),
-//         findAchievedAreaByCoreIndicator('3'),
-//         findAchievedAreaByCoreIndicator('4'),
-//         findAchievedAreaByCoreIndicator('5'),
-//         findAchievedAreaByCoreIndicator('2LDCF')
-//     ];
-//     const committedData = [
-//         store.project?.project.targetAreaCoreIndicator1 || 0,
-//         store.project?.project.targetAreaCoreIndicator2 || 0,
-//         store.project?.project.targetAreaCoreIndicator3 || 0,
-//         store.project?.project.targetAreaCoreIndicator4 || 0,
-//         store.project?.project.targetAreaCoreIndicator5 || 0,
-//         store.project?.project.targetAreaCoreIndicator2LDCF || 0,
-//     ];
-//     const yAxisData = [
-//         '1',
-//         '2',
-//         '3',
-//         '4',
-//         '5',
-//         '2LDCF'
-//     ];
-
-//     // delete the items from the three arrays above when achievedData is 0 and committedData is 0
-//     for (let i = 0; i < achievedData.length; i++) {
-//         if (achievedData[i] === 0 && committedData[i] === 0) {
-//             achievedData.splice(i, 1);
-//             committedData.splice(i, 1);
-//             yAxisData.splice(i, 1);
-//             i--;
-//         }
-//     }
-
-//     if (achievedData.length === 0) {
-//         showCIChart.value = false;
-//         return;
-//     };
-
-//     var myChart = echarts.init(ciChartDiv.value);
-
-//     const option = {
-//         // title: {
-//         //     text: 'Area achieved by GEF Core Indicators',
-//         // },
-//         tooltip: {
-//             trigger: 'axis',
-//             axisPointer: {
-//                 type: 'shadow'
-//             },
-//             valueFormatter: (value: number) => numberFormatter.format(value)
-//         },
-//         legend: {
-//             // bottom: 0,
-//         },
-//         grid: {
-//             left: '3%',
-//             right: '4%',
-//             bottom: '3%',
-//             containLabel: true
-//         },
-//         xAxis: {
-//             type: 'value',
-//             boundaryGap: [0, 0.01],
-//         },
-//         yAxis: {
-//             type: 'category',
-//             data: yAxisData,
-//         },
-//         series: [
-//             {
-//                 name: 'Committed',
-//                 type: 'bar',
-//                 data: committedData
-//             },
-//             {
-//                 name: 'Achieved',
-//                 type: 'bar',
-//                 data: achievedData
-//             }
-//         ],
-//         itemStyle: {
-//             borderRadius: 3,
-//         },
-
-//     };
-
-//     myChart.setOption(option);
-
-//     window.addEventListener('resize', () => {
-//         myChart.resize();
-//     });
-// }
-
 const countriesObj = computed(() => {
     if (!iso2codes || !project?.value?.project?.countries) return '';
-    const projectCountries = (project?.value?.project?.countries || []).map((iso2: string) => {
-        return iso2codes!.find(c => c.iso2 === iso2)
-    });
-    return projectCountries.map(c => ({ name: c?.label, iso2: c?.iso2 })).sort((a, b) => a.name.localeCompare(b.name));
+    const projectCountries = (project?.value?.project?.countries || []).map(
+        (iso2: string) => {
+            return iso2codes!.find((c) => c.iso2 === iso2);
+        },
+    );
+    return projectCountries
+        .map((c) => ({ name: c?.label, iso2: c?.iso2 }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 });
-
 
 const timeframe = computed(() => {
     const p = project.value.project;
     if (!p.startingYear && !p.endingYear) return 'No timeframe specified';
-    if (p.startingYear && p.endingYear) return `${p.startingYear} – ${p.endingYear}`;
+    if (p.startingYear && p.endingYear)
+        return `${p.startingYear} – ${p.endingYear}`;
     if (p.startingYear) return `from ${p.startingYear}`;
     if (p.endingYear) return `until ${p.endingYear}`;
 });
@@ -399,7 +247,6 @@ function deselectArea() {
     mapPanel.value?.resetMap();
 }
 
-
 const targetArea = computed(() => {
     if (project.value.reportingLine === 'GEF') {
         return getLastTargetArea(project.value);
@@ -417,7 +264,9 @@ const areaUnderRestoration = computed(() => {
 });
 
 function areaForGefIndicatorGroup(indicatorGroup: number) {
-    return areaByGefIndicatorGroup.value.find(i => +i[0] === indicatorGroup)?.[1];
+    return areaByGefIndicatorGroup.value.find(
+        (i) => +i[0] === indicatorGroup,
+    )?.[1];
 }
 
 function nCIOtherThan3() {
@@ -426,9 +275,9 @@ function nCIOtherThan3() {
         project.value.project.targetAreaCoreIndicator2,
         project.value.project.targetAreaCoreIndicator2LDCF,
         project.value.project.targetAreaCoreIndicator4,
-        project.value.project.targetAreaCoreIndicator5
+        project.value.project.targetAreaCoreIndicator5,
     ];
-    return allIndicators.filter(i => i).length;
+    return allIndicators.filter((i) => i).length;
 }
 
 function otherChartSize() {
@@ -439,11 +288,19 @@ function otherChartSize() {
 <template>
     <AlertModal
         title="Description"
-        :onClose="() => { showFullDescription = false }"
+        :onClose="
+            () => {
+                showFullDescription = false;
+            }
+        "
         :open="showFullDescription"
         buttonText="Close"
     >
-        <p class="whitespace-pre-wrap text-sm text-gray-800 text-left font-serif_">{{ project?.project.description }}</p>
+        <p
+            class="whitespace-pre-wrap text-sm text-gray-800 text-left font-serif_"
+        >
+            {{ project?.project.description }}
+        </p>
     </AlertModal>
     <header class="top-0 h-20 md:h-24">
         <div class="overflow-hidden bg-slate-200 relative h-20 md:h-24">
@@ -454,7 +311,9 @@ function otherChartSize() {
             <div class="px-4 sm:px-12 pt-3 md:pt-4">
                 <!-- Logos -->
                 <div class="relative w-full pl-10 flex">
-                    <div class="mb-2 sm:mb-5 mt-2 grid grid-flow-col gap-x-6 mx-auto md:mx-0 divide-x divide-slate-500">
+                    <div
+                        class="mb-2 sm:mb-5 mt-2 grid grid-flow-col gap-x-6 mx-auto md:mx-0 divide-x divide-slate-500"
+                    >
                         <div class="-ml-10 mr-3">
                             <router-link :to="{ name: 'home' }">
                                 <img
@@ -482,56 +341,69 @@ function otherChartSize() {
         </div>
     </header>
 
-    <div class="mx-auto sm:px-6_ lg:px-8_ font-serif_ h-[calc(100vh-5rem)] md:h-[calc(100vh-6rem)] border-t border-t-slate-400 bg-slate-100">
+    <div
+        class="mx-auto sm:px-6_ lg:px-8_ font-serif_ h-[calc(100vh-5rem)] md:h-[calc(100vh-6rem)] border-t border-t-slate-400 bg-slate-100"
+    >
         <div class="flex flex-col md:flex-row h-full">
             <div
                 id="projectInfo"
                 class="h-full w-full md:w-[400px] lg:w-[500px] xl:w-[600px] _py-6 _pl-4 pr-3 text-gray-800 overflow-auto"
             >
-                <div
-                    v-if="project"
-                    class="relative"
-                >
+                <div v-if="project" class="relative">
                     <transition name="appear_from_left">
                         <div
                             v-if="selectedArea"
-                            class="absolute w-full space-y-4 bg-slate-100 z-50 py-6 pl-4 "
+                            class="absolute w-full space-y-4 bg-slate-100 z-50 py-6 pl-4"
                         >
-                            <div class="text-gray-800 text-sm flex w-full items-center">
+                            <div
+                                class="text-gray-800 text-sm flex w-full items-center"
+                            >
                                 <div class="flex-grow">
-                                    <h1 class="text-2xl font-akrobat font-semibold">{{ selectedArea.siteName || 'Area' }}</h1>
+                                    <h1
+                                        class="text-2xl font-akrobat font-semibold"
+                                    >
+                                        {{ selectedArea.siteName || 'Area' }}
+                                    </h1>
                                 </div>
                                 <button @click="deselectArea">
-                                    <div class="rounded-full bg-gray-300 hover:bg-gray-400 p-1">
+                                    <div
+                                        class="rounded-full bg-gray-300 hover:bg-gray-400 p-1"
+                                    >
                                         <ArrowLeftIcon class="h-6 w-6" />
                                     </div>
                                 </button>
                             </div>
 
-                            <EcosystemsPanel :areas="[{ dummy: selectedArea }]" />
+                            <EcosystemsPanel
+                                :areas="[{ dummy: selectedArea }]"
+                            />
 
-                            <ActivitiesPanel :areas="[{ dummy: selectedArea }]" />
+                            <ActivitiesPanel
+                                :areas="[{ dummy: selectedArea }]"
+                            />
 
-                            <IndicatorsPanel :areas="[{ dummy: selectedArea }]" />
+                            <IndicatorsPanel
+                                :areas="[{ dummy: selectedArea }]"
+                            />
 
                             <AreasCharts
                                 :areas="[{ dummy: selectedArea }]"
                                 @zoomToArea="zoomToArea"
                             />
 
-
                             <ChartsSwiper :area="selectedArea" />
                         </div>
                     </transition>
                     <transition name="disappear_to_left">
-                        <div
-                            v-if="!selectedArea"
-                            class="space-y-4 py-6 pl-4"
-                        >
+                        <div v-if="!selectedArea" class="space-y-4 py-6 pl-4">
                             <div class="text-gray-800 text-sm">
                                 <div class="flex flex-row w-full">
                                     <div class="flex-1">
-                                        <h1 class="text-2xl font-akrobat font-semibold">{{ project.project.title }}</h1>
+                                        <h1
+                                            class="text-2xl font-akrobat font-semibold"
+                                        >
+                                            {{ project.project.title }}
+                                        </h1>
                                     </div>
                                     <!-- add GEF logo if GEF project -->
                                     <div
@@ -545,7 +417,9 @@ function otherChartSize() {
                                         />
                                     </div>
                                 </div>
-                                <div class="mt-1 flex flex-wrap gap-x-3 gap-y-2">
+                                <div
+                                    class="mt-1 flex flex-wrap gap-x-3 gap-y-2"
+                                >
                                     <div
                                         v-for="c in countriesObj"
                                         :key="c.iso2"
@@ -558,8 +432,6 @@ function otherChartSize() {
                                         />
                                         <span class="ml-2">{{ c.name }}</span>
                                     </div>
-
-
                                 </div>
                             </div>
 
@@ -583,216 +455,410 @@ function otherChartSize() {
                             />
                             <div v-else>
                                 <CommittedAreaChart
-                                    v-if="project.project.targetAreaCoreIndicator3"
-                                    title="Area of land and ecosystems under restoration"
-                                    :targetArea="project.project.targetAreaCoreIndicator3"
-                                    :areaUnderRestoration="areaForGefIndicatorGroup(3) ?? 0"
+                                    v-if="
+                                        project.project.targetAreaCoreIndicator3
+                                    "
+                                    :title="
+                                        t('publicPagePreview.charts.gef.CI3')
+                                    "
+                                    :targetArea="
+                                        project.project.targetAreaCoreIndicator3
+                                    "
+                                    :areaUnderRestoration="
+                                        areaForGefIndicatorGroup(3) ?? 0
+                                    "
                                     :units="project.project.areaUnits"
                                 />
-                                <div :class="['mt-2', nCIOtherThan3() > 1 ? 'grid grid-cols-2 gap-2' : '']">
-                                    <CommittedAreaChart
-                                        v-if="project.project.targetAreaCoreIndicator4"
-                                        title="Area of landscapes under improved practices"
-                                        :targetArea="project.project.targetAreaCoreIndicator4"
-                                        :areaUnderRestoration="areaForGefIndicatorGroup(4) ?? 0"
-                                        :units="project.project.areaUnits"
-                                        underRestorationLabel="Under improved practices"
-                                        :size="otherChartSize()"
-                                    />
-                                    <CommittedAreaChart
-                                        v-if="project.project.targetAreaCoreIndicator5"
-                                        title="Area of marine habitat under improved practices to benefit biodiversity"
-                                        :targetArea="project.project.targetAreaCoreIndicator5"
-                                        :areaUnderRestoration="areaForGefIndicatorGroup(2) ?? 0"
-                                        :units="project.project.areaUnits"
-                                        underRestorationLabel="Under improved practices"
-                                        :size="otherChartSize()"
-                                    />
-                                    <CommittedAreaChart
-                                        v-if="project.project.targetAreaCoreIndicator1"
-                                        title="Terrestrial protected areas created or under improved management for conservation and sustainable use"
-                                        :targetArea="project.project.targetAreaCoreIndicator1"
-                                        :areaUnderRestoration="areaForGefIndicatorGroup(1) ?? 0"
-                                        :units="project.project.areaUnits"
-                                        underRestorationLabel="Under improved practices"
-                                        :size="otherChartSize()"
-                                    />
-                                    <CommittedAreaChart
-                                        v-if="project.project.targetAreaCoreIndicator2"
-                                        title="Marine protected areas created or under improved management for conservation and sustainable use"
-                                        :targetArea="project.project.targetAreaCoreIndicator2"
-                                        :areaUnderRestoration="areaForGefIndicatorGroup(2) ?? 0"
-                                        :units="project.project.areaUnits"
-                                        underRestorationLabel="Under improved practices"
-                                        :size="otherChartSize()"
-                                    />
-                                    <CommittedAreaChart
-                                        v-if="project.project.targetAreaCoreIndicator2LDCF"
-                                        title="Area of land managed for climate resilience"
-                                        :targetArea="project.project.targetAreaCoreIndicator2LDCF"
-                                        :areaUnderRestoration="areaForGefIndicatorGroup('2LDCF') ?? 0"
-                                        :units="project.project.areaUnits"
-                                        underRestorationLabel="Under improved practices"
-                                        :size="otherChartSize()"
-                                    />
-                                </div>
-                            </div>
-
-
-                            <!-- <div
-                                v-if="project.reportingLine === 'GEF'"
-                                class="gap-x-5 lg:gap-x-0 rounded-md p-2 h-full bg-[#dd6b66]"
-                            >
-                                <div class="font-bold">GEF Core Indicators</div>
                                 <div
-                                    v-for="group in areaByGefIndicatorGroup"
-                                    :key="group[0]"
-                                    class="flex mt-2"
+                                    :class="[
+                                        'mt-2',
+                                        nCIOtherThan3() > 1
+                                            ? 'grid grid-cols-2 gap-2'
+                                            : '',
+                                    ]"
                                 >
-                                    <div class="flex flex-row gap-4">
-                                        <div class="flex-grow">
-                                            {{ indicatorGroupNames.find(i => '' + i.value === '' + group[0])?.label }}
-                                        </div>
-                                        <div>
-                                            <span class="font-bold text-xl mr-1">{{ group[1] ? formatNumber(group[1]) : 'n/a' }}</span>
-                                            <span class="text-xl">{{ project.project.areaUnits || '' }}</span>
-                                        </div>
-                                    </div>
+                                    <CommittedAreaChart
+                                        v-if="
+                                            project.project
+                                                .targetAreaCoreIndicator4
+                                        "
+                                        :title="
+                                            t(
+                                                'publicPagePreview.charts.gef.CI4',
+                                            )
+                                        "
+                                        :targetArea="
+                                            project.project
+                                                .targetAreaCoreIndicator4
+                                        "
+                                        :areaUnderRestoration="
+                                            areaForGefIndicatorGroup(4) ?? 0
+                                        "
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="
+                                            project.project
+                                                .targetAreaCoreIndicator5
+                                        "
+                                        :title="
+                                            project.project
+                                                .targetAreaCoreIndicator5
+                                        "
+                                        :targetArea="
+                                            project.project
+                                                .targetAreaCoreIndicator5
+                                        "
+                                        :areaUnderRestoration="
+                                            areaForGefIndicatorGroup(2) ?? 0
+                                        "
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="
+                                            project.project
+                                                .targetAreaCoreIndicator1
+                                        "
+                                        title="
+                                            project.project
+                                                .targetAreaCoreIndicator1
+                                        "
+                                        :targetArea="
+                                            project.project
+                                                .targetAreaCoreIndicator1
+                                        "
+                                        :areaUnderRestoration="
+                                            areaForGefIndicatorGroup(1) ?? 0
+                                        "
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="
+                                            project.project
+                                                .targetAreaCoreIndicator2
+                                        "
+                                        title="
+                                            project.project
+                                                .targetAreaCoreIndicator2
+                                        "
+                                        :targetArea="
+                                            project.project
+                                                .targetAreaCoreIndicator2
+                                        "
+                                        :areaUnderRestoration="
+                                            areaForGefIndicatorGroup(2) ?? 0
+                                        "
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
+                                    <CommittedAreaChart
+                                        v-if="
+                                            project.project
+                                                .targetAreaCoreIndicator2LDCF
+                                        "
+                                        title="
+                                            project.project
+                                                .targetAreaCoreIndicator2LDCF
+                                        "
+                                        :targetArea="
+                                            project.project
+                                                .targetAreaCoreIndicator2LDCF
+                                        "
+                                        :areaUnderRestoration="
+                                            areaForGefIndicatorGroup('2LDCF') ??
+                                            0
+                                        "
+                                        :units="project.project.areaUnits"
+                                        underRestorationLabel="Under improved practices"
+                                        :size="otherChartSize()"
+                                    />
                                 </div>
-                            </div> -->
-
-                            <!-- <div
-                        v-if="project.project.targetArea && project.project.areaUnderRestoration"
-                        id="chart"
-                        ref="chartDiv"
-                        class="rounded-md text-base h-48 w-full mt-8 overflow-hidden"
-                    /> -->
-
-                            <!-- <div class="shadow rounded-lg overflow-hidden aspect-[162/100]">
-                        <!- - <div class="absolute bottom-0 px-3 py-2 left-0 right-0 z-50 w-full bg-blend-multiply bg-black/40 text-white">
-                            <div>
-                                <h1 class="text-2xl">{{ project.project.title }}</h1>
                             </div>
-                            <div class="mt-1 text-base">
-                                <p>{{ countriesString }}</p>
-                            </div>
-                        </div> - ->
-
-                        <swiper
-                            v-if="uploadedFiles?.length > 0 && uploadedFiles[0]?.imageUrl"
-                            :navigation="true"
-                            :modules="modules"
-                        >
-                            <swiper-slide
-                                v-for="file in uploadedFiles"
-                                :key="file.path"
-                            >
-                                <img
-                                    v-if="file?.imageUrl"
-                                    :src="file.imageUrl"
-                                    alt="File Image"
-                                    class="object-cover aspect-[162/100]"
-                                />
-                            </swiper-slide>
-                        </swiper>
-                        <div
-                            v-else
-                            width="100%"
-                            height="100%"
-                            class="bg-red-400"
-                        />
-                    </div> -->
-
                             <ResultPanel>
                                 <div class="border-gray-100">
                                     <dl class="divide-y divide-gray-100">
-                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.description') }}</dt>
-                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                                <template v-if="project.project.description">
-                                                    <template v-if="project.project.description.length > 250">
-                                                        <p>{{ project.project.description.substring(0, 250) }}...</p>
+                                        <div
+                                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
+                                        >
+                                            <dt
+                                                class="text-sm font-medium leading-6 text-gray-900"
+                                            >
+                                                {{
+                                                    t(
+                                                        'publicPagePreview.resultPanel.description',
+                                                    )
+                                                }}
+                                            </dt>
+                                            <dd
+                                                class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+                                            >
+                                                <template
+                                                    v-if="
+                                                        project.project
+                                                            .description
+                                                    "
+                                                >
+                                                    <template
+                                                        v-if="
+                                                            project.project
+                                                                .description
+                                                                .length > 250
+                                                        "
+                                                    >
+                                                        <p>
+                                                            {{
+                                                                project.project.description.substring(
+                                                                    0,
+                                                                    250,
+                                                                )
+                                                            }}...
+                                                        </p>
                                                         <button
-                                                            @click="showFullDescription = !showFullDescription"
+                                                            @click="
+                                                                showFullDescription =
+                                                                    !showFullDescription
+                                                            "
                                                             class="text-blue-700 underline"
-                                                        >Show more</button>
+                                                        >
+                                                            Show more
+                                                        </button>
                                                     </template>
 
                                                     <template v-else>
-                                                        <p>{{ project.project.description }}</p>
+                                                        <p>
+                                                            {{
+                                                                project.project
+                                                                    .description
+                                                            }}
+                                                        </p>
                                                     </template>
                                                 </template>
                                                 <template v-else>
-                                                    <p class="italic text-gray-500">n/a</p>
+                                                    <p
+                                                        class="italic text-gray-500"
+                                                    >
+                                                        n/a
+                                                    </p>
                                                 </template>
                                             </dd>
                                         </div>
-                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.timeframe') }}</dt>
-                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ timeframe }}</dd>
+                                        <div
+                                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
+                                        >
+                                            <dt
+                                                class="text-sm font-medium leading-6 text-gray-900"
+                                            >
+                                                {{
+                                                    t(
+                                                        'publicPagePreview.resultPanel.timeframe',
+                                                    )
+                                                }}
+                                            </dt>
+                                            <dd
+                                                class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+                                            >
+                                                {{ timeframe }}
+                                            </dd>
                                         </div>
-                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.restorationStatus') }}</dt>
-                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                                <template v-if="project.project.restorationStatus">
-                                                    {{ getRecursiveMenuItem(menus.restorationStatuses, project.project.restorationStatus)?.label }}
+                                        <div
+                                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
+                                        >
+                                            <dt
+                                                class="text-sm font-medium leading-6 text-gray-900"
+                                            >
+                                                {{
+                                                    t(
+                                                        'publicPagePreview.resultPanel.restorationStatus',
+                                                    )
+                                                }}
+                                            </dt>
+                                            <dd
+                                                class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+                                            >
+                                                <template
+                                                    v-if="
+                                                        project.project
+                                                            .restorationStatus
+                                                    "
+                                                >
+                                                    {{
+                                                        getRecursiveMenuItem(
+                                                            menus.restorationStatuses,
+                                                            project.project
+                                                                .restorationStatus,
+                                                        )?.label
+                                                    }}
                                                 </template>
                                                 <span
                                                     v-else
                                                     class="italic text-gray-500"
-                                                >n/a</span>
-
+                                                    >n/a</span
+                                                >
                                             </dd>
                                         </div>
-                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.restorationTypes') }}</dt>
-                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                                <template v-if="project.project.restorationTypes?.length > 0">
-                                                    {{project.project.restorationTypes.map(type => getRecursiveMenuItem(menus.restorationTypes, type)?.label).join(', ')}}
+                                        <div
+                                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
+                                        >
+                                            <dt
+                                                class="text-sm font-medium leading-6 text-gray-900"
+                                            >
+                                                {{
+                                                    t(
+                                                        'publicPagePreview.resultPanel.restorationTypes',
+                                                    )
+                                                }}
+                                            </dt>
+                                            <dd
+                                                class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+                                            >
+                                                <template
+                                                    v-if="
+                                                        project.project
+                                                            .restorationTypes
+                                                            ?.length > 0
+                                                    "
+                                                >
+                                                    {{
+                                                        project.project.restorationTypes
+                                                            .map(
+                                                                (type) =>
+                                                                    getRecursiveMenuItem(
+                                                                        menus.restorationTypes,
+                                                                        type,
+                                                                    )?.label,
+                                                            )
+                                                            .join(', ')
+                                                    }}
                                                 </template>
                                                 <span
                                                     v-else
                                                     class="italic text-gray-500"
-                                                >n/a</span>
+                                                    >n/a</span
+                                                >
                                             </dd>
                                         </div>
-                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.tenureStatuses') }}</dt>
-                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                                <template v-if="project.project.tenureStatuses?.length > 0">
-                                                    {{project.project.tenureStatuses.map(status => getRecursiveMenuItem(menus.tenureStatuses, status)?.label).join(', ')}}
+                                        <div
+                                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
+                                        >
+                                            <dt
+                                                class="text-sm font-medium leading-6 text-gray-900"
+                                            >
+                                                {{
+                                                    t(
+                                                        'publicPagePreview.resultPanel.tenureStatuses',
+                                                    )
+                                                }}
+                                            </dt>
+                                            <dd
+                                                class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+                                            >
+                                                <template
+                                                    v-if="
+                                                        project.project
+                                                            .tenureStatuses
+                                                            ?.length > 0
+                                                    "
+                                                >
+                                                    {{
+                                                        project.project.tenureStatuses
+                                                            .map(
+                                                                (status) =>
+                                                                    getRecursiveMenuItem(
+                                                                        menus.tenureStatuses,
+                                                                        status,
+                                                                    )?.label,
+                                                            )
+                                                            .join(', ')
+                                                    }}
                                                 </template>
                                                 <span
                                                     v-else
                                                     class="italic text-gray-500"
-                                                >n/a</span>
+                                                    >n/a</span
+                                                >
                                             </dd>
                                         </div>
-                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.website') }}</dt>
-                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 hover:text-gray-900">
+                                        <div
+                                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
+                                        >
+                                            <dt
+                                                class="text-sm font-medium leading-6 text-gray-900"
+                                            >
+                                                {{
+                                                    t(
+                                                        'publicPagePreview.resultPanel.website',
+                                                    )
+                                                }}
+                                            </dt>
+                                            <dd
+                                                class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 hover:text-gray-900"
+                                            >
                                                 <a
-                                                    v-if="project.project.website"
-                                                    :href="project.project.website.startsWith('http') ? project.project.website : 'http://' + project.project.website"
+                                                    v-if="
+                                                        project.project.website
+                                                    "
+                                                    :href="
+                                                        project.project.website.startsWith(
+                                                            'http',
+                                                        )
+                                                            ? project.project
+                                                                  .website
+                                                            : 'http://' +
+                                                              project.project
+                                                                  .website
+                                                    "
                                                     target="_blank"
                                                     class="underline"
-                                                >{{ project.project.website }}</a>
+                                                    >{{
+                                                        project.project.website
+                                                    }}</a
+                                                >
                                                 <span
                                                     v-else
                                                     class="italic text-gray-500"
-                                                >n/a</span>
+                                                    >n/a</span
+                                                >
                                             </dd>
                                         </div>
-                                        <div class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                                            <dt class="text-sm font-medium leading-6 text-gray-900">{{ t('publicPagePreview.resultPanel.keywords') }}</dt>
-                                            <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                                <template v-if="project.project.keywords?.length > 0">
-                                                    {{ project.project.keywords.join(', ') }}
+                                        <div
+                                            class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0"
+                                        >
+                                            <dt
+                                                class="text-sm font-medium leading-6 text-gray-900"
+                                            >
+                                                {{
+                                                    t(
+                                                        'publicPagePreview.resultPanel.keywords',
+                                                    )
+                                                }}
+                                            </dt>
+                                            <dd
+                                                class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0"
+                                            >
+                                                <template
+                                                    v-if="
+                                                        project.project.keywords
+                                                            ?.length > 0
+                                                    "
+                                                >
+                                                    {{
+                                                        project.project.keywords.join(
+                                                            ', ',
+                                                        )
+                                                    }}
                                                 </template>
                                                 <span
                                                     v-else
                                                     class="italic text-gray-500"
-                                                >n/a</span>
+                                                    >n/a</span
+                                                >
                                             </dd>
                                         </div>
                                     </dl>
@@ -834,13 +900,15 @@ function otherChartSize() {
     /* scrollbar-width: thin; */
 }
 
-.gm-style iframe+div {
+.gm-style iframe + div {
     border: none !important;
 }
 
 .appear_from_left-enter-active,
 .appear_from_left-leave-active {
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition:
+        opacity 0.5s ease,
+        transform 0.5s ease;
 }
 
 .appear_from_left-enter-from,
@@ -855,7 +923,9 @@ function otherChartSize() {
 
 .disappear_to_left-enter-active,
 .disappear_to_left-leave-active {
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition:
+        opacity 0.5s ease,
+        transform 0.5s ease;
 }
 
 .disappear_to_left-enter-from,

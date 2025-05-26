@@ -3,34 +3,39 @@ import { ref, onMounted } from 'vue';
 
 import * as echarts from 'echarts/core';
 import { GaugeChart } from 'echarts/charts';
-import { TooltipComponent, TitleComponent, GridComponent } from 'echarts/components';
+import {
+    TooltipComponent,
+    TitleComponent,
+    GridComponent,
+} from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
 
-
 import { formatNumber } from '@/lib/util';
-
 
 echarts.use([
     GaugeChart,
     TooltipComponent,
     TitleComponent,
     GridComponent,
-    SVGRenderer
+    SVGRenderer,
 ]);
 
-const props = withDefaults(defineProps<{
-    areaUnderRestoration: number
-    targetArea: number
-    units: string
-    targetLabel?: string
-    underRestorationLabel?: string
-    title?: string
-    size?: string
-}>(), {
-    units: '',
-    targetLabel: 'Committed',
-    underRestorationLabel: 'Under Restoration'
-});
+const props = withDefaults(
+    defineProps<{
+        areaUnderRestoration: number;
+        targetArea: number;
+        units: string;
+        targetLabel?: string;
+        underRestorationLabel?: string;
+        title?: string;
+        size?: string;
+    }>(),
+    {
+        units: '',
+        targetLabel: 'Committed',
+        underRestorationLabel: 'Under Restoration',
+    },
+);
 
 const chartRef = ref<HTMLElement | null>(null);
 
@@ -47,7 +52,8 @@ function initChart() {
         tooltip: {
             show: true,
             confine: true,
-            formatter: (params: any) => `${params.seriesName}: ${params.data.value} ${props.units}`,
+            formatter: (params: any) =>
+                `${params.seriesName}: ${params.data.value} ${props.units}`,
             appendTo: document.querySelector('body'),
         },
         // title: props.title && {
@@ -65,7 +71,8 @@ function initChart() {
                 name: 'Committed Area',
                 type: 'gauge',
                 // center: ['50%', '65%'],
-                center: props.size === 'small' ? ['50%', '60%'] : ['50%', '65%'],
+                center:
+                    props.size === 'small' ? ['50%', '60%'] : ['50%', '65%'],
                 radius: '95%',
                 startAngle: 200,
                 endAngle: -20,
@@ -73,30 +80,30 @@ function initChart() {
                 max: Math.max(props.targetArea, props.areaUnderRestoration),
                 splitNumber: 1,
                 itemStyle: {
-                    color: '#F77F00'
+                    color: '#F77F00',
                 },
                 progress: {
                     show: true,
                     // width: 40
-                    width: props.size === 'small' ? 20 : 40
+                    width: props.size === 'small' ? 20 : 40,
                 },
                 pointer: {
-                    show: false
+                    show: false,
                 },
                 axisLine: {
-                    show: false
+                    show: false,
                 },
                 axisTick: {
-                    show: false
+                    show: false,
                 },
                 splitLine: {
-                    show: false
+                    show: false,
                 },
                 axisLabel: {
-                    show: false
+                    show: false,
                 },
                 anchor: {
-                    show: false
+                    show: false,
                 },
                 // title: {
                 //     show: false
@@ -124,31 +131,32 @@ function initChart() {
                             fontSize: props.size === 'small' ? 20 : 28,
                             fontWeight: 'bolder',
                             color: 'inherit',
-                            lineHeight: props.size === 'small' ? 20 : 28
+                            lineHeight: props.size === 'small' ? 20 : 28,
                         },
                         label: {
                             // fontSize: 16,
                             fontSize: props.size === 'small' ? 12 : 16,
                             color: '#888',
                             fontWeight: 'bold',
-                            lineHeight: props.size === 'small' ? 12 : 16
-                        }
+                            lineHeight: props.size === 'small' ? 12 : 16,
+                        },
                     },
-                    color: 'inherit'
+                    color: 'inherit',
                 },
 
                 data: [
                     {
                         value: Math.round(props.targetArea),
-                        name: props.title
-                    }
-                ]
+                        name: props.title,
+                    },
+                ],
             },
             {
                 name: 'Area Under Restoration',
                 type: 'gauge',
                 // center: ['50%', '65%'],
-                center: props.size === 'small' ? ['50%', '60%'] : ['50%', '65%'],
+                center:
+                    props.size === 'small' ? ['50%', '60%'] : ['50%', '65%'],
                 radius: '95%',
                 startAngle: 200,
                 endAngle: -20,
@@ -156,12 +164,12 @@ function initChart() {
                 max: Math.max(props.targetArea, props.areaUnderRestoration),
                 zlevel: 1,
                 itemStyle: {
-                    color: '#007F5F'
+                    color: '#007F5F',
                 },
                 progress: {
                     show: true,
                     // width: 16
-                    width: props.size === 'small' ? 8 : 16
+                    width: props.size === 'small' ? 8 : 16,
                 },
                 pointer: {
                     icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
@@ -169,21 +177,21 @@ function initChart() {
                     width: 14,
                     offsetCenter: [0, '-62%'],
                     itemStyle: {
-                        color: '#007F5F'
+                        color: '#007F5F',
                         // color: 'rgba(0, 0, 0, 0.5)'
-                    }
+                    },
                 },
                 axisLine: {
-                    show: false
+                    show: false,
                 },
                 axisTick: {
-                    show: false
+                    show: false,
                 },
                 splitLine: {
-                    show: false
+                    show: false,
                 },
                 axisLabel: {
-                    show: false
+                    show: false,
                 },
                 detail: {
                     valueAnimation: true,
@@ -197,7 +205,7 @@ function initChart() {
                         const formattedValue = formatNumber(value);
                         return [
                             `{label|${props.underRestorationLabel}}`,
-                            `{value|${formattedValue} ${props.units}}`
+                            `{value|${formattedValue} ${props.units}}`,
                         ].join('\n');
                     },
                     rich: {
@@ -206,25 +214,25 @@ function initChart() {
                             fontSize: props.size === 'small' ? 20 : 28,
                             fontWeight: 'bolder',
                             color: 'inherit',
-                            lineHeight: props.size === 'small' ? 20 : 28
+                            lineHeight: props.size === 'small' ? 20 : 28,
                         },
                         label: {
                             // fontSize: 16,
                             fontSize: props.size === 'small' ? 12 : 16,
                             color: '#888',
                             fontWeight: 'bold',
-                            lineHeight: props.size === 'small' ? 12 : 16
-                        }
+                            lineHeight: props.size === 'small' ? 12 : 16,
+                        },
                     },
-                    color: 'inherit'
+                    color: 'inherit',
                 },
                 data: [
                     {
-                        value: Math.round(props.areaUnderRestoration)
-                    }
-                ]
-            }
-        ]
+                        value: Math.round(props.areaUnderRestoration),
+                    },
+                ],
+            },
+        ],
     };
 
     myChart.setOption(option);
@@ -236,14 +244,24 @@ function initChart() {
 </script>
 
 <template>
-    <div :class="['w-full shadow-md rounded-lg border border-gray-100 bg-white', props.size === 'small' ? 'text-sm grid' : 'text-base']">
+    <div
+        :class="[
+            'w-full shadow-md rounded-lg border border-gray-100 bg-white',
+            props.size === 'small' ? 'text-sm grid' : 'text-base',
+        ]"
+    >
         <div
             v-if="props.title"
             class="w-full center text-center font-bold text-gray-600 pt-4"
-        >{{ props.title }}</div>
+        >
+            {{ props.title }}
+        </div>
         <div
             ref="chartRef"
-            :class="['w-full', props.size === 'small' ? 'h-52 self-end' : 'h-80']"
+            :class="[
+                'w-full',
+                props.size === 'small' ? 'h-52 self-end' : 'h-80',
+            ]"
         ></div>
     </div>
 </template>

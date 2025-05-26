@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 
+import { useI18n } from 'vue-i18n';
+
 import {
     Dialog,
     DialogPanel,
@@ -25,6 +27,8 @@ const props = defineProps<{
 
 const resultsAsiaPopup = ref(false);
 const resultsAsiaPopupShown = ref(false);
+
+const { t } = useI18n();
 
 onMounted(() => {
     loadMore();
@@ -253,7 +257,7 @@ watch(
                             :previewImage="currentResult.preview_image"
                             :countryIso3Codes="currentResult.country_codes_iso3"
                             :countryNames="currentResult.countries"
-                            viewFullText="View full initiative"
+                            :viewFullText="t('publicSearch.viewFullInitiative')"
                         />
                     </DialogPanel>
                 </TransitionChild>
@@ -299,7 +303,7 @@ watch(
                 :previewImage="result.preview_image"
                 :countryIso3Codes="result.country_codes_iso3"
                 :countryNames="result.countries"
-                viewFullText="View full initiative"
+                :viewFullText="t('publicSearch.viewFullInitiative')"
             />
         </div>
     </div>

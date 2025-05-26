@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { LinkIcon } from '@heroicons/vue/20/solid';
 
-import { LinkIcon } from '@heroicons/vue/20/solid'
+import Thumbnail from './Thumbnail.vue';
 
-import Thumbnail from './Thumbnail.vue'
+import Tooltip from '@/components/Tooltip.vue';
 
-import Tooltip from '@/components/Tooltip.vue'
-
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
     title?: string;
@@ -20,12 +20,14 @@ const props = defineProps<{
     viewFullText: string;
 }>();
 
+const { t } = useI18n();
+
 const sourceLinks = {
     ferm: 'https://ferm.fao.org',
     goprofor: 'https://www.lifegoprofor.eu',
     panorama: 'https://panorama.solutions',
     wocat: 'https://www.wocat.net',
-}
+};
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -36,13 +38,18 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 // transform the URL if the source is 'FERM' and it's a project, not a best practice
 const source = props.source.toLowerCase();
 let _url = props.url;
-if ((props.source === 'FERM' || props.source ==='GEF' || props.source === 'RESULT Asia-Pacific') && props.url.includes('/initiatives/')) {
+if (
+    (props.source === 'FERM' ||
+        props.source === 'GEF' ||
+        props.source === 'RESULT Asia-Pacific') &&
+    props.url.includes('/initiatives/')
+) {
     const projectId = props.url.split('/').pop();
     _url = `/search/initiatives/${projectId}`;
 }
 
-function changeSource(event, source) {
-    const img = event.target;
+function changeSource(event: MouseEvent, source: string) {
+    const img = event.target as HTMLImageElement;
     img.src = `/interop_logos/${source.toLowerCase()}.png`;
 }
 </script>
@@ -55,39 +62,36 @@ function changeSource(event, source) {
             :source="source"
             class="flex-shrink-0 object-cover h-64 hidden sm:flex"
         />
-        <!-- <img
-            v-if="preview_image"
-            :src="preview_image"
-            alt="thumbnail"
-            class="aspect-square overflow-hidden flex-shrink-0 object-cover h-full max-h-64 hidden sm:flex"
-        />
-        <div
-            v-else
-            class="flex justify-center h-full bg-gray-100"
-        >
-            <PhotoIcon class="h-32 w-32 text-gray-300 mt-6" />
-        </div> -->
         <div class="py-4 flex flex-col w-full mr-4 ml-4 sm:ml-0">
             <div class="flex-1 flex flex-col">
                 <div class="flex-1">
-                    <h3 class="text-md font-medium line-clamp-2">{{ title }}</h3>
+                    <h3 class="text-md font-medium line-clamp-2">
+                        {{ title }}
+                    </h3>
                     <p
                         v-if="shortDescription"
                         class="text-sm text-gray-700 line-clamp-2 w-auto mt-3"
-                    ><span class="font-semibold">Description: </span>{{ shortDescription }}</p>
-                    <p
-                        v-if="lastUpdated"
-                        class="text-sm text-gray-700"
-                    ><span class="font-semibold">Last updated: </span>{{ dateFormatter.format(new Date(lastUpdated)) }}</p>
-                    <!-- <div
-                        v-if="organizations?.length > 0"
-                        class="flex flex-row gap-x-2 text-sm mt-2"
-                    > -->
+                    >
+                        <span class="font-semibold"
+                            >{{ t('common.description') }}: </span
+                        >{{ shortDescription }}
+                    </p>
+                    <p v-if="lastUpdated" class="text-sm text-gray-700">
+                        <span class="font-semibold"
+                            >{{ t('publicSearch.detail.lastUpdated') }}: </span
+                        >{{ dateFormatter.format(new Date(lastUpdated)) }}
+                    </p>
                     <p
                         v-if="organizations?.length > 0"
                         class="text-sm text-gray-700 line-clamp-2"
                     >
-                        <span class="font-semibold text-gray-700">Organization<template v-if="organizations.length > 1">s</template>: </span>
+                        <span class="font-semibold text-gray-700"
+                            >{{
+                                t('publicSearch.detail.organizations', {
+                                    n: organizations.length,
+                                })
+                            }}:
+                        </span>
                         <!-- <div>
                             <p v-for="(org, index) in organizations">
                                 {{ org }}
@@ -95,12 +99,15 @@ function changeSource(event, source) {
                         </div> -->
 
                         <template v-for="(org, index) in organizations">
-                            {{ org }}<template v-if="index < organizations.length - 1">, </template>
+                            {{ org
+                            }}<template v-if="index < organizations.length - 1"
+                                >,
+                            </template>
                         </template>
                     </p>
                 </div>
                 <div class="flex flex-row gap-x-1.5 my-1">
-                    <div v-for="iso3, i in countryIso3Codes">
+                    <div v-for="(iso3, i) in countryIso3Codes">
                         <!-- <div class="group relative inline-block text-blue-500">
                             <img
                                 class="w-6 h-6"
