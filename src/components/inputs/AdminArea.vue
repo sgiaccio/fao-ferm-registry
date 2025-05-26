@@ -5,7 +5,11 @@ import { useI18n } from 'vue-i18n';
 
 import SelectInput from './base/SelectInput.vue';
 
-import { getGaulLevel0, getGaulLevel1, getGaulLevel2 } from '@/firebase/firestore';
+import {
+    getGaulLevel0,
+    getGaulLevel1,
+    getGaulLevel2,
+} from '@/firebase/firestore';
 
 import { useMenusStore } from '@/stores/menus';
 import { useProjectStore } from '@/stores/project';
@@ -14,27 +18,30 @@ import { getMenuSelectedLabel } from '@/components/project/menus';
 
 import AreaEcosystemsView from '@/views/project/AreaEcosystemsView.vue';
 
-
 // type AdminArea = {
 //     code?: string,
 //     name?: string,
 //     children?: AdminArea
 // }[]
 
-const props = withDefaults(defineProps<{
-    modelValue: {
-        siteName: string,
-        admin0?: string,
-        admin1?: string,
-        admin2?: string,
-        area: number,
-        activities: number[]
-        ecosystems: number[],
-    },
-    edit?: boolean,
-    index: number,
-    nAreas: number
-}>(), { edit: true });
+const props = withDefaults(
+    defineProps<{
+        modelValue: {
+            siteName: string;
+            admin0?: string;
+            admin1?: string;
+            admin2?: string;
+            area: number;
+            activities: number[];
+            ecosystems: number[];
+            startingYear: number;
+        };
+        edit?: boolean;
+        index: number;
+        nAreas: number;
+    }>(),
+    { edit: true },
+);
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -47,34 +54,40 @@ const admin0 = ref(props.modelValue?.admin0);
 const admin1 = ref(props.modelValue?.admin1);
 const admin2 = ref(props.modelValue?.admin2);
 
-
 const admin0Menu = ref();
 const admin1Menu = ref();
 const admin2Menu = ref();
 
 onMounted(async () => {
     admin0Menu.value = await getGaulLevel0();
-    watch(() => props.modelValue, (curr, prev) => {
-        if (!store.project) return;
+    watch(
+        () => props.modelValue,
+        (curr, prev) => {
+            if (!store.project) return;
 
-        if (curr.admin0 !== prev.admin0) {
-            if (!prev.admin0) {
-                store.addCountriesFromAdminAreas();
-            } else {
-                store.updateCountries();
+            if (curr.admin0 !== prev.admin0) {
+                if (!prev.admin0) {
+                    store.addCountriesFromAdminAreas();
+                } else {
+                    store.updateCountries();
+                }
             }
-        }
-    }, { deep: true });
+        },
+        { deep: true },
+    );
 });
 
-watch(admin0, async (val, prev) => {
-    if (val) {
-        admin1Menu.value = await getGaulLevel1(val) || undefined;
-    } else {
-        admin1Menu.value = undefined;
-    }
-
-}, { immediate: true });
+watch(
+    admin0,
+    async (val, prev) => {
+        if (val) {
+            admin1Menu.value = (await getGaulLevel1(val)) || undefined;
+        } else {
+            admin1Menu.value = undefined;
+        }
+    },
+    { immediate: true },
+);
 
 watch(admin0, async (val, prev) => {
     // if prev is null it means that the page was just loaded, don't change values
@@ -84,23 +97,27 @@ watch(admin0, async (val, prev) => {
         admin2.value = undefined;
     }
 
-    if (!val) emit('update:modelValue', undefined)
+    if (!val) emit('update:modelValue', undefined);
     emit('update:modelValue', {
         ...props.modelValue,
         admin0: admin0.value || undefined,
         admin1: admin1.value || undefined,
-        admin2: admin2.value || undefined
+        admin2: admin2.value || undefined,
     });
 });
 
-watch(admin1, async (val, prev) => {
-    if (val) {
-        if (!admin0.value) return
-        admin2Menu.value = await getGaulLevel2(admin0.value, val);
-    } else {
-        admin2Menu.value = undefined;
-    }
-}, { immediate: true });
+watch(
+    admin1,
+    async (val, prev) => {
+        if (val) {
+            if (!admin0.value) return;
+            admin2Menu.value = await getGaulLevel2(admin0.value, val);
+        } else {
+            admin2Menu.value = undefined;
+        }
+    },
+    { immediate: true },
+);
 
 watch(admin1, (val, prev) => {
     if (prev) {
@@ -112,19 +129,22 @@ watch(admin1, (val, prev) => {
         ...props.modelValue,
         admin0: admin0.value || undefined,
         admin1: admin1.value || undefined,
-        admin2: admin2.value || undefined
+        admin2: admin2.value || undefined,
     });
 });
 
-watch(admin2, val => {
-    if (!admin0.value && !admin1.value && !val) emit('update:modelValue', undefined);
+watch(admin2, (val) => {
+    if (!admin0.value && !admin1.value && !val)
+        emit('update:modelValue', undefined);
     emit('update:modelValue', {
         ...props.modelValue,
         admin0: admin0.value || undefined,
         admin1: admin1.value || undefined,
-        admin2: admin2.value || undefined
+        admin2: admin2.value || undefined,
     });
 });
+
+const years = generateYearOptions(1950, 2050);
 </script>
 
 <template>
@@ -134,12 +154,13 @@ watch(admin2, val => {
     <div class="flex flex-col gap-y-3">
         <div>
             <legend class="block text-sm font-medium leading-6 text-gray-900">
-                
                 {{ t('inputs.aoi.siteName') }}
             </legend>
             <template v-if="edit">
                 <div class="mt-2 flex rounded-md shadow-sm">
-                    <div class="relative flex flex-grow items-stretch focus-within:z-10">
+                    <div
+                        class="relative flex flex-grow items-stretch focus-within:z-10"
+                    >
                         <input
                             type="text"
                             v-model="modelValue.siteName"
@@ -154,11 +175,18 @@ watch(admin2, val => {
         <div>
             <legend class="block text-sm font-medium leading-6 text-gray-900">
                 {{ t('inputs.areaSurface') }}
-                [{{ getMenuSelectedLabel(store.project.project.areaUnits, menus.units) }}]
+                [{{
+                    getMenuSelectedLabel(
+                        store.project.project.areaUnits,
+                        menus.units,
+                    )
+                }}]
             </legend>
             <template v-if="edit">
                 <div class="mt-2 flex rounded-md shadow-sm">
-                    <div class="relative flex flex-grow items-stretch focus-within:z-10">
+                    <div
+                        class="relative flex flex-grow items-stretch focus-within:z-10"
+                    >
                         <input
                             type="number"
                             v-model="modelValue.area"
@@ -194,12 +222,25 @@ watch(admin2, val => {
             _placeholder="Please select Province"
             :placeholder="t('inputs.aoi.selectProvince')"
         />
+        <fieldset>
+            <div class="md:mt-5 mb-5">
+                <legend class="block text-sm font-bold text-gray-700 sm:mt-px">
+                    {{ t('inputs.aoi.startingYear') }}
+                </legend>
+                <div class="mt-2 flex rounded-md max-w-36">
+                    <SelectInput
+                        :edit="edit"
+                        v-model="modelValue.startingYear"
+                        :options="years"
+                    />
+                </div>
+            </div>
+        </fieldset>
         <AreaEcosystemsView
             :edit="edit"
             :area="modelValue"
             :index="index"
             :nAreas="nAreas"
         />
-        <!-- <pre>{{ JSON.stringify(modelValue, null, 2) }}</pre> -->
     </div>
 </template>

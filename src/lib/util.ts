@@ -1,19 +1,26 @@
-import {sortedGoalIndicators} from './auroraIndicators';
-import type { AreaDataKey, AreaObject, Menu, MenuValue, RecursiveMenu, RecursiveMenuItem } from '@/types';
+import { sortedGoalIndicators } from './auroraIndicators';
+import type {
+    AreaDataKey,
+    AreaObject,
+    Menu,
+    MenuValue,
+    RecursiveMenu,
+    RecursiveMenuItem,
+} from '@/types';
 import { getAreaValue } from '@/lib/areaUtil';
 
 export function fbTimestampToString(ts: any) {
     return ts.toDate().toLocaleDateString('EN-US', {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
     });
 }
 
 export function snakeToCamel(o: any) {
     let newO: any;
     if (o instanceof Array) {
-        return o.map(value => {
+        return o.map((value) => {
             if (typeof value === 'object') {
                 value = snakeToCamel(value);
             }
@@ -23,9 +30,14 @@ export function snakeToCamel(o: any) {
         newO = {};
         for (let origKey in o) {
             if (o.hasOwnProperty(origKey)) {
-                const newKey = origKey.replace(/-./g, x => x[1].toUpperCase());
+                const newKey = origKey.replace(/-./g, (x) =>
+                    x[1].toUpperCase(),
+                );
                 let value = o[origKey];
-                if (value instanceof Array || (value !== null && value.constructor === Object)) {
+                if (
+                    value instanceof Array ||
+                    (value !== null && value.constructor === Object)
+                ) {
                     value = snakeToCamel(value);
                 }
                 newO[newKey] = value;
@@ -38,7 +50,7 @@ export function snakeToCamel(o: any) {
 export function camelToSnake(o: any) {
     let newO: any;
     if (o instanceof Array) {
-        return o.map(value => {
+        return o.map((value) => {
             if (typeof value === 'object') {
                 value = camelToSnake(value);
             }
@@ -49,9 +61,16 @@ export function camelToSnake(o: any) {
         for (let origKey in o) {
             if (o.hasOwnProperty(origKey)) {
                 // The first character might be uppercase
-                let newKey = origKey.charAt(0).toLowerCase() + origKey.substring(1).replace(/[A-Z]/g, x => '-' + x[0].toLowerCase());
+                let newKey =
+                    origKey.charAt(0).toLowerCase() +
+                    origKey
+                        .substring(1)
+                        .replace(/[A-Z]/g, (x) => '-' + x[0].toLowerCase());
                 let value = o[origKey];
-                if (value instanceof Array || (value !== null && value.constructor === Object)) {
+                if (
+                    value instanceof Array ||
+                    (value !== null && value.constructor === Object)
+                ) {
                     value = camelToSnake(value);
                 }
                 newO[newKey] = value;
@@ -61,8 +80,11 @@ export function camelToSnake(o: any) {
     return newO;
 }
 
-export function getRecursiveMenuLabel(value: MenuValue, menu: RecursiveMenu): string {
-    const label = menu.find(i => i.value === value)?.label;
+export function getRecursiveMenuLabel(
+    value: MenuValue,
+    menu: RecursiveMenu,
+): string {
+    const label = menu.find((i) => i.value === value)?.label;
     if (label) return label;
     for (const i of menu) {
         if (i.items) {
@@ -101,7 +123,7 @@ export function formatNumber(n: number) {
         maximumFractionDigits: 0,
         // specify the abbreviations to use for the suffixes
         notation: 'compact',
-        compactDisplay: 'short'
+        compactDisplay: 'short',
     });
 }
 
@@ -123,8 +145,12 @@ export function getSortedIndicatorsAndMonitoring(indicatorAndMonitoring: any) {
         // check nullity
         if (!i1.indicator.rg_goal || !i2.indicator.rg_goal) return 0;
 
-        const i1Index = sortedGoalIndicators.findIndex(i => i.rg_goal === i1.indicator.rg_goal);
-        const i2Index = sortedGoalIndicators.findIndex(i => i.rg_goal === i2.indicator.rg_goal);
+        const i1Index = sortedGoalIndicators.findIndex(
+            (i) => i.rg_goal === i1.indicator.rg_goal,
+        );
+        const i2Index = sortedGoalIndicators.findIndex(
+            (i) => i.rg_goal === i2.indicator.rg_goal,
+        );
         return i1Index - i2Index;
     }
 
@@ -137,7 +163,7 @@ export function getSortedIndicatorsAndMonitoring(indicatorAndMonitoring: any) {
         if (!acc[goal]) {
             acc[goal] = {
                 goal,
-                indicators: []
+                indicators: [],
             };
         }
         acc[goal].indicators.push(indicator);
@@ -159,18 +185,27 @@ export function setsContainSameValues<T>(set1: Set<T>, set2: Set<T>) {
     return true;
 }
 
-export function getGroupsWhereEditor(privileges: { [key: string]: string }): string[] {
-    return Object.keys(privileges).filter(group => ['editor', 'admin'].includes(privileges[group]));
+export function getGroupsWhereEditor(privileges: {
+    [key: string]: string;
+}): string[] {
+    return Object.keys(privileges).filter((group) =>
+        ['editor', 'admin'].includes(privileges[group]),
+    );
 }
 
-export async function resilientFetch(url: string, options: any = {}, timeout = 5000, retries: number = 3): Promise<Response> {
+export async function resilientFetch(
+    url: string,
+    options: any = {},
+    timeout = 5000,
+    retries: number = 3,
+): Promise<Response> {
     for (let i = 0; i < retries; i++) {
         try {
             const response = await Promise.race([
                 fetch(url, options),
                 new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Timeout')), timeout)
-                )
+                    setTimeout(() => reject(new Error('Timeout')), timeout),
+                ),
             ]);
 
             // return response;
@@ -200,7 +235,10 @@ export function debounce(func: Function, wait: number) {
     };
 }
 
-export function getRecursiveMenuItem(menu: RecursiveMenu, value: MenuValue): RecursiveMenuItem | null {
+export function getRecursiveMenuItem(
+    menu: RecursiveMenu,
+    value: MenuValue,
+): RecursiveMenuItem | null {
     for (const item of menu) {
         if (item.value === value) {
             return item;
@@ -228,31 +266,39 @@ export function flattenMenu(menu: RecursiveMenu): Menu {
     return result;
 }
 
-export function getAllSelectedItemsInAreas(areas: AreaObject[], key: AreaDataKey, menu: RecursiveMenu) {
+export function getAllSelectedItemsInAreas(
+    areas: AreaObject[],
+    key: AreaDataKey,
+    menu: RecursiveMenu,
+) {
     if (areas.length === 0) return [];
     const items: MenuValue[] = areas.reduce((acc: any, area) => {
         const areaObjValue = getAreaValue(area);
         const areaItems = areaObjValue[key];
         return areaItems
-            ? (Array.isArray(areaItems)
+            ? Array.isArray(areaItems)
                 ? [...acc, ...areaItems]
-                : [...acc, areaItems])
+                : [...acc, areaItems]
             : acc;
     }, []);
     // remove duplicates
     const uniqueItems = [...new Set(items)];
     return uniqueItems
-        .map(i => getRecursiveMenuItem(menu, i))
+        .map((i) => getRecursiveMenuItem(menu, i))
         .filter((item): item is RecursiveMenuItem => item !== null)
-        .map(i => i.value)
+        .map((i) => i.value);
 }
 
 export function groupBiomesByRealm(biomes: any, realmsMenu: RecursiveMenu) {
     // Get the realm ids from the realm menu - the convention is that the realm id is the first word in the realm label
-    const realms = realmsMenu.map(realm => realm.label?.split(' ')[0] ?? '').filter(Boolean);
+    const realms = realmsMenu
+        .map((realm) => realm.label?.split(' ')[0] ?? '')
+        .filter(Boolean);
 
     // sort biomes alphabetically - this will make biomes ordered alphabetically within realms
-    const sortedBiomes = biomes.sort((a: string, b: string) => a.localeCompare(b));
+    const sortedBiomes = biomes.sort((a: string, b: string) =>
+        a.localeCompare(b),
+    );
 
     if (sortedBiomes?.length) {
         // sort biomes internally in realms
@@ -266,11 +312,16 @@ export function groupBiomesByRealm(biomes: any, realmsMenu: RecursiveMenu) {
             return acc;
         }, {});
 
-        const biomesByRealmArr = Object.entries(biomesByRealm).map(([realm, biomes]) => ({ realm, biomes }));
+        const biomesByRealmArr = Object.entries(biomesByRealm).map(
+            ([realm, biomes]) => ({ realm, biomes }),
+        );
 
         // Sort according to the order in the realms array
         return biomesByRealmArr.sort((a, b) => {
-            return realms.findIndex(r => r === a.realm) > realms.findIndex(r => r === b.realm) ? 1 : -1;
+            return realms.findIndex((r) => r === a.realm) >
+                realms.findIndex((r) => r === b.realm)
+                ? 1
+                : -1;
         });
     } else {
         return [];
@@ -279,7 +330,11 @@ export function groupBiomesByRealm(biomes: any, realmsMenu: RecursiveMenu) {
 
 export function getLastTargetArea(project: any) {
     // reverse the order of the phases and return the first one that is not null
-    return project.project?.targetAreaEvaluationPhase || project.project?.targetAreaReviewPhase || project.project?.targetAreaDesignPhase;
+    return (
+        project.project?.targetAreaEvaluationPhase ||
+        project.project?.targetAreaReviewPhase ||
+        project.project?.targetAreaDesignPhase
+    );
 }
 
 export function getPolygonsArea(areasObj: AreaObject[]) {
@@ -288,7 +343,7 @@ export function getPolygonsArea(areasObj: AreaObject[]) {
         const areas = areasObj
             // .filter((a: any) => ['draw', 'upload'].includes(getType(a)))
             // .map((a: any) => +((getValue(a) as { area: number }).area || 0));
-            .map(a => +(getAreaValue(a).area || 0));
+            .map((a) => +(getAreaValue(a).area || 0));
         return areas.reduce((a: number, b: number) => a + b, 0);
     } catch (e) {
         console.error('Error calculating polygons area', e);
@@ -300,16 +355,19 @@ export function areaByGefIndicator(areas: AreaObject[]) {
     return Object.entries(
         areas.reduce((acc: { [indicator: string]: number }, area: any) => {
             const { gefIndicator, area: areaValue } = getAreaValue(area);
-            return gefIndicator ? {
-                ...acc,
-                [gefIndicator]: (acc[gefIndicator] || 0) + +(areaValue || 0)
-            } : acc;
-        }, {}))
-        .sort((a, b) => {
-            if (a[0] > b[0]) return 1;
-            if (a[0] < b[0]) return -1;
-            return 0;
-        });
+            return gefIndicator
+                ? {
+                      ...acc,
+                      [gefIndicator]:
+                          (acc[gefIndicator] || 0) + +(areaValue || 0),
+                  }
+                : acc;
+        }, {}),
+    ).sort((a, b) => {
+        if (a[0] > b[0]) return 1;
+        if (a[0] < b[0]) return -1;
+        return 0;
+    });
 }
 
 export function areaByGefIndicatorGroup(areas: any) {
@@ -322,24 +380,74 @@ export function areaByGefIndicatorGroup(areas: any) {
 }
 
 const realmColors = [
-    { value: 'T', color: '#1f77b4', borderColor: '#0d4d8a', key: 'iucnEcosystems.T_Terrestrial_realm' },
-    { value: 'M', color: '#ff7f0e', borderColor: '#cc6608', key: 'iucnEcosystems.M_Marine_realm' },
-    { value: 'F', color: '#2ca02c', borderColor: '#1e6a1e', key: 'iucnEcosystems.F_Freshwater_realm' },
-    { value: 'S', color: '#d62728', borderColor: '#9a1c1c', key: 'iucnEcosystems.S_Subterranean_realm' },
-    { value: 'MT', color: '#9467bd', borderColor: '#6b4c8a', key: 'iucnEcosystems.MT_Marine_Terrestrial_realm' },
-    { value: 'SF', color: '#8c564b', borderColor: '#623c34', key: 'iucnEcosystems.SF_Subterranean_Freshwater_realm' },
-    { value: 'FM', color: '#e377c2', borderColor: '#b25399', key: 'iucnEcosystems.FM_Freshwater_Marine_realm' },
-    { value: 'MFT', color: '#7f7f7f', borderColor: '#595959', key: 'iucnEcosystems.MFT_Marine_Freshwater_Terrestrial_realm' },
-    { value: 'SM', color: '#bcbd22', borderColor: '#8a8c16', key: 'iucnEcosystems.SM_Subterranean_Marine_realm' },
-    { value: 'TF', color: '#17becf', borderColor: '#11a3ac', key: 'iucnEcosystems.TF_Terrestrial_Freshwater_realm' },
+    {
+        value: 'T',
+        color: '#1f77b4',
+        borderColor: '#0d4d8a',
+        key: 'iucnEcosystems.T_Terrestrial_realm',
+    },
+    {
+        value: 'M',
+        color: '#ff7f0e',
+        borderColor: '#cc6608',
+        key: 'iucnEcosystems.M_Marine_realm',
+    },
+    {
+        value: 'F',
+        color: '#2ca02c',
+        borderColor: '#1e6a1e',
+        key: 'iucnEcosystems.F_Freshwater_realm',
+    },
+    {
+        value: 'S',
+        color: '#d62728',
+        borderColor: '#9a1c1c',
+        key: 'iucnEcosystems.S_Subterranean_realm',
+    },
+    {
+        value: 'MT',
+        color: '#9467bd',
+        borderColor: '#6b4c8a',
+        key: 'iucnEcosystems.MT_Marine_Terrestrial_realm',
+    },
+    {
+        value: 'SF',
+        color: '#8c564b',
+        borderColor: '#623c34',
+        key: 'iucnEcosystems.SF_Subterranean_Freshwater_realm',
+    },
+    {
+        value: 'FM',
+        color: '#e377c2',
+        borderColor: '#b25399',
+        key: 'iucnEcosystems.FM_Freshwater_Marine_realm',
+    },
+    {
+        value: 'MFT',
+        color: '#7f7f7f',
+        borderColor: '#595959',
+        key: 'iucnEcosystems.MFT_Marine_Freshwater_Terrestrial_realm',
+    },
+    {
+        value: 'SM',
+        color: '#bcbd22',
+        borderColor: '#8a8c16',
+        key: 'iucnEcosystems.SM_Subterranean_Marine_realm',
+    },
+    {
+        value: 'TF',
+        color: '#17becf',
+        borderColor: '#11a3ac',
+        key: 'iucnEcosystems.TF_Terrestrial_Freshwater_realm',
+    },
 ];
 
 export function getRealmColor(realm: string) {
-    return realmColors.find(r => r.value === realm)?.color || '#ffffff';
+    return realmColors.find((r) => r.value === realm)?.color || '#ffffff';
 }
 
 export function getRealmBorderColor(realm: string) {
-    return realmColors.find(r => r.value === realm)?.borderColor || '#000000';
+    return realmColors.find((r) => r.value === realm)?.borderColor || '#000000';
 }
 
 export function getEcosystemColor(ecosystem: string) {
@@ -348,7 +456,7 @@ export function getEcosystemColor(ecosystem: string) {
 }
 
 export function getRealmKey(realm: string) {
-    return realmColors.find(r => r.value === realm)?.key;
+    return realmColors.find((r) => r.value === realm)?.key;
 }
 
 export function getEMStatsYears(stats: any) {
@@ -372,7 +480,11 @@ function accumulateAverage(totalYears: number) {
     };
 }
 
-function createValuesFromStats(stats: any[], processFn: (values: any[], data: any) => void, initialValue: any = []) {
+function createValuesFromStats(
+    stats: any[],
+    processFn: (values: any[], data: any) => void,
+    initialValue: any = [],
+) {
     return stats.reduce((acc: any[], year: any) => {
         for (const data of year.data) {
             const className = data.class_name;
@@ -391,7 +503,10 @@ function createValuesFromStats(stats: any[], processFn: (values: any[], data: an
 }
 
 // Using the function to create Echart values
-export function createEchartValuesFromEMStats(stats: any[], initialValue: any = []) {
+export function createEchartValuesFromEMStats(
+    stats: any[],
+    initialValue: any = [],
+) {
     return createValuesFromStats(stats, pushAreaHa, initialValue);
 }
 
@@ -438,7 +553,9 @@ export function addMissingEMClasses(stats: any, startYear: number) {
             });
         } else {
             const classes = yearData.data.map((d: any) => d.class_name);
-            const missingClasses = allClasses.filter((c: any) => !classes.includes(c));
+            const missingClasses = allClasses.filter(
+                (c: any) => !classes.includes(c),
+            );
             missingClasses.forEach((c: any) => {
                 yearData.data.push({
                     class_name: c,
@@ -451,4 +568,15 @@ export function addMissingEMClasses(stats: any, startYear: number) {
     // sort years
     years.sort((a: any, b: any) => a.year - b.year);
     return years;
+}
+
+export function generateYearOptions(
+    start: number,
+    end: number,
+): { value: number; label: string }[] {
+    const length = end - start + 1;
+    return Array.from({ length }, (_, i) => {
+        const year = start + i;
+        return { value: year, label: String(year) };
+    }).reverse();
 }
