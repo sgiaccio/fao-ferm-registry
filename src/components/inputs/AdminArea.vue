@@ -17,6 +17,7 @@ import { useProjectStore } from '@/stores/project';
 import { getMenuSelectedLabel } from '@/components/project/menus';
 
 import AreaEcosystemsView from '@/views/project/AreaEcosystemsView.vue';
+import { generateYearOptions } from '@/lib/util';
 
 // type AdminArea = {
 //     code?: string,
